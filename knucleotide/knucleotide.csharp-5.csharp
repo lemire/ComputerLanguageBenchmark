@@ -1,0 +1,305 @@
+﻿/* The Computer Language Benchmarks Game
+   http://benchmarksgame.alioth.debian.org/
+ *
+ * contributed by Sergey Prytkov
+ * shifting arithmetic borrowed from Anthony Lloyd's submission
+ * 
+ */
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;
+
+namespace knucleotide
+{
+    class Program
+    {
+        private static readonly (string, Dictionary<long, Wrapper>, string)[] dics = {
+            ("0", new Dictionary<long, Wrapper>(), (string)null),
+            ("00", new Dictionary<long, Wrapper>(), (string)null),
+            ("GGT", new Dictionary<long, Wrapper>(), (string)null),
+            ("GGTA", new Dictionary<long, Wrapper>(), (string)null),
+            ("GGTATT", new Dictionary<long, Wrapper>(), (string)null),
+            ("GGTATTTTAATT", new Dictionary<long, Wrapper>(), (string)null),
+            ("GGTATTTTAATTTATAGT", new Dictionary<long, Wrapper>(), (string)null),
+        };
+        private const byte a = (byte) 'a';
+        private const byte A = (byte) 'A';
+        private const byte c = (byte) 'c';
+        private const byte C = (byte) 'C';
+        private const byte g = (byte) 'g';
+        private const byte G = (byte) 'G';
+        private const byte T = (byte) 'T';
+        private const byte t = (byte) 't';
+        private const byte newLine = (byte) '\n';
+
+        private static readonly List<byte[]> memory = new List<byte[]>();
+        private static int start = 0;
+        private static int end = -1;
+        private static readonly VtComparer vt = new VtComparer();
+
+        private static int work=-1;
+        private const int WORK_COUNT=6;
+
+        private static void Worker()
+        {
+            while (true)
+            {
+                var currentWork = Interlocked.Increment(ref work);
+                if (currentWork > WORK_COUNT) return;
+                var (f, d, _) = dics[currentWork];
+                var fLen = f.Length;
+                ref var ss = ref dics[currentWork].Item3;
+                CountFrequency(fLen, d);
+                if (fLen <= 2)
+                    ss = WriteFrequencies(d, fLen);
+                else
+                    ss = WriteCount(d, f);
+                if (currentWork == WORK_COUNT) return;
+            }
+        }
+
+        private static void RunWorkers()
+        {
+            var worker = new ThreadStart(Worker);
+            var workers = new Thread[Environment.ProcessorCount];
+            for (int i = 0; i < workers.Length; i++)
+            {
+                workers[i] = new Thread(worker);
+                workers[i].Start();
+            }
+            for (int i = 0; i < workers.Length; i++)
+            {
+                workers[i].Join();
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            ReadInput();
+            RunWorkers();
+            Console.WriteLine(dics[0].Item3);
+            Console.WriteLine(dics[1].Item3);
+            Console.WriteLine(dics[2].Item3);
+            Console.WriteLine(dics[3].Item3);
+            Console.WriteLine(dics[4].Item3);
+            Console.WriteLine(dics[5].Item3);
+            Console.WriteLine(dics[6].Item3);
+        }
+
+        private class VtComparer : IComparer<(int, long)>
+        {
+            public int Compare((int, long) x, (int, long) y)
+            {
+                var a = y.Item1 - x.Item1;
+                if (a == 0) return (int) (x.Item2 - y.Item2);
+                return a;
+            }
+        }
+
+        private static string WriteFrequencies(Dictionary<long, Wrapper> freq, int fragmentLength)
+        {
+            var sb = new StringBuilder();
+            var res = new (int, long)[freq.Count];
+            var total = 0.0d;
+            var i = 0;
+            foreach (var kv in freq)
+            {
+                total += kv.Value.V;
+                res[i++] = (kv.Value.V, kv.Key);
+            }
+            double percent = 100.0 / total;
+            Array.Sort(res, vt);
+
+            foreach (var (val, k) in res)
+            {
+                var key = k;
+                if (fragmentLength == 2)
+                {
+                    var b = ToChar((int) (key & 0x3));
+                    key >>= 2;
+                    var a = ToChar((int) (key & 0x3));
+                    sb.Append(a);
+                    sb.Append(b);
+                }
+                else
+                {
+                    sb.Append(ToChar((int) (key & 0x3)));
+                }
+                sb.Append(' ');
+                sb.AppendLine((val * percent).ToString("F3"));
+            }
+            return sb.ToString();
+        }
+
+        private static string WriteCount(Dictionary<long, Wrapper> dictionary, string fragment)
+        {
+            long key = 0;
+            for (int i = 0; i < fragment.Length; ++i)
+                key = (key << 2) | ToNum((byte) fragment[i]);
+            Wrapper w;
+            var n = dictionary.TryGetValue(key, out w) ? w.V : 0;
+            return String.Concat(n.ToString(), "\t", fragment);
+        }
+
+        private static void CountFrequency(int fragmentLength, Dictionary<long, Wrapper> dictionary)
+        {
+            long rollingKey = 0;
+            long mask = 0;
+            int cursor;
+            var memoryI = 0;
+            var localStart = start;
+            for (cursor = 0; cursor < fragmentLength - 1; cursor++)
+            {
+                rollingKey <<= 2;
+                if (memory[memoryI].Length <= localStart + cursor)
+                {
+                    memoryI++;
+                    localStart = 0;
+                    cursor = 0;
+                }
+                rollingKey |= ToNum(memory[memoryI][localStart + cursor]);
+                mask = (mask << 2) + 3;
+            }
+            localStart += cursor;
+            mask = (mask << 2) + 3;
+            Wrapper w;
+            byte cursorByte;
+            for (int i = memoryI; i < memory.Count; i++)
+            {
+                var buffer = memory[i];
+                for (int j = i == 0 ? localStart : 0; j < buffer.Length; j++)
+                {
+                    if (i == memory.Count - 1 && j == end - 1) break;
+                    if ((cursorByte = buffer[j]) == newLine) continue;
+                    rollingKey = ((rollingKey << 2) & mask) | ToNum(cursorByte);
+                    if (dictionary.TryGetValue(rollingKey, out w))
+                        w.V++;
+                    else
+                        dictionary.Add(rollingKey, new Wrapper(1));
+                }
+            }
+        }
+
+        private class Wrapper
+        {
+            public int V;
+
+            public Wrapper(int v)
+            {
+                V = v;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static byte ToNum(byte b)
+        {
+            Debug.Assert(new []{'A','C','G','T','a','c','g','t'}.Contains((char) b));
+            return (byte)((b & 6) >> 1);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static char ToChar(int i)
+        {
+            switch (i)
+            {
+                case 0:
+                    return 'A';
+                case 1:
+                    return 'C';
+                case 2:
+                    return 'T';
+                default:
+                    return 'G';
+            }
+        }
+
+        private static void ReadInput()
+        {
+            var bufferSize = 32 * 1024 * 8;
+            var buffer = new byte[bufferSize];
+            var stdin = Console.OpenStandardInput();
+            var gti = -1;
+            var gt = (byte) '>';
+            var T = (byte) 'T';
+            var H = (byte) 'H';
+            var R = (byte) 'R';
+            var E = (byte) 'E';
+            int readen;
+            bool headerFound = false;
+            byte[] helpMe = null;
+            // I need refactor this mess
+            while ((readen = stdin.Read(buffer, 0, bufferSize)) > 0)
+            {
+                // looking for '>'
+                while (!headerFound && (gti = Array.IndexOf(buffer, gt, gti + 1, readen - (gti + 1))) != -1)
+                {
+                    // if '>THREE' fits buffer with no overlap (very likely)
+                    if (gti < readen - 6)
+                    {
+                        if (buffer[gti + 1] == T &&
+                            buffer[gti + 2] == H &&
+                            buffer[gti + 3] == R &&
+                            buffer[gti + 4] == E &&
+                            buffer[gti + 5] == E)
+                        {
+                            headerFound = true;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        helpMe = new byte[5];
+                        Buffer.BlockCopy(buffer, gti, helpMe, 0, readen - gti);
+                        stdin.Read(helpMe, readen - gti, helpMe.Length - (readen - gti));
+                        if (helpMe[0] == T &&
+                            helpMe[1] == H &&
+                            helpMe[2] == R &&
+                            helpMe[3] == E &&
+                            helpMe[4] == E)
+                        {
+                            headerFound = true;
+                            break;
+                        }
+                    }
+                }
+                if (headerFound)
+                {
+                    // if new line after header also in this buff (very likely)
+                    if ((start = Array.IndexOf(buffer, newLine, gti + 6, readen - (gti + 6))) != -1)
+                    {
+                        memory.Add(buffer);
+                        end = Array.IndexOf(buffer, gt, start, readen - start);
+                        if (readen < bufferSize)
+                        {
+                            end = readen;
+                            goto exit;
+                        }
+                        else
+                        {
+                            buffer = new byte[bufferSize];
+                            goto second_loop;
+                        }
+                    }
+                }
+            }
+            second_loop:
+            while (end == -1 && ((readen = stdin.Read(buffer, 0, bufferSize)) > 0))
+            {
+                end = Array.IndexOf(buffer, gt, 0, readen);
+                memory.Add(buffer);
+                buffer = new byte[bufferSize];
+                if (readen != bufferSize) break;
+            }
+            if (end == -1) end = readen;
+            exit:
+            start++;
+            stdin.Dispose();
+            GC.Collect();
+        }
+    }
+}
