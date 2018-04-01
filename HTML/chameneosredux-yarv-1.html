@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>chameneos-redux Ruby program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>chameneos-redux Ruby program</h2>
+    <aside>
+      <p><a href="./chameneosredux-description.html#chameneosredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc"># The Computer Language Benchmarks Game</span>
+<span class="slc"># http://benchmarksgame.alioth.debian.org/</span>
+
+<span class="slc">#   contributed by Michael Barker</span>
+<span class="slc">#   based on a Java contribution by Luzius Meisser</span>
+<span class="slc">#   converted to C by dualamd</span>
+<span class="slc">#   converted to Ruby by Eugene Pimenov</span>
+
+<span class="slc">#require &apos;thread&apos;</span>
+
+COLORS     <span class="opt">= [</span><span class="kwc">:blue</span><span class="opt">,</span> <span class="kwc">:red</span><span class="opt">,</span> <span class="kwc">:yellow</span><span class="opt">,</span> <span class="kwc">:invalid</span><span class="opt">].</span>freeze
+COMPLIMENT <span class="opt">= {</span>
+  <span class="kwc">:blue</span> <span class="opt">=&gt;</span> {:blue =&gt; :blue, :red =&gt; :yellow, :yellow =&gt; :red}<span class="opt">.</span>freeze<span class="opt">,</span>
+  <span class="kwc">:red</span> <span class="opt">=&gt;</span> {:blue =&gt; :yellow, :red =&gt; :red, :yellow =&gt; :blue}<span class="opt">.</span>freeze<span class="opt">,</span>
+  <span class="kwc">:yellow</span> <span class="opt">=&gt;</span> {:blue =&gt; :red, :red =&gt; :blue, :yellow =&gt; :yellow}<span class="opt">.</span>freeze
+<span class="opt">}.</span>freeze
+
+<span class="kwb">$creature_id</span> <span class="opt">=</span> <span class="num">0</span>
+
+NUMBERS <span class="opt">= %</span>w{zero one two three four five six seven eight nine}<span class="opt">.</span>freeze
+
+<span class="slc"># convert integer to number string: 1234 -&gt; &quot;one two three four&quot;</span>
+<span class="kwa">def</span> <span class="kwd">format_number</span><span class="opt">(</span>num<span class="opt">)</span>
+  out <span class="opt">= []</span>
+  <span class="kwa">begin</span>
+    out <span class="opt">&lt;&lt;</span> NUMBERS<span class="opt">[</span>num<span class="opt">%</span><span class="num">10</span><span class="opt">]</span>
+    num <span class="opt">/=</span> <span class="num">10</span>
+  <span class="kwa">end while</span> num <span class="opt">&gt;</span> <span class="num">0</span>
+  out<span class="opt">.</span>reverse<span class="opt">.</span><span class="kwd">join</span><span class="opt">(</span><span class="str">&quot; &quot;</span><span class="opt">)</span>
+<span class="kwa">end</span>
+
+<span class="kwa">class</span> MeetingPlace
+  attr_reader <span class="kwc">:mutex</span>
+  attr_accessor <span class="kwc">:meetings_left</span><span class="opt">,</span> <span class="kwc">:first_creature</span>
+
+  <span class="kwa">def</span> <span class="kwd">initialize</span><span class="opt">(</span>meetings<span class="opt">)</span>
+    <span class="kwb">&#64;mutex</span> <span class="opt">=</span> Mutex<span class="opt">.</span>new
+    <span class="kwb">&#64;meetings_left</span> <span class="opt">=</span> meetings
+  <span class="kwa">end</span>
+<span class="kwa">end</span>
+
+<span class="kwa">class</span> Creature
+  attr_accessor <span class="kwc">:place</span><span class="opt">,</span> <span class="kwc">:thread</span><span class="opt">,</span> <span class="kwc">:count</span><span class="opt">,</span> <span class="kwc">:same_count</span><span class="opt">,</span> <span class="kwc">:color</span><span class="opt">,</span> <span class="kwc">:id</span><span class="opt">,</span> <span class="kwc">:two_met</span><span class="opt">,</span> <span class="kwc">:sameid</span>
+
+  <span class="kwa">def</span> <span class="kwd">initialize</span><span class="opt">(</span>place<span class="opt">,</span> color<span class="opt">)</span>
+    <span class="kwb">&#64;place</span> <span class="opt">=</span> place
+    <span class="kwb">&#64;count</span> <span class="opt">=</span> <span class="kwb">&#64;same_count</span> <span class="opt">=</span> <span class="num">0</span>
+
+    <span class="kwb">&#64;id</span> <span class="opt">= (</span><span class="kwb">$creature_id</span> <span class="opt">+=</span> <span class="num">1</span><span class="opt">)</span>
+    <span class="kwb">&#64;color</span> <span class="opt">=</span> color
+    <span class="kwb">&#64;two_met</span> <span class="opt">=</span> <span class="kwc">FALSE</span>
+
+    <span class="kwb">&#64;thread</span> <span class="opt">=</span> Thread<span class="opt">.</span>new <span class="kwa">do</span>
+      <span class="kwa">loop do</span>
+        <span class="kwa">if</span> meet
+          Thread<span class="opt">.</span>pass <span class="kwa">while</span> <span class="kwb">&#64;two_met</span> <span class="opt">==</span> <span class="kwa">false</span>
+
+          <span class="kwb">&#64;same_count</span> <span class="opt">+=</span> <span class="num">1</span> <span class="kwa">if</span> <span class="kwb">&#64;sameid</span>
+          <span class="kwb">&#64;count</span> <span class="opt">+=</span> <span class="num">1</span>
+        <span class="kwa">else</span>
+          <span class="kwa">break</span>
+        <span class="kwa">end</span>
+      <span class="kwa">end</span>
+    <span class="kwa">end</span>
+  <span class="kwa">end</span>
+
+  <span class="kwa">def</span> meet
+    <span class="kwb">&#64;place</span><span class="opt">.</span>mutex<span class="opt">.</span>lock
+
+    <span class="kwa">if</span> <span class="kwb">&#64;place</span><span class="opt">.</span>meetings_left <span class="opt">&gt;</span> <span class="num">0</span>
+      <span class="kwa">if</span> <span class="kwb">&#64;place</span><span class="opt">.</span>first_creature
+        first <span class="opt">=</span> <span class="kwb">&#64;place</span><span class="opt">.</span>first_creature
+        new_color <span class="opt">=</span> COMPLIMENT<span class="opt">[</span><span class="kwb">&#64;color</span><span class="opt">][</span>first<span class="opt">.</span>color<span class="opt">]</span>
+
+        <span class="kwb">&#64;sameid</span>  <span class="opt">=</span> first<span class="opt">.</span>sameid  <span class="opt">=</span> <span class="kwb">&#64;id</span> <span class="opt">==</span> first<span class="opt">.</span>id
+        <span class="kwb">&#64;color</span>   <span class="opt">=</span> first<span class="opt">.</span>color   <span class="opt">=</span> new_color
+        <span class="kwb">&#64;two_met</span> <span class="opt">=</span> first<span class="opt">.</span>two_met <span class="opt">=</span> <span class="kwa">true</span>
+
+        <span class="kwb">&#64;place</span><span class="opt">.</span>first_creature <span class="opt">=</span> <span class="kwa">nil</span>
+        <span class="kwb">&#64;place</span><span class="opt">.</span>meetings_left <span class="opt">-=</span> <span class="num">1</span>
+      <span class="kwa">else</span>
+        <span class="kwb">&#64;two_met</span> <span class="opt">=</span> <span class="kwa">false</span>
+        <span class="kwb">&#64;place</span><span class="opt">.</span>first_creature <span class="opt">=</span> <span class="kwa">self</span>
+      <span class="kwa">end</span>
+      <span class="kwa">true</span>
+    <span class="kwa">else</span>
+      <span class="kwa">false</span>
+    <span class="kwa">end</span>
+  <span class="kwa">ensure</span>
+    <span class="kwb">&#64;place</span><span class="opt">.</span>mutex<span class="opt">.</span>unlock
+  <span class="kwa">end</span>
+
+  <span class="kwa">def</span> result
+    <span class="str">&apos;&apos;</span> <span class="opt">&lt;&lt;</span> <span class="kwb">&#64;count</span><span class="opt">.</span>to_s <span class="opt">&lt;&lt;</span> <span class="str">&apos; &apos;</span> <span class="opt">&lt;&lt;</span> <span class="kwd">format_number</span><span class="opt">(</span><span class="kwb">&#64;same_count</span><span class="opt">)</span>
+  <span class="kwa">end</span>
+<span class="kwa">end</span>
+
+<span class="kwa">def</span> <span class="kwd">run_game</span><span class="opt">(</span>n_meeting<span class="opt">,</span> colors<span class="opt">)</span>
+  place <span class="opt">=</span> MeetingPlace<span class="opt">.</span><span class="kwd">new</span><span class="opt">(</span>n_meeting<span class="opt">)</span>
+
+  creatures <span class="opt">= []</span>
+  colors<span class="opt">.</span>each <span class="kwa">do</span> <span class="opt">|</span>color<span class="opt">|</span>
+    print color<span class="opt">,</span> <span class="str">&quot; &quot;</span>
+    creatures <span class="opt">&lt;&lt;</span> Creature<span class="opt">.</span><span class="kwd">new</span><span class="opt">(</span>place<span class="opt">,</span> color<span class="opt">)</span>
+  <span class="kwa">end</span>
+  puts
+
+  <span class="slc"># wait for them to meet</span>
+  creatures<span class="opt">.</span>each { |c| c.thread.join}
+
+  total <span class="opt">=</span> <span class="num">0</span>
+  <span class="slc"># print meeting times of each creature</span>
+  creatures<span class="opt">.</span>each <span class="kwa">do</span> <span class="opt">|</span>c<span class="opt">|</span>
+    puts c<span class="opt">.</span>result
+    total <span class="opt">+=</span> c<span class="opt">.</span>count
+  <span class="kwa">end</span>
+
+  <span class="slc"># print total meeting times, should be equal n_meeting</span>
+  print <span class="str">&apos; &apos;</span><span class="opt">,</span> <span class="kwd">format_number</span><span class="opt">(</span>total<span class="opt">),</span> <span class="str">&quot;</span><span class="esc">\n\n</span><span class="str">&quot;</span>
+<span class="kwa">end</span>
+
+<span class="kwa">def</span> print_colors_table
+  <span class="opt">[</span><span class="kwc">:blue</span><span class="opt">,</span> <span class="kwc">:red</span><span class="opt">,</span> <span class="kwc">:yellow</span><span class="opt">].</span>each <span class="kwa">do</span> <span class="opt">|</span>c1<span class="opt">|</span>
+    <span class="opt">[</span><span class="kwc">:blue</span><span class="opt">,</span> <span class="kwc">:red</span><span class="opt">,</span> <span class="kwc">:yellow</span><span class="opt">].</span>each <span class="kwa">do</span> <span class="opt">|</span>c2<span class="opt">|</span>
+      puts <span class="str">&quot;</span><span class="ipl">#{c1}</span> <span class="str">+</span> <span class="ipl">#{c2}</span> <span class="str">-&gt;</span> <span class="ipl">#{COMPLIMENT[c1][c2]}</span><span class="str">&quot;</span>
+    <span class="kwa">end</span>
+  <span class="kwa">end</span>
+<span class="kwa">end</span>
+
+n <span class="opt">= (</span><span class="kwc">ARGV</span><span class="opt">[</span><span class="num">0</span><span class="opt">] ||</span> <span class="num">600</span><span class="opt">).</span>to_i
+
+
+print_colors_table
+puts
+
+run_game n<span class="opt">, [</span><span class="kwc">:blue</span><span class="opt">,</span> <span class="kwc">:red</span><span class="opt">,</span> <span class="kwc">:yellow</span><span class="opt">]</span>
+run_game n<span class="opt">, [</span><span class="kwc">:blue</span><span class="opt">,</span> <span class="kwc">:red</span><span class="opt">,</span> <span class="kwc">:yellow</span><span class="opt">,</span> <span class="kwc">:red</span><span class="opt">,</span> <span class="kwc">:yellow</span><span class="opt">,</span> <span class="kwc">:blue</span><span class="opt">,</span> <span class="kwc">:red</span><span class="opt">,</span> <span class="kwc">:yellow</span><span class="opt">,</span> <span class="kwc">:red</span><span class="opt">,</span> <span class="kwc">:blue</span><span class="opt">]</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+ruby 2.5.0p0 (2017-12-25 revision 61468) [x86_64-linux]
+
+
+Tue, 02 Jan 2018 01:27:08 GMT
+
+COMMAND LINE:
+/opt/src/ruby-2.5.0/bin/ruby -W0 chameneosredux.yarv 6000000
+
+PROGRAM OUTPUT:
+blue + blue -&gt; blue
+blue + red -&gt; yellow
+blue + yellow -&gt; red
+red + blue -&gt; yellow
+red + red -&gt; red
+red + yellow -&gt; blue
+yellow + blue -&gt; red
+yellow + red -&gt; blue
+yellow + yellow -&gt; yellow
+
+blue red yellow 
+4020682 zero
+3984673 zero
+3994645 zero
+ one two zero zero zero zero zero zero
+
+blue red yellow red yellow blue red yellow red blue 
+1200217 zero
+1199557 zero
+1202650 zero
+1201157 zero
+1201921 zero
+1194935 zero
+1199657 zero
+1204418 zero
+1193971 zero
+1201517 zero
+ one two zero zero zero zero zero zero
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

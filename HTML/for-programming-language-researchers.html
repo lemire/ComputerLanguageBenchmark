@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="index,follow,archive">
+<meta name="description" content="My question is if anyone here has any experience with simplistic benchmarking and &hellip; Explore the data for warmups and slowdowns.">
+<title>for researchers | The Computer Language Benchmarks Game</title>
+<link rel="shortcut icon" href="./favicon.ico">
+<style><!-- 
+a{color:black;text-decoration:none}article,footer,header{margin:auto;max-width:31em;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3{font-family:Ubuntu Mono,Consolas,Menlo,monospace}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}p{color:#333;line-height:1.4;margin:.3em 0 0}p a{border-bottom:.1em solid #333;padding-bottom:.1em}#core{background-color:black}blockquote{margin-top:.3em}blockquote p{display:inline}blockquote:before,q:before{content:open-quote}blockquote:after,q:after{content:close-quote}body{quotes:'\201C' '\201D' '\2018' '\2019' '\2039' '\203A'}img{display:block;margin:2.6em auto}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<header id="top">
+  <h1 id="core"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <section>
+    <h3 id="question">4chan</h3>
+    <blockquote cite="4chan"><p>My question is if anyone here has any experience with simplistic benchmarking and could tell me which things to test for in order to get a simple idea of each language's general performance?</blockquote>
+  <aside>
+    <h3>The practicalities depend on the context&hellip;</h3>
+    <blockquote cite="https://www.cs.kent.ac.uk/pubs/2012/3233/"><p>The practicalities depend on the context (<a href="https://www.cs.kent.ac.uk/pubs/2012/3233/">the goal of the study</a>, the criticality of the results and the consequences of possible errors, the kind of computer system evaluated, the runtime environment, infrastructure, and benchmarks). We understand that having a single best technique that could be mechanically followed in every study might be appealing, but we strongly believe that such practice is an illusion, and we definitely do not provide one here.</blockquote>
+  </aside>
+  </section>
+  <section>
+    <h3 id="repetition">So explore!</h3>
+    <p>Make <a href="http://www.itl.nist.gov/div898/handbook/eda/section3/runseqpl.htm">run-sequence charts</a> and check that the data is stable, without regularities or patterns.
+    <p><img src="./run-sequence-nbody.svg" alt="" title="" width="100%">
+    <p>Make charts of the same data randomly re-ordered and check for systematic differences.
+    <p><img src="./run-sequence-nbody-line.svg" alt="" title="" width="100%"><img src="./run-sequence-nbody-reordered-line.svg" alt="" title="" width="100%">
+    <p>Make <a href="http://www.itl.nist.gov/div898/handbook/eda/section3/lagplot.htm">lag charts</a> and check. Make <a href="http://www.itl.nist.gov/div898/handbook/eda/section3/autocopl.htm">auto-correlation function</a> charts and check.
+    <p><img src="./lag1-nbody.svg" alt="" title="" width="100%"><img src="./lag1-nbody-reordered.svg" alt="" title="" width="100%">
+    <p><img src="./acf-nbody.svg" alt="" title="" width="100%"><img src="./acf-nbody-reordered.svg" alt="" title="" width="100%">
+    <p>Explore the data to find out <a href="https://kar.kent.ac.uk/33611/">what kind-of repetition</a> and how much repetition is needed in the study.
+    <p>In particular, don't assume that after an arbitrary <em>warmup</em> phase JIT compilers must improve program performance -- <em>It ain't necessarily so</em>.
+    <blockquote cite="https://arxiv.org/abs/1602.00602"><p>In stark contrast to the traditional expectation of <q>warmup</q>, some benchmarks exhibit <a href="https://arxiv.org/abs/1602.00602"><q>slowdown</q></a>, where the performance of in-process iterations drops over time.</blockquote> 
+  </section>
+  <section>
+    <h3 id="cross-language-compiler-benchmarking">Initial comparisons</h3>
+    <p>The 4chan poster needed to show comparisons between their academic research implementation and other programming language implementations. Like [pdf] <a href="http://www.dcs.gla.ac.uk/~wingli/jvm_language_study/jvmlanguages.pdf">diverse</a> <a href="http://design.cs.iastate.edu/vmil/2013/papers/p05-Sarimbekov.pdf">researchers</a>, <a href="https://www.scss.tcd.ie/publications/tech-reports/reports.09/TCD-CS-2009-37.pdf">over</a> <a href="http://www.ccs.neu.edu/racket/pubs/oopsla12-stf.pdf">the</a> <a href="http://www.softlab.ntua.gr/research/techrep/CSD-SW-TR-8-09.pdf">past</a> <a href="https://sites.google.com/view/energy-efficiency-languages">decade</a>, they may decide to use the benchmarks game as a <em>convenient</em> source of comparison programs.
+    <p>Alternatively, for their initial assessment of compiler effectiveness, they may find the more-rigid less-permissive guidelines of <q><a href="https://github.com/smarr/are-we-fast-yet">Are We Fast Yet?</a></q> helpful.
+    <p>If some of those guidelines seem arbitrary, perhaps that is less important than <em>the possibility</em> that there will be identifiable opportunities to improve performance.
+  </section>
+  <section>
+    <h3 id="real-world"><q>The Real World</q></h3>
+    <blockquote cite="https://www.microsoft.com/en-us/research/publication/jsmeter-characterizing-real-world-behavior-of-javascript-programs/"><p>&hellip; doing effective research on the Java platform requires benchmarks that are both real and more complex than benchmark suites used to evaluate languages like C, C++, and Fortran. <br/>&hellip;  the JavaScript benchmarks are <em>fleetingly small</em>, and behave in ways that are <em>significantly different</em> than the real applications. We have documented numerous differences in behavior, and we conclude from these measured differences that results based on the <a href="https://www.microsoft.com/en-us/research/publication/jsmeter-characterizing-real-world-behavior-of-javascript-programs/">benchmarks may mislead</a> JavaScript engine implementers. Furthermore, we observe interesting behaviors in real JavaScript applications that the benchmarks fail to exhibit, suggesting that previously unexplored optimization strategies may be productive in practice.</blockquote> 
+  </section>
+  <section>
+    <h3 id="citation">Citation</h3>
+    <p>Gouy, Isaac. The Computer Language Benchmarks Game. Web.&lt;http://benchmarksgame.alioth.debian.org/&gt;. 
+  </section>
+</article>
+<footer>
+</footer>
+

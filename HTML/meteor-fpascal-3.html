@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>meteor-contest Pascal Free Pascal&nbsp;#3 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>meteor-contest Pascal Free Pascal&nbsp;#3 program</h2>
+    <aside>
+      <p><a href="./meteor-description.html#meteor">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="kwa">program</span> meteorshower<span class="opt">;</span>
+
+<span class="com">{ The Computer Language Benchmarks Game</span>
+<span class="com">  http://benchmarksgame.alioth.debian.org/</span>
+<span class="com"></span>
+<span class="com">  contributed by Daniel Mantione</span>
+<span class="com">  modified by Vincent Snijders</span>
+<span class="com">}</span>
+
+
+<span class="kwa">uses</span> dos<span class="opt">;</span>
+
+<span class="kwa">const</span> N_COL <span class="opt">=</span> <span class="num">5</span><span class="opt">;</span>
+      N_ROW <span class="opt">=</span> <span class="num">10</span><span class="opt">;</span>
+      N_CELL <span class="opt">=</span> N_COL <span class="opt">*</span> N_ROW<span class="opt">;</span>
+      N_PIECE_TYPE <span class="opt">=</span> <span class="num">10</span><span class="opt">;</span>
+
+      N_ELEM<span class="opt">=</span><span class="num">5</span><span class="opt">;</span>
+      N_ORIENT<span class="opt">=</span><span class="num">12</span><span class="opt">;</span>
+      ALL_PIECE_MASK<span class="opt">=[</span><span class="num">0</span><span class="opt">..</span>N_PIECE_TYPE<span class="opt">-</span><span class="num">1</span><span class="opt">];</span>
+      SKIP_PIECE<span class="opt">=</span><span class="num">5</span><span class="opt">;</span>
+
+      no_piece<span class="opt">=</span><span class="kwd">high</span><span class="opt">(</span><span class="kwb">byte</span><span class="opt">);</span>
+
+      L_EDGE_MASK<span class="opt">=[</span><span class="num">0</span><span class="opt">,</span><span class="num">5</span><span class="opt">,</span><span class="num">10</span><span class="opt">,</span><span class="num">15</span><span class="opt">,</span><span class="num">20</span><span class="opt">,</span><span class="num">25</span><span class="opt">,</span><span class="num">30</span><span class="opt">];</span>
+      R_EDGE_MASK<span class="opt">=[</span><span class="num">4</span><span class="opt">,</span><span class="num">9</span><span class="opt">,</span><span class="num">14</span><span class="opt">,</span><span class="num">19</span><span class="opt">,</span><span class="num">24</span><span class="opt">,</span><span class="num">29</span><span class="opt">];</span>
+      TOP_ROW    <span class="opt">= [</span><span class="num">0</span><span class="opt">*</span>N_COL<span class="opt">.</span><span class="num">.1</span><span class="opt">*</span>N_COL<span class="opt">-</span><span class="num">1</span><span class="opt">];</span>
+      SECOND_ROW <span class="opt">= [</span><span class="num">1</span><span class="opt">*</span>N_COL<span class="opt">.</span><span class="num">.2</span><span class="opt">*</span>N_COL<span class="opt">-</span><span class="num">1</span><span class="opt">];</span>
+      THIRD_ROW  <span class="opt">= [</span><span class="num">2</span><span class="opt">*</span>N_COL<span class="opt">.</span><span class="num">.3</span><span class="opt">*</span>N_COL<span class="opt">-</span><span class="num">1</span><span class="opt">];</span>
+      FOURTH_ROW <span class="opt">= [</span><span class="num">3</span><span class="opt">*</span>N_COL<span class="opt">.</span><span class="num">.4</span><span class="opt">*</span>N_COL<span class="opt">-</span><span class="num">1</span><span class="opt">];</span>
+      FIFTH_ROW  <span class="opt">= [</span><span class="num">4</span><span class="opt">*</span>N_COL<span class="opt">.</span><span class="num">.5</span><span class="opt">*</span>N_COL<span class="opt">-</span><span class="num">1</span><span class="opt">];</span>
+      SIXTH_ROW  <span class="opt">= [</span><span class="num">5</span><span class="opt">*</span>N_COL<span class="opt">.</span><span class="num">.6</span><span class="opt">*</span>N_COL<span class="opt">-</span><span class="num">1</span><span class="opt">];</span>
+      LAST_ROW   <span class="opt">=</span> SIXTH_ROW<span class="opt">;</span>
+      ROW_0_MASK<span class="opt">=[</span><span class="num">0</span><span class="opt">..</span>N_COL<span class="opt">-</span><span class="num">1</span><span class="opt">,</span><span class="num">10</span><span class="opt">..</span>N_COL<span class="opt">+</span><span class="num">10</span><span class="opt">-</span><span class="num">1</span><span class="opt">,</span><span class="num">20</span><span class="opt">..</span>N_COL<span class="opt">+</span><span class="num">20</span><span class="opt">-</span><span class="num">1</span><span class="opt">,</span><span class="num">30</span><span class="opt">,</span><span class="num">31</span><span class="opt">];</span>
+      ROW_1_MASK<span class="opt">=[</span><span class="num">5</span><span class="opt">..</span>N_COL<span class="opt">+</span><span class="num">5</span><span class="opt">-</span><span class="num">1</span><span class="opt">,</span><span class="num">15</span><span class="opt">..</span>N_COL<span class="opt">+</span><span class="num">15</span><span class="opt">-</span><span class="num">1</span><span class="opt">,</span><span class="num">25</span><span class="opt">..</span>N_COL<span class="opt">+</span><span class="num">25</span><span class="opt">-</span><span class="num">1</span><span class="opt">];</span>
+      BOARD_MASK<span class="opt">=[</span><span class="num">0</span><span class="opt">.</span><span class="num">.29</span><span class="opt">];</span>
+
+
+<span class="kwa">type</span>  bitvec<span class="opt">=</span><span class="kwa">set of</span> <span class="num">0</span><span class="opt">.</span><span class="num">.31</span><span class="opt">;</span>
+      dimensions<span class="opt">=(</span>dimx<span class="opt">,</span>dimy<span class="opt">);</span>
+      parity<span class="opt">=(</span>even<span class="opt">,</span>odd<span class="opt">);</span>
+      goodbad<span class="opt">=(</span>good<span class="opt">,</span>bad<span class="opt">,</span>always_bad<span class="opt">);</span>
+      piecenr<span class="opt">=</span><span class="kwa">type</span> <span class="num">0</span><span class="opt">..</span>N_PIECE_TYPE<span class="opt">-</span><span class="num">1</span><span class="opt">;</span>
+      orientation<span class="opt">=</span><span class="kwa">type</span> <span class="num">0</span><span class="opt">..</span>N_ORIENT<span class="opt">-</span><span class="num">1</span><span class="opt">;</span>
+
+      piece_placement<span class="opt">=</span><span class="kwa">record</span>
+        vec<span class="opt">:</span>bitvec<span class="opt">;</span>
+        ipiece<span class="opt">:</span>piecenr<span class="opt">;</span>
+        row<span class="opt">:</span><span class="kwb">byte</span><span class="opt">;</span>
+      <span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">type</span> Soln<span class="opt">=</span><span class="kwa">object</span>
+       m_pieces<span class="opt">:</span><span class="kwa">array</span><span class="opt">[</span>piecenr<span class="opt">]</span> <span class="kwa">of</span> piece_placement<span class="opt">;</span>
+       m_npiece<span class="opt">:</span><span class="kwb">byte</span><span class="opt">;</span>
+       m_cells<span class="opt">:</span><span class="kwa">array</span><span class="opt">[</span><span class="num">0</span><span class="opt">..</span>N_ROW<span class="opt">-</span><span class="num">1</span><span class="opt">,</span><span class="num">0</span><span class="opt">..</span>N_COL<span class="opt">-</span><span class="num">1</span><span class="opt">]</span> <span class="kwa">of</span> piecenr<span class="opt">;</span>
+       m_synched<span class="opt">:</span><span class="kwb">boolean</span><span class="opt">;</span>
+       <span class="kwa">constructor</span> <span class="kwd">init</span><span class="opt">(</span>fillval<span class="opt">:</span><span class="kwb">byte</span><span class="opt">);</span>
+       <span class="kwa">procedure</span> setCells<span class="opt">;</span>
+       <span class="kwa">function</span> <span class="kwd">lessThan</span><span class="opt">(</span><span class="kwa">var</span> r<span class="opt">:</span>Soln<span class="opt">):</span><span class="kwb">boolean</span><span class="opt">;</span>
+       <span class="kwa">procedure</span> <span class="kwd">write</span><span class="opt">(</span><span class="kwa">var</span> f<span class="opt">:</span><span class="kwb">text</span><span class="opt">);</span>
+       <span class="kwa">procedure</span> <span class="kwd">fill</span><span class="opt">(</span>value<span class="opt">:</span><span class="kwb">byte</span><span class="opt">);</span>
+       <span class="kwa">procedure</span> <span class="kwd">spin</span><span class="opt">(</span><span class="kwa">var</span> spun<span class="opt">:</span>Soln<span class="opt">);</span>
+
+       <span class="kwa">function</span> isEmpty<span class="opt">:</span><span class="kwb">boolean</span><span class="opt">;</span>
+       <span class="kwa">procedure</span> popPiece<span class="opt">;</span><span class="kwa">inline</span><span class="opt">;</span>
+       <span class="kwa">procedure</span> <span class="kwd">pushPiece</span><span class="opt">(</span>Avec<span class="opt">:</span>bitvec<span class="opt">;</span>AiPiece<span class="opt">:</span>piecenr<span class="opt">;</span>Arow<span class="opt">:</span><span class="kwb">byte</span><span class="opt">);</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+
+     instance<span class="opt">=</span><span class="kwa">record</span>
+       m_allowed<span class="opt">:</span><span class="kwa">set of</span> <span class="kwb">byte</span><span class="opt">;</span>
+       m_vec<span class="opt">:</span>bitvec<span class="opt">;</span>
+       m_offset<span class="opt">:</span><span class="kwb">longint</span><span class="opt">;</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+
+     TPts<span class="opt">=</span><span class="kwa">array</span><span class="opt">[</span><span class="num">0</span><span class="opt">..</span>N_ELEM<span class="opt">-</span><span class="num">1</span><span class="opt">,</span>dimensions<span class="opt">]</span> <span class="kwa">of</span> shortint<span class="opt">;</span>
+     piece<span class="opt">=</span><span class="kwa">object</span>
+       m_instance<span class="opt">:</span><span class="kwa">array</span><span class="opt">[</span>parity<span class="opt">]</span> <span class="kwa">of</span> instance<span class="opt">;</span>
+       <span class="kwa">procedure</span> <span class="kwd">set_ok_positions</span><span class="opt">(</span>isOdd<span class="opt">:</span>parity<span class="opt">;</span>w<span class="opt">,</span>h<span class="opt">:</span><span class="kwb">longint</span><span class="opt">);</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+
+     OkPieces<span class="opt">=</span><span class="kwa">record</span>
+       nPieces<span class="opt">:</span><span class="kwa">array</span><span class="opt">[</span>piecenr<span class="opt">]</span> <span class="kwa">of</span> <span class="kwb">byte</span><span class="opt">;</span>
+       pieceVec<span class="opt">:</span><span class="kwa">array</span><span class="opt">[</span>piecenr<span class="opt">,</span>orientation<span class="opt">]</span> <span class="kwa">of</span> bitvec<span class="opt">;</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+
+
+<span class="kwa">type</span>  fixed<span class="opt">=(</span>OPEN<span class="opt">,</span> CLOSED<span class="opt">);</span>
+      islandinfo<span class="opt">=</span><span class="kwa">record</span>
+        has_bad<span class="opt">:</span><span class="kwa">array</span><span class="opt">[</span>fixed<span class="opt">,</span>parity<span class="opt">]</span> <span class="kwa">of</span> bitvec<span class="opt">;</span>
+        is_known<span class="opt">:</span><span class="kwa">array</span><span class="opt">[</span>fixed<span class="opt">,</span>parity<span class="opt">]</span> <span class="kwa">of</span> bitvec<span class="opt">;</span>
+        alwaysBad<span class="opt">:</span><span class="kwa">array</span><span class="opt">[</span>parity<span class="opt">]</span> <span class="kwa">of</span> bitvec<span class="opt">;</span>
+      <span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">const</span> MAX_ISLAND_OFFSET<span class="opt">=</span><span class="num">1024</span><span class="opt">;</span>
+
+<span class="kwa">type</span> cacherec<span class="opt">=</span><span class="kwa">record</span>
+       krow<span class="opt">,</span>kpiecevec<span class="opt">:</span><span class="kwb">word</span><span class="opt">;</span>
+       kboardvec<span class="opt">:</span>bitvec<span class="opt">;</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">var</span> s_basePiece<span class="opt">:</span><span class="kwa">array</span><span class="opt">[</span>piecenr<span class="opt">,</span>orientation<span class="opt">]</span> <span class="kwa">of</span> piece<span class="opt">;</span>
+    g_okPieces<span class="opt">:</span><span class="kwa">array</span><span class="opt">[</span><span class="num">0</span><span class="opt">..</span>N_ROW<span class="opt">-</span><span class="num">1</span><span class="opt">,</span><span class="num">0</span><span class="opt">..</span>N_COL<span class="opt">-</span><span class="num">1</span><span class="opt">]</span> <span class="kwa">of</span> OkPieces<span class="opt">;</span>
+    g_islandInfo<span class="opt">:</span><span class="kwa">array</span><span class="opt">[</span><span class="num">0</span><span class="opt">..</span>MAX_ISLAND_OFFSET<span class="opt">-</span><span class="num">1</span><span class="opt">]</span> <span class="kwa">of</span> islandinfo<span class="opt">;</span>
+    g_nIslandInfo<span class="opt">:</span><span class="kwb">cardinal</span><span class="opt">=</span><span class="num">0</span><span class="opt">;</span>
+    cache<span class="opt">:</span><span class="kwa">array</span><span class="opt">[</span><span class="num">0</span><span class="opt">.</span><span class="num">.1024</span><span class="opt">*</span><span class="num">128</span><span class="opt">-</span><span class="num">1</span><span class="opt">]</span> <span class="kwa">of</span> cacherec<span class="opt">;</span>
+
+    m_curSoln<span class="opt">,</span>m_minSoln<span class="opt">,</span>m_maxSoln<span class="opt">:</span>Soln<span class="opt">;</span>
+    m_nSoln<span class="opt">:</span><span class="kwb">cardinal</span><span class="opt">;</span>
+
+<span class="kwa">const</span> basevecs<span class="opt">:</span><span class="kwa">array</span> <span class="opt">[</span><span class="num">0</span><span class="opt">.</span><span class="num">.9</span><span class="opt">]</span> <span class="kwa">of</span> bitvec<span class="opt">= (</span>
+        <span class="opt">[</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">3</span><span class="opt">,</span><span class="num">8</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">3</span><span class="opt">,</span><span class="num">6</span><span class="opt">,</span><span class="num">7</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">7</span><span class="opt">,</span><span class="num">12</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">5</span><span class="opt">,</span><span class="num">10</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">0</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">5</span><span class="opt">,</span><span class="num">6</span><span class="opt">,</span><span class="num">10</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">6</span><span class="opt">,</span><span class="num">7</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">5</span><span class="opt">,</span><span class="num">10</span><span class="opt">,</span><span class="num">15</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">5</span><span class="opt">,</span><span class="num">7</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">7</span><span class="opt">,</span><span class="num">8</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">3</span><span class="opt">,</span><span class="num">7</span><span class="opt">]</span>
+      <span class="opt">);</span>
+
+
+<span class="kwa">constructor</span> soln<span class="opt">.</span><span class="kwd">init</span><span class="opt">(</span>fillval<span class="opt">:</span><span class="kwb">byte</span><span class="opt">);</span>
+
+<span class="kwa">begin</span>
+  <span class="kwd">fill</span><span class="opt">(</span>fillval<span class="opt">);</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">procedure</span> Soln<span class="opt">.</span><span class="kwd">fill</span><span class="opt">(</span>value<span class="opt">:</span><span class="kwb">byte</span><span class="opt">);</span>
+
+<span class="kwa">begin</span>
+   m_synched<span class="opt">:=</span><span class="kwb">false</span><span class="opt">;</span>
+   <span class="kwd">fillchar</span><span class="opt">(</span>m_cells<span class="opt">,</span>N_CELL<span class="opt">,</span>value<span class="opt">);</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">function</span> soln<span class="opt">.</span>isEmpty<span class="opt">:</span><span class="kwb">boolean</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+  isempty<span class="opt">:=</span>m_nPiece<span class="opt">=</span><span class="num">0</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">procedure</span> soln<span class="opt">.</span><span class="kwd">pushPiece</span><span class="opt">(</span>Avec<span class="opt">:</span>bitvec<span class="opt">;</span>AiPiece<span class="opt">:</span>piecenr<span class="opt">;</span>Arow<span class="opt">:</span><span class="kwb">byte</span><span class="opt">);</span>
+
+<span class="kwa">begin</span>
+  <span class="kwa">with</span> m_pieces<span class="opt">[</span>m_npiece<span class="opt">]</span> <span class="kwa">do</span>
+    <span class="kwa">begin</span>
+      vec<span class="opt">:=</span>Avec<span class="opt">;</span>
+      iPiece<span class="opt">:=</span>AiPiece<span class="opt">;</span>
+      row<span class="opt">:=</span>Arow<span class="opt">;</span>
+    <span class="kwa">end</span><span class="opt">;</span>
+  <span class="kwd">inc</span><span class="opt">(</span>m_npiece<span class="opt">);</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">procedure</span> soln<span class="opt">.</span>popPiece<span class="opt">;</span><span class="kwa">inline</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+  <span class="kwd">dec</span><span class="opt">(</span>m_nPiece<span class="opt">);</span>
+  m_synched <span class="opt">:=</span> <span class="kwb">false</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">procedure</span> soln<span class="opt">.</span><span class="kwd">write</span><span class="opt">(</span><span class="kwa">var</span> f<span class="opt">:</span><span class="kwb">text</span><span class="opt">);</span>
+
+<span class="kwa">var</span> x<span class="opt">,</span>y<span class="opt">:</span><span class="kwb">byte</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+  <span class="kwa">for</span> y<span class="opt">:=</span><span class="num">0</span> <span class="kwa">to</span> N_ROW<span class="opt">-</span><span class="num">1</span> <span class="kwa">do</span>
+    <span class="kwa">begin</span>
+      <span class="com">{indent every second line}</span>
+      <span class="kwa">if</span> y <span class="kwa">mod</span> <span class="num">2</span><span class="opt">=</span><span class="num">1</span> <span class="kwa">then</span>
+        system<span class="opt">.</span><span class="kwd">write</span><span class="opt">(</span>f<span class="opt">,</span><span class="str">&apos; &apos;</span><span class="opt">);</span>
+      <span class="kwa">for</span> x<span class="opt">:=</span><span class="num">0</span> <span class="kwa">to</span> N_COL<span class="opt">-</span><span class="num">1</span> <span class="kwa">do</span>
+        <span class="kwa">if</span> m_cells<span class="opt">[</span>y<span class="opt">,</span>x<span class="opt">]=</span>no_piece <span class="kwa">then</span>
+          system<span class="opt">.</span><span class="kwd">write</span><span class="opt">(</span>f<span class="opt">,</span><span class="str">&apos;. &apos;</span><span class="opt">)</span>
+        <span class="kwa">else</span>
+          system<span class="opt">.</span><span class="kwd">write</span><span class="opt">(</span>f<span class="opt">,</span><span class="kwb">char</span><span class="opt">(</span><span class="kwb">byte</span><span class="opt">(</span><span class="str">&apos;0&apos;</span><span class="opt">)+</span>m_cells<span class="opt">[</span>y<span class="opt">,</span>x<span class="opt">]),</span><span class="str">&apos; &apos;</span><span class="opt">);</span>
+      <span class="kwd">writeln</span><span class="opt">(</span>f<span class="opt">);</span>
+    <span class="kwa">end</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+
+<span class="kwa">procedure</span> Soln<span class="opt">.</span>setCells<span class="opt">;</span>
+
+<span class="kwa">var</span> c<span class="opt">,</span>i<span class="opt">,</span>x<span class="opt">,</span>y<span class="opt">,</span>newcells<span class="opt">:</span><span class="kwb">byte</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   <span class="kwa">if</span> m_synched <span class="kwa">then</span>
+     exit<span class="opt">;</span>
+   <span class="kwa">for</span> i<span class="opt">:=</span><span class="num">1</span> <span class="kwa">to</span> m_nPiece <span class="kwa">do</span>
+     <span class="kwa">with</span> m_pieces<span class="opt">[</span>i<span class="opt">-</span><span class="num">1</span><span class="opt">]</span> <span class="kwa">do</span>
+       <span class="kwa">begin</span>
+         newcells<span class="opt">:=</span><span class="num">0</span><span class="opt">;</span>
+         c<span class="opt">:=</span><span class="num">0</span><span class="opt">;</span>
+         <span class="kwa">for</span> y<span class="opt">:=</span>row <span class="kwa">to</span> N_ROW <span class="kwa">do</span>
+           <span class="kwa">begin</span>
+             <span class="kwa">for</span> x<span class="opt">:=</span><span class="num">0</span> <span class="kwa">to</span> N_COL<span class="opt">-</span><span class="num">1</span> <span class="kwa">do</span>
+               <span class="kwa">begin</span>
+                 <span class="kwa">if</span> c <span class="kwa">in</span> vec <span class="kwa">then</span>
+                   <span class="kwa">begin</span>
+                     m_cells<span class="opt">[</span>y<span class="opt">,</span>x<span class="opt">]:=</span>ipiece<span class="opt">;</span>
+                     <span class="kwd">inc</span><span class="opt">(</span>NewCells<span class="opt">);</span>
+                   <span class="kwa">end</span><span class="opt">;</span>
+                 <span class="kwd">inc</span><span class="opt">(</span>c<span class="opt">);</span>
+               <span class="kwa">end</span><span class="opt">;</span>
+             <span class="kwa">if</span> NewCells<span class="opt">=</span>N_ELEM <span class="kwa">then</span>
+               break<span class="opt">;</span>
+           <span class="kwa">end</span><span class="opt">;</span>
+       <span class="kwa">end</span><span class="opt">;</span>
+   m_synched<span class="opt">:=</span><span class="kwb">true</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">function</span> Soln<span class="opt">.</span><span class="kwd">lessThan</span><span class="opt">(</span><span class="kwa">var</span> r<span class="opt">:</span>Soln<span class="opt">):</span><span class="kwb">boolean</span><span class="opt">;</span>
+
+<span class="kwa">var</span> x<span class="opt">,</span>y<span class="opt">,</span>lval<span class="opt">,</span>rval<span class="opt">:</span><span class="kwb">byte</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   <span class="kwa">if</span> m_pieces<span class="opt">[</span><span class="num">0</span><span class="opt">].</span>iPiece<span class="opt">&lt;&gt;</span>r<span class="opt">.</span>m_pieces<span class="opt">[</span><span class="num">0</span><span class="opt">].</span>iPiece <span class="kwa">then</span>
+     <span class="kwa">begin</span>
+       lessthan<span class="opt">:=</span>m_pieces<span class="opt">[</span><span class="num">0</span><span class="opt">].</span>iPiece <span class="opt">&lt;</span> r<span class="opt">.</span>m_pieces<span class="opt">[</span><span class="num">0</span><span class="opt">].</span>iPiece<span class="opt">;</span>
+       exit<span class="opt">;</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+
+   <span class="kwd">setCells</span><span class="opt">();</span>
+   r<span class="opt">.</span><span class="kwd">setCells</span><span class="opt">();</span>
+
+   <span class="kwa">for</span> y<span class="opt">:=</span><span class="num">0</span> <span class="kwa">to</span> N_ROW<span class="opt">-</span><span class="num">1</span> <span class="kwa">do</span>
+      <span class="kwa">for</span> x<span class="opt">:=</span><span class="num">0</span> <span class="kwa">to</span> N_COL<span class="opt">-</span><span class="num">1</span> <span class="kwa">do</span>
+        <span class="kwa">begin</span>
+         lval<span class="opt">:=</span>m_cells<span class="opt">[</span>y<span class="opt">,</span>x<span class="opt">];</span>
+         rval<span class="opt">:=</span>r<span class="opt">.</span>m_cells<span class="opt">[</span>y<span class="opt">,</span>x<span class="opt">];</span>
+
+         <span class="kwa">if</span> lval <span class="opt">&lt;&gt;</span> rval <span class="kwa">then</span>
+           <span class="kwa">begin</span>
+             lessthan<span class="opt">:=</span>lval<span class="opt">&lt;</span>rval<span class="opt">;</span>
+             exit<span class="opt">;</span>
+           <span class="kwa">end</span><span class="opt">;</span>
+        <span class="kwa">end</span><span class="opt">;</span>
+
+   lessthan<span class="opt">:=</span><span class="kwb">false</span><span class="opt">;</span> <span class="com">{solutions are equal}</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">procedure</span> Soln<span class="opt">.</span><span class="kwd">spin</span><span class="opt">(</span><span class="kwa">var</span> spun<span class="opt">:</span>Soln<span class="opt">);</span>
+
+<span class="kwa">var</span> x<span class="opt">,</span>y<span class="opt">:</span><span class="kwb">byte</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   setCells<span class="opt">;</span>
+   <span class="com">{swap cells}</span>
+   <span class="kwa">for</span> y<span class="opt">:=</span><span class="num">0</span> <span class="kwa">to</span> N_ROW<span class="opt">-</span><span class="num">1</span> <span class="kwa">do</span>
+      <span class="kwa">for</span> x<span class="opt">:=</span><span class="num">0</span> <span class="kwa">to</span> N_COL<span class="opt">-</span><span class="num">1</span> <span class="kwa">do</span>
+        spun<span class="opt">.</span>m_cells<span class="opt">[</span>y<span class="opt">,</span>x<span class="opt">]:=</span>m_cells<span class="opt">[</span>N_ROW<span class="opt">-</span>y<span class="opt">-</span><span class="num">1</span><span class="opt">,</span>N_COL<span class="opt">-</span>x<span class="opt">-</span><span class="num">1</span><span class="opt">];</span>
+
+   <span class="com">{swap first and last pieces (the rest aren&apos;t used)}</span>
+   spun<span class="opt">.</span>m_pieces<span class="opt">[</span><span class="num">0</span><span class="opt">].</span>iPiece<span class="opt">:=</span>m_pieces<span class="opt">[</span>N_PIECE_TYPE<span class="opt">-</span><span class="num">1</span><span class="opt">].</span>iPiece<span class="opt">;</span>
+   spun<span class="opt">.</span>m_synched<span class="opt">:=</span><span class="kwb">true</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">function</span> <span class="kwd">floor</span><span class="opt">(</span>top<span class="opt">,</span>bot<span class="opt">:</span><span class="kwb">longint</span><span class="opt">):</span><span class="kwb">longint</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   floor<span class="opt">:=</span>top <span class="kwa">div</span> bot<span class="opt">;</span>
+   <span class="com">{negative numbers should be rounded down, not towards zero}</span>
+   <span class="kwa">if</span> <span class="opt">(</span>floor<span class="opt">*</span>bot<span class="opt">&lt;&gt;</span>top<span class="opt">)</span> <span class="kwa">and</span> <span class="opt">((</span>top<span class="opt">&lt;</span><span class="num">0</span><span class="opt">)</span> <span class="kwa">xor</span> <span class="opt">(</span>bot<span class="opt">&lt;=</span><span class="num">0</span><span class="opt">))</span> <span class="kwa">then</span>
+      <span class="kwd">dec</span><span class="opt">(</span>floor<span class="opt">);</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">const</span> s_firstOne<span class="opt">:</span><span class="kwa">array</span><span class="opt">[</span><span class="num">0</span><span class="opt">.</span><span class="num">.31</span><span class="opt">]</span> <span class="kwa">of</span> <span class="kwb">byte</span><span class="opt">=(</span>
+   <span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">1</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span>   <span class="num">2</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">1</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span>
+   <span class="num">3</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">1</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span>   <span class="num">2</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">1</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span>
+
+   <span class="num">4</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">1</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span>   <span class="num">2</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">1</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span>
+   <span class="num">3</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">1</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span>   <span class="num">2</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">1</span><span class="opt">,</span> <span class="num">0</span>
+<span class="opt">);</span>
+
+<span class="kwa">function</span> <span class="kwd">first_set_bit</span><span class="opt">(</span>v<span class="opt">:</span>bitvec<span class="opt">):</span><span class="kwb">cardinal</span><span class="opt">;</span><span class="kwa">inline</span><span class="opt">;</span>
+
+<span class="ppc">{$ifdef endian_little}</span>
+<span class="kwa">const</span> l<span class="opt">=</span><span class="num">0</span><span class="opt">;</span>
+      h<span class="opt">=</span><span class="num">1</span><span class="opt">;</span>
+<span class="ppc">{$else}</span>
+<span class="kwa">const</span> l<span class="opt">=</span><span class="num">1</span><span class="opt">;</span>
+      h<span class="opt">=</span><span class="num">0</span><span class="opt">;</span>
+<span class="ppc">{$endif}</span>
+
+<span class="kwa">var</span> d<span class="opt">:</span><span class="kwb">double</span><span class="opt">;</span>
+    u<span class="opt">:</span><span class="kwa">array</span><span class="opt">[</span><span class="num">0</span><span class="opt">.</span><span class="num">.1</span><span class="opt">]</span> <span class="kwa">of</span> bitvec <span class="kwa">absolute</span> d<span class="opt">;</span>
+
+<span class="kwa">begin</span>
+  first_set_bit<span class="opt">:=</span><span class="num">0</span><span class="opt">;</span>
+  <span class="kwa">if</span> v<span class="opt">&lt;&gt;[]</span> <span class="kwa">then</span>
+    <span class="kwa">begin</span>
+      u<span class="opt">[</span>l<span class="opt">]:=</span>v<span class="opt">;</span>
+      u<span class="opt">[</span>h<span class="opt">]:=[</span><span class="num">30</span><span class="opt">,</span><span class="num">25</span><span class="opt">,</span><span class="num">24</span><span class="opt">,</span><span class="num">21</span><span class="opt">,</span><span class="num">20</span><span class="opt">];</span>
+      d<span class="opt">:=</span>d<span class="opt">-</span><span class="num">4503599627370496</span><span class="opt">;</span>
+      first_set_bit<span class="opt">:=</span><span class="kwb">cardinal</span><span class="opt">(</span>u<span class="opt">[</span>h<span class="opt">])</span> <span class="kwa">shr</span> <span class="num">20</span><span class="opt">-</span><span class="num">$3ff</span><span class="opt">;</span>
+    <span class="kwa">end</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">function</span> <span class="kwd">count_ones</span><span class="opt">(</span>v<span class="opt">:</span>bitvec<span class="opt">):</span><span class="kwb">cardinal</span><span class="opt">;</span><span class="kwa">inline</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   count_ones<span class="opt">:=</span><span class="num">0</span><span class="opt">;</span>
+   <span class="kwa">while</span> v<span class="opt">&lt;&gt;[]</span> <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+       <span class="kwd">inc</span><span class="opt">(</span>count_ones<span class="opt">);</span>
+       <span class="kwb">cardinal</span><span class="opt">(</span>v<span class="opt">):=</span><span class="kwb">cardinal</span><span class="opt">(</span>v<span class="opt">)</span> <span class="kwa">and</span> <span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>v<span class="opt">)-</span><span class="num">1</span><span class="opt">);</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">procedure</span> <span class="kwd">setCoordList</span><span class="opt">(</span>vec<span class="opt">:</span>bitvec<span class="opt">;</span><span class="kwa">var</span> pts<span class="opt">:</span>Tpts<span class="opt">);</span>
+
+<span class="kwa">var</span> iPt<span class="opt">,</span>n<span class="opt">:</span><span class="kwb">longint</span><span class="opt">;</span>
+    x<span class="opt">,</span>y<span class="opt">:</span><span class="kwb">byte</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   iPt<span class="opt">:=</span><span class="num">0</span><span class="opt">;</span>
+   n<span class="opt">:=</span><span class="num">0</span><span class="opt">;</span>
+   <span class="kwa">for</span> y<span class="opt">:=</span><span class="num">0</span> <span class="kwa">to</span> N_ROW<span class="opt">-</span><span class="num">1</span> <span class="kwa">do</span>
+     <span class="kwa">for</span> x<span class="opt">:=</span><span class="num">0</span> <span class="kwa">to</span> N_COL<span class="opt">-</span><span class="num">1</span> <span class="kwa">do</span>
+       <span class="kwa">begin</span>
+         <span class="kwa">if</span> n <span class="kwa">in</span> vec <span class="kwa">then</span>
+           <span class="kwa">begin</span>
+             pts<span class="opt">[</span>iPt<span class="opt">,</span>dimx<span class="opt">]:=</span>x<span class="opt">;</span>
+             pts<span class="opt">[</span>iPt<span class="opt">,</span>dimy<span class="opt">]:=</span>y<span class="opt">;</span>
+             <span class="kwd">inc</span><span class="opt">(</span>iPt<span class="opt">);</span>
+           <span class="kwa">end</span><span class="opt">;</span>
+         <span class="kwd">inc</span><span class="opt">(</span>n<span class="opt">);</span>
+         <span class="kwa">if</span> n<span class="opt">=</span><span class="num">32</span> <span class="kwa">then</span>
+           exit<span class="opt">;</span>
+       <span class="kwa">end</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">function</span> <span class="kwd">toBitVector</span><span class="opt">(</span><span class="kwa">const</span> pts<span class="opt">:</span>Tpts<span class="opt">):</span>bitvec<span class="opt">;</span>
+
+<span class="kwa">var</span> x<span class="opt">,</span>y<span class="opt">,</span>iPt<span class="opt">:</span><span class="kwb">byte</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   tobitvector<span class="opt">:=[];</span>
+   <span class="kwa">for</span> iPt<span class="opt">:=</span><span class="kwd">low</span><span class="opt">(</span>pts<span class="opt">)</span> <span class="kwa">to</span> <span class="kwd">high</span><span class="opt">(</span>pts<span class="opt">)</span> <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+       x<span class="opt">:=</span>pts<span class="opt">[</span>iPt<span class="opt">,</span>dimx<span class="opt">];</span>
+       y<span class="opt">:=</span>pts<span class="opt">[</span>iPt<span class="opt">,</span>dimy<span class="opt">];</span>
+       <span class="kwd">include</span><span class="opt">(</span>tobitvector<span class="opt">,</span>y<span class="opt">*</span>N_COL<span class="opt">+</span>x<span class="opt">);</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">procedure</span> <span class="kwd">shiftUpLines</span><span class="opt">(</span><span class="kwa">var</span> pts<span class="opt">:</span>Tpts<span class="opt">;</span>shift<span class="opt">:</span><span class="kwb">longint</span><span class="opt">);</span>
+
+<span class="kwa">var</span> iPt<span class="opt">:</span><span class="kwb">byte</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   <span class="com">{vertical shifts have a twist}</span>
+   <span class="kwa">for</span> iPt<span class="opt">:=</span><span class="kwd">low</span><span class="opt">(</span>pts<span class="opt">)</span> <span class="kwa">to</span> <span class="kwd">high</span><span class="opt">(</span>pts<span class="opt">)</span> <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+       <span class="kwa">if</span> pts<span class="opt">[</span>iPt<span class="opt">,</span>dimy<span class="opt">]</span> <span class="kwa">and</span> shift <span class="kwa">and</span> <span class="num">1</span><span class="opt">&lt;&gt;</span><span class="num">0</span> <span class="kwa">then</span>
+         <span class="kwd">inc</span><span class="opt">(</span>pts<span class="opt">[</span>iPt<span class="opt">,</span>dimx<span class="opt">]);</span>
+       <span class="kwd">dec</span><span class="opt">(</span>pts<span class="opt">[</span>iPt<span class="opt">,</span>dimy<span class="opt">],</span>shift<span class="opt">);</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">function</span> <span class="kwd">shiftToX0</span><span class="opt">(</span><span class="kwa">var</span> pts<span class="opt">:</span>Tpts<span class="opt">;</span><span class="kwa">var</span> Ainstance<span class="opt">:</span>instance<span class="opt">;</span>offsetRow<span class="opt">:</span><span class="kwb">longint</span><span class="opt">):</span>shortint<span class="opt">;</span>
+
+<span class="kwa">var</span> x<span class="opt">,</span>y<span class="opt">,</span>xmin<span class="opt">,</span>xmax<span class="opt">,</span>iPt<span class="opt">,</span>offset<span class="opt">:</span>shortint<span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   <span class="com">{ .. determine shift}</span>
+   xMin<span class="opt">:=</span>pts<span class="opt">[</span><span class="num">0</span><span class="opt">,</span>dimx<span class="opt">];</span>
+   xMax<span class="opt">:=</span>xMin<span class="opt">;</span>
+   <span class="kwa">for</span> iPt<span class="opt">:=</span><span class="kwd">low</span><span class="opt">(</span>pts<span class="opt">)+</span><span class="num">1</span> <span class="kwa">to</span> <span class="kwd">high</span><span class="opt">(</span>pts<span class="opt">)</span> <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+       x<span class="opt">:=</span>pts<span class="opt">[</span>iPt<span class="opt">,</span>dimx<span class="opt">];</span>
+       y<span class="opt">:=</span>pts<span class="opt">[</span>iPt<span class="opt">,</span>dimy<span class="opt">];</span>
+       <span class="kwa">if</span> x<span class="opt">&lt;</span>xMin <span class="kwa">then</span>
+         xMin<span class="opt">:=</span>x
+       <span class="kwa">else if</span> x <span class="opt">&gt;</span> xMax <span class="kwa">then</span>
+         xMax<span class="opt">:=</span>x<span class="opt">;</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+
+   offset<span class="opt">:=</span>N_ELEM<span class="opt">;</span>
+   <span class="kwa">for</span> iPt<span class="opt">:=</span><span class="kwd">low</span><span class="opt">(</span>pts<span class="opt">)</span> <span class="kwa">to</span> <span class="kwd">high</span><span class="opt">(</span>pts<span class="opt">)</span> <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+      <span class="kwd">dec</span><span class="opt">(</span>pts<span class="opt">[</span>iPt<span class="opt">,</span>dimx<span class="opt">],</span>xMin<span class="opt">);</span>
+      <span class="com">{check offset -- leftmost cell on top line}</span>
+      <span class="kwa">if</span> <span class="opt">(</span>pts<span class="opt">[</span>iPt<span class="opt">,</span>dimy<span class="opt">]=</span>offsetRow<span class="opt">)</span> <span class="kwa">and</span> <span class="opt">(</span>pts<span class="opt">[</span>iPt<span class="opt">,</span>dimx<span class="opt">]&lt;</span>offset<span class="opt">)</span> <span class="kwa">then</span>
+         offset<span class="opt">:=</span>pts<span class="opt">[</span>iPt<span class="opt">,</span>dimx<span class="opt">];</span>
+   <span class="kwa">end</span><span class="opt">;</span>
+
+   Ainstance<span class="opt">.</span>m_offset <span class="opt">:=</span> offset<span class="opt">;</span>
+   Ainstance<span class="opt">.</span>m_vec <span class="opt">:=</span> <span class="kwd">toBitVector</span><span class="opt">(</span>pts<span class="opt">);</span>
+   shifttox0<span class="opt">:=</span>xMax <span class="opt">-</span> xMin<span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">function</span> <span class="kwd">badregion</span><span class="opt">(</span><span class="kwa">var</span> to_fill<span class="opt">:</span>bitvec<span class="opt">;</span>rnew<span class="opt">:</span>bitvec<span class="opt">):</span><span class="kwb">boolean</span><span class="opt">;</span>
+
+<span class="kwa">var</span> region<span class="opt">,</span>even_region<span class="opt">,</span>odd_region<span class="opt">:</span>bitvec<span class="opt">;</span>
+    cell_count<span class="opt">:</span><span class="kwb">cardinal</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   <span class="com">{Grow empty region, until it doesn&apos;t change any more.}</span>
+   <span class="kwa">repeat</span>
+      region<span class="opt">:=</span>rnew<span class="opt">;</span>
+      even_region<span class="opt">:=</span>region<span class="opt">*(</span>ROW_0_MASK<span class="opt">*([</span><span class="num">0</span><span class="opt">.</span><span class="num">.31</span><span class="opt">]-</span>L_EDGE_MASK<span class="opt">));</span>
+      odd_region<span class="opt">:=</span>region<span class="opt">*(</span>ROW_1_MASK<span class="opt">*([</span><span class="num">0</span><span class="opt">.</span><span class="num">.31</span><span class="opt">]-</span>R_EDGE_MASK<span class="opt">));</span>
+
+      rnew<span class="opt">:=</span>to_fill<span class="opt">*(</span>rnew
+                    <span class="com">{simple grow up/down}</span>
+                    <span class="opt">+</span><span class="kwd">bitvec</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>region<span class="opt">)</span> <span class="kwa">shr</span> N_COL<span class="opt">)</span>
+                    <span class="opt">+</span><span class="kwd">bitvec</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>region<span class="opt">)</span> <span class="kwa">shl</span> N_COL<span class="opt">)</span>
+                    <span class="com">{grow right/left}</span>
+                    <span class="opt">+</span><span class="kwd">bitvec</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>region<span class="opt">)</span> <span class="kwa">and not</span> <span class="kwb">cardinal</span><span class="opt">(</span>L_EDGE_MASK<span class="opt">)</span> <span class="kwa">shr</span> <span class="num">1</span><span class="opt">)</span>
+                    <span class="opt">+</span><span class="kwd">bitvec</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>region<span class="opt">)</span> <span class="kwa">and not</span> <span class="kwb">cardinal</span><span class="opt">(</span>R_EDGE_MASK<span class="opt">)</span> <span class="kwa">shl</span> <span class="num">1</span><span class="opt">)</span>
+                    <span class="com">{tricky growth}</span>
+                    <span class="opt">+</span><span class="kwd">bitvec</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>even_Region<span class="opt">)</span> <span class="kwa">shr</span> <span class="opt">(</span>N_COL<span class="opt">+</span><span class="num">1</span><span class="opt">))</span>
+                    <span class="opt">+</span><span class="kwd">bitvec</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>even_Region<span class="opt">)</span> <span class="kwa">shl</span> <span class="opt">(</span>N_COL<span class="opt">-</span><span class="num">1</span><span class="opt">))</span>
+                    <span class="opt">+</span><span class="kwd">bitvec</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>odd_Region<span class="opt">)</span> <span class="kwa">shr</span> <span class="opt">(</span>N_COL<span class="opt">-</span><span class="num">1</span><span class="opt">))</span>
+                    <span class="opt">+</span><span class="kwd">bitvec</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>odd_Region<span class="opt">)</span> <span class="kwa">shl</span> <span class="opt">(</span>N_COL<span class="opt">+</span><span class="num">1</span><span class="opt">))</span>
+                    <span class="opt">);</span>
+   <span class="kwa">until</span> <span class="opt">(</span>rnew<span class="opt">=</span>to_fill<span class="opt">)</span> <span class="kwa">or</span> <span class="opt">(</span>rnew<span class="opt">=</span>region<span class="opt">);</span>
+
+   <span class="com">{Subtract empty region from board.}</span>
+   to_fill<span class="opt">:=</span>to_fill<span class="opt">-</span>rnew<span class="opt">;</span>
+
+   cell_count<span class="opt">:=</span><span class="kwd">count_ones</span><span class="opt">(</span>to_fill<span class="opt">);</span>
+   <span class="com">{Optimize &apos;cell_count mod 5&lt;&gt;0&apos; by hand...}</span>
+   badregion<span class="opt">:=</span>cell_count<span class="opt">&lt;&gt;((</span>cell_count<span class="opt">*</span><span class="num">$cccd</span><span class="opt">)</span> <span class="kwa">shr</span> <span class="num">18</span><span class="opt">)*</span><span class="num">5</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">function</span> <span class="kwd">has_bad_islands_single</span><span class="opt">(</span>boardVec<span class="opt">:</span>bitvec<span class="opt">;</span>row<span class="opt">:</span><span class="kwb">longint</span><span class="opt">):</span><span class="kwb">boolean</span><span class="opt">;</span>
+
+<span class="kwa">var</span> tofill<span class="opt">,</span>startregion<span class="opt">,</span>bmask<span class="opt">:</span>bitvec<span class="opt">;</span>
+    isodd<span class="opt">:</span><span class="kwb">boolean</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   tofill<span class="opt">:=[</span><span class="num">0</span><span class="opt">.</span><span class="num">.31</span><span class="opt">]-</span>boardvec<span class="opt">;</span>
+   isOdd<span class="opt">:=</span>row <span class="kwa">and</span> <span class="num">1</span><span class="opt">&lt;&gt;</span><span class="num">0</span><span class="opt">;</span>
+   <span class="kwa">if</span> isOdd <span class="kwa">then</span>
+     <span class="kwa">begin</span>
+       <span class="kwd">dec</span><span class="opt">(</span>row<span class="opt">);</span>
+       toFill<span class="opt">:=</span><span class="kwd">bitvec</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>tofill<span class="opt">)</span> <span class="kwa">shl</span> N_COL<span class="opt">);</span> <span class="com">{shift to even aligned}</span>
+       toFill<span class="opt">:=</span> tofill <span class="opt">+</span> TOP_ROW<span class="opt">;</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+
+   startRegion <span class="opt">:=</span> TOP_ROW<span class="opt">;</span>
+   bMask <span class="opt">:=</span> BOARD_MASK<span class="opt">;</span> <span class="com">{all but the first two bits}</span>
+   <span class="kwa">if</span> row<span class="opt">&gt;=</span><span class="num">4</span> <span class="kwa">then</span>
+      <span class="kwb">cardinal</span><span class="opt">(</span>bMask<span class="opt">):=</span><span class="kwb">cardinal</span><span class="opt">(</span>bmask<span class="opt">)</span> <span class="kwa">shr</span> <span class="opt">((</span>row<span class="opt">-</span><span class="num">4</span><span class="opt">)*</span>N_COL<span class="opt">)</span>
+   <span class="kwa">else if</span> isOdd <span class="kwa">or</span> <span class="opt">(</span>row <span class="opt">=</span> <span class="num">0</span><span class="opt">)</span> <span class="kwa">then</span>
+      startRegion <span class="opt">:=</span> LAST_ROW<span class="opt">;</span>
+
+   toFill<span class="opt">:=</span>tofill<span class="opt">*</span>bMask<span class="opt">;</span>
+   startRegion<span class="opt">:=</span>startregion<span class="opt">*</span>toFill<span class="opt">;</span>
+
+   has_bad_islands_single<span class="opt">:=</span><span class="kwb">true</span><span class="opt">;</span>
+   <span class="kwa">while</span> toFill<span class="opt">&lt;&gt;[]</span> <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+       <span class="kwa">if</span> <span class="kwd">badRegion</span><span class="opt">(</span>toFill<span class="opt">,</span> startRegion<span class="opt">)</span> <span class="kwa">then</span>
+         exit<span class="opt">;</span>
+       startRegion<span class="opt">:=[</span><span class="kwd">first_set_bit</span><span class="opt">(</span>toFill<span class="opt">)];</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+   has_bad_islands_single<span class="opt">:=</span><span class="kwb">false</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+
+<span class="kwa">procedure</span> piece<span class="opt">.</span><span class="kwd">set_ok_positions</span><span class="opt">(</span>isOdd<span class="opt">:</span>parity<span class="opt">;</span>w<span class="opt">,</span>h<span class="opt">:</span><span class="kwb">longint</span><span class="opt">);</span>
+
+<span class="kwa">var</span> x<span class="opt">,</span>y<span class="opt">,</span>xpos<span class="opt">,</span>pos<span class="opt">:</span><span class="kwb">byte</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   pos<span class="opt">:=</span><span class="kwb">byte</span><span class="opt">(</span>isodd<span class="opt">)*</span>N_COL<span class="opt">;</span>
+   <span class="kwa">with</span> m_instance<span class="opt">[</span>isOdd<span class="opt">]</span> <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+       m_allowed<span class="opt">:=[];</span>
+       y<span class="opt">:=</span><span class="kwb">byte</span><span class="opt">(</span>isOdd<span class="opt">);</span>
+       <span class="kwa">while</span> y<span class="opt">&lt;</span>N_ROW<span class="opt">-</span>h <span class="kwa">do</span>
+         <span class="kwa">begin</span>
+           <span class="kwa">if</span> m_offset<span class="opt">&lt;&gt;</span><span class="num">0</span> <span class="kwa">then</span>
+             <span class="kwd">inc</span><span class="opt">(</span>pos<span class="opt">,</span>m_offset<span class="opt">);</span>
+           <span class="kwa">for</span> xPos<span class="opt">:=</span><span class="num">0</span> <span class="kwa">to</span> N_COL<span class="opt">-</span><span class="num">1</span><span class="opt">-</span>m_offset <span class="kwa">do</span>
+             <span class="kwa">begin</span>
+               <span class="com">{check if the new position is on the board}</span>
+               <span class="kwa">if</span> <span class="opt">(</span>xPos<span class="opt">&lt;</span>N_COL<span class="opt">-</span>w<span class="opt">)</span> <span class="kwa">and not</span> <span class="kwd">has_bad_islands_single</span><span class="opt">(</span><span class="kwd">bitvec</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>m_vec<span class="opt">)</span> <span class="kwa">shl</span> xPos<span class="opt">),</span>y<span class="opt">)</span> <span class="kwa">then</span>
+                 <span class="kwa">begin</span>
+                   <span class="com">{position is allowed}</span>
+                   <span class="kwd">include</span><span class="opt">(</span>m_allowed<span class="opt">,</span>pos<span class="opt">);</span>
+                 <span class="kwa">end</span><span class="opt">;</span>
+               <span class="kwd">inc</span><span class="opt">(</span>pos<span class="opt">);</span>
+             <span class="kwa">end</span><span class="opt">;</span>
+           y<span class="opt">:=</span>y<span class="opt">+</span><span class="num">2</span><span class="opt">;</span>
+           <span class="com">{Skip row with wrong parity:}</span>
+           <span class="kwd">inc</span><span class="opt">(</span>pos<span class="opt">,</span>N_COL<span class="opt">);</span>
+         <span class="kwa">end</span><span class="opt">;</span>
+   <span class="kwa">end</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">procedure</span> <span class="kwd">gen_orientation</span><span class="opt">(</span>vec<span class="opt">:</span>bitvec<span class="opt">;</span>iOrient<span class="opt">:</span><span class="kwb">cardinal</span><span class="opt">;</span><span class="kwa">var</span> target<span class="opt">:</span>Piece<span class="opt">);</span>
+
+<span class="kwa">var</span> pts<span class="opt">:</span>Tpts<span class="opt">;</span>
+    x<span class="opt">,</span>y<span class="opt">,</span>ymin<span class="opt">,</span>ymax<span class="opt">,</span>h<span class="opt">,</span>w<span class="opt">:</span>shortint<span class="opt">;</span>
+    rot<span class="opt">,</span>iPt<span class="opt">:</span><span class="kwb">byte</span><span class="opt">;</span>
+    flip<span class="opt">:</span><span class="kwb">boolean</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   <span class="com">{get (x,y) coordinates}</span>
+   <span class="kwd">setCoordList</span><span class="opt">(</span>vec<span class="opt">,</span> pts<span class="opt">);</span>
+
+   rot <span class="opt">:=</span> iOrient <span class="kwa">mod</span> <span class="num">6</span><span class="opt">;</span>
+   flip <span class="opt">:=</span> iOrient <span class="opt">&gt;=</span> <span class="num">6</span><span class="opt">;</span>
+   <span class="kwa">if</span> flip <span class="kwa">then</span>
+     <span class="kwa">for</span> iPt<span class="opt">:=</span><span class="num">0</span> <span class="kwa">to</span> N_ELEM<span class="opt">-</span><span class="num">1</span> <span class="kwa">do</span>
+       pts<span class="opt">[</span>iPt<span class="opt">,</span>dimy<span class="opt">]:=-</span>pts<span class="opt">[</span>iPt<span class="opt">,</span>dimy<span class="opt">];</span>
+
+   <span class="com">{rotate as necessary}</span>
+   <span class="kwa">while</span> rot<span class="opt">&gt;</span><span class="num">0</span> <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+       <span class="kwa">for</span> iPt<span class="opt">:=</span><span class="num">0</span> <span class="kwa">to</span> N_ELEM<span class="opt">-</span><span class="num">1</span> <span class="kwa">do</span>
+         <span class="kwa">begin</span>
+           x<span class="opt">:=</span>pts<span class="opt">[</span>iPt<span class="opt">,</span>dimx<span class="opt">];</span>
+           y<span class="opt">:=</span>pts<span class="opt">[</span>iPt<span class="opt">,</span>dimy<span class="opt">];</span>
+           pts<span class="opt">[</span>iPt<span class="opt">,</span>dimx<span class="opt">]:=</span><span class="kwd">floor</span><span class="opt">(</span><span class="num">2</span><span class="opt">*</span>x<span class="opt">-</span><span class="num">3</span><span class="opt">*</span>y<span class="opt">+</span><span class="num">1</span><span class="opt">,</span><span class="num">4</span><span class="opt">);</span>
+           pts<span class="opt">[</span>iPt<span class="opt">,</span>dimy<span class="opt">]:=</span><span class="kwd">floor</span><span class="opt">(</span><span class="num">2</span><span class="opt">*</span>x<span class="opt">+</span>y<span class="opt">+</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">);</span>
+         <span class="kwa">end</span><span class="opt">;</span>
+      <span class="kwd">dec</span><span class="opt">(</span>rot<span class="opt">);</span>
+   <span class="kwa">end</span><span class="opt">;</span>
+
+   <span class="com">{determine vertical shift}</span>
+   yMin <span class="opt">:=</span> pts<span class="opt">[</span><span class="num">0</span><span class="opt">,</span>dimy<span class="opt">];</span>
+   yMax <span class="opt">:=</span> yMin<span class="opt">;</span>
+   <span class="kwa">for</span> iPt<span class="opt">:=</span> <span class="num">1</span> <span class="kwa">to</span> N_ELEM<span class="opt">-</span><span class="num">1</span> <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+       y <span class="opt">:=</span> pts<span class="opt">[</span>iPt<span class="opt">,</span>dimy<span class="opt">];</span>
+
+       <span class="kwa">if</span> y <span class="opt">&lt;</span> yMin <span class="kwa">then</span>
+         yMin <span class="opt">:=</span> y
+       <span class="kwa">else if</span> y <span class="opt">&gt;</span> yMax <span class="kwa">then</span>
+         yMax <span class="opt">:=</span> y<span class="opt">;</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+   h<span class="opt">:=</span>yMax<span class="opt">-</span>yMin<span class="opt">;</span>
+
+   <span class="kwd">shiftUpLines</span><span class="opt">(</span>pts<span class="opt">,</span> yMin<span class="opt">);</span>
+   w <span class="opt">:=</span> <span class="kwd">shiftToX0</span><span class="opt">(</span>pts<span class="opt">,</span> target<span class="opt">.</span>m_instance<span class="opt">[</span>EVEN<span class="opt">],</span> <span class="num">0</span><span class="opt">);</span>
+   target<span class="opt">.</span><span class="kwd">set_ok_positions</span><span class="opt">(</span>EVEN<span class="opt">,</span> w<span class="opt">,</span> h<span class="opt">);</span>
+   <span class="kwb">cardinal</span><span class="opt">(</span>target<span class="opt">.</span>m_instance<span class="opt">[</span>EVEN<span class="opt">].</span>m_vec<span class="opt">) :=</span> <span class="kwb">cardinal</span><span class="opt">(</span>target<span class="opt">.</span>m_instance<span class="opt">[</span>EVEN<span class="opt">].</span>m_vec<span class="opt">)</span> <span class="kwa">shr</span> target<span class="opt">.</span>m_instance<span class="opt">[</span>EVEN<span class="opt">].</span>m_offset<span class="opt">;</span>
+
+   <span class="com">{shift down one line}</span>
+   <span class="kwd">shiftUpLines</span><span class="opt">(</span>pts<span class="opt">, -</span><span class="num">1</span><span class="opt">);</span>
+   w <span class="opt">:=</span> <span class="kwd">shiftToX0</span><span class="opt">(</span>pts<span class="opt">,</span> target<span class="opt">.</span>m_instance<span class="opt">[</span>ODD<span class="opt">],</span> <span class="num">1</span><span class="opt">);</span>
+   <span class="com">{shift the bitmask back one line}</span>
+   <span class="kwb">cardinal</span><span class="opt">(</span>target<span class="opt">.</span>m_instance<span class="opt">[</span>ODD<span class="opt">].</span>m_vec<span class="opt">) :=</span><span class="kwb">cardinal</span><span class="opt">(</span>target<span class="opt">.</span>m_instance<span class="opt">[</span>ODD<span class="opt">].</span>m_vec<span class="opt">)</span> <span class="kwa">shr</span> N_COL<span class="opt">;</span>
+   target<span class="opt">.</span><span class="kwd">set_ok_positions</span><span class="opt">(</span>ODD<span class="opt">,</span> w<span class="opt">,</span> h<span class="opt">);</span>
+   <span class="kwb">cardinal</span><span class="opt">(</span>target<span class="opt">.</span>m_instance<span class="opt">[</span>ODD<span class="opt">].</span>m_vec<span class="opt">):=</span> <span class="kwb">cardinal</span><span class="opt">(</span>target<span class="opt">.</span>m_instance<span class="opt">[</span>ODD<span class="opt">].</span>m_vec<span class="opt">)</span> <span class="kwa">shr</span> target<span class="opt">.</span>m_instance<span class="opt">[</span>ODD<span class="opt">].</span>m_offset<span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">function</span> <span class="kwd">getPiece</span><span class="opt">(</span>iPiece<span class="opt">,</span>iOrient<span class="opt">:</span><span class="kwb">cardinal</span><span class="opt">;</span>iParity<span class="opt">:</span>parity<span class="opt">):</span>instance<span class="opt">;</span><span class="kwa">inline</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+  getpiece<span class="opt">:=</span>s_basePiece<span class="opt">[</span>iPiece<span class="opt">][</span>iOrient<span class="opt">].</span>m_instance<span class="opt">[</span>iParity<span class="opt">];</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">procedure</span> gen_all_orientations<span class="opt">;</span>
+
+<span class="kwa">var</span> ipiece<span class="opt">:</span>piecenr<span class="opt">;</span>
+    iorient<span class="opt">:</span>orientation<span class="opt">;</span>
+    irow<span class="opt">,</span>icol<span class="opt">:</span><span class="kwb">byte</span><span class="opt">;</span>
+    refpiece<span class="opt">:</span>bitvec<span class="opt">;</span>
+    n<span class="opt">,</span>npiece<span class="opt">:</span><span class="kwb">byte</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   <span class="kwa">for</span> iPiece<span class="opt">:=</span><span class="kwd">low</span><span class="opt">(</span>ipiece<span class="opt">)</span> <span class="kwa">to</span> <span class="kwd">high</span><span class="opt">(</span>ipiece<span class="opt">)</span> <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+       refPiece<span class="opt">:=</span>BaseVecs<span class="opt">[</span>iPiece<span class="opt">];</span>
+       <span class="kwa">for</span> iOrient<span class="opt">:=</span><span class="kwd">low</span><span class="opt">(</span>iorient<span class="opt">)</span> <span class="kwa">to</span> <span class="kwd">high</span><span class="opt">(</span>iorient<span class="opt">)</span> <span class="kwa">do</span>
+         <span class="kwa">begin</span>
+           <span class="kwd">gen_orientation</span><span class="opt">(</span>refPiece<span class="opt">,</span> iOrient<span class="opt">,</span> s_basePiece<span class="opt">[</span>iPiece<span class="opt">,</span>iOrient<span class="opt">]);</span>
+           <span class="kwa">with</span> s_basePiece<span class="opt">[</span>iPiece<span class="opt">,</span>iOrient<span class="opt">]</span> <span class="kwa">do</span>
+             <span class="kwa">begin</span>
+               <span class="kwa">if</span> <span class="opt">(</span>iPiece<span class="opt">=</span>SKIP_PIECE<span class="opt">)</span> <span class="kwa">and</span> <span class="opt">(</span>iOrient <span class="kwa">in</span> <span class="opt">[</span><span class="num">3</span><span class="opt">.</span><span class="num">.5</span><span class="opt">,</span><span class="num">9</span><span class="opt">.</span><span class="num">.11</span><span class="opt">])</span> <span class="kwa">then</span>
+                 <span class="kwa">begin</span>
+                   m_instance<span class="opt">[</span>odd<span class="opt">].</span>m_allowed <span class="opt">:= [];</span>
+                   m_instance<span class="opt">[</span>even<span class="opt">].</span>m_allowed <span class="opt">:= [];</span>
+                 <span class="kwa">end</span><span class="opt">;</span>
+             <span class="kwa">end</span><span class="opt">;</span>
+         <span class="kwa">end</span><span class="opt">;</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+
+   <span class="kwa">for</span> iPiece<span class="opt">:=</span><span class="kwd">low</span><span class="opt">(</span>ipiece<span class="opt">)</span> <span class="kwa">to</span> <span class="kwd">high</span><span class="opt">(</span>ipiece<span class="opt">)</span> <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+      <span class="kwa">for</span> iOrient<span class="opt">:=</span><span class="kwd">low</span><span class="opt">(</span>iorient<span class="opt">)</span> <span class="kwa">to</span> <span class="kwd">high</span><span class="opt">(</span>iorient<span class="opt">)</span> <span class="kwa">do</span>
+        <span class="kwa">begin</span>
+         n<span class="opt">:=</span><span class="num">0</span><span class="opt">;</span>
+         <span class="kwa">for</span> iRow<span class="opt">:=</span><span class="num">0</span> <span class="kwa">to</span> N_ROW<span class="opt">-</span><span class="num">1</span> <span class="kwa">do</span>
+           <span class="kwa">begin</span>
+            <span class="kwa">with</span> <span class="kwd">getPiece</span><span class="opt">(</span>iPiece<span class="opt">,</span> iOrient<span class="opt">,</span> <span class="kwd">parity</span><span class="opt">(</span>iRow <span class="kwa">and</span> <span class="num">1</span><span class="opt">))</span> <span class="kwa">do</span>
+              <span class="kwa">for</span> iCol<span class="opt">:=</span><span class="num">0</span> <span class="kwa">to</span> N_COL<span class="opt">-</span><span class="num">1</span> <span class="kwa">do</span>
+                <span class="kwa">begin</span>
+                  <span class="kwa">if</span> n <span class="kwa">in</span> m_allowed <span class="kwa">then</span>
+                    <span class="kwa">begin</span>
+                      nPiece<span class="opt">:=</span>g_okPieces<span class="opt">[</span>iRow<span class="opt">,</span>iCol<span class="opt">].</span>nPieces<span class="opt">[</span>iPiece<span class="opt">];</span>
+                      g_okPieces<span class="opt">[</span>iRow<span class="opt">,</span>iCol<span class="opt">].</span>pieceVec<span class="opt">[</span>iPiece<span class="opt">,</span>nPiece<span class="opt">]:=</span><span class="kwd">bitvec</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>m_vec<span class="opt">)</span> <span class="kwa">shl</span> iCol<span class="opt">);</span>
+                      <span class="kwd">inc</span><span class="opt">(</span>g_okPieces<span class="opt">[</span>iRow<span class="opt">,</span>iCol<span class="opt">].</span>nPieces<span class="opt">[</span>iPiece<span class="opt">]);</span>
+                    <span class="kwa">end</span><span class="opt">;</span>
+                  <span class="kwd">inc</span><span class="opt">(</span>n<span class="opt">);</span>
+                <span class="kwa">end</span><span class="opt">;</span>
+          <span class="kwa">end</span>
+      <span class="kwa">end</span>
+   <span class="kwa">end</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">procedure</span> init_board<span class="opt">;</span>
+
+<span class="kwa">begin</span>
+  m_cursoln<span class="opt">.</span><span class="kwd">init</span><span class="opt">(</span>NO_PIECE<span class="opt">);</span>
+  m_minsoln<span class="opt">.</span><span class="kwd">init</span><span class="opt">(</span>NO_PIECE<span class="opt">);</span>
+  m_maxsoln<span class="opt">.</span><span class="kwd">init</span><span class="opt">(</span>NO_PIECE<span class="opt">);</span>
+  m_nsoln<span class="opt">:=</span><span class="num">0</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">const</span> g_firstRegion<span class="opt">:</span><span class="kwa">array</span><span class="opt">[</span><span class="num">0</span><span class="opt">.</span><span class="num">.31</span><span class="opt">]</span> <span class="kwa">of</span> bitvec<span class="opt">=(</span>
+        <span class="opt">[],      [</span><span class="num">0</span><span class="opt">],      [</span><span class="num">1</span><span class="opt">],       [</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">2</span><span class="opt">],     [</span><span class="num">0</span><span class="opt">],      [</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">],     [</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">3</span><span class="opt">],     [</span><span class="num">0</span><span class="opt">],      [</span><span class="num">1</span><span class="opt">],       [</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">2</span><span class="opt">,</span><span class="num">3</span><span class="opt">],   [</span><span class="num">0</span><span class="opt">],      [</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">3</span><span class="opt">],   [</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">3</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">4</span><span class="opt">],     [</span><span class="num">0</span><span class="opt">],      [</span><span class="num">1</span><span class="opt">],       [</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">2</span><span class="opt">],     [</span><span class="num">0</span><span class="opt">],      [</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">],     [</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">3</span><span class="opt">,</span><span class="num">4</span><span class="opt">],   [</span><span class="num">0</span><span class="opt">],      [</span><span class="num">1</span><span class="opt">],       [</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">2</span><span class="opt">,</span><span class="num">3</span><span class="opt">,</span><span class="num">4</span><span class="opt">], [</span><span class="num">0</span><span class="opt">],      [</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">3</span><span class="opt">,</span><span class="num">4</span><span class="opt">], [</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">3</span><span class="opt">,</span><span class="num">4</span><span class="opt">]</span>
+<span class="opt">);</span>
+
+<span class="kwa">function</span> <span class="kwd">calc_bad_islands</span><span class="opt">(</span>boardVec<span class="opt">:</span>bitvec<span class="opt">;</span>row<span class="opt">:</span><span class="kwb">longint</span><span class="opt">):</span>goodbad<span class="opt">;</span>
+
+<span class="kwa">var</span> tofill<span class="opt">,</span>boardmask<span class="opt">,</span>bottom<span class="opt">,</span>startregion<span class="opt">:</span>bitvec<span class="opt">;</span>
+    filled<span class="opt">:</span><span class="kwb">boolean</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   toFill<span class="opt">:=[</span><span class="num">0</span><span class="opt">.</span><span class="num">.31</span><span class="opt">]-</span>boardVec<span class="opt">;</span>
+   <span class="com">{Compensate for odd rows.}</span>
+   <span class="kwa">if</span> row <span class="kwa">and</span> <span class="num">1</span><span class="opt">&lt;&gt;</span><span class="num">0</span> <span class="kwa">then</span>
+     <span class="kwa">begin</span>
+       <span class="kwd">dec</span><span class="opt">(</span>row<span class="opt">);</span>
+       <span class="kwb">cardinal</span><span class="opt">(</span>toFill<span class="opt">):=</span><span class="kwb">cardinal</span><span class="opt">(</span>tofill<span class="opt">)</span> <span class="kwa">shl</span> N_COL<span class="opt">;</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+
+   boardMask <span class="opt">:=</span> BOARD_MASK<span class="opt">;</span> <span class="com">{all but the first two bits}</span>
+   <span class="kwa">if</span> row<span class="opt">&gt;</span><span class="num">4</span> <span class="kwa">then</span>
+      <span class="kwb">cardinal</span><span class="opt">(</span>boardMask<span class="opt">):=</span><span class="kwb">cardinal</span><span class="opt">(</span>boardmask<span class="opt">)</span> <span class="kwa">shr</span> <span class="opt">((</span>row<span class="opt">-</span><span class="num">4</span><span class="opt">)*</span>N_COL<span class="opt">);</span>
+   toFill<span class="opt">:=</span>tofill<span class="opt">*</span>boardMask<span class="opt">;</span>
+
+   <span class="com">{a little pre-work to speed things up}</span>
+   filled<span class="opt">:=</span>toFill<span class="opt">*</span>LAST_ROW<span class="opt">=</span>LAST_ROW<span class="opt">;</span>
+   bottom<span class="opt">:=</span>LAST_ROW<span class="opt">;</span>
+   <span class="kwa">while</span> bottom<span class="opt">*</span>toFill<span class="opt">=</span>bottom <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+       toFill<span class="opt">:=</span>tofill<span class="opt">-</span>bottom<span class="opt">;</span>
+       <span class="kwb">cardinal</span><span class="opt">(</span>bottom<span class="opt">):=</span><span class="kwb">cardinal</span><span class="opt">(</span>bottom<span class="opt">)</span> <span class="kwa">shr</span> N_COL<span class="opt">;</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+
+   <span class="kwa">if</span> filled <span class="kwa">or</span> <span class="opt">(</span>row<span class="opt">&lt;</span><span class="num">4</span><span class="opt">)</span> <span class="kwa">then</span>
+      startRegion <span class="opt">:=</span> bottom <span class="opt">*</span> toFill
+   <span class="kwa">else</span>
+     <span class="kwa">begin</span>
+       startRegion <span class="opt">:=</span> g_firstRegion<span class="opt">[</span><span class="kwb">cardinal</span><span class="opt">(</span>toFill<span class="opt">*</span>TOP_ROW<span class="opt">)];</span>
+       <span class="kwa">if</span> startRegion<span class="opt">=[]</span> <span class="kwa">then</span>
+          <span class="kwa">begin</span>
+            startRegion <span class="opt">:=</span> <span class="kwd">bitvec</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>toFill<span class="opt">)</span> <span class="kwa">shr</span> N_COL<span class="opt">)*</span>TOP_ROW<span class="opt">;</span>
+            startRegion <span class="opt">:=</span> g_firstRegion<span class="opt">[</span><span class="kwb">cardinal</span><span class="opt">(</span>startRegion<span class="opt">)];</span>
+            <span class="kwb">cardinal</span><span class="opt">(</span>startRegion<span class="opt">) :=</span> <span class="kwb">cardinal</span><span class="opt">(</span>startregion<span class="opt">)</span> <span class="kwa">shl</span> N_COL<span class="opt">;</span>
+          <span class="kwa">end</span><span class="opt">;</span>
+        startRegion<span class="opt">:=</span>startregion<span class="opt">+</span><span class="kwd">bitvec</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>startRegion<span class="opt">)</span> <span class="kwa">shl</span> N_COL<span class="opt">)*</span>toFill<span class="opt">;</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+
+   <span class="kwa">while</span> toFill<span class="opt">&lt;&gt;[]</span> <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+       <span class="kwa">if</span> <span class="kwd">badRegion</span><span class="opt">(</span>toFill<span class="opt">,</span> startRegion<span class="opt">)</span> <span class="kwa">then</span>
+          <span class="kwa">begin</span>
+            <span class="kwa">if</span> toFill<span class="opt">&lt;&gt;[]</span> <span class="kwa">then</span>
+              calc_bad_islands<span class="opt">:=</span>ALWAYS_BAD
+            <span class="kwa">else</span>
+              calc_bad_islands<span class="opt">:=</span>BAD<span class="opt">;</span>
+            exit<span class="opt">;</span>
+          <span class="kwa">end</span><span class="opt">;</span>
+       startRegion <span class="opt">:= [</span><span class="kwd">first_set_bit</span><span class="opt">(</span>toFill<span class="opt">)];</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+
+   calc_bad_islands<span class="opt">:=</span>GOOD<span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+
+<span class="kwa">function</span> <span class="kwd">has_bad_islands</span><span class="opt">(</span>boardvec<span class="opt">:</span>bitvec<span class="opt">;</span>row<span class="opt">:</span><span class="kwb">longint</span><span class="opt">):</span>goodbad<span class="opt">;</span>
+
+<span class="kwa">var</span> last_row<span class="opt">:</span>bitvec<span class="opt">;</span>
+    isodd<span class="opt">:</span>parity<span class="opt">;</span>
+    isclosed<span class="opt">:</span>fixed<span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   <span class="com">{skip over any filled rows}</span>
+   <span class="kwa">while</span> boardVec<span class="opt">*</span>TOP_ROW<span class="opt">=</span>TOP_ROW <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+       <span class="kwb">cardinal</span><span class="opt">(</span>boardVec<span class="opt">):=</span><span class="kwb">cardinal</span><span class="opt">(</span>boardvec<span class="opt">)</span> <span class="kwa">shr</span> N_COL<span class="opt">;</span>
+       <span class="kwd">inc</span><span class="opt">(</span>row<span class="opt">);</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+
+   has_bad_islands<span class="opt">:=</span>bad<span class="opt">;</span>
+   <span class="kwa">with</span> g_islandInfo<span class="opt">[</span><span class="kwb">cardinal</span><span class="opt">(</span>boardvec<span class="opt">*(</span>TOP_ROW<span class="opt">+</span>SECOND_ROW<span class="opt">))]</span> <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+       last_row<span class="opt">:=</span><span class="kwd">bitvec</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>boardvec<span class="opt">)</span> <span class="kwa">shr</span> <span class="opt">(</span><span class="num">2</span><span class="opt">*</span>N_COL<span class="opt">))*</span>TOP_ROW<span class="opt">;</span>
+       isOdd<span class="opt">:=</span><span class="kwd">parity</span><span class="opt">(</span>row <span class="kwa">and</span> <span class="num">1</span><span class="opt">);</span>
+
+       <span class="kwa">if not</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>last_row<span class="opt">)</span> <span class="kwa">in</span> alwaysBad<span class="opt">[</span><span class="kwd">parity</span><span class="opt">(</span>row <span class="kwa">and</span> <span class="num">1</span><span class="opt">)])</span> <span class="kwa">then</span>
+         <span class="kwa">if</span> boardVec<span class="opt">*</span><span class="kwd">bitvec</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>TOP_ROW<span class="opt">)</span> <span class="kwa">shl</span> N_COL<span class="opt">*</span><span class="num">3</span><span class="opt">))=[]</span> <span class="kwa">then</span>
+           <span class="kwa">begin</span>
+             isClosed<span class="opt">:=</span><span class="kwd">fixed</span><span class="opt">(</span>row<span class="opt">&gt;</span><span class="num">6</span><span class="opt">);</span> <span class="com">{because we track 3 rows}</span>
+               <span class="kwa">if not</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>last_row<span class="opt">)</span> <span class="kwa">in</span> is_known<span class="opt">[</span>isClosed<span class="opt">,</span>isOdd<span class="opt">])</span> <span class="kwa">then</span>
+                 <span class="kwa">if</span> boardVec<span class="opt">&lt;&gt;[]</span> <span class="kwa">then</span>
+                   <span class="kwa">begin</span>
+                     has_bad_islands<span class="opt">:=</span><span class="kwd">calc_bad_islands</span><span class="opt">(</span>boardvec<span class="opt">,</span>row<span class="opt">);</span>
+                     <span class="kwd">include</span><span class="opt">(</span>is_known<span class="opt">[</span>isClosed<span class="opt">,</span>isOdd<span class="opt">],</span><span class="kwb">cardinal</span><span class="opt">(</span>last_row<span class="opt">));</span>
+                     <span class="kwa">if</span> has_bad_islands<span class="opt">&lt;&gt;</span>good <span class="kwa">then</span>
+                       <span class="kwd">include</span><span class="opt">(</span>is_known<span class="opt">[</span>isClosed<span class="opt">,</span>isOdd<span class="opt">],</span><span class="kwb">cardinal</span><span class="opt">(</span>last_row<span class="opt">));</span>
+                   <span class="kwa">end</span>
+                 <span class="kwa">else</span>
+                   has_bad_islands<span class="opt">:=</span>good
+               <span class="kwa">else</span>
+                 <span class="kwa">if not</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>last_row<span class="opt">)</span> <span class="kwa">in</span> has_bad<span class="opt">[</span>isClosed<span class="opt">,</span>isOdd<span class="opt">])</span> <span class="kwa">then</span>
+                   has_bad_islands<span class="opt">:=</span>good<span class="opt">;</span>
+           <span class="kwa">end</span>
+         <span class="kwa">else</span>
+           has_bad_islands<span class="opt">:=</span><span class="kwd">calc_bad_islands</span><span class="opt">(</span>boardvec<span class="opt">,</span>row<span class="opt">);</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">const</span> g_flip<span class="opt">:</span><span class="kwa">array</span><span class="opt">[</span><span class="num">0</span><span class="opt">.</span><span class="num">.31</span><span class="opt">]</span> <span class="kwa">of</span> bitvec<span class="opt">=(</span>
+        <span class="opt">[],        [</span><span class="num">4</span><span class="opt">],        [</span><span class="num">3</span><span class="opt">],        [</span><span class="num">3</span><span class="opt">,</span><span class="num">4</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">2</span><span class="opt">],       [</span><span class="num">2</span><span class="opt">,</span><span class="num">4</span><span class="opt">],      [</span><span class="num">2</span><span class="opt">,</span><span class="num">3</span><span class="opt">],      [</span><span class="num">2</span><span class="opt">,</span><span class="num">3</span><span class="opt">,</span><span class="num">4</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">1</span><span class="opt">],       [</span><span class="num">1</span><span class="opt">,</span><span class="num">4</span><span class="opt">],      [</span><span class="num">1</span><span class="opt">,</span><span class="num">3</span><span class="opt">],      [</span><span class="num">1</span><span class="opt">,</span><span class="num">3</span><span class="opt">,</span><span class="num">4</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">],     [</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">4</span><span class="opt">],    [</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">3</span><span class="opt">],    [</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">3</span><span class="opt">,</span><span class="num">4</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">0</span><span class="opt">],       [</span><span class="num">0</span><span class="opt">,</span><span class="num">4</span><span class="opt">],      [</span><span class="num">0</span><span class="opt">,</span><span class="num">3</span><span class="opt">],      [</span><span class="num">0</span><span class="opt">,</span><span class="num">3</span><span class="opt">,</span><span class="num">4</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">0</span><span class="opt">,</span><span class="num">2</span><span class="opt">],     [</span><span class="num">0</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">4</span><span class="opt">],    [</span><span class="num">0</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">3</span><span class="opt">],    [</span><span class="num">0</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">3</span><span class="opt">,</span><span class="num">4</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">],     [</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">4</span><span class="opt">],    [</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">3</span><span class="opt">],    [</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">3</span><span class="opt">,</span><span class="num">4</span><span class="opt">],</span>
+        <span class="opt">[</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">],   [</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">4</span><span class="opt">],  [</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">3</span><span class="opt">],  [</span><span class="num">0</span><span class="opt">,</span><span class="num">1</span><span class="opt">,</span><span class="num">2</span><span class="opt">,</span><span class="num">3</span><span class="opt">,</span><span class="num">4</span><span class="opt">]</span>
+<span class="opt">);</span>
+
+<span class="kwa">function</span> <span class="kwd">flipTwoRows</span><span class="opt">(</span>bits<span class="opt">:</span>bitvec<span class="opt">):</span>bitvec<span class="opt">;</span><span class="kwa">inline</span><span class="opt">;</span>
+
+<span class="kwa">var</span> flipped<span class="opt">:</span><span class="kwb">cardinal</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   flipped<span class="opt">:=</span><span class="kwb">cardinal</span><span class="opt">(</span>g_flip<span class="opt">[</span><span class="kwb">cardinal</span><span class="opt">(</span>bits<span class="opt">)</span> <span class="kwa">shr</span> N_COL<span class="opt">])</span> <span class="kwa">shl</span> N_COL<span class="opt">;</span>
+   fliptworows<span class="opt">:=</span><span class="kwd">bitvec</span><span class="opt">(</span>flipped <span class="kwa">or</span> <span class="kwb">cardinal</span><span class="opt">(</span>g_flip<span class="opt">[</span><span class="kwb">cardinal</span><span class="opt">(</span>bits<span class="opt">*</span>TOP_ROW<span class="opt">)]));</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">procedure</span> <span class="kwd">mark_bad</span><span class="opt">(</span><span class="kwa">var</span> info<span class="opt">:</span>IslandInfo<span class="opt">;</span>n<span class="opt">:</span><span class="kwb">byte</span><span class="opt">;</span>eo<span class="opt">:</span>parity<span class="opt">;</span>always<span class="opt">:</span><span class="kwb">boolean</span><span class="opt">);</span><span class="kwa">inline</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+  <span class="kwa">with</span> info <span class="kwa">do</span>
+   <span class="kwa">begin</span>
+     <span class="kwd">include</span><span class="opt">(</span>has_bad<span class="opt">[</span>OPEN<span class="opt">,</span>eo<span class="opt">],</span>n<span class="opt">);</span>
+     <span class="kwd">include</span><span class="opt">(</span>has_bad<span class="opt">[</span>CLOSED<span class="opt">,</span>eo<span class="opt">],</span>n<span class="opt">);</span>
+
+     <span class="kwa">if</span> always <span class="kwa">then</span>
+       <span class="kwd">include</span><span class="opt">(</span>alwaysBad<span class="opt">[</span>eo<span class="opt">],</span>n<span class="opt">);</span>
+   <span class="kwa">end</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">procedure</span> calc_always_bad<span class="opt">;</span>
+
+<span class="kwa">var</span> i<span class="opt">,</span>iWord<span class="opt">:</span><span class="kwb">cardinal</span><span class="opt">;</span>
+    boardvec<span class="opt">:</span>bitvec<span class="opt">;</span>
+    hasbad<span class="opt">:</span>goodbad<span class="opt">;</span>
+    always<span class="opt">:</span><span class="kwb">boolean</span><span class="opt">;</span>
+    flipped<span class="opt">:^</span>islandinfo<span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   <span class="kwa">for</span> iWord<span class="opt">:=</span><span class="num">1</span> <span class="kwa">to</span> MAX_ISLAND_OFFSET<span class="opt">-</span><span class="num">1</span> <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+      flipped <span class="opt">:= &#64;</span>g_islandInfo<span class="opt">[</span><span class="kwb">cardinal</span><span class="opt">(</span><span class="kwd">flipTwoRows</span><span class="opt">(</span><span class="kwd">bitvec</span><span class="opt">(</span>iWord<span class="opt">)))];</span>
+      <span class="kwa">for</span> i<span class="opt">:=</span><span class="num">0</span> <span class="kwa">to</span> <span class="num">31</span> <span class="kwa">do</span>
+        <span class="kwa">begin</span>
+          boardvec<span class="opt">:=</span><span class="kwd">bitvec</span><span class="opt">((</span>i <span class="kwa">shl</span> <span class="opt">(</span><span class="num">2</span><span class="opt">*</span>N_COL<span class="opt">))</span> <span class="kwa">or</span> iWord<span class="opt">);</span>
+          <span class="kwa">if not</span><span class="opt">(</span>i <span class="kwa">in</span> g_islandInfo<span class="opt">[</span>iWord<span class="opt">].</span>is_known<span class="opt">[</span>OPEN<span class="opt">,</span>EVEN<span class="opt">])</span> <span class="kwa">then</span>
+            <span class="kwa">begin</span>
+              hasBad<span class="opt">:=</span><span class="kwd">calc_bad_islands</span><span class="opt">(</span>boardvec<span class="opt">,</span><span class="num">0</span><span class="opt">);</span>
+              <span class="kwa">if</span> hasBad<span class="opt">&lt;&gt;</span>good <span class="kwa">then</span>
+                <span class="kwa">begin</span>
+                 always<span class="opt">:=</span>hasBad<span class="opt">=</span>ALWAYS_BAD<span class="opt">;</span>
+                 <span class="kwd">mark_bad</span><span class="opt">(</span>g_islandInfo<span class="opt">[</span>iWord<span class="opt">],</span> i<span class="opt">,</span> EVEN<span class="opt">,</span> always<span class="opt">);</span>
+                 <span class="kwd">mark_bad</span><span class="opt">(</span>flipped<span class="opt">^,</span><span class="kwb">cardinal</span><span class="opt">(</span>g_flip<span class="opt">[</span>i<span class="opt">]),</span> ODD<span class="opt">,</span> always<span class="opt">);</span>
+              <span class="kwa">end</span><span class="opt">;</span>
+            <span class="kwa">end</span><span class="opt">;</span>
+      <span class="kwa">end</span><span class="opt">;</span>
+      flipped<span class="opt">^.</span>is_known<span class="opt">[</span>OPEN<span class="opt">,</span>odd<span class="opt">]:=[</span><span class="num">0</span><span class="opt">.</span><span class="num">.31</span><span class="opt">];</span>
+      g_islandInfo<span class="opt">[</span>iWord<span class="opt">].</span>is_known<span class="opt">[</span>OPEN<span class="opt">,</span>even<span class="opt">]:=[</span><span class="num">0</span><span class="opt">.</span><span class="num">.31</span><span class="opt">];</span>
+   <span class="kwa">end</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">procedure</span> <span class="kwd">record_solution</span><span class="opt">(</span><span class="kwa">var</span> s<span class="opt">:</span>Soln<span class="opt">);</span>
+
+<span class="kwa">var</span> spun<span class="opt">:</span>soln<span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   s<span class="opt">.</span>setcells<span class="opt">;</span>
+   <span class="kwd">inc</span><span class="opt">(</span>m_nSoln<span class="opt">,</span><span class="num">2</span><span class="opt">);</span> <span class="com">{add solution and its rotation}</span>
+
+   <span class="kwa">if</span> m_minSoln<span class="opt">.</span>isEmpty <span class="kwa">then</span>
+     <span class="kwa">begin</span>
+       m_minSoln <span class="opt">:=</span> s<span class="opt">;</span>
+       m_maxSoln <span class="opt">:=</span> s<span class="opt">;</span>
+       exit<span class="opt">;</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+
+   <span class="kwa">if</span> s<span class="opt">.</span><span class="kwd">lessThan</span><span class="opt">(</span>m_minSoln<span class="opt">)</span> <span class="kwa">then</span>
+      m_minSoln <span class="opt">:=</span> s
+   <span class="kwa">else if</span> m_maxSoln<span class="opt">.</span><span class="kwd">lessThan</span><span class="opt">(</span>s<span class="opt">)</span> <span class="kwa">then</span>
+      m_maxSoln <span class="opt">:=</span> s<span class="opt">;</span>
+
+   s<span class="opt">.</span><span class="kwd">spin</span><span class="opt">(</span>spun<span class="opt">);</span>
+   <span class="kwa">if</span> spun<span class="opt">.</span><span class="kwd">lessThan</span><span class="opt">(</span>m_minSoln<span class="opt">)</span> <span class="kwa">then</span>
+      m_minSoln <span class="opt">:=</span> spun
+   <span class="kwa">else if</span> m_maxSoln<span class="opt">.</span><span class="kwd">lessThan</span><span class="opt">(</span>spun<span class="opt">)</span> <span class="kwa">then</span>
+      m_maxSoln <span class="opt">:=</span> spun<span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">function</span> <span class="kwd">gen_all_solutions</span><span class="opt">(</span>boardVec<span class="opt">,</span>placedPieces<span class="opt">:</span>bitvec<span class="opt">;</span>row<span class="opt">:</span><span class="kwb">byte</span><span class="opt">):</span><span class="kwb">cardinal</span><span class="opt">;</span>
+
+<span class="kwa">var</span> ipiece<span class="opt">:</span>piecenr<span class="opt">;</span>
+    iorient<span class="opt">:</span><span class="kwb">byte</span><span class="opt">;</span>
+    piece<span class="opt">:</span>bitvec<span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   <span class="kwa">while</span> boardVec<span class="opt">*</span>TOP_ROW<span class="opt">=</span>TOP_ROW <span class="kwa">do</span>
+     <span class="kwa">begin</span>
+       <span class="kwb">cardinal</span><span class="opt">(</span>boardVec<span class="opt">):=</span><span class="kwb">cardinal</span><span class="opt">(</span>boardvec<span class="opt">)</span> <span class="kwa">shr</span> N_COL<span class="opt">;</span>
+       <span class="kwd">inc</span><span class="opt">(</span>row<span class="opt">);</span>
+     <span class="kwa">end</span><span class="opt">;</span>
+   gen_all_solutions<span class="opt">:=</span><span class="num">0</span><span class="opt">;</span>
+   <span class="kwa">with</span> cache<span class="opt">[((</span><span class="kwb">cardinal</span><span class="opt">(</span>boardvec<span class="opt">)*</span>
+              <span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>placedpieces<span class="opt">)</span> <span class="com">{shl 3}</span> <span class="opt">+</span> <span class="num">1</span><span class="opt">)</span>
+              <span class="kwa">xor</span> row <span class="kwa">shl</span> <span class="num">5</span><span class="opt">))</span> <span class="kwa">mod</span> <span class="num">131071</span><span class="opt">]</span> <span class="kwa">do</span>
+     <span class="kwa">if</span> <span class="opt">(</span>krow<span class="opt">&lt;&gt;</span>row<span class="opt">)</span> <span class="kwa">or</span> <span class="opt">(</span><span class="kwd">bitvec</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>kpiecevec<span class="opt">))&lt;&gt;</span>placedpieces<span class="opt">)</span> <span class="kwa">or</span> <span class="opt">(</span>kboardvec<span class="opt">&lt;&gt;</span>boardvec<span class="opt">)</span> <span class="kwa">then</span>
+       <span class="kwa">begin</span>
+         <span class="kwa">with</span> g_okpieces<span class="opt">[</span>row<span class="opt">,</span>s_firstOne<span class="opt">[</span><span class="kwb">cardinal</span><span class="opt">([</span><span class="num">0</span><span class="opt">..</span>N_COL<span class="opt">-</span><span class="num">1</span><span class="opt">]-</span>boardVec<span class="opt">)]]</span> <span class="kwa">do</span>
+           <span class="kwa">for</span> ipiece<span class="opt">:=</span><span class="num">0</span> <span class="kwa">to</span> N_PIECE_TYPE<span class="opt">-</span><span class="num">1</span> <span class="kwa">do</span>
+             <span class="kwa">if not</span><span class="opt">(</span>ipiece <span class="kwa">in</span> placedpieces<span class="opt">)</span> <span class="kwa">then</span>
+               <span class="kwa">for</span> iorient<span class="opt">:=</span><span class="num">1</span> <span class="kwa">to</span> npieces<span class="opt">[</span>ipiece<span class="opt">]</span> <span class="kwa">do</span> <span class="com">{start with 1, npieces[x] can be zero}</span>
+                 <span class="kwa">begin</span>
+                   piece<span class="opt">:=</span>pieceVec<span class="opt">[</span>iPiece<span class="opt">,</span>iOrient<span class="opt">-</span><span class="num">1</span><span class="opt">];</span>
+                   <span class="com">{check if piece conflicts with other pieces or if we get a bad island.}</span>
+                   <span class="kwa">if</span> <span class="opt">(</span>piece<span class="opt">*</span>boardVec<span class="opt">=[])</span> <span class="kwa">and</span> <span class="opt">(</span><span class="kwd">has_bad_islands</span><span class="opt">(</span>boardVec<span class="opt">+</span>piece<span class="opt">,</span>row<span class="opt">)=</span>good<span class="opt">)</span> <span class="kwa">then</span>
+                     <span class="kwa">begin</span>
+                       m_curSoln<span class="opt">.</span><span class="kwd">pushPiece</span><span class="opt">(</span>piece<span class="opt">,</span>iPiece<span class="opt">,</span>row<span class="opt">);</span>
+                       <span class="com">{recurse or record solution}</span>
+                       <span class="kwa">if</span> placedPieces<span class="opt">+[</span>ipiece<span class="opt">]&lt;&gt;</span>ALL_PIECE_MASK <span class="kwa">then</span>
+                         <span class="kwd">inc</span><span class="opt">(</span>gen_all_solutions<span class="opt">,</span><span class="kwd">gen_all_solutions</span><span class="opt">(</span>boardVec<span class="opt">+</span>piece<span class="opt">,</span>placedPieces<span class="opt">+[</span>ipiece<span class="opt">],</span>row<span class="opt">))</span>
+                       <span class="kwa">else</span>
+                         <span class="kwa">begin</span>
+                           <span class="kwd">record_solution</span><span class="opt">(</span>m_curSoln<span class="opt">);</span>
+                           <span class="kwd">inc</span><span class="opt">(</span>gen_all_solutions<span class="opt">);</span>
+                         <span class="kwa">end</span><span class="opt">;</span>
+                       m_curSoln<span class="opt">.</span><span class="kwd">popPiece</span><span class="opt">();</span>
+                     <span class="kwa">end</span><span class="opt">;</span>
+                <span class="kwa">end</span><span class="opt">;</span>
+         <span class="kwa">if</span> gen_all_solutions<span class="opt">=</span><span class="num">0</span> <span class="kwa">then</span>
+           <span class="kwa">begin</span>
+             krow<span class="opt">:=</span>row<span class="opt">;</span>
+             kpiecevec<span class="opt">:=</span><span class="kwb">word</span><span class="opt">(</span><span class="kwb">cardinal</span><span class="opt">(</span>placedpieces<span class="opt">));</span>
+             kboardvec<span class="opt">:=</span>boardvec<span class="opt">;</span>
+           <span class="kwa">end</span><span class="opt">;</span>
+      <span class="kwa">end</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   <span class="kwa">if</span> paramcount <span class="opt">&gt;</span> <span class="num">2</span> <span class="kwa">then</span>
+     <span class="kwd">halt</span><span class="opt">(</span><span class="num">1</span><span class="opt">);</span> <span class="com">{spec says this is an error}</span>
+
+   <span class="kwd">textrec</span><span class="opt">(</span>output<span class="opt">).</span>flushfunc<span class="opt">:=</span><span class="kwa">nil</span><span class="opt">;</span>
+
+   gen_all_orientations<span class="opt">;</span>
+   calc_always_bad<span class="opt">;</span>
+   init_board<span class="opt">;</span>
+   <span class="kwd">filldword</span><span class="opt">(</span>cache<span class="opt">,</span><span class="kwd">sizeof</span><span class="opt">(</span>cache<span class="opt">)</span> <span class="kwa">shr</span> <span class="num">2</span><span class="opt">,</span><span class="num">$ffffffff</span><span class="opt">);</span>
+   <span class="kwd">gen_all_solutions</span><span class="opt">([], [],</span> <span class="num">0</span><span class="opt">);</span>
+
+   <span class="kwd">writeln</span><span class="opt">(</span>m_nSoln<span class="opt">,</span><span class="str">&apos; solutions found&apos;</span><span class="opt">);</span>
+   writeln<span class="opt">;</span>
+   m_minSoln<span class="opt">.</span><span class="kwd">write</span><span class="opt">(</span>output<span class="opt">);</span>
+   writeln<span class="opt">;</span>
+   m_maxSoln<span class="opt">.</span><span class="kwd">write</span><span class="opt">(</span>output<span class="opt">);</span>
+   writeln<span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">.</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+Free Pascal Compiler version 3.0.4 [2017/10/03] for x86_64
+
+
+Sun, 10 Dec 2017 05:31:17 GMT
+
+MAKE:
+mv meteor.fpascal-3.fpascal meteor.fpascal-3.pas
+/opt/src/fpc-3.0.4/bin/fpc -FuInclude/fpascal -XXs -O4 -Tlinux  -oFPASCAL_RUN meteor.fpascal-3.pas
+Free Pascal Compiler version 3.0.4 [2017/10/03] for x86_64
+Copyright (c) 1993-2017 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling meteor.fpascal-3.pas
+meteor.fpascal-3.pas(173,24) Warning: Comparison might be always false due to range of constant and expression
+meteor.fpascal-3.pas(174,11) Warning: unreachable code
+meteor.fpascal-3.pas(363,7) Note: Local variable &quot;y&quot; is assigned but never used
+meteor.fpascal-3.pas(466,5) Note: Local variable &quot;x&quot; not used
+meteor.fpascal-3.pas(881,19) Warning: Variable &quot;m_nSoln&quot; does not seem to be initialized
+meteor.fpascal-3.pas(104,5) Note: Local variable &quot;g_nIslandInfo&quot; not used
+Linking FPASCAL_RUN
+/usr/bin/ld: warning: link.res contains output sections; did you forget -T?
+887 lines compiled, 0.1 sec
+3 warning(s) issued
+3 note(s) issued
+mv FPASCAL_RUN meteor.fpascal-3.fpascal_run
+rm meteor.fpascal-3.pas
+
+0.14s to complete and log all make actions
+
+COMMAND LINE:
+./meteor.fpascal-3.fpascal_run 2098
+
+PROGRAM OUTPUT:
+2098 solutions found
+
+0 0 0 0 1 
+ 2 2 2 0 1 
+2 6 6 1 1 
+ 2 6 1 5 5 
+8 6 5 5 5 
+ 8 6 3 3 3 
+4 8 8 9 3 
+ 4 4 8 9 3 
+4 7 4 7 9 
+ 7 7 7 9 9 
+
+9 9 9 9 8 
+ 9 6 6 8 5 
+6 6 8 8 5 
+ 6 8 2 5 5 
+7 7 7 2 5 
+ 7 4 7 2 0 
+1 4 2 2 0 
+ 1 4 4 0 3 
+1 4 0 0 3 
+ 1 1 3 3 3 
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

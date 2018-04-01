@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>regex-redux Chapel program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>regex-redux Chapel program</h2>
+    <aside>
+      <p><a href="./regexredux-description.html#regexredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">/* The Computer Language Benchmarks Game</span>
+<span class="com">   http://benchmarksgame.alioth.debian.org/</span>
+<span class="com"></span>
+<span class="com">   regex-dna program contributed by Ben Harshbarger</span>
+<span class="com">   derived from the GNU C++ RE2 version by Alexey Zolotov</span>
+<span class="com"></span>
+<span class="com">   converted from regex-dna program</span>
+<span class="com">*/</span>
+
+<span class="kwa">proc</span> <span class="kwc">main</span><span class="opt">(</span>args<span class="opt">: []</span> <span class="kwb">string</span><span class="opt">) {</span>
+  <span class="kwa">var</span> variants <span class="opt">= [</span>
+    <span class="str">&quot;agggtaaa|tttaccct&quot;</span><span class="opt">,</span>
+    <span class="str">&quot;[cgt]gggtaaa|tttaccc[acg]&quot;</span><span class="opt">,</span>
+    <span class="str">&quot;a[act]ggtaaa|tttacc[agt]t&quot;</span><span class="opt">,</span>
+    <span class="str">&quot;ag[act]gtaaa|tttac[agt]ct&quot;</span><span class="opt">,</span>
+    <span class="str">&quot;agg[act]taaa|ttta[agt]cct&quot;</span><span class="opt">,</span>
+    <span class="str">&quot;aggg[acg]aaa|ttt[cgt]ccct&quot;</span><span class="opt">,</span>
+    <span class="str">&quot;agggt[cgt]aa|tt[acg]accct&quot;</span><span class="opt">,</span>
+    <span class="str">&quot;agggta[cgt]a|t[acg]taccct&quot;</span><span class="opt">,</span>
+    <span class="str">&quot;agggtaa[cgt]|[acg]ttaccct&quot;</span>
+  <span class="opt">];</span>
+
+  <span class="kwa">var</span> subst <span class="opt">= [</span>
+    <span class="opt">(</span><span class="str">&quot;tHa[Nt]&quot;</span><span class="opt">,</span> <span class="str">&quot;&lt;4&gt;&quot;</span><span class="opt">), (</span><span class="str">&quot;aND|caN|Ha[DS]|WaS&quot;</span><span class="opt">,</span> <span class="str">&quot;&lt;3&gt;&quot;</span><span class="opt">), (</span><span class="str">&quot;a[NSt]|BY&quot;</span><span class="opt">,</span> <span class="str">&quot;&lt;2&gt;&quot;</span><span class="opt">),</span> 
+    <span class="opt">(</span><span class="str">&quot;&lt;[^&gt;]*&gt;&quot;</span><span class="opt">,</span> <span class="str">&quot;|&quot;</span><span class="opt">), (</span><span class="str">&quot;</span><span class="esc">\\</span><span class="str">|[^|][^|]*</span><span class="esc">\\</span><span class="str">|&quot;</span><span class="opt">,</span> <span class="str">&quot;-&quot;</span><span class="opt">)</span>
+  <span class="opt">];</span>
+
+  <span class="kwa">var</span> data<span class="opt">:</span> <span class="kwb">string</span><span class="opt">;</span>
+  stdin<span class="opt">.</span><span class="kwc">readstring</span><span class="opt">(</span>data<span class="opt">);</span> <span class="slc">// read in the entire file</span>
+  <span class="kwa">const</span> initLen <span class="opt">=</span> data<span class="opt">.</span>length<span class="opt">;</span>
+
+  <span class="slc">// remove newlines</span>
+  data <span class="opt">=</span> <span class="kwc">compile</span><span class="opt">(</span><span class="str">&quot;&gt;.*</span><span class="esc">\n</span><span class="str">|</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">).</span><span class="kwc">sub</span><span class="opt">(</span><span class="str">&quot;&quot;</span><span class="opt">,</span> data<span class="opt">);</span>
+
+  <span class="kwa">var</span> copy <span class="opt">=</span> data<span class="opt">;</span> <span class="slc">// make a copy so we can perform replacements in parallel</span>
+
+  <span class="kwa">var</span> results<span class="opt">: [</span>variants<span class="opt">.</span><span class="kwa">domain</span><span class="opt">]</span> <span class="kwb">int</span><span class="opt">;</span>
+
+  <span class="kwa">sync</span> <span class="opt">{</span>
+    <span class="slc">// fire off a task to perform replacements</span>
+    <span class="kwa">begin with</span> <span class="opt">(</span><span class="kwa">ref</span> copy<span class="opt">) {</span>
+      <span class="kwa">for</span> <span class="opt">(</span>f<span class="opt">,</span> r<span class="opt">)</span> <span class="kwa">in</span> subst <span class="kwa">do</span>
+        copy <span class="opt">=</span> <span class="kwc">compile</span><span class="opt">(</span>f<span class="opt">).</span><span class="kwc">sub</span><span class="opt">(</span>r<span class="opt">,</span> copy<span class="opt">);</span>
+    <span class="opt">}</span>
+
+    <span class="slc">// count patterns</span>
+    <span class="kwa">forall</span> <span class="opt">(</span>pattern<span class="opt">,</span> result<span class="opt">)</span> <span class="kwa">in zip</span><span class="opt">(</span>variants<span class="opt">,</span> results<span class="opt">)</span> <span class="kwa">do</span>
+      <span class="kwa">for</span> m <span class="kwa">in</span> <span class="kwc">compile</span><span class="opt">(</span>pattern<span class="opt">).</span><span class="kwc">matches</span><span class="opt">(</span>data<span class="opt">)</span> <span class="kwa">do</span>
+        result <span class="opt">+=</span> <span class="num">1</span><span class="opt">;</span>
+  <span class="opt">}</span>
+
+  <span class="slc">// print results</span>
+  <span class="kwa">for</span> <span class="opt">(</span>p<span class="opt">,</span>r<span class="opt">)</span> <span class="kwa">in zip</span><span class="opt">(</span>variants<span class="opt">,</span> results<span class="opt">)</span> <span class="kwa">do</span>
+    <span class="kwc">writeln</span><span class="opt">(</span>p<span class="opt">,</span> <span class="str">&quot; &quot;</span><span class="opt">,</span> r<span class="opt">);</span>
+  <span class="kwc">writeln</span><span class="opt">();</span>
+
+  <span class="kwc">writeln</span><span class="opt">(</span>initLen<span class="opt">);</span>
+  <span class="kwc">writeln</span><span class="opt">(</span>data<span class="opt">.</span>length<span class="opt">);</span>
+  <span class="kwc">writeln</span><span class="opt">(</span>copy<span class="opt">.</span>length<span class="opt">);</span>
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+chpl Version 1.16.0
+Copyright (c) 2004-2017, Cray Inc.
+
+
+Wed, 25 Oct 2017 17:04:27 GMT
+
+MAKE:
+mv regexredux.chapel regexredux.chpl
+/opt/src/chapel-1.16.0/bin/linux64/chpl --fast regexredux.chpl -o regexredux.chapel_run
+rm regexredux.chpl
+
+12.23s to complete and log all make actions
+
+COMMAND LINE:
+./regexredux.chapel_run --n=0 &lt; regexredux-input5000000.txt
+
+PROGRAM OUTPUT:
+agggtaaa|tttaccct 356
+[cgt]gggtaaa|tttaccc[acg] 1250
+a[act]ggtaaa|tttacc[agt]t 4252
+ag[act]gtaaa|tttac[agt]ct 2894
+agg[act]taaa|ttta[agt]cct 5435
+aggg[acg]aaa|ttt[cgt]ccct 1537
+agggt[cgt]aa|tt[acg]accct 1431
+agggta[cgt]a|t[acg]taccct 1608
+agggtaa[cgt]|[acg]ttaccct 2178
+
+50833411
+50000000
+27388361
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

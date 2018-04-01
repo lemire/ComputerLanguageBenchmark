@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="all">
+<meta name="description" content="Compare programs that search for solutions to a shape packing puzzle for ~24 programming languages (64-bit Ubuntu quad core).">
+<title>meteor-contest (64-bit Ubuntu quad core) | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article,footer{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.best{font-weight:bold}.message{font-size:.8em}table{color:#333;margin:1.3em auto 0;text-align:right}tbody:after{content:"-";display:block;line-height:2.6em;visibility:hidden}td{border-bottom:.15em dotted #eee;padding:.7em 0 0 1em}td a,th a{display:block}th{font-weight:normal;padding:0 0 0 1em}td:first-child{padding-left:0}td:nth-child(2),th:nth-child(2){text-align:left}
+
+@media only screen{th:nth-child(1),td:nth-child(1),th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(6),td:nth-child(6),th:nth-child(7),td:nth-child(7){display:none}}
+@media only screen and (min-width:23em){th:nth-child(1),td:nth-child(1){display:table-cell}}@media only screen and (min-width:37em){th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:table-cell}li{display:inline-block}}@media only screen and (min-width:43em){th:nth-child(7),td:nth-child(7){display:table-cell}}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>meteor-contest</h2>
+    <aside>
+      <p><a href="./meteor-description.html#meteor">description</a>
+    </aside>
+  </div>
+  <section>
+    <div>
+      <h3>program source code, command-line and measurements</h3>
+    </div>
+    <table>
+      <tr>
+        <th>&#215;
+        <th>source
+        <th><a href="./meteor.html"><span>secs</span></a>
+        <th><a href="./meteor-mem.html"><span>mem</span></a>
+        <th class="best">gz
+        <th><a href="./meteor-cpu.html"><span>cpu</span></a>
+        <th>cpu load
+      <tr>
+        <td>1.0
+        <td><a href="./meteor-ghc-4.html"><span><strong>Haskell</strong>&nbsp;GHC&nbsp;#4</span></a>
+        <td>1.49
+        <td>6,816
+        <td class="best">818
+        <td>1.74
+        <td class="message">99%&nbsp;6%&nbsp;7%&nbsp;5%
+      <tr>
+        <td>1.5
+        <td><a href="./meteor-python3-3.html"><span><strong>Python&nbsp;3</strong>&nbsp;#3</span></a>
+        <td>9.82
+        <td>11,984
+        <td class="best">1220
+        <td>9.82
+        <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;0%
+      <tr>
+        <td>1.6
+        <td><a href="./meteor-python3-2.html"><span>Python 3&nbsp;#2</span></a>
+        <td>7.65
+        <td>10,212
+        <td>1330
+        <td>7.64
+        <td class="message">1%&nbsp;2%&nbsp;0%&nbsp;100%
+      <tr>
+        <td>1.8
+        <td><a href="./meteor-python3-1.html"><span>Python 3</span></a>
+        <td>10.21
+        <td>10,220
+        <td>1447
+        <td>10.20
+        <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;0%
+      <tr>
+        <td>1.8
+        <td><a href="./meteor-perl-2.html"><span><strong>Perl</strong>&nbsp;#2</span></a>
+        <td>18.99
+        <td>6,880
+        <td class="best">1512
+        <td>18.99
+        <td class="message">35%&nbsp;0%&nbsp;1%&nbsp;65%
+      <tr>
+        <td>1.9
+        <td><a href="./meteor-perl-1.html"><span>Perl</span></a>
+        <td>46.74
+        <td>6,984
+        <td>1547
+        <td>46.72
+        <td class="message">0%&nbsp;0%&nbsp;1%&nbsp;100%
+      <tr>
+        <td>1.9
+        <td><a href="./meteor-lua-5.html"><span><strong>Lua</strong>&nbsp;#5</span></a>
+        <td>2.08
+        <td>5,348
+        <td class="best">1558
+        <td>2.07
+        <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;1%
+      <tr>
+        <td>2.0
+        <td><a href="./meteor-lua-6.html"><span>Lua&nbsp;#6</span></a>
+        <td>1.01
+        <td>4,824
+        <td>1655
+        <td>1.01
+        <td class="message">1%&nbsp;100%&nbsp;3%&nbsp;0%
+      <tr>
+        <td>2.2
+        <td><a href="./meteor-ghc-3.html"><span>Haskell GHC&nbsp;#3</span></a>
+        <td>0.50
+        <td>5,912
+        <td>1826
+        <td>0.62
+        <td class="message">96%&nbsp;16%&nbsp;12%&nbsp;13%
+      <tr>
+        <td>2.3
+        <td><a href="./meteor-racket-1.html"><span><strong>Racket</strong></span></a>
+        <td>0.61
+        <td>24,880
+        <td class="best">1907
+        <td>0.61
+        <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;3%
+      <tr>
+        <td>2.3
+        <td><a href="./meteor-ghc-2.html"><span>Haskell GHC&nbsp;#2</span></a>
+        <td>0.58
+        <td>6,100
+        <td>1914
+        <td>0.71
+        <td class="message">10%&nbsp;98%&nbsp;12%&nbsp;9%
+      <tr>
+        <td>2.7
+        <td><a href="./meteor-ghc-1.html"><span>Haskell GHC</span></a>
+        <td>0.77
+        <td>5,704
+        <td>2215
+        <td>0.91
+        <td class="message">10%&nbsp;10%&nbsp;99%&nbsp;11%
+      <tr>
+        <td>2.7
+        <td><a href="./meteor-rust-1.html"><span><strong>Rust</strong></span></a>
+        <td>0.06
+        <td>?
+        <td class="best">2238
+        <td>0.14
+        <td class="message">67%&nbsp;67%&nbsp;80%&nbsp;57%
+      <tr>
+        <td>3.2
+        <td><a href="./meteor-chapel-2.html"><span><strong>Chapel</strong>&nbsp;#2</span></a>
+        <td>0.04
+        <td>?
+        <td class="best">2603
+        <td>0.08
+        <td class="message">75%&nbsp;50%&nbsp;33%&nbsp;50%
+      <tr>
+        <td>3.2
+        <td><a href="./meteor-gpp-6.html"><span><strong>C++</strong>&nbsp;g++&nbsp;#6</span></a>
+        <td>?
+        <td>?
+        <td class="best">2620
+        <td>0.05
+        <td class="message">
+      <tr>
+        <td>3.3
+        <td><a href="./meteor-chapel-1.html"><span>Chapel</span></a>
+        <td>0.09
+        <td>?
+        <td>2736
+        <td>0.24
+        <td class="message">90%&nbsp;63%&nbsp;71%&nbsp;67%
+      <tr>
+        <td>3.4
+        <td><a href="./meteor-yarv-1.html"><span><strong>Ruby</strong></span></a>
+        <td>7.43
+        <td>9,732
+        <td class="best">2768
+        <td>7.42
+        <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tr>
+        <td>3.4
+        <td><a href="./meteor-mri-1.html"><span><strong>Ruby</strong>&nbsp;MRI</span></a>
+        <td>33.69
+        <td>6,028
+        <td class="best">2768
+        <td>33.68
+        <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;0%
+      <tr>
+        <td>3.4
+        <td><a href="./meteor-jruby-1.html"><span><strong>Ruby</strong>&nbsp;JRuby</span></a>
+        <td>15.99
+        <td>840,376
+        <td class="best">2768
+        <td>32.17
+        <td class="message">74%&nbsp;39%&nbsp;37%&nbsp;54%
+      <tr>
+        <td>3.4
+        <td><a href="./meteor-jruby-2.html"><span>Ruby JRuby&nbsp;#2</span></a>
+        <td>14.25
+        <td>780,992
+        <td>2786
+        <td>30.78
+        <td class="message">65%&nbsp;71%&nbsp;40%&nbsp;42%
+      <tr>
+        <td>3.4
+        <td><a href="./meteor-mri-2.html"><span>Matz's Interpreter&nbsp;#2</span></a>
+        <td>23.56
+        <td>5,752
+        <td>2786
+        <td>23.55
+        <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;0%
+      <tr>
+        <td>3.4
+        <td><a href="./meteor-yarv-2.html"><span>Ruby&nbsp;#2</span></a>
+        <td>4.64
+        <td>9,648
+        <td>2786
+        <td>4.64
+        <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;0%
+      <tr>
+        <td>3.6
+        <td><a href="./meteor-ghc-5.html"><span>Haskell GHC&nbsp;#5</span></a>
+        <td>0.56
+        <td>6,560
+        <td>2953
+        <td>0.70
+        <td class="message">9%&nbsp;100%&nbsp;11%&nbsp;9%
+      <tr>
+        <td>3.7
+        <td><a href="./meteor-go-1.html"><span><strong>Go</strong></span></a>
+        <td>0.13
+        <td>?
+        <td class="best">2995
+        <td>0.13
+        <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;7%
+      <tr>
+        <td>3.8
+        <td><a href="./meteor-gcc-1.html"><span><strong>C</strong>&nbsp;gcc</span></a>
+        <td>0.08
+        <td>?
+        <td class="best">3073
+        <td>0.08
+        <td class="message">0%&nbsp;22%&nbsp;100%&nbsp;0%
+      <tr>
+        <td>4.7
+        <td><a href="./meteor-rust-2.html"><span>Rust&nbsp;#2</span></a>
+        <td>0.03
+        <td>?
+        <td>3848
+        <td>0.09
+        <td class="message">67%&nbsp;100%&nbsp;100%&nbsp;75%
+      <tr>
+        <td>5.0
+        <td><a href="./meteor-gpp-2.html"><span>C++ g++&nbsp;#2</span></a>
+        <td>0.16
+        <td>?
+        <td>4093
+        <td>0.16
+        <td class="message">12%&nbsp;100%&nbsp;7%&nbsp;0%
+      <tr>
+        <td>5.3
+        <td><a href="./meteor-gpp-1.html"><span>C++ g++</span></a>
+        <td>0.14
+        <td>?
+        <td>4348
+        <td>0.14
+        <td class="message">100%&nbsp;7%&nbsp;14%&nbsp;8%
+      <tr>
+        <td>5.4
+        <td><a href="./meteor-java-1.html"><span><strong>Java</strong>&nbsp;</span></a>
+        <td>0.80
+        <td>39,452
+        <td class="best">4408
+        <td>1.16
+        <td class="message">12%&nbsp;7%&nbsp;33%&nbsp;96%
+      <tr>
+        <td>6.0
+        <td><a href="./meteor-gpp-3.html"><span>C++ g++&nbsp;#3</span></a>
+        <td>0.08
+        <td>?
+        <td>4871
+        <td>0.08
+        <td class="message">89%&nbsp;38%&nbsp;0%&nbsp;11%
+      <tr>
+        <td>6.2
+        <td><a href="./meteor-gpp-5.html"><span>C++ g++&nbsp;#5</span></a>
+        <td>0.08
+        <td>?
+        <td>5058
+        <td>0.08
+        <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tr>
+        <td>6.3
+        <td><a href="./meteor-java-2.html"><span>Java&nbsp;#2</span></a>
+        <td>0.34
+        <td>2,240
+        <td>5180
+        <td>0.64
+        <td class="message">21%&nbsp;69%&nbsp;50%&nbsp;52%
+      <tr>
+        <td>6.5
+        <td><a href="./meteor-gpp-4.html"><span>C++ g++&nbsp;#4</span></a>
+        <td>0.07
+        <td>?
+        <td>5336
+        <td>0.07
+        <td class="message">14%&nbsp;100%&nbsp;0%&nbsp;14%
+      <tr>
+        <td>6.6
+        <td><a href="./meteor-vw-1.html"><span><strong>Smalltalk</strong>&nbsp;VW</span></a>
+        <td>0.68
+        <td>56,684
+        <td class="best">5373
+        <td>0.68
+        <td class="message">6%&nbsp;1%&nbsp;3%&nbsp;99%
+      <tr>
+        <td>6.7
+        <td><a href="./meteor-fpascal-3.html"><span><strong>Pascal</strong>&nbsp;Free&nbsp;Pascal&nbsp;#3</span></a>
+        <td>0.08
+        <td>?
+        <td class="best">5517
+        <td>0.08
+        <td class="message">0%&nbsp;100%&nbsp;0%&nbsp;0%
+      <tr>
+        <td>
+        <td><a href="./meteor-gnat-1.html"><span>Ada 2005 GNAT</span></a>
+        <td>
+        <td>
+        <td class="message">Make&nbsp;Error
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./meteor-ocaml-1.html"><span>OCaml</span></a>
+        <td>
+        <td>
+        <td class="message">Make&nbsp;Error
+        <td>
+        <td>
+      </table>
+      <nav>
+        <ul>
+          <li><a href="./meteor.html"><span>by secs</span></a>
+          <li><a href="./meteor-mem.html"><span>by mem</span></a>
+          <li class="best">by gz
+          <li><a href="./meteor-cpu.html"><span>by cpu</span></a>
+        </ul>
+      </nav>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./why-measure-toy-benchmark-programs.html"><span>toy programs</span></a>
+      <li><a href="./how-programs-are-measured.html"><span>details</span></a>
+      <li><a href="./dont-jump-to-conclusions.html"><span>conclusions</span></a>
+    </ul>
+  </nav>
+  <aside>
+    <p>We want easy answers, but easy answers are often incomplete or wrong. You and I know, <a href="../index.html"><span>there's more we need to understand</span></a>.
+  </aside>
+</footer>
+

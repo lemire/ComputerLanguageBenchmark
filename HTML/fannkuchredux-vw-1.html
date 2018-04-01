@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>fannkuch-redux Smalltalk VW program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>fannkuch-redux Smalltalk VW program</h2>
+    <aside>
+      <p><a href="./fannkuchredux-description.html#fannkuchredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">&quot;* The Computer Language Benchmarks Game</span>
+<span class="com">   http://benchmarksgame.alioth.debian.org/</span>
+<span class="com">   contributed by Paolo Bonzini </span>
+<span class="com">   modified by Isaac Gouy *&quot;</span>!
+
+<span class="kwc">Smalltalk</span>.<span class="kwc">Core</span> <span class="kwb">defineClass:</span> <span class="kwd">#BenchmarksGame</span>
+	<span class="kwb">superclass:</span> #{<span class="kwc">Core</span>.<span class="kwc">Object</span>}
+	<span class="kwb">indexedType:</span> <span class="kwd">#none</span>
+	<span class="kwb">private:</span> <span class="kwa">false</span>
+	<span class="kwb">instanceVariableNames:</span> <span class="str">''</span>
+	<span class="kwb">classInstanceVariableNames:</span> <span class="str">''</span>
+	<span class="kwb">imports:</span> <span class="str">''</span>
+	<span class="kwb">category:</span> <span class="str">''</span>!
+
+<span class="kwc">Smalltalk</span> <span class="kwb">defineClass:</span> <span class="kwd">#PermGeneratorRedux</span>
+	<span class="kwb">superclass:</span> #{<span class="kwc">Core</span>.<span class="kwc">Object</span>}
+	<span class="kwb">indexedType:</span> <span class="kwd">#none</span>
+	<span class="kwb">private:</span> <span class="kwa">false</span>
+	<span class="kwb">instanceVariableNames:</span> <span class="str">'timesRotated perm atEnd '</span>
+	<span class="kwb">classInstanceVariableNames:</span> <span class="str">''</span>
+	<span class="kwb">imports:</span> <span class="str">''</span>
+	<span class="kwb">category:</span> <span class="str">'benchmarks game'</span>!
+
+!<span class="kwc">PermGeneratorRedux</span> class <span class="kwb">methodsFor:</span> <span class="str">'instance creation'</span>!
+
+<span class="kwb">new:</span> size
+   ^<span class="kwa">self</span> new
+      <span class="kwb">initialize:</span> size;
+      yourself! !
+
+
+!<span class="kwc">PermGeneratorRedux</span> <span class="kwb">methodsFor:</span> <span class="str">'accessing'</span>!
+
+<span class="kwb">atEnd</span>
+   ^atEnd!
+
+<span class="kwb">maxPfannkuchenTo:</span> output
+   <span class="kwd">| max permutation checksum permCount flipsCount |</span>
+   max :<span class="kwb">=</span> <span class="num">0</span>.
+   permCount :<span class="kwb">=</span> <span class="num">0</span>.
+   checksum :<span class="kwb">=</span> <span class="num">0</span>.
+   [<span class="kwa">self</span> atEnd] <span class="kwb">whileFalse:</span>
+      [permutation :<span class="kwb">=</span> <span class="kwa">self</span> next.
+      permCount :<span class="kwb">=</span> permCount <span class="kwb">+</span> <span class="num">1</span>.
+      (permCount <span class="kwb">=</span> <span class="num">1048576</span>) <span class="kwb">ifTrue:</span> [permCount :<span class="kwb">=</span> <span class="num">0</span>].
+      flipsCount :<span class="kwb">=</span> permutation pfannkuchen.
+      checksum :<span class="kwb">=</span> permCount odd 
+         <span class="kwb">ifTrue:</span> [checksum<span class="kwb">+</span>flipsCount] 
+         <span class="kwb">ifFalse:</span> [checksum<span class="kwb">-</span>flipsCount].
+      max :<span class="kwb">=</span> max <span class="kwb">max:</span> flipsCount].
+   output <span class="kwb">print:</span> checksum; nl.
+   ^max!
+
+<span class="kwb">next</span>
+   <span class="kwd">| result |</span>
+   result :<span class="kwb">=</span> perm copy.
+   <span class="kwa">self</span> makeNext.
+   ^result! !
+
+!<span class="kwc">PermGeneratorRedux</span> <span class="kwb">methodsFor:</span> <span class="str">'initialize-release'</span>!
+
+<span class="kwb">initialize:</span> size
+   perm :<span class="kwb">=</span> (<span class="num">1</span> <span class="kwb">to:</span> size) asArray.
+   timesRotated :<span class="kwb">=</span> <span class="kwc">Array</span> <span class="kwb">new:</span> size <span class="kwb">withAll:</span> <span class="num">0</span>.
+   atEnd :<span class="kwb">=</span> <span class="kwa">false</span>.!
+
+<span class="kwb">makeNext</span>
+   <span class="kwd">| temp remainder |</span>
+   <span class="com">&quot;* Generate the next permutation. *&quot;</span>
+   <span class="num">2</span> <span class="kwb">to:</span> perm size <span class="kwb">do:</span> [ <span class="kwd">:r</span> |
+      <span class="com">&quot;* Rotate the first r items to the left. *&quot;</span>
+      temp :<span class="kwb">=</span> perm <span class="kwb">at:</span> <span class="num">1</span>.
+      <span class="num">1</span> <span class="kwb">to:</span> r <span class="kwb">-</span> <span class="num">1</span> <span class="kwb">do:</span> [ <span class="kwd">:i</span> | perm <span class="kwb">at:</span> i <span class="kwb">put:</span> (perm <span class="kwb">at:</span> i <span class="kwb">+</span> <span class="num">1</span>) ].
+      perm <span class="kwb">at:</span> r <span class="kwb">put:</span> temp.
+
+      remainder :<span class="kwb">=</span> timesRotated <span class="kwb">at:</span> r 
+                                <span class="kwb">put:</span> ((timesRotated <span class="kwb">at:</span> r) <span class="kwb">+</span> <span class="num">1</span>) <span class="esc">\\</span> r.
+      remainder <span class="kwb">=</span> <span class="num">0</span> <span class="kwb">ifFalse:</span> [ ^<span class="kwa">self</span> ].
+
+      <span class="com">&quot;* After r rotations, the first r items </span>
+<span class="com">         are in their original positions.</span>
+<span class="com">      Go on rotating the first r+1 items. *&quot;</span>
+   ].
+
+   <span class="com">&quot;* We are past the final permutation. *&quot;</span>
+   atEnd :<span class="kwb">=</span> <span class="kwa">true</span>! !
+
+
+!<span class="kwc">Core</span>.<span class="kwc">BenchmarksGame</span> class <span class="kwb">methodsFor:</span> <span class="str">'private'</span>!
+
+<span class="kwb">fannkuchRedux:</span> n <span class="kwb">to:</span> output
+   ^(<span class="kwc">PermGeneratorRedux</span> <span class="kwb">new:</span> n) <span class="kwb">maxPfannkuchenTo:</span> output! !
+
+!<span class="kwc">Core</span>.<span class="kwc">BenchmarksGame</span> class <span class="kwb">methodsFor:</span> <span class="str">'initialize-release'</span>!
+
+<span class="kwb">program</span>
+   <span class="kwd">| n f |</span>
+   n :<span class="kwb">=</span> <span class="kwc">CEnvironment</span> commandLine last asNumber.
+   f :<span class="kwb">=</span> <span class="kwa">self</span> <span class="kwb">fannkuchRedux:</span> n <span class="kwb">to:</span> <span class="kwc">Stdout</span>.
+   <span class="kwc">Stdout</span>
+      <span class="kwb">nextPutAll:</span> <span class="str">'Pfannkuchen('</span>, n printString, <span class="str">') = '</span>;
+      <span class="kwb">print:</span> f; nl.
+
+   ^<span class="str">''</span>! !
+
+
+!<span class="kwc">Core</span>.<span class="kwc">Array</span> <span class="kwb">methodsFor:</span> <span class="str">'benchmarks game'</span>!
+
+<span class="kwb">pfannkuchen</span>
+   <span class="kwd">| first complement a b k |</span>
+   k :<span class="kwb">=</span> <span class="num">0</span>.
+   [ (first :<span class="kwb">=</span> <span class="kwa">self</span> <span class="kwb">at:</span> <span class="num">1</span>) <span class="kwb">==</span> <span class="num">1</span> ] <span class="kwb">whileFalse:</span> [
+      k :<span class="kwb">=</span> k <span class="kwb">+</span> <span class="num">1</span>.
+      complement :<span class="kwb">=</span> first <span class="kwb">+</span> <span class="num">1</span>.
+      <span class="num">1</span> <span class="kwb">to:</span> first <span class="kwb">//</span> <span class="num">2</span> <span class="kwb">do:</span> [ <span class="kwd">:i</span> |
+         a :<span class="kwb">=</span> <span class="kwa">self</span> <span class="kwb">at:</span> i.
+         b :<span class="kwb">=</span> <span class="kwa">self</span> <span class="kwb">at:</span> complement <span class="kwb">-</span> i.
+         <span class="kwa">self</span> <span class="kwb">at:</span> i <span class="kwb">put:</span> b.
+         <span class="kwa">self</span> <span class="kwb">at:</span> complement <span class="kwb">-</span> i <span class="kwb">put:</span> a.
+      ]
+   ].
+   ^k! !
+
+
+!<span class="kwc">Core</span>.<span class="kwc">Stream</span> <span class="kwb">methodsFor:</span> <span class="str">'benchmarks game'</span>!
+
+<span class="kwb">nl</span>
+   <span class="kwa">self</span> <span class="kwb">nextPut:</span> <span class="kwc">Character</span> lf! !
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+VisualWorks&#174; Personal Use Edition Release 8.2 of July 15, 2016
+
+
+
+
+Tue, 02 May 2017 18:26:47 GMT
+
+MAKE:
+cp /usr/local/src/vw8.2pul/image/visualnc64.im fannkuchredux.vw_run.im
+/usr/local/src/vw8.2pul/bin/linuxx86_64/vwlinuxx86_64 fannkuchredux.vw_run.im -nogui -pcl MatriX -filein fannkuchredux.vw -doit 'ObjectMemory snapshotThenQuit'
+
+Autoloading MatriX from $(VISUALWORKS)/preview/matrix/MatriX.pcl
+Autoloading Xtreams-Support from $(VISUALWORKS)/xtreams/Xtreams-Support.pcl
+Autoloading Xtreams-Core from $(VISUALWORKS)/xtreams/Xtreams-Core.pcl
+Autoloading Xtreams-Terminals from $(VISUALWORKS)/xtreams/Xtreams-Terminals.pcl
+Autoloading Xtreams-Transforms from $(VISUALWORKS)/xtreams/Xtreams-Transforms.pcl
+Autoloading Xtreams-Substreams from $(VISUALWORKS)/xtreams/Xtreams-Substreams.pcl
+Autoloading Xtreams-Multiplexing from $(VISUALWORKS)/xtreams/Xtreams-Multiplexing.pcl
+Filing in from:
+	fannkuchredux.vw
+PermGeneratorRedux class&lt;instance creation
+PermGeneratorRedux&lt;accessing
+PermGeneratorRedux&lt;initialize-release
+BenchmarksGame class&lt;private
+BenchmarksGame class&lt;initialize-release
+Array&lt;benchmarks game
+Do you want to add Root.Smalltalk.Core.Array&gt;&gt;pfannkuchen to the previously unchanged package, Collections-Arrayed
+						OK to continue?
+Stream&lt;benchmarks game
+Do you want to add Root.Smalltalk.Core.Stream&gt;&gt;nl to the previously unchanged package, Collections-Streams
+						OK to continue?
+/home/dunham/benchmarksgame_quadcore/fannkuchredux/tmp/fannkuchredux.vw_run.im created at May 2, 2017 11:25:51 AM
+4.40s to complete and log all make actions
+
+COMMAND LINE:
+/usr/local/src/vw8.2pul/bin/linuxx86_64/vwlinuxx86_64 fannkuchredux.vw_run.im -nogui -evaluate &quot;BenchmarksGame program&quot; -a 12
+
+PROGRAM OUTPUT:
+3968050
+Pfannkuchen(12) = 65
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

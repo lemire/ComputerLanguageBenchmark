@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>binary-trees Smalltalk VW program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>binary-trees Smalltalk VW program</h2>
+    <aside>
+      <p><a href="./binarytrees-description.html#binarytrees">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">&quot;* The Computer Language Shootout</span>
+<span class="com">    http://shootout.alioth.debian.org/</span>
+<span class="com">    contributed by Isaac Gouy</span>
+<span class="com">    modified by Eliot Miranda </span>
+<span class="com">*&quot;</span>!
+
+
+<span class="kwc">Smalltalk</span>.<span class="kwc">Core</span> <span class="kwb">defineClass:</span> <span class="kwd">#BenchmarksGame</span>
+	<span class="kwb">superclass:</span> #{<span class="kwc">Core</span>.<span class="kwc">Object</span>}
+	<span class="kwb">indexedType:</span> <span class="kwd">#none</span>
+	<span class="kwb">private:</span> <span class="kwa">false</span>
+	<span class="kwb">instanceVariableNames:</span> <span class="str">''</span>
+	<span class="kwb">classInstanceVariableNames:</span> <span class="str">''</span>
+	<span class="kwb">imports:</span> <span class="str">''</span>
+	<span class="kwb">category:</span> <span class="str">''</span>!
+
+<span class="kwc">Smalltalk</span> <span class="kwb">defineClass:</span> <span class="kwd">#TreeNode</span>
+	<span class="kwb">superclass:</span> #{<span class="kwc">Core</span>.<span class="kwc">Object</span>}
+	<span class="kwb">indexedType:</span> <span class="kwd">#none</span>
+	<span class="kwb">private:</span> <span class="kwa">false</span>
+	<span class="kwb">instanceVariableNames:</span> <span class="str">'left right '</span>
+	<span class="kwb">classInstanceVariableNames:</span> <span class="str">''</span>
+	<span class="kwb">imports:</span> <span class="str">''</span>
+	<span class="kwb">category:</span> <span class="str">'benchmarks game'</span>!
+
+!<span class="kwc">Core</span>.<span class="kwc">BenchmarksGame</span> class <span class="kwb">methodsFor:</span> <span class="str">'initialize-release'</span>!
+
+<span class="kwb">program</span>
+   <span class="kwd">| n minDepth maxDepth stretchDepth check longLivedTree iterations |</span>
+   n :<span class="kwb">=</span> <span class="kwc">CEnvironment</span> commandLine last asNumber.
+
+   minDepth :<span class="kwb">=</span> <span class="num">4</span>.
+   maxDepth :<span class="kwb">=</span> minDepth <span class="kwb">+</span> <span class="num">2</span> <span class="kwb">max:</span> n.
+   stretchDepth :<span class="kwb">=</span> maxDepth <span class="kwb">+</span> <span class="num">1</span>.
+
+   check :<span class="kwb">=</span> (<span class="kwc">TreeNode</span> <span class="kwb">bottomUpTree:</span> stretchDepth) itemCheck.
+   <span class="kwc">Stdout</span>
+      <span class="kwb">nextPutAll:</span> <span class="str">'stretch tree of depth '</span>; <span class="kwb">print:</span> stretchDepth; tab;
+      <span class="kwb">nextPutAll:</span> <span class="str">' check: '</span>; <span class="kwb">print:</span> check; nl.
+
+   longLivedTree :<span class="kwb">=</span> <span class="kwc">TreeNode</span> <span class="kwb">bottomUpTree:</span> maxDepth.
+   minDepth <span class="kwb">to:</span> maxDepth <span class="kwb">by:</span> <span class="num">2</span> <span class="kwb">do:</span> [<span class="kwd">:depth</span>|
+      iterations :<span class="kwb">=</span> <span class="num">1</span> <span class="kwb">bitShift:</span> maxDepth <span class="kwb">-</span> depth <span class="kwb">+</span> minDepth.
+
+      check :<span class="kwb">=</span> <span class="num">0</span>.
+      <span class="num">1</span> <span class="kwb">to:</span> iterations <span class="kwb">do:</span> [<span class="kwd">:i</span>|
+         check :<span class="kwb">=</span> check <span class="kwb">+</span> (<span class="kwc">TreeNode</span> <span class="kwb">bottomUpTree:</span> depth) itemCheck
+         ].
+      <span class="kwc">Stdout</span>
+         <span class="kwb">print:</span> iterations; tab;
+         <span class="kwb">nextPutAll:</span> <span class="str">' trees of depth '</span>; <span class="kwb">print:</span> depth; tab;
+         <span class="kwb">nextPutAll:</span> <span class="str">' check: '</span>; <span class="kwb">print:</span> check; nl
+      ].
+
+   <span class="kwc">Stdout</span>
+      <span class="kwb">nextPutAll:</span> <span class="str">'long lived tree of depth '</span>; <span class="kwb">print:</span> maxDepth; tab;
+      <span class="kwb">nextPutAll:</span> <span class="str">' check: '</span>; <span class="kwb">print:</span> longLivedTree itemCheck; nl.
+
+   ^<span class="str">''</span>! !
+
+
+!<span class="kwc">TreeNode</span> class <span class="kwb">methodsFor:</span> <span class="str">'instance creation'</span>!
+
+<span class="kwb">bottomUpTree:</span> anInteger
+   ^(anInteger &gt; <span class="num">0</span>) 
+      <span class="kwb">ifTrue:</span> [
+         <span class="kwa">self</span> 
+            <span class="kwb">left:</span> (<span class="kwa">self</span> <span class="kwb">bottomUpTree:</span> anInteger <span class="kwb">-</span> <span class="num">1</span>) 
+            <span class="kwb">right:</span> (<span class="kwa">self</span> <span class="kwb">bottomUpTree:</span> anInteger <span class="kwb">-</span> <span class="num">1</span>)  
+         ]
+      <span class="kwb">ifFalse:</span> [<span class="kwa">self</span> <span class="kwb">left:</span> <span class="kwa">nil</span> <span class="kwb">right:</span> <span class="kwa">nil</span>]!
+
+<span class="kwb">left:</span> leftChild <span class="kwb">right:</span> rightChild      
+   ^(<span class="kwa">super</span> new) <span class="kwb">left:</span> leftChild <span class="kwb">right:</span> rightChild! !
+
+
+!<span class="kwc">TreeNode</span> <span class="kwb">methodsFor:</span> <span class="str">'accessing'</span>!
+
+<span class="kwb">itemCheck</span>
+   ^left isNil 
+      <span class="kwb">ifTrue:</span> [<span class="num">1</span>] <span class="kwb">ifFalse:</span> [<span class="num">1</span> <span class="kwb">+</span> left itemCheck <span class="kwb">+</span> right itemCheck]! !
+
+!<span class="kwc">TreeNode</span> <span class="kwb">methodsFor:</span> <span class="str">'initialize-release'</span>!
+
+<span class="kwb">left:</span> leftChild <span class="kwb">right:</span> rightChild
+   left :<span class="kwb">=</span> leftChild.
+   right :<span class="kwb">=</span> rightChild! !
+
+
+!<span class="kwc">Core</span>.<span class="kwc">Stream</span> <span class="kwb">methodsFor:</span> <span class="str">'benchmarks game'</span>!
+
+<span class="kwb">nl</span>
+   <span class="kwa">self</span> <span class="kwb">nextPut:</span> <span class="kwc">Character</span> lf! !
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+VisualWorks&#174; Personal Use Edition Release 8.2 of July 15, 2016
+
+
+
+
+Thu, 11 May 2017 00:40:37 GMT
+
+MAKE:
+cp /usr/local/src/vw8.2pul/image/visualnc64.im binarytrees.vw_run.im
+/usr/local/src/vw8.2pul/bin/linuxx86_64/vwlinuxx86_64 binarytrees.vw_run.im -nogui -pcl MatriX -filein binarytrees.vw -doit 'ObjectMemory snapshotThenQuit'
+
+Autoloading MatriX from $(VISUALWORKS)/preview/matrix/MatriX.pcl
+Autoloading Xtreams-Support from $(VISUALWORKS)/xtreams/Xtreams-Support.pcl
+Autoloading Xtreams-Core from $(VISUALWORKS)/xtreams/Xtreams-Core.pcl
+Autoloading Xtreams-Terminals from $(VISUALWORKS)/xtreams/Xtreams-Terminals.pcl
+Autoloading Xtreams-Transforms from $(VISUALWORKS)/xtreams/Xtreams-Transforms.pcl
+Autoloading Xtreams-Substreams from $(VISUALWORKS)/xtreams/Xtreams-Substreams.pcl
+Autoloading Xtreams-Multiplexing from $(VISUALWORKS)/xtreams/Xtreams-Multiplexing.pcl
+Filing in from:
+	binarytrees.vw
+BenchmarksGame class&lt;initialize-release
+TreeNode class&lt;instance creation
+TreeNode&lt;accessing
+TreeNode&lt;initialize-release
+Stream&lt;benchmarks game
+Do you want to add Root.Smalltalk.Core.Stream&gt;&gt;nl to the previously unchanged package, Collections-Streams
+						OK to continue?
+/home/dunham/benchmarksgame_quadcore/binarytrees/tmp/binarytrees.vw_run.im created at May 10, 2017 5:40:35 PM
+5.38s to complete and log all make actions
+
+COMMAND LINE:
+/usr/local/src/vw8.2pul/bin/linuxx86_64/vwlinuxx86_64 binarytrees.vw_run.im -nogui -evaluate &quot;BenchmarksGame program&quot; -a 21
+
+PROGRAM OUTPUT:
+stretch tree of depth 22	 check: 8388607
+2097152	 trees of depth 4	 check: 65011712
+524288	 trees of depth 6	 check: 66584576
+131072	 trees of depth 8	 check: 66977792
+32768	 trees of depth 10	 check: 67076096
+8192	 trees of depth 12	 check: 67100672
+2048	 trees of depth 14	 check: 67106816
+512	 trees of depth 16	 check: 67108352
+128	 trees of depth 18	 check: 67108736
+32	 trees of depth 20	 check: 67108832
+long lived tree of depth 21	 check: 4194303
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

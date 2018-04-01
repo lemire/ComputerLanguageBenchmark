@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="all">
+<meta name="description" content="Compare programs that read DNA sequences and write their reverse-complement for ~24 programming languages (64-bit Ubuntu quad core).">
+<title>reverse-complement (64-bit Ubuntu quad core) | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article,footer{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.best{font-weight:bold}.message{font-size:.8em}table{color:#333;margin:1.3em auto 0;text-align:right}tbody:after{content:"-";display:block;line-height:2.6em;visibility:hidden}td{border-bottom:.15em dotted #eee;padding:.7em 0 0 1em}td a,th a{display:block}th{font-weight:normal;padding:0 0 0 1em}td:first-child{padding-left:0}td:nth-child(2),th:nth-child(2){text-align:left}
+
+@media only screen{th:nth-child(1),td:nth-child(1),th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(6),td:nth-child(6),th:nth-child(7),td:nth-child(7){display:none}}
+@media only screen and (min-width:23em){th:nth-child(1),td:nth-child(1){display:table-cell}}@media only screen and (min-width:37em){th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:table-cell}li{display:inline-block}}@media only screen and (min-width:43em){th:nth-child(7),td:nth-child(7){display:table-cell}}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>reverse-complement</h2>
+    <aside>
+      <p><a href="./revcomp-description.html#revcomp">description</a>
+    </aside>
+  </div>
+  <section>
+    <div>
+      <h3>program source code, command-line and measurements</h3>
+    </div>
+    <table>
+      <tr>
+        <th>&#215;
+        <th>source
+        <th><a href="./revcomp.html"><span>secs</span></a>
+        <th><a href="./revcomp-mem.html"><span>mem</span></a>
+        <th class="best">gz
+        <th><a href="./revcomp-cpu.html"><span>cpu</span></a>
+        <th>cpu load
+      <tr>
+        <td>1.0
+        <td><a href="./revcomp-yarv-2.html"><span><strong>Ruby</strong>&nbsp;#2</span></a>
+        <td>32.71
+        <td>497,404
+        <td class="best">264
+        <td>32.69
+        <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;0%
+      <tr>
+        <td>1.0
+        <td><a href="./revcomp-mri-2.html"><span><strong>Ruby</strong>&nbsp;MRI&nbsp;#2</span></a>
+        <td>38.87
+        <td>492,748
+        <td class="best">264
+        <td>38.84
+        <td class="message">0%&nbsp;1%&nbsp;1%&nbsp;100%
+      <tr>
+        <td>1.0
+        <td><a href="./revcomp-jruby-2.html"><span><strong>Ruby</strong>&nbsp;JRuby&nbsp;#2</span></a>
+        <td>241.69
+        <td>2,277,264
+        <td class="best">264
+        <td>246.26
+        <td class="message">16%&nbsp;34%&nbsp;24%&nbsp;32%
+      <tr>
+        <td>1.0
+        <td><a href="./revcomp-php-2.html"><span><strong>PHP</strong>&nbsp;#2</span></a>
+        <td>17.80
+        <td>1,779,140
+        <td class="best">274
+        <td>17.77
+        <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;0%
+      <tr>
+        <td>1.1
+        <td><a href="./revcomp-perl-3.html"><span><strong>Perl</strong>&nbsp;#3</span></a>
+        <td>10.61
+        <td>1,493,876
+        <td class="best">287
+        <td>10.59
+        <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;0%
+      <tr>
+        <td>1.2
+        <td><a href="./revcomp-php-1.html"><span>PHP</span></a>
+        <td>14.96
+        <td>1,473,012
+        <td>312
+        <td>14.94
+        <td class="message">100%&nbsp;0%&nbsp;1%&nbsp;0%
+      <tr>
+        <td>1.3
+        <td><a href="./revcomp-python3-4.html"><span><strong>Python&nbsp;3</strong>&nbsp;#4</span></a>
+        <td>219.97
+        <td>?
+        <td class="best">335
+        <td>?
+        <td class="message">45%&nbsp;27%&nbsp;22%&nbsp;57%
+      <tr>
+        <td>1.7
+        <td><a href="./revcomp-php-3.html"><span>PHP&nbsp;#3</span></a>
+        <td>12.08
+        <td>?
+        <td>438
+        <td>?
+        <td class="message">3%&nbsp;59%&nbsp;29%&nbsp;59%
+      <tr>
+        <td>2.0
+        <td><a href="./revcomp-yarv-3.html"><span>Ruby&nbsp;#3</span></a>
+        <td>68.06
+        <td>?
+        <td>517
+        <td>?
+        <td class="message">49%&nbsp;41%&nbsp;35%&nbsp;54%
+      <tr>
+        <td>2.1
+        <td><a href="./revcomp-jruby-1.html"><span>Ruby JRuby</span></a>
+        <td>125.09
+        <td>?
+        <td>545
+        <td>?
+        <td class="message">45%&nbsp;61%&nbsp;63%&nbsp;52%
+      <tr>
+        <td>2.1
+        <td><a href="./revcomp-lua-2.html"><span><strong>Lua</strong>&nbsp;#2</span></a>
+        <td>75.98
+        <td>2,943,804
+        <td class="best">553
+        <td>75.07
+        <td class="message">53%&nbsp;4%&nbsp;2%&nbsp;58%
+      <tr>
+        <td>2.1
+        <td><a href="./revcomp-racket-1.html"><span><strong>Racket</strong></span></a>
+        <td>55.21
+        <td>1,726,720
+        <td class="best">553
+        <td>55.19
+        <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tr>
+        <td>2.2
+        <td><a href="./revcomp-gpp-1.html"><span><strong>C++</strong>&nbsp;g++</span></a>
+        <td>11.26
+        <td>979,844
+        <td class="best">592
+        <td>11.24
+        <td class="message">0%&nbsp;3%&nbsp;98%&nbsp;0%
+      <tr>
+        <td>2.3
+        <td><a href="./revcomp-lua-4.html"><span>Lua&nbsp;#4</span></a>
+        <td>90.15
+        <td>1,483,212
+        <td>594
+        <td>90.10
+        <td class="message">100%&nbsp;0%&nbsp;1%&nbsp;0%
+      <tr>
+        <td>2.3
+        <td><a href="./revcomp-fsharpcore-1.html"><span><strong>F#</strong>&nbsp;.NET&nbsp;Core</span></a>
+        <td>269.16
+        <td>3,308,844
+        <td class="best">595
+        <td>273.26
+        <td class="message">30%&nbsp;62%&nbsp;41%&nbsp;78%
+      <tr>
+        <td>2.3
+        <td><a href="./revcomp-go-3.html"><span><strong>Go</strong>&nbsp;#3</span></a>
+        <td>4.10
+        <td>826,360
+        <td class="best">605
+        <td>4.25
+        <td class="message">4%&nbsp;97%&nbsp;4%&nbsp;0%
+      <tr>
+        <td>2.3
+        <td><a href="./revcomp-go-2.html"><span>Go&nbsp;#2</span></a>
+        <td>4.00
+        <td>824,356
+        <td>611
+        <td>4.16
+        <td class="message">1%&nbsp;35%&nbsp;68%&nbsp;2%
+      <tr>
+        <td>2.4
+        <td><a href="./revcomp-hipe-3.html"><span><strong>Erlang</strong>&nbsp;HiPE&nbsp;#3</span></a>
+        <td>5&nbsp;min
+        <td>3,395,544
+        <td class="best">630
+        <td>291.27
+        <td class="message">53%&nbsp;19%&nbsp;18%&nbsp;36%
+      <tr>
+        <td>2.4
+        <td><a href="./revcomp-chapel-1.html"><span><strong>Chapel</strong></span></a>
+        <td>6.70
+        <td>1,002,992
+        <td class="best">643
+        <td>9.01
+        <td class="message">99%&nbsp;17%&nbsp;7%&nbsp;15%
+      <tr>
+        <td>2.5
+        <td><a href="./revcomp-gcc-5.html"><span><strong>C</strong>&nbsp;gcc&nbsp;#5</span></a>
+        <td>2.85
+        <td>994,248
+        <td class="best">647
+        <td>2.84
+        <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;0%
+      <tr>
+        <td>2.5
+        <td><a href="./revcomp-java-4.html"><span><strong>Java</strong>&nbsp;&nbsp;#4</span></a>
+        <td>9.59
+        <td>1,923,996
+        <td class="best">651
+        <td>9.86
+        <td class="message">14%&nbsp;16%&nbsp;23%&nbsp;53%
+      <tr>
+        <td>2.7
+        <td><a href="./revcomp-gcc-4.html"><span>C gcc&nbsp;#4</span></a>
+        <td>7.64
+        <td>500,432
+        <td>709
+        <td>7.63
+        <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;0%
+      <tr>
+        <td>2.7
+        <td><a href="./revcomp-gpp-5.html"><span>C++ g++&nbsp;#5</span></a>
+        <td>42.75
+        <td>747,244
+        <td>720
+        <td>42.74
+        <td class="message">70%&nbsp;1%&nbsp;0%&nbsp;30%
+      <tr>
+        <td>2.8
+        <td><a href="./revcomp-gcc-2.html"><span>C gcc&nbsp;#2</span></a>
+        <td>2.17
+        <td>994,276
+        <td>750
+        <td>3.20
+        <td class="message">82%&nbsp;16%&nbsp;40%&nbsp;17%
+      <tr>
+        <td>2.8
+        <td><a href="./revcomp-java-6.html"><span>Java&nbsp;#6</span></a>
+        <td>6.13
+        <td>2,026,596
+        <td>752
+        <td>7.26
+        <td class="message">21%&nbsp;63%&nbsp;12%&nbsp;25%
+      <tr>
+        <td>2.9
+        <td><a href="./revcomp-fpascal-2.html"><span><strong>Pascal</strong>&nbsp;Free&nbsp;Pascal&nbsp;#2</span></a>
+        <td>8.32
+        <td>509,364
+        <td class="best">771
+        <td>8.31
+        <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;0%
+      <tr>
+        <td>3.1
+        <td><a href="./revcomp-python3-6.html"><span>Python 3&nbsp;#6</span></a>
+        <td>18.79
+        <td>1,008,868
+        <td>814
+        <td>19.73
+        <td class="message">9%&nbsp;69%&nbsp;35%&nbsp;30%
+      <tr>
+        <td>3.1
+        <td><a href="./revcomp-gcc-6.html"><span>C gcc&nbsp;#6</span></a>
+        <td>1.98
+        <td>796,324
+        <td>820
+        <td>2.68
+        <td class="message">23%&nbsp;98%&nbsp;3%&nbsp;17%
+      <tr>
+        <td>3.2
+        <td><a href="./revcomp-gpp-3.html"><span>C++ g++&nbsp;#3</span></a>
+        <td>4.48
+        <td>500,056
+        <td>840
+        <td>4.47
+        <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;0%
+      <tr>
+        <td>3.5
+        <td><a href="./revcomp-csharpcore-3.html"><span><strong>C#</strong>&nbsp;.NET&nbsp;Core&nbsp;#3</span></a>
+        <td>24.30
+        <td>1,410,196
+        <td class="best">915
+        <td>33.73
+        <td class="message">18%&nbsp;38%&nbsp;48%&nbsp;37%
+      <tr>
+        <td>3.5
+        <td><a href="./revcomp-gnat-1.html"><span><strong>Ada</strong>&nbsp;2005&nbsp;GNAT</span></a>
+        <td>22.36
+        <td>525,920
+        <td class="best">937
+        <td>22.35
+        <td class="message">100%&nbsp;61%&nbsp;5%&nbsp;38%
+      <tr>
+        <td>3.7
+        <td><a href="./revcomp-ghc-2.html"><span><strong>Haskell</strong>&nbsp;GHC&nbsp;#2</span></a>
+        <td>25.86
+        <td>3,460,312
+        <td class="best">982
+        <td>32.41
+        <td class="message">56%&nbsp;74%&nbsp;65%&nbsp;49%
+      <tr>
+        <td>3.8
+        <td><a href="./revcomp-go-5.html"><span>Go&nbsp;#5</span></a>
+        <td>5.64
+        <td>1,355,812
+        <td>996
+        <td>7.18
+        <td class="message">50%&nbsp;26%&nbsp;33%&nbsp;20%
+      <tr>
+        <td>3.9
+        <td><a href="./revcomp-ghc-3.html"><span>Haskell GHC&nbsp;#3</span></a>
+        <td>5.85
+        <td>501,324
+        <td>1020
+        <td>7.82
+        <td class="message">13%&nbsp;8%&nbsp;100%&nbsp;13%
+      <tr>
+        <td>3.9
+        <td><a href="./revcomp-racket-2.html"><span>Racket&nbsp;#2</span></a>
+        <td>17.08
+        <td>555,148
+        <td>1030
+        <td>17.07
+        <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;2%
+      <tr>
+        <td>4.1
+        <td><a href="./revcomp-gpp-2.html"><span>C++ g++&nbsp;#2</span></a>
+        <td>4.88
+        <td>979,076
+        <td>1087
+        <td>4.87
+        <td class="message">1%&nbsp;0%&nbsp;1%&nbsp;100%
+      <tr>
+        <td>4.2
+        <td><a href="./revcomp-node-7.html"><span><strong>Node.js</strong>&nbsp;#7</span></a>
+        <td>16.66
+        <td>706,256
+        <td class="best">1103
+        <td>17.71
+        <td class="message">71%&nbsp;51%&nbsp;40%&nbsp;48%
+      <tr>
+        <td>4.2
+        <td><a href="./revcomp-java-5.html"><span>Java&nbsp;#5</span></a>
+        <td>6.81
+        <td>1,121,596
+        <td>1108
+        <td>7.15
+        <td class="message">80%&nbsp;3%&nbsp;4%&nbsp;20%
+      <tr>
+        <td>4.2
+        <td><a href="./revcomp-csharpcore-1.html"><span>C# .NET Core</span></a>
+        <td>7.02
+        <td>1,028,316
+        <td>1109
+        <td>7.02
+        <td class="message">0%&nbsp;1%&nbsp;1%&nbsp;99%
+      <tr>
+        <td>4.3
+        <td><a href="./revcomp-typescript-1.html"><span><strong>TypeScript</strong></span></a>
+        <td>16.30
+        <td>706,532
+        <td class="best">1141
+        <td>17.35
+        <td class="message">59%&nbsp;20%&nbsp;23%&nbsp;5%
+      <tr>
+        <td>4.4
+        <td><a href="./revcomp-hipe-4.html"><span>Erlang HiPE&nbsp;#4</span></a>
+        <td>183.55
+        <td>1,996,644
+        <td>1171
+        <td>241.54
+        <td class="message">54%&nbsp;25%&nbsp;21%&nbsp;37%
+      <tr>
+        <td>4.6
+        <td><a href="./revcomp-node-2.html"><span>Node.js&nbsp;#2</span></a>
+        <td>24.06
+        <td>706,548
+        <td>1221
+        <td>25.14
+        <td class="message">8%&nbsp;49%&nbsp;26%&nbsp;24%
+      <tr>
+        <td>4.9
+        <td><a href="./revcomp-swift-1.html"><span><strong>Swift</strong></span></a>
+        <td>4.11
+        <td>772,076
+        <td class="best">1287
+        <td>4.80
+        <td class="message">10%&nbsp;8%&nbsp;19%&nbsp;82%
+      <tr>
+        <td>4.9
+        <td><a href="./revcomp-hipe-1.html"><span>Erlang HiPE</span></a>
+        <td>45.53
+        <td>2,070,992
+        <td>1302
+        <td>110.61
+        <td class="message">56%&nbsp;57%&nbsp;57%&nbsp;74%
+      <tr>
+        <td>5.1
+        <td><a href="./revcomp-go-6.html"><span>Go&nbsp;#6</span></a>
+        <td>4.44
+        <td>2,228,580
+        <td>1338
+        <td>7.07
+        <td class="message">43%&nbsp;44%&nbsp;28%&nbsp;46%
+      <tr>
+        <td>5.2
+        <td><a href="./revcomp-ocaml-1.html"><span><strong>OCaml</strong></span></a>
+        <td>3.73
+        <td>?
+        <td class="best">1368
+        <td>?
+        <td class="message">56%&nbsp;62%&nbsp;55%&nbsp;58%
+      <tr>
+        <td>5.4
+        <td><a href="./revcomp-gcc-3.html"><span>C gcc&nbsp;#3</span></a>
+        <td>1.78
+        <td>994,444
+        <td>1438
+        <td>3.96
+        <td class="message">42%&nbsp;49%&nbsp;96%&nbsp;42%
+      <tr>
+        <td>6.1
+        <td><a href="./revcomp-csharpcore-5.html"><span>C# .NET Core&nbsp;#5</span></a>
+        <td>4.41
+        <td>1,031,280
+        <td>1613
+        <td>7.18
+        <td class="message">42%&nbsp;23%&nbsp;10%&nbsp;90%
+      <tr>
+        <td>6.1
+        <td><a href="./revcomp-csharpcore-6.html"><span>C# .NET Core&nbsp;#6</span></a>
+        <td>2.95
+        <td>1,032,860
+        <td>1621
+        <td>7.17
+        <td class="message">41%&nbsp;35%&nbsp;94%&nbsp;75%
+      <tr>
+        <td>6.2
+        <td><a href="./revcomp-java-7.html"><span>Java&nbsp;#7</span></a>
+        <td>24.15
+        <td>?
+        <td>1647
+        <td>?
+        <td class="message">17%&nbsp;73%&nbsp;70%&nbsp;14%
+      <tr>
+        <td>6.3
+        <td><a href="./revcomp-csharpcore-2.html"><span>C# .NET Core&nbsp;#2</span></a>
+        <td>6.00
+        <td>2,713,340
+        <td>1674
+        <td>9.50
+        <td class="message">4%&nbsp;34%&nbsp;72%&nbsp;58%
+      <tr>
+        <td>6.5
+        <td><a href="./revcomp-csharpcore-4.html"><span>C# .NET Core&nbsp;#4</span></a>
+        <td>5.68
+        <td>1,926,612
+        <td>1714
+        <td>8.18
+        <td class="message">32%&nbsp;89%&nbsp;10%&nbsp;16%
+      <tr>
+        <td>6.5
+        <td><a href="./revcomp-java-3.html"><span>Java&nbsp;#3</span></a>
+        <td>5.02
+        <td>1,145,884
+        <td>1722
+        <td>11.04
+        <td class="message">85%&nbsp;42%&nbsp;53%&nbsp;43%
+      <tr>
+        <td>6.9
+        <td><a href="./revcomp-gpp-6.html"><span>C++ g++&nbsp;#6</span></a>
+        <td>6.37
+        <td>1,506,760
+        <td>1832
+        <td>8.80
+        <td class="message">85%&nbsp;31%&nbsp;2%&nbsp;22%
+      <tr>
+        <td>7.1
+        <td><a href="./revcomp-rust-1.html"><span><strong>Rust</strong></span></a>
+        <td>3.29
+        <td>1,044,220
+        <td class="best">1871
+        <td>4.33
+        <td class="message">33%&nbsp;20%&nbsp;77%&nbsp;26%
+      <tr>
+        <td>7.1
+        <td><a href="./revcomp-gcc-1.html"><span>C gcc</span></a>
+        <td>2.93
+        <td>1,971,100
+        <td>1874
+        <td>4.08
+        <td class="message">28%&nbsp;87%&nbsp;2%&nbsp;28%
+      <tr>
+        <td>8.3
+        <td><a href="./revcomp-java-8.html"><span>Java&nbsp;#8</span></a>
+        <td>3.15
+        <td>680,424
+        <td>2183
+        <td>7.07
+        <td class="message">52%&nbsp;70%&nbsp;43%&nbsp;63%
+      <tr>
+        <td>8.6
+        <td><a href="./revcomp-gpp-4.html"><span>C++ g++&nbsp;#4</span></a>
+        <td>3.08
+        <td>980,604
+        <td>2280
+        <td>4.66
+        <td class="message">62%&nbsp;25%&nbsp;12%&nbsp;54%
+      <tr>
+        <td>12
+        <td><a href="./revcomp-gnat-2.html"><span>Ada 2005 GNAT&nbsp;#2</span></a>
+        <td>3.93
+        <td>785,560
+        <td>3283
+        <td>4.49
+        <td class="message">1%&nbsp;41%&nbsp;74%&nbsp;1%
+      <tr>
+        <td>
+        <td><a href="./revcomp-dart-3.html"><span>Dart&nbsp;#3</span></a>
+        <td>
+        <td>
+        <td class="message">Failed
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-dart-2.html"><span>Dart&nbsp;#2</span></a>
+        <td>
+        <td>
+        <td class="message">Failed
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-fsharpcore-2.html"><span>F# .NET Core&nbsp;#2</span></a>
+        <td>
+        <td>
+        <td class="message">Failed
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-ifc-1.html"><span>Fortran Intel</span></a>
+        <td>
+        <td>
+        <td class="message">Make&nbsp;Error
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-ifc-2.html"><span>Fortran Intel&nbsp;#2</span></a>
+        <td>
+        <td>
+        <td class="message">Make&nbsp;Error
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-go-1.html"><span>Go</span></a>
+        <td>
+        <td>
+        <td class="message">Failed
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-hack-2.html"><span>Hack&nbsp;#2</span></a>
+        <td>
+        <td>
+        <td class="message">Bad&nbsp;Output
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-hack-1.html"><span>Hack</span></a>
+        <td>
+        <td>
+        <td class="message">Bad&nbsp;Output
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-sbcl-1.html"><span>Lisp SBCL</span></a>
+        <td>
+        <td>
+        <td class="message">Timed&nbsp;Out
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-ocaml-4.html"><span>OCaml&nbsp;#4</span></a>
+        <td>
+        <td>
+        <td class="message">Make&nbsp;Error
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-ocaml-2.html"><span>OCaml&nbsp;#2</span></a>
+        <td>
+        <td>
+        <td class="message">Make&nbsp;Error
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-ocaml-3.html"><span>OCaml&nbsp;#3</span></a>
+        <td>
+        <td>
+        <td class="message">Make&nbsp;Error
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-yarv-1.html"><span>Ruby</span></a>
+        <td>
+        <td>
+        <td class="message">Failed
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-mri-3.html"><span>Matz's Interpreter&nbsp;#3</span></a>
+        <td>
+        <td>
+        <td class="message">Bad&nbsp;Output
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-mri-1.html"><span>Matz's Interpreter</span></a>
+        <td>
+        <td>
+        <td class="message">Failed
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-jruby-3.html"><span>Ruby JRuby&nbsp;#3</span></a>
+        <td>
+        <td>
+        <td class="message">Bad&nbsp;Output
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-rust-3.html"><span>Rust&nbsp;#3</span></a>
+        <td>
+        <td>
+        <td class="message">Make&nbsp;Error
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-rust-2.html"><span>Rust&nbsp;#2</span></a>
+        <td>
+        <td>
+        <td class="message">Make&nbsp;Error
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./revcomp-vw-1.html"><span>Smalltalk VW</span></a>
+        <td>
+        <td>
+        <td class="message">Make&nbsp;Error
+        <td>
+        <td>
+      </table>
+      <nav>
+        <ul>
+          <li><a href="./revcomp.html"><span>by secs</span></a>
+          <li><a href="./revcomp-mem.html"><span>by mem</span></a>
+          <li class="best">by gz
+          <li><a href="./revcomp-cpu.html"><span>by cpu</span></a>
+        </ul>
+      </nav>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./why-measure-toy-benchmark-programs.html"><span>toy programs</span></a>
+      <li><a href="./how-programs-are-measured.html"><span>details</span></a>
+      <li><a href="./dont-jump-to-conclusions.html"><span>conclusions</span></a>
+    </ul>
+  </nav>
+  <aside>
+    <p>We want easy answers, but easy answers are often incomplete or wrong. You and I know, <a href="../index.html"><span>there's more we need to understand</span></a>.
+  </aside>
+</footer>
+

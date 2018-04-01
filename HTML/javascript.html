@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="all" />
+<meta name="description" content="Node.js programs vs Java programs (performance on 64-bit Ubuntu quad core)." />
+<title>Node.js&nbsp;vs&nbsp;Java (64-bit Ubuntu quad core) | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article,footer{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,nav li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{display:inline-block}nav li{list-style-type:none}nav li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}nav ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,span{border-bottom:.1em solid #333;padding-bottom:.1em}
+#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.best{font-weight:bold}.message{font-size:.8em}table{color:#333;margin:1.3em auto 0;text-align:right}tbody:after{content:"-";display:block;line-height:2.6em;visibility:hidden}tbody:last-child{text-align:left}td{border-bottom:.15em dotted #eee;padding:.7em 0 0 1em}td a,th a{display:block}td:first-child,th:first-child{text-align:left;padding-left:0}td:nth-child(6),th:nth-child(6){display:table-cell}th{font-weight:normal;padding:.7em 0 0 1em}
+@media only screen{th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:none}}@media only screen and (min-width:28em){th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5){display:table-cell}}@media only screen and (min-width:41em){th:nth-child(6),td:nth-child(6){display:table-cell}}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>Node.js programs versus Java</h2>
+    <aside>
+      <p><a href="./measurements-node.html">all other Node.js programs & measurements</a>
+    </aside>
+  </div>
+  <section>
+    <div>
+      <h3>by benchmark task performance</h3>
+    </div>
+    <table>
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./regexredux.html"><span>regex-redux</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./regexredux-node-2.html"><span>Node.js</span></a>
+        <td class="best">4.22
+        <td>596,420
+        <td>432
+        <td>4.24
+        <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;1%
+      <tr>
+        <td><a href="./regexredux-java-3.html"><span>Java</span></a>
+        <td>10.51
+        <td>573,972
+        <td>929
+        <td>31.30
+        <td class="message">70%&nbsp;73%&nbsp;70%&nbsp;86%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./nbody.html"><span>n-body</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./nbody-node-1.html"><span>Node.js</span></a>
+        <td>26.61
+        <td>33,152
+        <td>1297
+        <td>26.61
+        <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;1%
+      <tr>
+        <td><a href="./nbody-java-4.html"><span>Java</span></a>
+        <td>22.17
+        <td>33,040
+        <td>1489
+        <td>22.27
+        <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;1%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./mandelbrot.html"><span>mandelbrot</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./mandelbrot-node-1.html"><span>Node.js</span></a>
+        <td>17.72
+        <td>613,608
+        <td>748
+        <td>63.70
+        <td class="message">85%&nbsp;94%&nbsp;99%&nbsp;83%
+      <tr>
+        <td><a href="./mandelbrot-java-2.html"><span>Java</span></a>
+        <td>6.10
+        <td>76,520
+        <td>796
+        <td>23.59
+        <td class="message">97%&nbsp;98%&nbsp;98%&nbsp;96%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./spectralnorm.html"><span>spectral-norm</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./spectralnorm-node-3.html"><span>Node.js</span></a>
+        <td>15.79
+        <td>31,900
+        <td>381
+        <td>15.79
+        <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;0%
+      <tr>
+        <td><a href="./spectralnorm-java-2.html"><span>Java</span></a>
+        <td>4.38
+        <td>35,388
+        <td>950
+        <td>16.80
+        <td class="message">96%&nbsp;96%&nbsp;95%&nbsp;97%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./fasta.html"><span>fasta</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./fasta-node-4.html"><span>Node.js</span></a>
+        <td>9.80
+        <td>34,804
+        <td>1785
+        <td>9.82
+        <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;0%
+      <tr>
+        <td><a href="./fasta-java-5.html"><span>Java</span></a>
+        <td>2.27
+        <td>43,628
+        <td>2473
+        <td>5.93
+        <td class="message">51%&nbsp;75%&nbsp;57%&nbsp;81%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./fannkuchredux.html"><span>fannkuch-redux</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./fannkuchredux-node-4.html"><span>Node.js</span></a>
+        <td>89.63
+        <td>30,960
+        <td>473
+        <td>89.61
+        <td class="message">0%&nbsp;100%&nbsp;0%&nbsp;1%
+      <tr>
+        <td><a href="./fannkuchredux-java-1.html"><span>Java</span></a>
+        <td>18.27
+        <td>31,820
+        <td>1282
+        <td>72.06
+        <td class="message">99%&nbsp;99%&nbsp;98%&nbsp;98%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./revcomp.html"><span>reverse-complement</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./revcomp-node-7.html"><span>Node.js</span></a>
+        <td>16.66
+        <td>706,256
+        <td>1103
+        <td>17.71
+        <td class="message">71%&nbsp;51%&nbsp;40%&nbsp;48%
+      <tr>
+        <td><a href="./revcomp-java-8.html"><span>Java</span></a>
+        <td>3.15
+        <td>680,424
+        <td>2183
+        <td>7.07
+        <td class="message">52%&nbsp;70%&nbsp;43%&nbsp;63%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./binarytrees.html"><span>binary-trees</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./binarytrees-node-1.html"><span>Node.js</span></a>
+        <td>45.39
+        <td>658,324
+        <td>440
+        <td>81.91
+        <td class="message">37%&nbsp;39%&nbsp;59%&nbsp;46%
+      <tr>
+        <td><a href="./binarytrees-java-7.html"><span>Java</span></a>
+        <td>8.39
+        <td>933,808
+        <td>835
+        <td>28.28
+        <td class="message">82%&nbsp;86%&nbsp;84%&nbsp;88%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./knucleotide.html"><span>k-nucleotide</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./knucleotide-node-2.html"><span>Node.js</span></a>
+        <td>61.24
+        <td>1,739,992
+        <td>935
+        <td>137.09
+        <td class="message">80%&nbsp;75%&nbsp;95%&nbsp;71%
+      <tr>
+        <td><a href="./knucleotide-java-1.html"><span>Java</span></a>
+        <td>8.75
+        <td>385,056
+        <td>1812
+        <td>27.09
+        <td class="message">85%&nbsp;72%&nbsp;70%&nbsp;85%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./pidigits.html"><span>pidigits</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./pidigits-node-2.html"><span>Node.js</span></a>
+        <td>&nbsp;
+        <td class="message">Bad&nbsp;Output
+        <td colspan="3">
+      <tr>
+        <td><a href="./pidigits-java-2.html"><span>Java</span></a>
+        <td>0.28
+        <td>1,028
+        <td>938
+        <td>0.36
+        <td class="message">43%&nbsp;11%&nbsp;19%&nbsp;66%
+      <tbody>
+      <tr>
+        <td>Node.js
+        <td colspan="5" class="message"><p>v9.4.0
+
+      <tr>
+        <td>Java
+        <td colspan="5" class="message"><p>java 10 2018-03-20<br/>
+Java(TM) SE Runtime Environment 18.3 (build 10+46)<br/>
+Java HotSpot(TM) 64-Bit Server VM 18.3 (build 10+46, mixed mode)
+
+    </table>
+    <nav>
+      <ul>
+        <li><a href="./node-gpp.html"><span>vs C++</span></a>
+          <li class="best">vs Java
+        <li><a href="./node-python3.html"><span>vs Python</span></a>
+        <li><a href="./node-yarv.html"><span>vs Ruby</span></a>
+      </ul>
+    </nav>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./why-measure-toy-benchmark-programs.html"><span>toy programs</span></a>
+      <li><a href="./how-programs-are-measured.html"><span>details</span></a>
+      <li><a href="./dont-jump-to-conclusions.html"><span>conclusions</span></a>
+    </ul>
+  </nav>
+  <aside>
+    <p>We want easy answers, but easy answers are often incomplete or wrong. You and I know, <a href="./index.html"><span>there's more we need to understand</span></a>.
+  </aside>
+</footer>
+
+

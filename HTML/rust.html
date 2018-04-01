@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="all" />
+<meta name="description" content="Rust programs vs C gcc programs (performance on 64-bit Ubuntu quad core)." />
+<title>Rust&nbsp;vs&nbsp;C gcc (64-bit Ubuntu quad core) | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article,footer{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,nav li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{display:inline-block}nav li{list-style-type:none}nav li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}nav ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,span{border-bottom:.1em solid #333;padding-bottom:.1em}
+#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.best{font-weight:bold}.message{font-size:.8em}table{color:#333;margin:1.3em auto 0;text-align:right}tbody:after{content:"-";display:block;line-height:2.6em;visibility:hidden}tbody:last-child{text-align:left}td{border-bottom:.15em dotted #eee;padding:.7em 0 0 1em}td a,th a{display:block}td:first-child,th:first-child{text-align:left;padding-left:0}td:nth-child(6),th:nth-child(6){display:table-cell}th{font-weight:normal;padding:.7em 0 0 1em}
+@media only screen{th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:none}}@media only screen and (min-width:28em){th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5){display:table-cell}}@media only screen and (min-width:41em){th:nth-child(6),td:nth-child(6){display:table-cell}}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>Rust programs versus C gcc</h2>
+    <aside>
+      <p><a href="./measurements-rust.html">all other Rust programs & measurements</a>
+    </aside>
+  </div>
+  <section>
+    <div>
+      <h3>by benchmark task performance</h3>
+    </div>
+    <table>
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./knucleotide.html"><span>k-nucleotide</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./knucleotide-rust-6.html"><span>Rust</span></a>
+        <td class="best">5.53
+        <td>140,784
+        <td>1671
+        <td>16.44
+        <td class="message">83%&nbsp;51%&nbsp;67%&nbsp;99%
+      <tr>
+        <td><a href="./knucleotide-gcc-1.html"><span>C&nbsp;gcc</span></a>
+        <td>6.67
+        <td>130,160
+        <td>1506
+        <td>19.33
+        <td class="message">76%&nbsp;50%&nbsp;92%&nbsp;75%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./pidigits.html"><span>pidigits</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./pidigits-rust-3.html"><span>Rust</span></a>
+        <td class="best">1.74
+        <td>4,592
+        <td>1366
+        <td>1.74
+        <td class="message">1%&nbsp;1%&nbsp;3%&nbsp;100%
+      <tr>
+        <td><a href="./pidigits-gcc-1.html"><span>C&nbsp;gcc</span></a>
+        <td>1.74
+        <td>2,716
+        <td>452
+        <td>1.74
+        <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;2%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./mandelbrot.html"><span>mandelbrot</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./mandelbrot-rust-3.html"><span>Rust</span></a>
+        <td>1.89
+        <td>13,712
+        <td>1007
+        <td>7.51
+        <td class="message">100%&nbsp;99%&nbsp;100%&nbsp;99%
+      <tr>
+        <td><a href="./mandelbrot-gcc-6.html"><span>C&nbsp;gcc</span></a>
+        <td>1.64
+        <td>29,424
+        <td>1135
+        <td>6.53
+        <td class="message">99%&nbsp;100%&nbsp;100%&nbsp;100%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./spectralnorm.html"><span>spectral-norm</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./spectralnorm-rust-3.html"><span>Rust</span></a>
+        <td>2.51
+        <td>2,752
+        <td>1053
+        <td>9.20
+        <td class="message">91%&nbsp;93%&nbsp;95%&nbsp;90%
+      <tr>
+        <td><a href="./spectralnorm-gcc-5.html"><span>C&nbsp;gcc</span></a>
+        <td>2.00
+        <td>1,300
+        <td>569
+        <td>7.89
+        <td class="message">99%&nbsp;99%&nbsp;100%&nbsp;99%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./fannkuchredux.html"><span>fannkuch-redux</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./fannkuchredux-rust-2.html"><span>Rust</span></a>
+        <td>12.07
+        <td>1,832
+        <td>1191
+        <td>47.32
+        <td class="message">99%&nbsp;100%&nbsp;95%&nbsp;99%
+      <tr>
+        <td><a href="./fannkuchredux-gcc-5.html"><span>C&nbsp;gcc</span></a>
+        <td>8.66
+        <td>980
+        <td>910
+        <td>34.22
+        <td class="message">100%&nbsp;97%&nbsp;100%&nbsp;100%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./nbody.html"><span>n-body</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./nbody-rust-1.html"><span>Rust</span></a>
+        <td>13.24
+        <td>1,704
+        <td>1480
+        <td>13.23
+        <td class="message">1%&nbsp;1%&nbsp;1%&nbsp;100%
+      <tr>
+        <td><a href="./nbody-gcc-4.html"><span>C&nbsp;gcc</span></a>
+        <td>9.12
+        <td>1,176
+        <td>1490
+        <td>9.12
+        <td class="message">1%&nbsp;100%&nbsp;2%&nbsp;2%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./revcomp.html"><span>reverse-complement</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./revcomp-rust-1.html"><span>Rust</span></a>
+        <td>3.29
+        <td>1,044,220
+        <td>1871
+        <td>4.33
+        <td class="message">33%&nbsp;20%&nbsp;77%&nbsp;26%
+      <tr>
+        <td><a href="./revcomp-gcc-3.html"><span>C&nbsp;gcc</span></a>
+        <td>1.78
+        <td>994,444
+        <td>1438
+        <td>3.96
+        <td class="message">42%&nbsp;49%&nbsp;96%&nbsp;42%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./regexredux.html"><span>regex-redux</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./regexredux-rust-1.html"><span>Rust</span></a>
+        <td>3.02
+        <td>189,036
+        <td>804
+        <td>4.40
+        <td class="message">87%&nbsp;15%&nbsp;17%&nbsp;29%
+      <tr>
+        <td><a href="./regexredux-gcc-4.html"><span>C&nbsp;gcc</span></a>
+        <td>1.48
+        <td>152,352
+        <td>1230
+        <td>4.05
+        <td class="message">59%&nbsp;99%&nbsp;57%&nbsp;61%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./binarytrees.html"><span>binary-trees</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./binarytrees-rust-1.html"><span>Rust</span></a>
+        <td>6.36
+        <td>119,720
+        <td>751
+        <td>21.40
+        <td class="message">94%&nbsp;77%&nbsp;78%&nbsp;90%
+      <tr>
+        <td><a href="./binarytrees-gcc-3.html"><span>C&nbsp;gcc</span></a>
+        <td>2.44
+        <td>133,956
+        <td>836
+        <td>7.57
+        <td class="message">80%&nbsp;65%&nbsp;68%&nbsp;100%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./fasta.html"><span>fasta</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./fasta-rust-3.html"><span>Rust</span></a>
+        <td>3.84
+        <td>2,904
+        <td>1233
+        <td>3.84
+        <td class="message">0%&nbsp;0%&nbsp;1%&nbsp;100%
+      <tr>
+        <td><a href="./fasta-gcc-2.html"><span>C&nbsp;gcc</span></a>
+        <td>1.32
+        <td>2,912
+        <td>2268
+        <td>5.25
+        <td class="message">100%&nbsp;99%&nbsp;100%&nbsp;99%
+      <tbody>
+      <tr>
+        <td>Rust
+        <td colspan="5" class="message"><p>rustc 1.25.0 (84203cac6 2018-03-25)
+
+      <tr>
+        <td>C&nbsp;gcc
+        <td colspan="5" class="message"><p>gcc (Ubuntu 7.2.0-8ubuntu3) 7.2.0
+
+    </table>
+    <nav>
+      <ul>
+          <li class="best">vs C
+        <li><a href="./rust-gpp.html"><span>vs C++</span></a>
+        <li><a href="./rust-go.html"><span>vs Go</span></a>
+        <li><a href="./rust-java.html"><span>vs Java</span></a>
+      </ul>
+    </nav>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./why-measure-toy-benchmark-programs.html"><span>toy programs</span></a>
+      <li><a href="./how-programs-are-measured.html"><span>details</span></a>
+      <li><a href="./dont-jump-to-conclusions.html"><span>conclusions</span></a>
+    </ul>
+  </nav>
+  <aside>
+    <p>We want easy answers, but easy answers are often incomplete or wrong. You and I know, <a href="./index.html"><span>there's more we need to understand</span></a>.
+  </aside>
+</footer>
+
+

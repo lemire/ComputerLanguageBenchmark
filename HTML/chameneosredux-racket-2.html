@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>chameneos-redux Racket&nbsp;#2 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>chameneos-redux Racket&nbsp;#2 program</h2>
+    <aside>
+      <p><a href="./chameneosredux-description.html#chameneosredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="opt">#</span>lang racket<span class="opt">/</span>base
+
+<span class="slc">;;; The Computer Language Benchmarks Game</span>
+<span class="slc">;;; http://benchmarksgame.alioth.debian.org/</span>
+
+<span class="slc">;;; contributed by Matthew Flatt</span>
+<span class="slc">;;; modified by HN</span>
+<span class="slc">;;;</span>
+<span class="slc">;;; Uses Racket threads</span>
+
+<span class="opt">(</span><span class="kwa">require</span> racket<span class="opt">/</span>cmdline
+         racket<span class="opt">/</span>match<span class="opt">)</span>
+
+<span class="opt">(</span><span class="kwa">define</span> <span class="opt">(</span><span class="kwa">change</span> c1 c2<span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">case</span> c1
+    <span class="opt">[(</span><span class="kwa">red</span><span class="opt">)</span>
+     <span class="opt">(</span><span class="kwa">case</span> c2 <span class="opt">[(</span><span class="kwa">blue</span><span class="opt">) &apos;</span>yellow<span class="opt">] [(</span><span class="kwa">yellow</span><span class="opt">) &apos;</span>blue<span class="opt">] [</span>else c1<span class="opt">])]</span>
+    <span class="opt">[(</span><span class="kwa">yellow</span><span class="opt">)</span>
+     <span class="opt">(</span><span class="kwa">case</span> c2 <span class="opt">[(</span><span class="kwa">blue</span><span class="opt">) &apos;</span>red<span class="opt">] [(</span><span class="kwa">red</span><span class="opt">) &apos;</span>blue<span class="opt">] [</span>else c1<span class="opt">])]</span>
+    <span class="opt">[(</span><span class="kwa">blue</span><span class="opt">)</span>
+     <span class="opt">(</span><span class="kwa">case</span> c2 <span class="opt">[(</span><span class="kwa">yellow</span><span class="opt">) &apos;</span>red<span class="opt">] [(</span><span class="kwa">red</span><span class="opt">) &apos;</span>yellow<span class="opt">] [</span>else c1<span class="opt">])]))</span>
+  
+<span class="opt">(</span><span class="kwa">let</span> <span class="opt">([</span>colors <span class="opt">&apos;(</span><span class="kwa">blue</span> red yellow<span class="opt">)])</span>
+  <span class="opt">(</span><span class="kwa">for</span><span class="opt">* ([</span>a colors<span class="opt">][</span>b colors<span class="opt">])</span>
+    <span class="opt">(</span><span class="kwa">printf</span> <span class="str">&quot;~a + ~a -&gt; ~a</span><span class="esc">\n</span><span class="str">&quot;</span> a b <span class="opt">(</span><span class="kwa">change</span> a b<span class="opt">))))</span>
+
+<span class="opt">(</span><span class="kwa">define</span> <span class="opt">(</span><span class="kwa">place</span> meeting-ch n custodian<span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">parameterize</span> <span class="opt">([</span>current-custodian custodian<span class="opt">])</span>
+    <span class="opt">(</span><span class="kwa">thread</span>
+     <span class="opt">(</span><span class="kwa">lambda</span> <span class="opt">()</span>
+       <span class="opt">(</span><span class="kwa">let</span> loop <span class="opt">([</span>n n<span class="opt">])</span>
+         <span class="opt">(</span><span class="kwa">if</span> <span class="opt">(</span><span class="kwa">zero</span>? n<span class="opt">)</span>
+             <span class="slc">;; Fade all:</span>
+             <span class="opt">(</span><span class="kwa">let</span> loop <span class="opt">()</span>
+               <span class="opt">(</span><span class="kwa">let</span> <span class="opt">([</span>c <span class="opt">(</span><span class="kwa">channel-get</span> meeting-ch<span class="opt">)])</span>
+                 <span class="opt">(</span><span class="kwa">channel-put</span> <span class="opt">(</span><span class="kwa">car</span> c<span class="opt">) #</span>f<span class="opt">)</span>
+                 <span class="opt">(</span><span class="kwa">loop</span><span class="opt">)))</span>
+             <span class="slc">;; Let two meet:</span>
+             <span class="opt">(</span><span class="kwa">match-let</span> <span class="opt">([(</span><span class="kwa">cons</span> ch1 v1<span class="opt">) (</span><span class="kwa">channel-get</span> meeting-ch<span class="opt">)]</span>
+                         <span class="opt">[(</span><span class="kwa">cons</span> ch2 v2<span class="opt">) (</span><span class="kwa">channel-get</span> meeting-ch<span class="opt">)])</span>
+               <span class="opt">(</span><span class="kwa">channel-put</span> ch1 v2<span class="opt">)</span>
+               <span class="opt">(</span><span class="kwa">channel-put</span> ch2 v1<span class="opt">)</span>
+               <span class="opt">(</span><span class="kwa">loop</span> <span class="opt">(</span><span class="kwa">sub1</span> n<span class="opt">)))))))))</span>
+
+<span class="opt">(</span><span class="kwa">define</span> <span class="opt">(</span><span class="kwa">creature</span> color meeting-ch result-ch custodian<span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">parameterize</span> <span class="opt">([</span>current-custodian custodian<span class="opt">])</span>
+    <span class="opt">(</span><span class="kwa">thread</span> 
+     <span class="opt">(</span><span class="kwa">lambda</span> <span class="opt">()</span>
+       <span class="opt">(</span><span class="kwa">let</span> <span class="opt">([</span>ch <span class="opt">(</span><span class="kwa">make-channel</span><span class="opt">)]</span>
+             <span class="opt">[</span>name <span class="opt">(</span><span class="kwa">gensym</span><span class="opt">)])</span>
+         <span class="opt">(</span><span class="kwa">let</span> loop <span class="opt">([</span>color color<span class="opt">][</span>met <span class="num">0</span><span class="opt">][</span>same <span class="num">0</span><span class="opt">])</span>
+           <span class="opt">(</span><span class="kwa">channel-put</span> meeting-ch <span class="opt">(</span><span class="kwa">cons</span> ch <span class="opt">(</span><span class="kwa">cons</span> color name<span class="opt">)))</span>
+           <span class="opt">(</span><span class="kwa">match</span> <span class="opt">(</span><span class="kwa">channel-get</span> ch<span class="opt">)</span>
+             <span class="opt">[(</span><span class="kwa">cons</span> other-color other-name<span class="opt">)</span>
+              <span class="slc">;; Meet:</span>
+              <span class="opt">(</span><span class="kwa">loop</span> <span class="opt">(</span><span class="kwa">change</span> color other-color<span class="opt">)</span> 
+                    <span class="opt">(</span><span class="kwa">add1</span> met<span class="opt">)</span>
+                    <span class="opt">(+</span> same <span class="opt">(</span><span class="kwa">if</span> <span class="opt">(</span><span class="kwa">eq</span>? name other-name<span class="opt">)</span>
+                                <span class="num">1</span>
+                                <span class="num">0</span><span class="opt">)))]</span>
+             <span class="opt">[#</span>f
+              <span class="slc">;; Done:</span>
+              <span class="opt">(</span><span class="kwa">channel-put</span> result-ch <span class="opt">(</span><span class="kwa">cons</span> met same<span class="opt">))])))))))</span>
+
+<span class="opt">(</span><span class="kwa">define</span> <span class="opt">(</span><span class="kwa">spell</span> n<span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">for</span> <span class="opt">([</span>i <span class="opt">(</span><span class="kwa">number-</span><span class="opt">&gt;</span>string n<span class="opt">)])</span>
+    <span class="opt">(</span><span class="kwa">display</span> <span class="str">&quot; &quot;</span><span class="opt">)</span>
+    <span class="opt">(</span><span class="kwa">display</span> <span class="opt">(</span><span class="kwa">hash-ref</span> digits i<span class="opt">))))</span>
+  
+<span class="opt">(</span><span class="kwa">define</span> digits
+  <span class="opt">#</span>hash<span class="opt">((#</span>\<span class="num">0</span> . <span class="str">&quot;zero&quot;</span><span class="opt">)</span>
+        <span class="opt">(#</span>\<span class="num">1</span> . <span class="str">&quot;one&quot;</span><span class="opt">)</span>
+        <span class="opt">(#</span>\<span class="num">2</span> . <span class="str">&quot;two&quot;</span><span class="opt">)</span>
+        <span class="opt">(#</span>\<span class="num">3</span> . <span class="str">&quot;three&quot;</span><span class="opt">)</span>
+        <span class="opt">(#</span>\<span class="num">4</span> . <span class="str">&quot;four&quot;</span><span class="opt">)</span>
+        <span class="opt">(#</span>\<span class="num">5</span> . <span class="str">&quot;five&quot;</span><span class="opt">)</span>
+        <span class="opt">(#</span>\<span class="num">6</span> . <span class="str">&quot;six&quot;</span><span class="opt">)</span>
+        <span class="opt">(#</span>\<span class="num">7</span> . <span class="str">&quot;seven&quot;</span><span class="opt">)</span>
+        <span class="opt">(#</span>\<span class="num">8</span> . <span class="str">&quot;eight&quot;</span><span class="opt">)</span>
+        <span class="opt">(#</span>\<span class="num">9</span> . <span class="str">&quot;nine&quot;</span><span class="opt">)))</span>
+
+<span class="opt">(</span><span class="kwa">define</span> <span class="opt">(</span><span class="kwa">go</span> n inits<span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">let</span> <span class="opt">([</span>result-ch <span class="opt">(</span><span class="kwa">make-channel</span><span class="opt">)]</span>
+        <span class="opt">[</span>meeting-ch <span class="opt">(</span><span class="kwa">make-channel</span><span class="opt">)]</span>
+        <span class="opt">[</span>custodian <span class="opt">(</span><span class="kwa">make-custodian</span><span class="opt">)])</span>
+    <span class="opt">(</span><span class="kwa">place</span> meeting-ch n custodian<span class="opt">)</span>
+    <span class="opt">(</span><span class="kwa">newline</span><span class="opt">)</span>
+    <span class="opt">(</span><span class="kwa">for</span> <span class="opt">([</span>init inits<span class="opt">])</span>
+      <span class="opt">(</span><span class="kwa">printf</span> <span class="str">&quot; ~a&quot;</span> init<span class="opt">)</span>
+      <span class="opt">(</span><span class="kwa">creature</span> init meeting-ch result-ch custodian<span class="opt">))</span>
+    <span class="opt">(</span><span class="kwa">newline</span><span class="opt">)</span>
+    <span class="opt">(</span><span class="kwa">let</span> <span class="opt">([</span>results <span class="opt">(</span><span class="kwa">for</span><span class="opt">/</span>list <span class="opt">([</span>i inits<span class="opt">])</span>
+                     <span class="opt">(</span><span class="kwa">channel-get</span> result-ch<span class="opt">))])</span>
+      <span class="opt">(</span><span class="kwa">for</span> <span class="opt">([</span>r results<span class="opt">])</span>
+        <span class="opt">(</span><span class="kwa">display</span> <span class="opt">(</span><span class="kwa">car</span> r<span class="opt">))</span>
+        <span class="opt">(</span><span class="kwa">spell</span> <span class="opt">(</span><span class="kwa">cdr</span> r<span class="opt">))</span>
+        <span class="opt">(</span><span class="kwa">newline</span><span class="opt">))</span>
+      <span class="opt">(</span><span class="kwa">spell</span> <span class="opt">(</span><span class="kwa">apply</span> <span class="opt">+ (</span><span class="kwa">map</span> car results<span class="opt">)))</span>
+      <span class="opt">(</span><span class="kwa">newline</span><span class="opt">))</span>
+    <span class="opt">(</span><span class="kwa">custodian-shutdown-all</span> custodian<span class="opt">)))</span>
+
+<span class="opt">(</span><span class="kwa">let</span> <span class="opt">([</span>n <span class="opt">(</span><span class="kwa">command-line</span> <span class="opt">#:</span>args <span class="opt">(</span><span class="kwa">n</span><span class="opt">) (</span><span class="kwa">string-</span><span class="opt">&gt;</span>number n<span class="opt">))])</span>
+  <span class="opt">(</span><span class="kwa">go</span> n <span class="opt">&apos;(</span><span class="kwa">blue</span> red yellow<span class="opt">))</span>
+  <span class="opt">(</span><span class="kwa">go</span> n <span class="opt">&apos;(</span><span class="kwa">blue</span> red yellow red yellow blue red yellow red blue<span class="opt">))</span>
+  <span class="opt">(</span><span class="kwa">newline</span><span class="opt">))</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+Welcome to Racket v6.12.
+
+
+Tue, 27 Mar 2018 19:32:30 GMT
+
+MAKE:
+/opt/src/racket-6.12/bin/raco make chameneosredux.racket-2.racket
+
+0.84s to complete and log all make actions
+
+COMMAND LINE:
+/opt/src/racket-6.12/bin/racket ./compiled/chameneosredux.racket-2_racket.zo 6000000
+
+PROGRAM OUTPUT:
+blue + blue -&gt; blue
+blue + red -&gt; yellow
+blue + yellow -&gt; red
+red + blue -&gt; yellow
+red + red -&gt; red
+red + yellow -&gt; blue
+yellow + blue -&gt; red
+yellow + red -&gt; blue
+yellow + yellow -&gt; yellow
+
+ blue red yellow
+3999999 zero
+4000000 zero
+4000001 zero
+ one two zero zero zero zero zero zero
+
+ blue red yellow red yellow blue red yellow red blue
+1199821 zero
+1199919 zero
+1200045 zero
+1199989 zero
+1199997 zero
+1200046 zero
+1200045 zero
+1200046 zero
+1200046 zero
+1200046 zero
+ one two zero zero zero zero zero zero
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

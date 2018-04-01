@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>fasta Ada 2005 GNAT&nbsp;#5 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>fasta Ada 2005 GNAT&nbsp;#5 program</h2>
+    <aside>
+      <p><a href="./fasta-description.html#fasta">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+
+<span class="slc">-- The Computer Language Benchmarks Game</span>
+<span class="slc">-- http://benchmarksgame.alioth.debian.org</span>
+<span class="slc">--</span>
+<span class="slc">-- contributed by Pascal Obry on 2005/04/07</span>
+<span class="slc">-- modified by Gautier de Montmollin</span>
+<span class="slc">-- modified by Georg Bauhaus, Jonathan Parker (July 2011)</span>
+
+<span class="kwa">with</span> Ada<span class="opt">.</span>Command_Line<span class="opt">;</span>
+<span class="kwa">with</span> GNAT<span class="opt">.</span>Float_Control<span class="opt">;</span>
+<span class="kwa">with</span> Sequence<span class="opt">.</span>Data<span class="opt">,</span> Sequence<span class="opt">.</span>Creation<span class="opt">;</span>
+
+<span class="kwa">procedure</span> Fasta <span class="kwa">is</span>
+
+   N <span class="opt">:</span> <span class="kwa">constant</span> <span class="kwb">Positive</span> <span class="opt">:=</span> <span class="kwb">Positive</span><span class="kwd">&apos;Value</span> <span class="opt">(</span>Ada<span class="opt">.</span>Command_Line<span class="opt">.</span>Argument <span class="opt">(</span><span class="num">1</span><span class="opt">));</span>
+   
+   <span class="kwa">use</span> Sequence<span class="opt">.</span>Data<span class="opt">,</span> Sequence<span class="opt">.</span>Creation<span class="opt">;</span>
+   
+   Runner <span class="opt">:</span> Environment<span class="opt">;</span>
+<span class="kwa">begin</span>
+   GNAT<span class="opt">.</span>Float_Control<span class="opt">.</span>Reset<span class="opt">;</span>
+
+   Make_Repeat_Fasta <span class="opt">(</span><span class="str">&quot;&gt;ONE Homo sapiens alu&quot;</span><span class="opt">,</span> ALU<span class="opt">,</span> N<span class="opt">*</span><span class="num">2</span><span class="opt">);</span>
+   Make_Random_Fasta <span class="opt">(</span><span class="str">&quot;&gt;TWO IUB ambiguity codes&quot;</span><span class="opt">,</span> IUB<span class="opt">,</span> N<span class="opt">*</span><span class="num">3</span><span class="opt">);</span>
+   Make_Random_Fasta <span class="opt">(</span><span class="str">&quot;&gt;THREE Homo sapiens frequency&quot;</span><span class="opt">,</span> Homosapiens<span class="opt">,</span> N<span class="opt">*</span><span class="num">5</span><span class="opt">);</span>
+
+<span class="kwa">end</span> Fasta<span class="opt">;</span>
+    
+<span class="kwa">package</span> Sequence<span class="opt">.</span>Data <span class="kwa">is</span>
+   
+   <span class="kwa">pragma</span> Pure <span class="opt">(</span>Data<span class="opt">);</span>
+   
+   Homosapiens <span class="opt">:</span> <span class="kwa">constant</span> Nucleotide_Set<span class="opt">(</span><span class="num">0</span><span class="opt">.</span><span class="num">.3</span><span class="opt">) :=</span>
+    <span class="opt">((</span><span class="str">&apos;a&apos;</span><span class="opt">,</span> <span class="num">0.3029549426680</span><span class="opt">), (</span><span class="str">&apos;c&apos;</span><span class="opt">,</span> <span class="num">0.1979883004921</span><span class="opt">),</span>
+     <span class="opt">(</span><span class="str">&apos;g&apos;</span><span class="opt">,</span> <span class="num">0.1975473066391</span><span class="opt">), (</span><span class="str">&apos;t&apos;</span><span class="opt">,</span> <span class="num">0.3015094502008</span><span class="opt">));</span>
+
+   IUB <span class="opt">:</span> <span class="kwa">constant</span> Nucleotide_Set<span class="opt">(</span><span class="num">0</span><span class="opt">.</span><span class="num">.14</span><span class="opt">) :=</span>
+    <span class="opt">((</span><span class="str">&apos;a&apos;</span><span class="opt">,</span> <span class="num">0.27</span><span class="opt">), (</span><span class="str">&apos;c&apos;</span><span class="opt">,</span> <span class="num">0.12</span><span class="opt">), (</span><span class="str">&apos;g&apos;</span><span class="opt">,</span> <span class="num">0.12</span><span class="opt">), (</span><span class="str">&apos;t&apos;</span><span class="opt">,</span> <span class="num">0.27</span><span class="opt">),</span>
+     <span class="opt">(</span><span class="str">&apos;B&apos;</span><span class="opt">,</span> <span class="num">0.02</span><span class="opt">), (</span><span class="str">&apos;D&apos;</span><span class="opt">,</span> <span class="num">0.02</span><span class="opt">), (</span><span class="str">&apos;H&apos;</span><span class="opt">,</span> <span class="num">0.02</span><span class="opt">), (</span><span class="str">&apos;K&apos;</span><span class="opt">,</span> <span class="num">0.02</span><span class="opt">),</span>
+     <span class="opt">(</span><span class="str">&apos;M&apos;</span><span class="opt">,</span> <span class="num">0.02</span><span class="opt">), (</span><span class="str">&apos;N&apos;</span><span class="opt">,</span> <span class="num">0.02</span><span class="opt">), (</span><span class="str">&apos;R&apos;</span><span class="opt">,</span> <span class="num">0.02</span><span class="opt">), (</span><span class="str">&apos;S&apos;</span><span class="opt">,</span> <span class="num">0.02</span><span class="opt">),</span>
+     <span class="opt">(</span><span class="str">&apos;V&apos;</span><span class="opt">,</span> <span class="num">0.02</span><span class="opt">), (</span><span class="str">&apos;W&apos;</span><span class="opt">,</span> <span class="num">0.02</span><span class="opt">), (</span><span class="str">&apos;Y&apos;</span><span class="opt">,</span> <span class="num">0.02</span><span class="opt">));</span>
+
+   ALU <span class="opt">:</span> <span class="kwa">constant</span> <span class="kwb">String</span> <span class="opt">:=</span>
+     <span class="str">&quot;GGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGG&quot;</span> <span class="opt">&amp;</span>
+     <span class="str">&quot;GAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGA&quot;</span> <span class="opt">&amp;</span>
+     <span class="str">&quot;CCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAAT&quot;</span> <span class="opt">&amp;</span>
+     <span class="str">&quot;ACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCA&quot;</span> <span class="opt">&amp;</span>
+     <span class="str">&quot;GCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGG&quot;</span> <span class="opt">&amp;</span>
+     <span class="str">&quot;AGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCC&quot;</span> <span class="opt">&amp;</span>
+     <span class="str">&quot;AGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAA&quot;</span><span class="opt">;</span>
+   
+<span class="kwa">end</span> Sequence<span class="opt">.</span>Data<span class="opt">;</span>
+
+
+<span class="kwa">with</span> Ada<span class="opt">.</span>Finalization<span class="opt">;</span>
+
+<span class="kwa">package</span> Sequence<span class="opt">.</span>Creation <span class="kwa">is</span>
+
+   <span class="kwa">procedure</span> Make_Random_Fasta
+     <span class="opt">(</span>Title       <span class="opt">:</span> <span class="kwa">in</span> <span class="kwb">String</span><span class="opt">;</span> 
+      Nucleotides <span class="opt">:</span> <span class="kwa">in</span> Nucleotide_Set<span class="opt">;</span> 
+      N           <span class="opt">:</span> <span class="kwa">in</span> <span class="kwb">Positive</span><span class="opt">);</span>
+
+   <span class="kwa">procedure</span> Make_Repeat_Fasta 
+     <span class="opt">(</span>Title <span class="opt">:</span> <span class="kwa">in</span> <span class="kwb">String</span><span class="opt">;</span>
+      S     <span class="opt">:</span> <span class="kwa">in</span> <span class="kwb">String</span><span class="opt">;</span> 
+      N     <span class="opt">:</span> <span class="kwa">in</span> <span class="kwb">Positive</span><span class="opt">);</span>
+   
+   <span class="kwa">type</span> Environment <span class="kwa">is new</span> Ada<span class="opt">.</span>Finalization<span class="opt">.</span>Limited_Controlled
+     <span class="kwa">with null record</span><span class="opt">;</span>
+
+<span class="kwa">private</span>
+
+   overriding
+   <span class="kwa">procedure</span> Initialize <span class="opt">(</span>Active <span class="opt">:</span> <span class="kwa">in out</span> Environment<span class="opt">);</span>
+
+   overriding
+   <span class="kwa">procedure</span> Finalize <span class="opt">(</span>Active <span class="opt">:</span> <span class="kwa">in out</span> Environment<span class="opt">);</span>
+
+<span class="kwa">end</span> Sequence<span class="opt">.</span>Creation<span class="opt">;</span>
+
+<span class="kwa">package</span> Sequence <span class="kwa">is</span>
+   
+   <span class="kwa">pragma</span> Pure <span class="opt">(</span>Sequence<span class="opt">);</span>
+   
+   <span class="kwa">type</span> Real <span class="kwa">is digits</span> <span class="num">15</span><span class="opt">;</span>
+
+   <span class="kwa">type</span> Nucleotide <span class="kwa">is record</span>
+      C <span class="opt">:</span> <span class="kwb">Character</span><span class="opt">;</span>
+      P <span class="opt">:</span> Real<span class="opt">;</span>
+   <span class="kwa">end record</span><span class="opt">;</span>
+
+   Max_Length_of_Code <span class="opt">:</span> <span class="kwa">constant</span> <span class="opt">:=</span> <span class="num">15</span><span class="opt">;</span>
+
+   <span class="kwa">subtype</span> Nucleotide_Index <span class="kwa">is</span> <span class="kwb">Integer</span> <span class="kwa">range</span> <span class="num">0</span> <span class="opt">..</span> Max_Length_of_Code<span class="opt">-</span><span class="num">1</span><span class="opt">;</span>
+
+   <span class="kwa">type</span> Nucleotide_Set <span class="kwa">is array</span> <span class="opt">(</span>Nucleotide_Index <span class="kwa">range</span> <span class="opt">&lt;&gt;)</span> <span class="kwa">of</span> Nucleotide<span class="opt">;</span>
+
+<span class="kwa">end</span> Sequence<span class="opt">;</span>
+
+<span class="kwa">with</span> LCG_Random<span class="opt">;</span>
+<span class="kwa">with</span> Line_IO<span class="opt">;</span>
+
+<span class="kwa">package body</span> Sequence<span class="opt">.</span>Creation <span class="kwa">is</span>
+
+   <span class="kwa">package</span> Real_Random_Nums <span class="kwa">is new</span> LCG_Random <span class="opt">(</span>Real<span class="opt">);</span>
+   <span class="kwa">use</span> Real_Random_Nums<span class="opt">;</span>
+   
+   overriding
+   <span class="kwa">procedure</span> Initialize <span class="opt">(</span>Active <span class="opt">:</span> <span class="kwa">in out</span> Environment<span class="opt">)</span> <span class="kwa">is</span>
+   <span class="kwa">begin</span>
+      Line_IO<span class="opt">.</span>Open_Stdout<span class="opt">;</span>
+   <span class="kwa">end</span> Initialize<span class="opt">;</span>
+   
+   overriding
+   <span class="kwa">procedure</span> Finalize <span class="opt">(</span>Active <span class="opt">:</span> <span class="kwa">in out</span> Environment<span class="opt">)</span> <span class="kwa">is</span>
+   <span class="kwa">begin</span>
+      Line_IO<span class="opt">.</span>Close_Stdout<span class="opt">;</span>
+   <span class="kwa">end</span> Finalize<span class="opt">;</span>
+
+
+   Line_Length <span class="opt">:</span> <span class="kwa">constant</span> <span class="opt">:=</span> <span class="num">60</span><span class="opt">;</span>
+   End_of_Line <span class="opt">:</span> <span class="kwb">String</span> <span class="kwa">renames</span> Line_IO<span class="opt">.</span>End_of_Line<span class="opt">;</span>
+
+   <span class="kwa">subtype</span> Line_End_Positions <span class="kwa">is</span> <span class="kwb">Positive</span>
+      <span class="kwa">range</span> Line_Length <span class="opt">+</span> <span class="num">1</span> <span class="opt">..</span> Line_Length <span class="opt">+</span> End_of_Line<span class="kwd">&apos;Length</span><span class="opt">;</span>
+
+   Line_Buffer <span class="opt">:</span> <span class="kwb">String</span> <span class="opt">(</span><span class="num">1</span> <span class="opt">..</span> Line_Length <span class="opt">+</span> End_of_Line<span class="kwd">&apos;Length</span><span class="opt">);</span>
+
+   Nucleo_Cumulative <span class="opt">:</span> <span class="kwa">array</span> <span class="opt">(</span>Nucleotide_Index<span class="opt">)</span> <span class="kwa">of</span> Nucleotide<span class="opt">;</span>
+
+   <span class="kwa">procedure</span> Make_Random_Fasta
+     <span class="opt">(</span>Title       <span class="opt">:</span> <span class="kwa">in</span> <span class="kwb">String</span><span class="opt">;</span> 
+      Nucleotides <span class="opt">:</span> <span class="kwa">in</span> Nucleotide_Set<span class="opt">;</span> 
+      N           <span class="opt">:</span> <span class="kwa">in</span> <span class="kwb">Positive</span><span class="opt">)</span>
+   <span class="kwa">is</span>
+      <span class="kwa">function</span> Random_Nucleotide <span class="kwa">return</span> <span class="kwb">Character</span> <span class="kwa">is</span>
+         r <span class="opt">:</span> <span class="kwa">constant</span> Real <span class="opt">:=</span> Gen_Random <span class="opt">(</span><span class="num">1.0</span><span class="opt">);</span>
+         Result <span class="opt">:</span> <span class="kwb">Character</span> <span class="opt">:=</span> <span class="str">&apos;J&apos;</span><span class="opt">;</span>
+      <span class="kwa">begin</span>
+         Choose_Random<span class="opt">:</span> 
+         <span class="kwa">for</span> i <span class="kwa">in</span> Nucleo_Cumulative<span class="kwd">&apos;Range</span> <span class="kwa">loop</span>
+            <span class="kwa">if</span> Nucleo_Cumulative<span class="opt">(</span>i<span class="opt">).</span>P <span class="opt">&gt;</span> r <span class="kwa">then</span>
+               Result <span class="opt">:=</span> Nucleo_Cumulative<span class="opt">(</span>i<span class="opt">).</span>C<span class="opt">;</span>
+               <span class="kwa">exit</span> Choose_Random<span class="opt">;</span>
+            <span class="kwa">end if</span><span class="opt">;</span>
+         <span class="kwa">end loop</span> Choose_Random<span class="opt">;</span>
+         <span class="kwa">return</span> Result<span class="opt">;</span>
+      <span class="kwa">end</span> Random_Nucleotide<span class="opt">;</span>
+
+      Sum  <span class="opt">:</span> Real<span class="opt">;</span>
+      Remaining_Chars  <span class="opt">:</span> <span class="kwa">constant</span> <span class="kwb">Natural</span> <span class="opt">:=</span> N <span class="kwa">mod</span> Line_Length<span class="opt">;</span>
+      No_of_Full_Lines <span class="opt">:</span> <span class="kwa">constant</span> <span class="kwb">Natural</span> <span class="opt">:=</span> N  <span class="opt">/</span>  Line_Length<span class="opt">;</span>
+   <span class="kwa">begin</span>
+      Line_IO<span class="opt">.</span>Print <span class="opt">(</span>Title <span class="opt">&amp;</span> End_of_Line<span class="opt">);</span>
+
+      Nucleo_Cumulative <span class="opt">:= (</span><span class="kwa">others</span> <span class="opt">=&gt; (</span><span class="str">&apos;j&apos;</span><span class="opt">,</span> <span class="num">2.0</span><span class="opt">));</span>
+      <span class="kwa">for</span> k <span class="kwa">in</span> Nucleotides<span class="kwd">&apos;Range</span> <span class="kwa">loop</span>
+         Nucleo_Cumulative<span class="opt">(</span>k<span class="opt">).</span>C <span class="opt">:=</span> Nucleotides<span class="opt">(</span>k<span class="opt">).</span>C<span class="opt">;</span>
+      <span class="kwa">end loop</span><span class="opt">;</span>
+
+      Sum <span class="opt">:=</span> <span class="num">0.0</span><span class="opt">;</span>
+      <span class="kwa">for</span> k <span class="kwa">in</span> Nucleotides<span class="kwd">&apos;Range</span> <span class="kwa">loop</span>
+         Sum <span class="opt">:=</span> Sum <span class="opt">+</span> Nucleotides<span class="opt">(</span>k<span class="opt">).</span>P<span class="opt">;</span>
+         Nucleo_Cumulative<span class="opt">(</span>k<span class="opt">).</span>P <span class="opt">:=</span> Sum<span class="opt">;</span>
+      <span class="kwa">end loop</span><span class="opt">;</span>
+
+      Line_Buffer<span class="opt">(</span>Line_End_Positions<span class="opt">) :=</span> End_of_Line<span class="opt">;</span>
+
+      <span class="kwa">for</span> k <span class="kwa">in</span> <span class="num">1</span> <span class="opt">..</span> No_of_Full_Lines <span class="kwa">loop</span>
+         <span class="kwa">for</span> i <span class="kwa">in</span> <span class="num">1</span> <span class="opt">..</span> Line_Length <span class="kwa">loop</span>
+            Line_Buffer<span class="opt">(</span>i<span class="opt">) :=</span> Random_Nucleotide<span class="opt">;</span>
+         <span class="kwa">end loop</span><span class="opt">;</span>
+         Line_IO<span class="opt">.</span>Print <span class="opt">(</span>Line_Buffer<span class="opt">);</span>
+      <span class="kwa">end loop</span><span class="opt">;</span>
+
+      <span class="kwa">if</span> Remaining_Chars <span class="opt">&gt;</span> <span class="num">0</span> <span class="kwa">then</span>
+         <span class="kwa">for</span> i <span class="kwa">in</span> <span class="num">1</span> <span class="opt">..</span> Remaining_Chars <span class="kwa">loop</span>
+            Line_Buffer<span class="opt">(</span>i<span class="opt">) :=</span> Random_Nucleotide<span class="opt">;</span>
+         <span class="kwa">end loop</span><span class="opt">;</span>
+         Line_IO<span class="opt">.</span>Print <span class="opt">(</span>Line_Buffer<span class="opt">(</span><span class="num">1</span> <span class="opt">..</span> Remaining_Chars<span class="opt">) &amp;</span> End_of_Line<span class="opt">);</span>
+      <span class="kwa">end if</span><span class="opt">;</span>
+
+   <span class="kwa">end</span> Make_Random_Fasta<span class="opt">;</span>
+
+   <span class="kwa">procedure</span> Make_Repeat_Fasta 
+     <span class="opt">(</span>Title <span class="opt">:</span> <span class="kwa">in</span> <span class="kwb">String</span><span class="opt">;</span>
+      S     <span class="opt">:</span> <span class="kwa">in</span> <span class="kwb">String</span><span class="opt">;</span> 
+      N     <span class="opt">:</span> <span class="kwa">in</span> <span class="kwb">Positive</span><span class="opt">)</span> 
+   <span class="kwa">is</span>
+      S_App <span class="opt">:</span> <span class="kwa">constant</span> <span class="kwb">String</span> <span class="opt">:=</span> S <span class="opt">&amp;</span> S<span class="opt">(</span>S<span class="kwd">&apos;First</span> <span class="opt">..</span> S<span class="kwd">&apos;First</span> <span class="opt">+</span> Line_Length<span class="opt">);</span>
+
+      Pos <span class="opt">:</span> <span class="kwb">Positive</span> <span class="opt">:=</span> S_App<span class="kwd">&apos;First</span><span class="opt">;</span>
+      Remaining_Chars <span class="opt">:</span> <span class="kwb">Natural</span> <span class="opt">:=</span> N<span class="opt">;</span>
+      No_of_Chars_Output <span class="opt">:</span> <span class="kwb">Natural</span> <span class="opt">:=</span> <span class="num">0</span><span class="opt">;</span>
+   <span class="kwa">begin</span>
+      Line_IO<span class="opt">.</span>Print <span class="opt">(</span>Title <span class="opt">&amp;</span> End_of_Line<span class="opt">);</span>
+
+      <span class="kwa">while</span> Remaining_Chars <span class="opt">&gt;</span> <span class="num">0</span> <span class="kwa">loop</span>
+
+         No_of_Chars_Output <span class="opt">:=</span> <span class="kwb">Integer</span><span class="kwd">&apos;Min</span> <span class="opt">(</span>Remaining_Chars<span class="opt">,</span> Line_Length<span class="opt">);</span>
+
+         Line_IO<span class="opt">.</span>Print <span class="opt">(</span>S_App <span class="opt">(</span>Pos <span class="opt">..</span> Pos <span class="opt">+</span> No_of_Chars_Output <span class="opt">-</span> <span class="num">1</span><span class="opt">));</span>
+         Line_IO<span class="opt">.</span>Print <span class="opt">(</span>End_of_Line<span class="opt">);</span>
+
+         Remaining_Chars <span class="opt">:=</span> Remaining_Chars <span class="opt">-</span> No_of_Chars_Output<span class="opt">;</span>
+
+         Pos <span class="opt">:=</span> Pos <span class="opt">+</span> No_of_Chars_Output<span class="opt">;</span>
+         <span class="kwa">if</span> Pos <span class="opt">&gt;</span> S<span class="kwd">&apos;Last</span> <span class="kwa">then</span>
+            Pos <span class="opt">:=</span> Pos <span class="opt">-</span> S<span class="kwd">&apos;Length</span><span class="opt">;</span>
+         <span class="kwa">end if</span><span class="opt">;</span>
+
+      <span class="kwa">end loop</span><span class="opt">;</span>
+
+   <span class="kwa">end</span> Make_Repeat_Fasta<span class="opt">;</span>
+
+<span class="kwa">end</span> Sequence<span class="opt">.</span>Creation<span class="opt">;</span>
+
+<span class="kwa">package</span> Line_IO <span class="kwa">is</span>
+
+   <span class="kwa">procedure</span> Print <span class="opt">(</span>Item <span class="opt">:</span> <span class="kwb">String</span><span class="opt">);</span>
+
+   <span class="kwa">procedure</span> Close_Stdout<span class="opt">;</span>
+
+   <span class="kwa">procedure</span> Open_Stdout<span class="opt">;</span>
+
+   End_of_Line <span class="opt">:</span> <span class="kwa">constant</span> <span class="kwb">String</span> <span class="opt">:= (</span><span class="num">1</span> <span class="opt">=&gt;</span> ASCII<span class="opt">.</span>LF<span class="opt">);</span>
+
+   <span class="kwa">pragma</span> Inline <span class="opt">(</span>Print<span class="opt">);</span>
+
+<span class="kwa">end</span> Line_IO<span class="opt">;</span>
+
+
+<span class="kwa">with</span> Ada<span class="opt">.</span>Streams<span class="opt">.</span>Stream_IO<span class="opt">;</span>
+<span class="kwa">with</span> Unchecked_Conversion<span class="opt">;</span>
+
+<span class="kwa">package body</span> Line_IO <span class="kwa">is</span>
+
+   <span class="kwa">use</span> Ada<span class="opt">.</span>Streams<span class="opt">;</span>
+
+   Stdout <span class="opt">:</span> Stream_IO<span class="opt">.</span>File_Type<span class="opt">;</span>
+
+   <span class="kwa">procedure</span> Print <span class="opt">(</span>Item <span class="opt">:</span> <span class="kwb">String</span><span class="opt">)</span> <span class="kwa">is</span>
+      <span class="kwa">subtype</span> Index <span class="kwa">is</span> Stream_Element_Offset <span class="kwa">range</span>
+         Stream_Element_Offset<span class="opt">(</span>Item<span class="kwd">&apos;First</span><span class="opt">) ..</span> Stream_Element_Offset<span class="opt">(</span>Item<span class="kwd">&apos;Last</span><span class="opt">);</span>
+      <span class="kwa">subtype</span> XString <span class="kwa">is</span> <span class="kwb">String</span> <span class="opt">(</span>Item<span class="kwd">&apos;Range</span><span class="opt">);</span>
+      <span class="kwa">subtype</span> XBytes <span class="kwa">is</span> Stream_Element_Array <span class="opt">(</span>Index<span class="opt">);</span>
+      <span class="kwa">function</span> To_Bytes <span class="kwa">is new</span> Unchecked_Conversion
+        <span class="opt">(</span>Source <span class="opt">=&gt;</span> XString<span class="opt">,</span>
+         Target <span class="opt">=&gt;</span> XBytes<span class="opt">);</span>
+   <span class="kwa">begin</span>
+      Stream_IO<span class="opt">.</span>Write <span class="opt">(</span>Stdout<span class="opt">,</span> To_Bytes <span class="opt">(</span>Item<span class="opt">));</span>
+   <span class="kwa">end</span> Print<span class="opt">;</span>
+
+   <span class="kwa">procedure</span> Close_Stdout <span class="kwa">is</span>
+   <span class="kwa">begin</span>
+      Stream_IO<span class="opt">.</span>Close <span class="opt">(</span>Stdout<span class="opt">);</span>
+   <span class="kwa">end</span> Close_Stdout<span class="opt">;</span>
+
+   <span class="kwa">procedure</span> Open_Stdout <span class="kwa">is</span>
+   <span class="kwa">begin</span>
+      Stream_IO<span class="opt">.</span>Open 
+        <span class="opt">(</span>File <span class="opt">=&gt;</span> Stdout<span class="opt">,</span>
+         Mode <span class="opt">=&gt;</span> Stream_IO<span class="opt">.</span>Out_File<span class="opt">,</span>
+         Name <span class="opt">=&gt;</span> <span class="str">&quot;/dev/stdout&quot;</span><span class="opt">);</span>
+   <span class="kwa">end</span> Open_Stdout<span class="opt">;</span>
+
+<span class="kwa">end</span> Line_IO<span class="opt">;</span>
+
+
+<span class="kwa">generic</span>
+
+   <span class="kwa">type</span> Real <span class="kwa">is digits</span> <span class="opt">&lt;&gt;;</span>
+
+<span class="kwa">package</span> LCG_Random <span class="kwa">is</span>
+
+   <span class="kwa">function</span> Gen_Random <span class="opt">(</span>Max <span class="opt">:</span> <span class="kwa">in</span> Real<span class="opt">)</span> <span class="kwa">return</span> Real<span class="opt">;</span>
+   <span class="slc">-- Linear congruential random number generator. </span>
+   <span class="slc">-- Period = 139_968, with output in [0.0, 1.0) if Max = 1.0.</span>
+
+<span class="kwa">end</span> LCG_Random<span class="opt">;</span>
+
+<span class="kwa">package body</span> LCG_Random <span class="kwa">is</span>
+
+   <span class="kwa">pragma</span> Assert <span class="opt">(</span>Real<span class="kwd">&apos;Digits</span> <span class="opt">&gt;</span> <span class="num">5</span><span class="opt">);</span>
+
+   <span class="kwa">type</span> Random_State <span class="kwa">is mod</span> <span class="num">2</span><span class="opt">**</span><span class="num">32</span><span class="opt">;</span>
+
+   State <span class="opt">:</span> Random_State <span class="opt">:=</span> <span class="num">42</span><span class="opt">;</span>
+
+   <span class="kwa">type</span> Signed <span class="kwa">is range</span>
+      <span class="opt">-</span><span class="num">2</span><span class="opt">**(</span>Random_State<span class="kwd">&apos;Size</span><span class="opt">-</span><span class="num">1</span><span class="opt">) ..</span> <span class="num">2</span><span class="opt">**(</span>Random_State<span class="kwd">&apos;Size</span><span class="opt">-</span><span class="num">1</span><span class="opt">) -</span> <span class="num">1</span><span class="opt">;</span>
+
+   <span class="kwa">function</span> Gen_Random <span class="opt">(</span>Max <span class="opt">:</span> <span class="kwa">in</span> Real<span class="opt">)</span> <span class="kwa">return</span> Real <span class="kwa">is</span>
+      IM <span class="opt">:</span> <span class="kwa">constant</span> <span class="opt">:=</span> <span class="num">139</span>_968<span class="opt">;</span>
+      IA <span class="opt">:</span> <span class="kwa">constant</span> <span class="opt">:=</span>   <span class="num">3</span>_877<span class="opt">;</span>
+      IC <span class="opt">:</span> <span class="kwa">constant</span> <span class="opt">:=</span>  <span class="num">29</span>_573<span class="opt">;</span>
+   <span class="kwa">begin</span>
+      State <span class="opt">:= (</span>State <span class="opt">*</span> IA <span class="opt">+</span> IC<span class="opt">)</span> <span class="kwa">mod</span> IM<span class="opt">;</span>
+      <span class="kwa">return</span> <span class="opt">(</span>Max <span class="opt">*</span> Real <span class="opt">(</span>Signed <span class="opt">(</span>State<span class="opt">))) * (</span><span class="num">1.0</span> <span class="opt">/</span> Real <span class="opt">(</span>IM<span class="opt">));</span>
+   <span class="kwa">end</span> Gen_Random<span class="opt">;</span>
+
+<span class="kwa">end</span> LCG_Random<span class="opt">;</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+GNATMAKE 7.2.0
+gcc (Ubuntu 7.2.0-8ubuntu3) 7.2.0
+
+
+
+Thu, 26 Oct 2017 14:49:21 GMT
+
+MAKE:
+gnatchop -r -w fasta.gnat-5.gnat
+splitting fasta.gnat-5.gnat into:
+   fasta.adb
+   sequence-data.ads
+   sequence-creation.ads
+   sequence.ads
+   sequence-creation.adb
+   line_io.ads
+   line_io.adb
+   lcg_random.ads
+   lcg_random.adb
+gnatmake -O3 -fomit-frame-pointer -march=native -msse3 -mfpmath=sse -gnatNp -f fasta.adb -o fasta.gnat-5.gnat_run 
+gcc-7 -c -O3 -fomit-frame-pointer -march=native -msse3 -mfpmath=sse -gnatNp fasta.adb
+gcc-7 -c -O3 -fomit-frame-pointer -march=native -msse3 -mfpmath=sse -gnatNp sequence.ads
+gcc-7 -c -O3 -fomit-frame-pointer -march=native -msse3 -mfpmath=sse -gnatNp sequence-creation.adb
+gcc-7 -c -O3 -fomit-frame-pointer -march=native -msse3 -mfpmath=sse -gnatNp sequence-data.ads
+gcc-7 -c -O3 -fomit-frame-pointer -march=native -msse3 -mfpmath=sse -gnatNp lcg_random.adb
+gcc-7 -c -O3 -fomit-frame-pointer -march=native -msse3 -mfpmath=sse -gnatNp line_io.adb
+gnatbind-7 -x fasta.ali
+gnatlink-7 fasta.ali -O3 -fomit-frame-pointer -march=native -msse3 -mfpmath=sse -o fasta.gnat-5.gnat_run
+
+0.76s to complete and log all make actions
+
+COMMAND LINE:
+./fasta.gnat-5.gnat_run 25000000
+
+(TRUNCATED) PROGRAM OUTPUT:
+&gt;ONE Homo sapiens alu
+GGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGA
+TCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACT
+AAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAG
+GCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCG
+CCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGT
+GGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCA
+GGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAA
+TTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAG
+AATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCA
+GCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGT
+AATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACC
+AGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTG
+GTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACC
+CGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAG
+AGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTT
+TGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACA
+TGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCT
+GTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGG
+TTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGT
+CTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGG
+CGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCG
+TCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTA
+CTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCG
+AGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCG
+GGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACC
+TGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAA
+TACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGA
+GGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACT
+GCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTC
+ACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGT
+TCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGC
+CGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCG
+CTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTG
+GGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCC
+CAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCT
+GGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGC
+GCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGA
+GGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGA
+GACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGA
+GGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTG
+AAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAAT
+CCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCA
+GTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAA
+AAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGC
+GGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCT
+ACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGG
+GAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATC
+GCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGC
+GGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGG
+TCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAA
+AAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAG
+GAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACT
+CCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCC
+TGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAG
+ACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGC
+GTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGA
+ACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGA
+CAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCA
+CTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCA
+ACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCG
+CCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGG
+AGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTC
+CGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCG
+AGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACC
+CCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAG
+CTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAG
+CCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGG
+CCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATC
+ACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAA
+AAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGC
+TGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCC
+ACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGG
+CTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGG
+AGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATT
+AGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAA
+TCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGC
+CTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAA
+TCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAG
+CCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGT
+GGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCG
+GGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAG
+CGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTG
+GGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATG
+GTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGT
+AATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTT
+GCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCT
+CAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCG
+GGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTC
+TCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACT
+CGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAG
+ATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGG
+CGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTG
+AGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATA
+CAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGG
+CAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGC
+ACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCAC
+GCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTC
+GAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCG
+GGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCT
+TGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGG
+CGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCA
+GCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGG
+CCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGC
+GCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGG
+CGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGA
+CTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGG
+CCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAA
+ACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCC
+CAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGT
+GAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAA
+AGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGG
+ATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTAC
+TAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGA
+GGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGC
+GCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGG
+TGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTC
+AGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAA
+ATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGA
+GAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCC
+AGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTG
+TAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGAC
+CAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGT
+GGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAAC
+CCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACA
+GAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACT
+TTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAAC
+ATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCC
+TGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAG
+GTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCG
+TCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAG
+GCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCC
+GTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCT
+ACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCC
+GAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCC
+GGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCAC
+CTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAA
+ATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTG
+AGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCAC
+TGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCT
+CACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAG
+TTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAG
+CCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATC
+GCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCT
+GGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATC
+CCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCC
+TGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGG
+CGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGG
+AGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCG
+AGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGG
+AGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGT
+GAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAA
+TCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGC
+AGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCA
+AAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGG
+CGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTC
+TACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCG
+GGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGAT
+CGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCG
+CGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAG
+GTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACA
+AAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCA
+GGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCAC
+TCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGC
+CTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGA
+GACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGG
+CGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTG
+AACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCG
+ACAGAGCGAGACTCCGTCTCAAAAAGGCCGG    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

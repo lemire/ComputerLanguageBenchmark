@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="all" />
+<meta name="description" content="Performance measurements for all the Smalltalk VW programs implementing ~12 simple benchmark tasks, (64-bit Ubuntu quad core)." />
+<title>Smalltalk VW measurements (64-bit Ubuntu quad core) | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article,footer{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}code,h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}nav p{margin:0 .5em}ul{clear:left;margin:-0.3em 0 1.5em;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,span{border-bottom:.1em solid #333;padding-bottom:.1em}
+#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.best{font-weight:bold}.message{font-size:.8em}table{color:#333;margin:1.3em auto 0;text-align:right}tbody:after{content:"-";display:block;line-height:2.6em;visibility:hidden}td{border-bottom:.15em dotted #eee;padding:.7em 0 0 1em}td a,th a{display:block}td:first-child,th:first-child{text-align:left;padding-left:0}th{font-weight:normal;padding:0 0 0 1em}
+@media only screen{th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6),th:nth-child(7),td:nth-child(7){display:none}}@media only screen and (min-width:27em){th:nth-child(3),td:nth-child(3){display:table-cell}}@media only screen and (min-width:38em){th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:table-cell}}@media only screen and (min-width:47em){th:nth-child(7),td:nth-child(7){display:table-cell}}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+
+<article>
+  <div>
+    <h2>all Smalltalk VW programs & measurements</h2>
+    <aside>
+      <p>&nbsp;</a>
+    </aside>
+  </div>
+  <section>
+    <table>
+      <tbody>
+      <tr>
+        <td colspan="7" class="message"><p>VisualWorks&#174; Personal Use Edition Release 8.2 of July 15, 2016
+
+
+
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./binarytrees-vw-3.html"><span>binary-trees&nbsp;&nbsp;#3</span></a>
+          <td>0.22
+          <td>&nbsp;7
+          <td>1,264
+          <td>938
+          <td>0.21
+          <td class="message">5%&nbsp;95%&nbsp;10%&nbsp;0%
+        <tr>
+          <td><a href="./binarytrees-vw-3.html"><span>binary-trees&nbsp;&nbsp;#3</span></a>
+          <td>0.43
+          <td>&nbsp;14
+          <td>56,728
+          <td>938
+          <td>0.42
+          <td class="message">100%&nbsp;2%&nbsp;2%&nbsp;2%
+        <tr>
+          <td><a href="./binarytrees-vw-3.html"><span>binary-trees&nbsp;&nbsp;#3</span></a>
+          <td>31.15
+          <td>&nbsp;21
+          <td>375,020
+          <td>938
+          <td>83.72
+          <td class="message">59%&nbsp;78%&nbsp;64%&nbsp;71%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./binarytrees-vw-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>0.21
+          <td>&nbsp;7
+          <td>1,164
+          <td>725
+          <td>0.20
+          <td class="message">0%&nbsp;5%&nbsp;95%&nbsp;0%
+        <tr>
+          <td><a href="./binarytrees-vw-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>0.40
+          <td>&nbsp;14
+          <td>724
+          <td>725
+          <td>0.39
+          <td class="message">100%&nbsp;0%&nbsp;5%&nbsp;3%
+        <tr>
+          <td><a href="./binarytrees-vw-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>76.03
+          <td>&nbsp;21
+          <td>375,100
+          <td>725
+          <td>75.93
+          <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./chameneosredux-vw-2.html"><span>chameneos-redux&nbsp;&nbsp;#2</span></a>
+          <td>0.81
+          <td>&nbsp;60,000
+          <td>54,024
+          <td>2552
+          <td>0.65
+          <td class="message">99%&nbsp;0%&nbsp;1%&nbsp;29%
+        <tr>
+          <td><a href="./chameneosredux-vw-2.html"><span>chameneos-redux&nbsp;&nbsp;#2</span></a>
+          <td>4.66
+          <td>&nbsp;600,000
+          <td>56,844
+          <td>2552
+          <td>4.65
+          <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;0%
+        <tr>
+          <td><a href="./chameneosredux-vw-2.html"><span>chameneos-redux&nbsp;&nbsp;#2</span></a>
+          <td>44.57
+          <td>&nbsp;6,000,000
+          <td>56,572
+          <td>2552
+          <td>44.52
+          <td class="message">1%&nbsp;0%&nbsp;100%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fannkuchredux-vw-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>4.34
+          <td>&nbsp;10
+          <td>54,612
+          <td>927
+          <td>4.34
+          <td class="message">0%&nbsp;0%&nbsp;1%&nbsp;100%
+        <tr>
+          <td><a href="./fannkuchredux-vw-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>50.79
+          <td>&nbsp;11
+          <td>55,544
+          <td>927
+          <td>50.75
+          <td class="message">66%&nbsp;4%&nbsp;4%&nbsp;42%
+        <tr>
+          <td><a href="./fannkuchredux-vw-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>694.43
+          <td>&nbsp;12
+          <td>53,736
+          <td>927
+          <td>694.06
+          <td class="message">1%&nbsp;100%&nbsp;1%&nbsp;1%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fasta-vw-1.html"><span>fasta&nbsp;</span></a>
+          <td>0.70
+          <td>&nbsp;250,000
+          <td>54,812
+          <td>1536
+          <td>0.69
+          <td class="message">3%&nbsp;0%&nbsp;100%&nbsp;1%
+        <tr>
+          <td><a href="./fasta-vw-1.html"><span>fasta&nbsp;</span></a>
+          <td>4.97
+          <td>&nbsp;2,500,000
+          <td>55,520
+          <td>1536
+          <td>4.96
+          <td class="message">1%&nbsp;100%&nbsp;1%&nbsp;0%
+        <tr>
+          <td><a href="./fasta-vw-1.html"><span>fasta&nbsp;</span></a>
+          <td>47.34
+          <td>&nbsp;25,000,000
+          <td>56,084
+          <td>1536
+          <td>47.32
+          <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./knucleotide-vw-5.html"><span>k-nucleotide&nbsp;&nbsp;#5</span></a>
+          <td>7.20
+          <td>&nbsp;250,000
+          <td>92,052
+          <td>1303
+          <td>7.17
+          <td class="message">100%&nbsp;9%&nbsp;7%&nbsp;8%
+        <tr>
+          <td><a href="./knucleotide-vw-5.html"><span>k-nucleotide&nbsp;&nbsp;#5</span></a>
+          <td>66.53
+          <td>&nbsp;2,500,000
+          <td>145,956
+          <td>1303
+          <td>66.34
+          <td class="message">34%&nbsp;18%&nbsp;97%&nbsp;23%
+        <tr>
+          <td><a href="./knucleotide-vw-5.html"><span>k-nucleotide&nbsp;&nbsp;#5</span></a>
+          <td>652.47
+          <td>&nbsp;25,000,000
+          <td>387,932
+          <td>1303
+          <td>651.61
+          <td class="message">39%&nbsp;63%&nbsp;34%&nbsp;21%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-vw-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>2.51
+          <td>&nbsp;1,000
+          <td>54,780
+          <td>627
+          <td>2.50
+          <td class="message">41%&nbsp;16%&nbsp;16%&nbsp;100%
+        <tr>
+          <td><a href="./mandelbrot-vw-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>36.79
+          <td>&nbsp;4,000
+          <td>54,460
+          <td>627
+          <td>36.77
+          <td class="message">27%&nbsp;11%&nbsp;99%&nbsp;7%
+        <tr>
+          <td><a href="./mandelbrot-vw-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>584.04
+          <td>&nbsp;16,000
+          <td>54,500
+          <td>627
+          <td>583.69
+          <td class="message">39%&nbsp;62%&nbsp;27%&nbsp;17%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-vw-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>2.21
+          <td>&nbsp;1,000
+          <td>86,876
+          <td>940
+          <td>2.24
+          <td class="message">40%&nbsp;40%&nbsp;34%&nbsp;37%
+        <tr>
+          <td><a href="./mandelbrot-vw-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>14.74
+          <td>&nbsp;4,000
+          <td>?
+          <td>940
+          <td>?
+          <td class="message">92%&nbsp;64%&nbsp;93%&nbsp;5%
+        <tr>
+          <td><a href="./mandelbrot-vw-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>214.93
+          <td>&nbsp;16,000
+          <td>118,764
+          <td>940
+          <td>151.34
+          <td class="message">28%&nbsp;75%&nbsp;68%&nbsp;98%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./meteor-vw-1.html"><span>meteor-contest&nbsp;</span></a>
+          <td>0.68
+          <td>&nbsp;2,098
+          <td>56,684
+          <td>5373
+          <td>0.68
+          <td class="message">6%&nbsp;1%&nbsp;3%&nbsp;99%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-vw-1.html"><span>n-body&nbsp;</span></a>
+          <td>2.13
+          <td>&nbsp;500,000
+          <td>54,920
+          <td>1805
+          <td>2.12
+          <td class="message">100%&nbsp;0%&nbsp;1%&nbsp;1%
+        <tr>
+          <td><a href="./nbody-vw-1.html"><span>n-body&nbsp;</span></a>
+          <td>19.65
+          <td>&nbsp;5,000,000
+          <td>56,064
+          <td>1805
+          <td>19.63
+          <td class="message">1%&nbsp;100%&nbsp;1%&nbsp;2%
+        <tr>
+          <td><a href="./nbody-vw-1.html"><span>n-body&nbsp;</span></a>
+          <td>194.34
+          <td>&nbsp;50,000,000
+          <td>56,384
+          <td>1805
+          <td>194.29
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;1%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./pidigits-vw-4.html"><span>pidigits&nbsp;&nbsp;#4</span></a>
+          <td>0.79
+          <td>&nbsp;2,000
+          <td>54,792
+          <td>773
+          <td>0.78
+          <td class="message">27%&nbsp;100%&nbsp;23%&nbsp;9%
+        <tr>
+          <td><a href="./pidigits-vw-4.html"><span>pidigits&nbsp;&nbsp;#4</span></a>
+          <td>5.85
+          <td>&nbsp;6,000
+          <td>55,952
+          <td>773
+          <td>5.84
+          <td class="message">8%&nbsp;100%&nbsp;16%&nbsp;13%
+        <tr>
+          <td><a href="./pidigits-vw-4.html"><span>pidigits&nbsp;&nbsp;#4</span></a>
+          <td>13.37
+          <td>&nbsp;10,000
+          <td>55,996
+          <td>773
+          <td>13.36
+          <td class="message">1%&nbsp;1%&nbsp;100%&nbsp;1%
+      <tbody>
+        <tr>
+          <td><a href="./revcomp-vw-1.html"><span>reverse-complement&nbsp;</span></a>
+          <td class="message">Make&nbsp;Error
+          <td>&nbsp;250,000
+          <td>
+          <td>
+          <td>
+          <td class="message">
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-vw-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>7.70
+          <td>&nbsp;500
+          <td>?
+          <td>1054
+          <td>?
+          <td class="message">43%&nbsp;40%&nbsp;32%&nbsp;43%
+        <tr>
+          <td><a href="./spectralnorm-vw-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>15.04
+          <td>&nbsp;3,000
+          <td>250,076
+          <td>1054
+          <td>40.26
+          <td class="message">68%&nbsp;70%&nbsp;66%&nbsp;66%
+        <tr>
+          <td><a href="./spectralnorm-vw-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>32.22
+          <td>&nbsp;5,500
+          <td>244,048
+          <td>1054
+          <td>82.07
+          <td class="message">84%&nbsp;83%&nbsp;84%&nbsp;86%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-vw-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>0.98
+          <td>&nbsp;500
+          <td>54,508
+          <td>669
+          <td>0.97
+          <td class="message">19%&nbsp;16%&nbsp;18%&nbsp;100%
+        <tr>
+          <td><a href="./spectralnorm-vw-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>27.36
+          <td>&nbsp;3,000
+          <td>56,008
+          <td>669
+          <td>27.34
+          <td class="message">8%&nbsp;100%&nbsp;8%&nbsp;6%
+        <tr>
+          <td><a href="./spectralnorm-vw-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>91.12
+          <td>&nbsp;5,500
+          <td>56,232
+          <td>669
+          <td>91.10
+          <td class="message">1%&nbsp;1%&nbsp;0%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./threadring-vw-2.html"><span>thread-ring&nbsp;&nbsp;#2</span></a>
+          <td>0.81
+          <td>&nbsp;500,000
+          <td>56,796
+          <td>655
+          <td>0.60
+          <td class="message">1%&nbsp;0%&nbsp;3%&nbsp;99%
+        <tr>
+          <td><a href="./threadring-vw-2.html"><span>thread-ring&nbsp;&nbsp;#2</span></a>
+          <td>4.26
+          <td>&nbsp;5,000,000
+          <td>56,304
+          <td>655
+          <td>4.23
+          <td class="message">1%&nbsp;100%&nbsp;0%&nbsp;1%
+        <tr>
+          <td><a href="./threadring-vw-2.html"><span>thread-ring&nbsp;&nbsp;#2</span></a>
+          <td>39.67
+          <td>&nbsp;50,000,000
+          <td>57,012
+          <td>655
+          <td>39.65
+          <td class="message">1%&nbsp;1%&nbsp;100%&nbsp;1%
+    </table>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./why-measure-toy-benchmark-programs.html"><span>toy programs</span></a>
+      <li><a href="./how-programs-are-measured.html"><span>details</span></a>
+      <li><a href="./dont-jump-to-conclusions.html"><span>conclusions</span></a>
+    </ul>
+  </nav>
+  <aside>
+    <p>We want easy answers, but easy answers are often incomplete or wrong. You and I know, there's more we need to understand.
+  </aside>
+</footer>
+

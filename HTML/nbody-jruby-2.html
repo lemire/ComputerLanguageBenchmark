@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>n-body Ruby JRuby&nbsp;#2 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>n-body Ruby JRuby&nbsp;#2 program</h2>
+    <aside>
+      <p><a href="./nbody-description.html#nbody">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc"># The Computer Language Shootout</span>
+<span class="slc"># http://shootout.alioth.debian.org</span>
+<span class="slc">#</span>
+<span class="slc"># Optimized for Ruby by Jesse Millikan</span>
+<span class="slc"># From version ported by Michael Neumann from the C gcc version, </span>
+<span class="slc"># which was written by Christoph Bauer. </span>
+
+SOLAR_MASS <span class="opt">=</span> <span class="num">4</span> <span class="opt">*</span> Math<span class="opt">:</span><span class="kwc">:PI</span><span class="opt">**</span><span class="num">2</span>
+DAYS_PER_YEAR <span class="opt">=</span> <span class="num">365.24</span>
+
+<span class="kwa">class</span> Planet
+ attr_accessor <span class="kwc">:x</span><span class="opt">,</span> <span class="kwc">:y</span><span class="opt">,</span> <span class="kwc">:z</span><span class="opt">,</span> <span class="kwc">:vx</span><span class="opt">,</span> <span class="kwc">:vy</span><span class="opt">,</span> <span class="kwc">:vz</span><span class="opt">,</span> <span class="kwc">:mass</span>
+
+ <span class="kwa">def</span> <span class="kwd">initialize</span><span class="opt">(</span>x<span class="opt">,</span> y<span class="opt">,</span> z<span class="opt">,</span> vx<span class="opt">,</span> vy<span class="opt">,</span> vz<span class="opt">,</span> mass<span class="opt">)</span>
+  <span class="kwb">&#64;x</span><span class="opt">,</span> <span class="kwb">&#64;y</span><span class="opt">,</span> <span class="kwb">&#64;z</span> <span class="opt">=</span> x<span class="opt">,</span> y<span class="opt">,</span> z
+  <span class="kwb">&#64;vx</span><span class="opt">,</span> <span class="kwb">&#64;vy</span><span class="opt">,</span> <span class="kwb">&#64;vz</span> <span class="opt">=</span> vx <span class="opt">*</span> DAYS_PER_YEAR<span class="opt">,</span> vy <span class="opt">*</span> DAYS_PER_YEAR<span class="opt">,</span> vz <span class="opt">*</span> DAYS_PER_YEAR 
+  <span class="kwb">&#64;mass</span> <span class="opt">=</span> mass <span class="opt">*</span> SOLAR_MASS
+ <span class="kwa">end</span>
+
+ <span class="kwa">def</span> <span class="kwd">move_from_i</span><span class="opt">(</span>bodies<span class="opt">,</span> nbodies<span class="opt">,</span> dt<span class="opt">,</span> i<span class="opt">)</span>
+  <span class="kwa">while</span> i <span class="opt">&lt;</span> nbodies
+   b2 <span class="opt">=</span> bodies<span class="opt">[</span>i<span class="opt">]</span>
+   dx <span class="opt">=</span> <span class="kwb">&#64;x</span> <span class="opt">-</span> b2<span class="opt">.</span>x
+   dy <span class="opt">=</span> <span class="kwb">&#64;y</span> <span class="opt">-</span> b2<span class="opt">.</span>y
+   dz <span class="opt">=</span> <span class="kwb">&#64;z</span> <span class="opt">-</span> b2<span class="opt">.</span>z
+
+   distance <span class="opt">=</span> Math<span class="opt">.</span><span class="kwd">sqrt</span><span class="opt">(</span>dx <span class="opt">*</span> dx <span class="opt">+</span> dy <span class="opt">*</span> dy <span class="opt">+</span> dz <span class="opt">*</span> dz<span class="opt">)</span>
+   mag <span class="opt">=</span> dt <span class="opt">/ (</span>distance <span class="opt">*</span> distance <span class="opt">*</span> distance<span class="opt">)</span>
+   b_mass_mag<span class="opt">,</span> b2_mass_mag <span class="opt">=</span> <span class="kwb">&#64;mass</span> <span class="opt">*</span> mag<span class="opt">,</span> b2<span class="opt">.</span>mass <span class="opt">*</span> mag
+
+   <span class="kwb">&#64;vx</span> <span class="opt">-=</span> dx <span class="opt">*</span> b2_mass_mag
+   <span class="kwb">&#64;vy</span> <span class="opt">-=</span> dy <span class="opt">*</span> b2_mass_mag
+   <span class="kwb">&#64;vz</span> <span class="opt">-=</span> dz <span class="opt">*</span> b2_mass_mag
+   b2<span class="opt">.</span>vx <span class="opt">+=</span> dx <span class="opt">*</span> b_mass_mag
+   b2<span class="opt">.</span>vy <span class="opt">+=</span> dy <span class="opt">*</span> b_mass_mag
+   b2<span class="opt">.</span>vz <span class="opt">+=</span> dz <span class="opt">*</span> b_mass_mag
+   i <span class="opt">+=</span> <span class="num">1</span> 
+  <span class="kwa">end</span>
+
+  <span class="kwb">&#64;x</span> <span class="opt">+=</span> dt <span class="opt">*</span> <span class="kwb">&#64;vx</span>
+  <span class="kwb">&#64;y</span> <span class="opt">+=</span> dt <span class="opt">*</span> <span class="kwb">&#64;vy</span>
+  <span class="kwb">&#64;z</span> <span class="opt">+=</span> dt <span class="opt">*</span> <span class="kwb">&#64;vz</span>
+ <span class="kwa">end</span>
+<span class="kwa">end</span>
+
+<span class="kwa">def</span> <span class="kwd">energy</span><span class="opt">(</span>bodies<span class="opt">)</span>
+  e <span class="opt">=</span> <span class="num">0.0</span>
+  nbodies <span class="opt">=</span> bodies<span class="opt">.</span>size
+ 
+  <span class="kwa">for</span> i <span class="kwa">in</span> <span class="num">0</span> <span class="opt">...</span> nbodies 
+    b <span class="opt">=</span> bodies<span class="opt">[</span>i<span class="opt">]</span>
+    e <span class="opt">+=</span> <span class="num">0.5</span> <span class="opt">*</span> b<span class="opt">.</span>mass <span class="opt">* (</span>b<span class="opt">.</span>vx <span class="opt">*</span> b<span class="opt">.</span>vx <span class="opt">+</span> b<span class="opt">.</span>vy <span class="opt">*</span> b<span class="opt">.</span>vy <span class="opt">+</span> b<span class="opt">.</span>vz <span class="opt">*</span> b<span class="opt">.</span>vz<span class="opt">)</span>
+    <span class="kwa">for</span> j <span class="kwa">in</span> <span class="opt">(</span>i <span class="opt">+</span> <span class="num">1</span><span class="opt">) ...</span> nbodies
+      b2 <span class="opt">=</span> bodies<span class="opt">[</span>j<span class="opt">]</span>
+      dx <span class="opt">=</span> b<span class="opt">.</span>x <span class="opt">-</span> b2<span class="opt">.</span>x
+      dy <span class="opt">=</span> b<span class="opt">.</span>y <span class="opt">-</span> b2<span class="opt">.</span>y
+      dz <span class="opt">=</span> b<span class="opt">.</span>z <span class="opt">-</span> b2<span class="opt">.</span>z
+      distance <span class="opt">=</span> Math<span class="opt">.</span><span class="kwd">sqrt</span><span class="opt">(</span>dx <span class="opt">*</span> dx <span class="opt">+</span> dy <span class="opt">*</span> dy <span class="opt">+</span> dz <span class="opt">*</span> dz<span class="opt">)</span>
+      e <span class="opt">-= (</span>b<span class="opt">.</span>mass <span class="opt">*</span> b2<span class="opt">.</span>mass<span class="opt">) /</span> distance
+    <span class="kwa">end</span>
+  <span class="kwa">end</span>
+  e
+<span class="kwa">end</span>
+
+<span class="kwa">def</span> <span class="kwd">offset_momentum</span><span class="opt">(</span>bodies<span class="opt">)</span>
+  px<span class="opt">,</span> py<span class="opt">,</span> pz <span class="opt">=</span> <span class="num">0.0</span><span class="opt">,</span> <span class="num">0.0</span><span class="opt">,</span> <span class="num">0.0</span>
+
+  <span class="kwa">for</span> b <span class="kwa">in</span> bodies
+    m <span class="opt">=</span> b<span class="opt">.</span>mass
+    px <span class="opt">+=</span> b<span class="opt">.</span>vx <span class="opt">*</span> m
+    py <span class="opt">+=</span> b<span class="opt">.</span>vy <span class="opt">*</span> m
+    pz <span class="opt">+=</span> b<span class="opt">.</span>vz <span class="opt">*</span> m
+  <span class="kwa">end</span>
+
+  b <span class="opt">=</span> bodies<span class="opt">[</span><span class="num">0</span><span class="opt">]</span>
+  b<span class="opt">.</span>vx <span class="opt">= -</span> px <span class="opt">/</span> SOLAR_MASS
+  b<span class="opt">.</span>vy <span class="opt">= -</span> py <span class="opt">/</span> SOLAR_MASS
+  b<span class="opt">.</span>vz <span class="opt">= -</span> pz <span class="opt">/</span> SOLAR_MASS
+<span class="kwa">end</span>
+
+BODIES <span class="opt">= [</span>
+  <span class="slc"># sun</span>
+  Planet<span class="opt">.</span><span class="kwd">new</span><span class="opt">(</span><span class="num">0.0</span><span class="opt">,</span> <span class="num">0.0</span><span class="opt">,</span> <span class="num">0.0</span><span class="opt">,</span> <span class="num">0.0</span><span class="opt">,</span> <span class="num">0.0</span><span class="opt">,</span> <span class="num">0.0</span><span class="opt">,</span> <span class="num">1.0</span><span class="opt">),</span>
+
+  <span class="slc"># jupiter</span>
+  Planet<span class="opt">.</span><span class="kwd">new</span><span class="opt">(</span>
+    <span class="num">4.84143144246472090e+00</span><span class="opt">,</span>
+    <span class="opt">-</span><span class="num">1.16032004402742839e+00</span><span class="opt">,</span>
+    <span class="opt">-</span><span class="num">1.03622044471123109e-01</span><span class="opt">,</span>
+    <span class="num">1.66007664274403694e-03</span><span class="opt">,</span>
+    <span class="num">7.69901118419740425e-03</span><span class="opt">,</span>
+    <span class="opt">-</span><span class="num">6.90460016972063023e-05</span><span class="opt">,</span>
+    <span class="num">9.54791938424326609e-04</span><span class="opt">),</span>
+
+  <span class="slc"># saturn</span>
+  Planet<span class="opt">.</span><span class="kwd">new</span><span class="opt">(</span>
+    <span class="num">8.34336671824457987e+00</span><span class="opt">,</span>
+    <span class="num">4.12479856412430479e+00</span><span class="opt">,</span>
+    <span class="opt">-</span><span class="num">4.03523417114321381e-01</span><span class="opt">,</span>
+    <span class="opt">-</span><span class="num">2.76742510726862411e-03</span><span class="opt">,</span>
+    <span class="num">4.99852801234917238e-03</span><span class="opt">,</span>
+    <span class="num">2.30417297573763929e-05</span><span class="opt">,</span>
+    <span class="num">2.85885980666130812e-04</span><span class="opt">),</span>
+
+  <span class="slc"># uranus</span>
+  Planet<span class="opt">.</span><span class="kwd">new</span><span class="opt">(</span>
+    <span class="num">1.28943695621391310e+01</span><span class="opt">,</span>
+    <span class="opt">-</span><span class="num">1.51111514016986312e+01</span><span class="opt">,</span>
+    <span class="opt">-</span><span class="num">2.23307578892655734e-01</span><span class="opt">,</span>
+    <span class="num">2.96460137564761618e-03</span><span class="opt">,</span>
+    <span class="num">2.37847173959480950e-03</span><span class="opt">,</span>
+    <span class="opt">-</span><span class="num">2.96589568540237556e-05</span><span class="opt">,</span>
+    <span class="num">4.36624404335156298e-05</span><span class="opt">),</span>
+
+  <span class="slc"># neptune</span>
+  Planet<span class="opt">.</span><span class="kwd">new</span><span class="opt">(</span>
+    <span class="num">1.53796971148509165e+01</span><span class="opt">,</span>
+    <span class="opt">-</span><span class="num">2.59193146099879641e+01</span><span class="opt">,</span>
+    <span class="num">1.79258772950371181e-01</span><span class="opt">,</span>
+    <span class="num">2.68067772490389322e-03</span><span class="opt">,</span>
+    <span class="num">1.62824170038242295e-03</span><span class="opt">,</span>
+    <span class="opt">-</span><span class="num">9.51592254519715870e-05</span><span class="opt">,</span>
+    <span class="num">5.15138902046611451e-05</span><span class="opt">)</span>
+<span class="opt">]</span>
+
+
+n <span class="opt">=</span> <span class="kwd">Integer</span><span class="opt">(</span><span class="kwc">ARGV</span><span class="opt">[</span><span class="num">0</span><span class="opt">])</span>
+
+<span class="kwd">offset_momentum</span><span class="opt">(</span>BODIES<span class="opt">)</span>
+
+puts <span class="str">&quot;%.9f&quot;</span> <span class="opt">%</span> <span class="kwd">energy</span><span class="opt">(</span>BODIES<span class="opt">)</span>
+
+nbodies <span class="opt">=</span> BODIES<span class="opt">.</span>size
+dt <span class="opt">=</span> <span class="num">0.01</span>
+
+n<span class="opt">.</span>times <span class="kwa">do</span>
+  i <span class="opt">=</span> <span class="num">0</span>
+  <span class="kwa">while</span> i <span class="opt">&lt;</span> nbodies
+    b <span class="opt">=</span> BODIES<span class="opt">[</span>i<span class="opt">]</span>
+    b<span class="opt">.</span><span class="kwd">move_from_i</span><span class="opt">(</span>BODIES<span class="opt">,</span> nbodies<span class="opt">,</span> dt<span class="opt">,</span> i <span class="opt">+</span> <span class="num">1</span><span class="opt">)</span>
+    i <span class="opt">+=</span> <span class="num">1</span>
+  <span class="kwa">end</span>
+<span class="kwa">end</span>
+
+puts <span class="str">&quot;%.9f&quot;</span> <span class="opt">%</span> <span class="kwd">energy</span><span class="opt">(</span>BODIES<span class="opt">)</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+jruby 9.1.16.0 (2.3.3) 2018-02-21 8f3f95a Java HotSpot(TM) 64-Bit Server VM 10+46 on 10+46 +jit [linux-x86_64]
+
+
+Thu, 22 Mar 2018 03:11:49 GMT
+
+MAKE:
+mv nbody.jruby-2.jruby nbody.rb
+
+0.01s to complete and log all make actions
+
+COMMAND LINE:
+/opt/src/jruby-9.1.16.0/bin/jruby -Xcompile.fastest=true -Xcompile.invokedynamic=true -J-server -J-Xmn512m -J-Xms2048m -J-Xmx2048m nbody.rb 50000000
+
+PROGRAM OUTPUT:
+-0.169075164
+-0.169059907
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

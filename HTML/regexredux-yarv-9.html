@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>regex-redux Ruby&nbsp;#9 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>regex-redux Ruby&nbsp;#9 program</h2>
+    <aside>
+      <p><a href="./regexredux-description.html#regexredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc"># The Computer Language Benchmarks Game</span>
+<span class="slc"># http://benchmarksgame.alioth.debian.org</span>
+<span class="slc">#</span>
+<span class="slc"># regex-dna program contributed by jose fco. gonzalez</span>
+<span class="slc"># corrected to use regex instead of string substitution</span>
+<span class="slc"># converted from regex-dna program</span>
+
+seq <span class="opt">=</span> <span class="kwc">STDIN</span><span class="opt">.</span>readlines<span class="opt">.</span>join
+ilen <span class="opt">=</span> seq<span class="opt">.</span>size
+
+seq<span class="opt">.</span>gsub<span class="opt">!(</span><span class="kwc">/&gt;.*\n|\n/</span><span class="opt">,</span><span class="str">&quot;&quot;</span><span class="opt">)</span>
+clen <span class="opt">=</span> seq<span class="opt">.</span>length
+
+<span class="opt">[</span>
+  <span class="kwc">/agggtaaa|tttaccct/</span>i<span class="opt">,</span>
+  <span class="kwc">/[cgt]gggtaaa|tttaccc[acg]/</span>i<span class="opt">,</span>
+  <span class="kwc">/a[act]ggtaaa|tttacc[agt]t/</span>i<span class="opt">,</span>
+  <span class="kwc">/ag[act]gtaaa|tttac[agt]ct/</span>i<span class="opt">,</span>
+  <span class="kwc">/agg[act]taaa|ttta[agt]cct/</span>i<span class="opt">,</span>
+  <span class="kwc">/aggg[acg]aaa|ttt[cgt]ccct/</span>i<span class="opt">,</span>
+  <span class="kwc">/agggt[cgt]aa|tt[acg]accct/</span>i<span class="opt">,</span>
+  <span class="kwc">/agggta[cgt]a|t[acg]taccct/</span>i<span class="opt">,</span>
+  <span class="kwc">/agggtaa[cgt]|[acg]ttaccct/</span>i
+<span class="opt">].</span>each {|f| puts &quot;#{f.source} <span class="slc">#{seq.scan(f).size}&quot; }</span>
+
+<span class="opt">{</span>
+<span class="kwc">/tHa[Nt]/</span> <span class="opt">=&gt;</span> <span class="str">&apos;&lt;4&gt;&apos;</span><span class="opt">,</span> <span class="kwc">/aND|caN|Ha[DS]|WaS/</span> <span class="opt">=&gt;</span> <span class="str">&apos;&lt;3&gt;&apos;</span><span class="opt">,</span> <span class="kwc">/a[NSt]|BY/</span> <span class="opt">=&gt;</span> <span class="str">&apos;&lt;2&gt;&apos;</span><span class="opt">,</span> 
+<span class="kwc">/&lt;[^&gt;]*&gt;/</span> <span class="opt">=&gt;</span> <span class="str">&apos;|&apos;</span><span class="opt">,</span> <span class="kwc">/\|[^|][^|]*\|/</span> <span class="opt">=&gt;</span> <span class="str">&apos;-&apos;</span>
+<span class="opt">}.</span>each { |f,r| seq.gsub!(f,r) }
+
+puts
+puts ilen
+puts clen
+puts seq<span class="opt">.</span>length
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+ruby 2.5.0p0 (2017-12-25 revision 61468) [x86_64-linux]
+
+
+Tue, 02 Jan 2018 03:42:54 GMT
+
+COMMAND LINE:
+/opt/src/ruby-2.5.0/bin/ruby -W0 regexredux.yarv-9.yarv 0 &lt; regexredux-input5000000.txt
+
+PROGRAM OUTPUT:
+agggtaaa|tttaccct 356
+[cgt]gggtaaa|tttaccc[acg] 1250
+a[act]ggtaaa|tttacc[agt]t 4252
+ag[act]gtaaa|tttac[agt]ct 2894
+agg[act]taaa|ttta[agt]cct 5435
+aggg[acg]aaa|ttt[cgt]ccct 1537
+agggt[cgt]aa|tt[acg]accct 1431
+agggta[cgt]a|t[acg]taccct 1608
+agggtaa[cgt]|[acg]ttaccct 2178
+
+50833411
+50000000
+27388361
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

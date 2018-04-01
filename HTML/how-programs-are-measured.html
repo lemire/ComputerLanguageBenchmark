@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="index,follow,archive">
+<meta name="description" content="How programs are measured for the Computer Language Benchmarks Game.">
+<title>details | The Computer Language Benchmarks Game</title>
+<link rel="shortcut icon" href="./favicon.ico">
+<style><!-- 
+a{color:black;text-decoration:none}article,footer,header{margin:auto;max-width:31em;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}code,h1,h2,h3{font-family:Ubuntu Mono,Consolas,Menlo,monospace}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}p{color:#333;line-height:1.4;margin:.3em 0 0}p a{border-bottom:.1em solid #333;padding-bottom:.1em}#core{background-color:black}code{font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<header id="top">
+  <h1 id="core"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <h2></h2>
+  <aside>
+    <p>Measured on a quad-core 2.4Ghz Intel<sup>&#174;</sup> Q6600<sup>&#174;</sup> with 4GB of RAM and 250GB SATA II disk drive; using Ubuntu&#8482; 17.10 Linux x64 4.13.0-16-generic.
+  </aside>
+  <section>
+    <h3 id="measured">How programs are measured</h3>
+    <ol>
+      <li><p>Each program is run and measured at the smallest input value, program output redirected to a file and compared to expected output. As long as the output matches expected output, the program is then run and measured at the next larger input value until measurements have been made at every input value.
+      <li><p>If the program gives the expected output within an arbitrary cutoff time (120 seconds) the program is measured again (5 more times) with output redirected to <code>/dev/null</code>.
+      <li><p>If the program doesn't give the expected output within an arbitrary timeout (usually one hour) the program is forced to quit. If measurements at a smaller input value have been successful within an arbitrary cutoff time (120 seconds), the program is measured again (5 more times) at that smaller input value, with output redirected to <code>/dev/null</code>.
+<li>The measurements shown on the website are either:
+      <ul>
+        <li><p>within the arbitrary cutoff - the lowest time and highest memory use from 6 measurements
+        <li><p>outside the arbitrary cutoff - the sole time and memory use measurement
+      </ul>
+      <li><p>For sure, programs taking 4 and 5 hours were only measured once!
+    </ol>
+  </section>
+  <section>
+    <h3 id="time">How programs are timed</h3>
+    <p>Each program is run as a child-process of <a href="./benchmarksgame-script.zip">a Python script</a> using <a href="http://docs.python.org/library/subprocess.html#popen-objects"><code>Popen</code></a>:
+    <ul>
+      <li><p>secs - The time is taken before forking the child-process and after the child-process exits, using <a href="http://docs.python.org/library/time.html?highlight=time.time#time.time"><code>time.time()</code></a>
+      <li><p>CPU - The script child-process <code>usr+sys rusage</code> time is taken using <a href="http://docs.python.org/library/os.html?highlight=os.wait3#os.wait3"><code>os.wait3</code></a>
+    </ul>
+    <p>On win32:
+    <ul>
+      <li><p>secs - The time is taken before forking the child-process and after the child-process exits, using <a href="http://msdn.microsoft.com/en-us/library/ms644904(VS.85).aspx"><code>QueryPerformanceCounter</code></a>
+      <li><p>CPU - <code>QueryInformationJobObject(hJob,JobObjectBasicAccountingInformation)</code> <a href="http://msdn.microsoft.com/en-us/library/ms684143(VS.85).aspx"><code>TotalKernelTime + TotalUserTime</code></a>
+    </ul>
+    <p>(Note: <a href="./sometimes-people-just-make-up-stuff.html#jvm-startup-time">Those measurements include startup time</a>).
+  </section>
+  <section>
+    <h3 id="memory">How program memory use is measured</h3>
+    <p>By sampling <code>GLIBTOP_PROC_MEM_RESIDENT</code> for the program and it's child processes every 0.2 seconds. Obviously those measurements are unlikely to be reliable for programs that run for less than 0.2 seconds.
+    <p>On win32: <code>QueryInformationJobObject(hJob,JobObjectExtendedLimitInformation)</code> <a href="http://msdn.microsoft.com/en-us/library/ms684156(VS.85).aspx"><code>PeakJobMemoryUsed</code></a>
+  </section>
+  <section>
+    <h3 id="source-code">How source code size is measured</h3>
+    <p>We start with the source-code markup you can see, remove comments, remove duplicate whitespace characters, and then apply minimum GZip compression. The measurement is the size in bytes of that GZip compressed source-code file.
+    <p>Thanks to Brian Hurt for the idea of using <b>size of compressed source code</b> instead of lines of code.
+    <p>(Note: There is some evidence that <a href="http://my.safaribooksonline.com/book/software-engineering-and-development/9780596808310/general-principles-of-searching-for-and-using-evidence/herraiz_hassan_metrics">complexity metrics don't provide any more information than SLoC or LoC</a>.)
+  </section>
+  <section>
+    <h3 id="cpu-load">How CPU load is measured</h3>
+    <p>The GTop cpu idle and GTop cpu total are taken before forking the child-process and after the child-process exits. The percentages represent the proportion of cpu not-idle to cpu total for each core.
+    <p>On win32: <code>GetSystemTimes</code> <a href="http://msdn.microsoft.com/en-us/library/ms724400(VS.85).aspx"><code>UserTime</code> <code>IdleTime</code></a> are taken before forking the child-process and after the child-process exits. The percentage represents the proportion of <code>TotalUserTime</code> to <code>UserTime + IdleTime</code> (because that's like the percentage you'll see in Task Manager).
+  </section>
+  <section>
+    <h3 id="data-files">Data files</h3>
+    <p>The <a href="./summarydata.html">summary data shown</a> only includes measurements for programs that successfully completed every workload; only includes measurements for the fastest programs and only includes the fastest measurement for those programs. Additional measurements (not just the fastest programs, not just the fastest measurements) are included in a separate compressed data file.
+  </section>
+</article>
+<footer>
+</footer>

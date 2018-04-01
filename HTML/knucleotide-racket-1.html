@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>k-nucleotide Racket program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>k-nucleotide Racket program</h2>
+    <aside>
+      <p><a href="./knucleotide-description.html#knucleotide">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="opt">#</span>lang racket<span class="opt">/</span>base
+
+<span class="slc">;;; The Computer Language Benchmarks Game</span>
+<span class="slc">;;; http://benchmarksgame.alioth.debian.org/</span>
+
+<span class="slc">;;; contributed by Matthew Flatt</span>
+
+<span class="opt">(</span><span class="kwa">define</span> <span class="opt">(</span><span class="kwa">all-counts</span> len dna<span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">let</span> <span class="opt">([</span>table <span class="opt">(</span><span class="kwa">make-hasheq</span><span class="opt">)]</span>
+        <span class="opt">[</span>seq <span class="opt">(</span><span class="kwa">make-string</span> len<span class="opt">)])</span>
+    <span class="opt">(</span><span class="kwa">for</span> <span class="opt">([</span>s <span class="opt">(</span><span class="kwa">in-range</span> <span class="opt">(</span><span class="kwa">-</span> <span class="opt">(</span><span class="kwa">string-length</span> dna<span class="opt">)</span> len<span class="opt">)</span> -<span class="num">1</span> -<span class="num">1</span><span class="opt">)])</span>
+      <span class="opt">(</span><span class="kwa">string-copy</span><span class="opt">!</span> seq <span class="num">0</span> dna s <span class="opt">(+</span> s len<span class="opt">))</span>
+      <span class="opt">(</span><span class="kwa">let</span> <span class="opt">([</span>key <span class="opt">(</span><span class="kwa">string-</span><span class="opt">&gt;</span>symbol seq<span class="opt">)])</span>
+        <span class="opt">(</span><span class="kwa">let</span> <span class="opt">([</span>cnt <span class="opt">(</span><span class="kwa">hash-ref</span> table key <span class="num">0</span><span class="opt">)])</span>
+          <span class="opt">(</span><span class="kwa">hash-set</span><span class="opt">!</span> table key <span class="opt">(</span><span class="kwa">add1</span> cnt<span class="opt">)))))</span>
+    table<span class="opt">))</span>
+
+<span class="opt">(</span><span class="kwa">define</span> <span class="opt">(</span><span class="kwa">write-freqs</span> table<span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">let</span><span class="opt">* ([</span>content <span class="opt">(</span><span class="kwa">hash-map</span> table cons<span class="opt">)]</span>
+         <span class="opt">[</span>total <span class="opt">(</span><span class="kwa">exact-</span><span class="opt">&gt;</span>inexact <span class="opt">(</span><span class="kwa">apply</span> <span class="opt">+ (</span><span class="kwa">map</span> cdr content<span class="opt">)))])</span>
+    <span class="opt">(</span><span class="kwa">for</span> <span class="opt">([</span>a <span class="opt">(</span><span class="kwa">sort</span> content <span class="opt">&gt; #:</span>key cdr<span class="opt">)])</span>
+      <span class="opt">(</span><span class="kwa">printf</span> <span class="str">&quot;~a ~a</span><span class="esc">\n</span><span class="str">&quot;</span> 
+              <span class="opt">(</span><span class="kwa">car</span> a<span class="opt">)</span> 
+              <span class="opt">(</span><span class="kwa">real-</span><span class="opt">&gt;</span>decimal-string <span class="opt">(*</span> <span class="num">100</span> <span class="opt">(/ (</span><span class="kwa">cdr</span> a<span class="opt">)</span> total<span class="opt">))</span> <span class="num">3</span><span class="opt">)))))</span>
+
+<span class="opt">(</span><span class="kwa">define</span> <span class="opt">(</span><span class="kwa">write-one-freq</span> table key<span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">let</span> <span class="opt">([</span>cnt <span class="opt">(</span><span class="kwa">hash-ref</span> table key <span class="num">0</span><span class="opt">)])</span>
+    <span class="opt">(</span><span class="kwa">printf</span> <span class="str">&quot;~a</span><span class="esc">\t</span><span class="str">~a</span><span class="esc">\n</span><span class="str">&quot;</span> cnt key<span class="opt">)))</span>
+
+<span class="opt">(</span><span class="kwa">define</span> dna
+  <span class="opt">(</span><span class="kwa">let</span> <span class="opt">([</span>in <span class="opt">(</span><span class="kwa">current-input-port</span><span class="opt">)])</span>
+    <span class="slc">;; Skip to &quot;&gt;THREE ...&quot;</span>
+    <span class="opt">(</span><span class="kwa">regexp-match</span> <span class="opt">#</span>rx<span class="opt">#</span><span class="str">&quot;(?m:^&gt;THREE.*$)&quot;</span> in<span class="opt">)</span>
+    <span class="opt">(</span><span class="kwa">let</span> <span class="opt">([</span>s <span class="opt">(</span><span class="kwa">open-output-string</span><span class="opt">)])</span>
+      <span class="slc">;; Copy everything but newlines to s:</span>
+      <span class="opt">(</span><span class="kwa">for</span> <span class="opt">([</span>l <span class="opt">(</span><span class="kwa">in-bytes-lines</span> in<span class="opt">)])</span>
+        <span class="opt">(</span><span class="kwa">write-bytes</span> l s<span class="opt">))</span>
+      <span class="slc">;; Extract the string from s:</span>
+      <span class="opt">(</span><span class="kwa">string-upcase</span> <span class="opt">(</span><span class="kwa">get-output-string</span> s<span class="opt">)))))</span>
+
+<span class="slc">;; 1-nucleotide counts:</span>
+<span class="opt">(</span><span class="kwa">write-freqs</span> <span class="opt">(</span><span class="kwa">all-counts</span> <span class="num">1</span> dna<span class="opt">))</span>
+<span class="opt">(</span><span class="kwa">newline</span><span class="opt">)</span>
+
+<span class="slc">;; 2-nucleotide counts:</span>
+<span class="opt">(</span><span class="kwa">write-freqs</span> <span class="opt">(</span><span class="kwa">all-counts</span> <span class="num">2</span> dna<span class="opt">))</span>
+<span class="opt">(</span><span class="kwa">newline</span><span class="opt">)</span>
+
+<span class="slc">;; Specific sequences:</span>
+<span class="opt">(</span><span class="kwa">for</span> <span class="opt">([</span>seq <span class="opt">&apos;(</span><span class="str">&quot;GGT&quot;</span> <span class="str">&quot;GGTA&quot;</span> <span class="str">&quot;GGTATT&quot;</span> <span class="str">&quot;GGTATTTTAATT&quot;</span> <span class="str">&quot;GGTATTTTAATTTATAGT&quot;</span><span class="opt">)])</span> 
+  <span class="opt">(</span><span class="kwa">write-one-freq</span> <span class="opt">(</span><span class="kwa">all-counts</span> <span class="opt">(</span><span class="kwa">string-length</span> seq<span class="opt">)</span> dna<span class="opt">)</span>
+                  <span class="opt">(</span><span class="kwa">string-</span><span class="opt">&gt;</span>symbol seq<span class="opt">)))</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+Welcome to Racket v6.12.
+
+
+Tue, 27 Mar 2018 19:55:59 GMT
+
+MAKE:
+/opt/src/racket-6.12/bin/raco make knucleotide.racket
+
+0.53s to complete and log all make actions
+
+COMMAND LINE:
+/opt/src/racket-6.12/bin/racket ./compiled/knucleotide_racket.zo 0 &lt; knucleotide-input25000000.txt
+
+PROGRAM OUTPUT:
+A 30.295
+T 30.151
+C 19.800
+G 19.754
+
+AA 9.177
+TA 9.132
+AT 9.131
+TT 9.091
+CA 6.002
+AC 6.001
+AG 5.987
+GA 5.984
+CT 5.971
+TC 5.971
+GT 5.957
+TG 5.956
+CC 3.917
+GC 3.911
+CG 3.909
+GG 3.902
+
+1471758	GGT
+446535	GGTA
+47336	GGTATT
+893	GGTATTTTAATT
+893	GGTATTTTAATTTATAGT
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="all" />
+<meta name="description" content="Performance measurements for all the Racket programs implementing ~12 simple benchmark tasks, (64-bit Ubuntu quad core)." />
+<title>Racket measurements (64-bit Ubuntu quad core) | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article,footer{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}code,h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}nav p{margin:0 .5em}ul{clear:left;margin:-0.3em 0 1.5em;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,span{border-bottom:.1em solid #333;padding-bottom:.1em}
+#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.best{font-weight:bold}.message{font-size:.8em}table{color:#333;margin:1.3em auto 0;text-align:right}tbody:after{content:"-";display:block;line-height:2.6em;visibility:hidden}td{border-bottom:.15em dotted #eee;padding:.7em 0 0 1em}td a,th a{display:block}td:first-child,th:first-child{text-align:left;padding-left:0}th{font-weight:normal;padding:0 0 0 1em}
+@media only screen{th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6),th:nth-child(7),td:nth-child(7){display:none}}@media only screen and (min-width:27em){th:nth-child(3),td:nth-child(3){display:table-cell}}@media only screen and (min-width:38em){th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:table-cell}}@media only screen and (min-width:47em){th:nth-child(7),td:nth-child(7){display:table-cell}}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+
+<article>
+  <div>
+    <h2>all Racket programs & measurements</h2>
+    <aside>
+      <p>&nbsp;</a>
+    </aside>
+  </div>
+  <section>
+    <table>
+      <tbody>
+      <tr>
+        <td colspan="7" class="message"><p>Welcome to Racket v6.12.
+
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./binarytrees-racket-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>0.08
+          <td>&nbsp;7
+          <td>?
+          <td>476
+          <td>0.08
+          <td class="message">11%&nbsp;13%&nbsp;88%&nbsp;0%
+        <tr>
+          <td><a href="./binarytrees-racket-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>0.22
+          <td>&nbsp;14
+          <td>2,612
+          <td>476
+          <td>0.22
+          <td class="message">5%&nbsp;4%&nbsp;5%&nbsp;100%
+        <tr>
+          <td><a href="./binarytrees-racket-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>49.22
+          <td>&nbsp;21
+          <td>619,480
+          <td>476
+          <td>49.17
+          <td class="message">0%&nbsp;35%&nbsp;66%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./binarytrees-racket-2.html"><span>binary-trees&nbsp;&nbsp;#2</span></a>
+          <td>0.09
+          <td>&nbsp;7
+          <td>?
+          <td>416
+          <td>0.08
+          <td class="message">0%&nbsp;0%&nbsp;88%&nbsp;11%
+        <tr>
+          <td><a href="./binarytrees-racket-2.html"><span>binary-trees&nbsp;&nbsp;#2</span></a>
+          <td>0.17
+          <td>&nbsp;14
+          <td>?
+          <td>416
+          <td>0.16
+          <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;6%
+        <tr>
+          <td><a href="./binarytrees-racket-2.html"><span>binary-trees&nbsp;&nbsp;#2</span></a>
+          <td>29.81
+          <td>&nbsp;21
+          <td>501,312
+          <td>416
+          <td>29.78
+          <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./binarytrees-racket-3.html"><span>binary-trees&nbsp;&nbsp;#3</span></a>
+          <td>0.08
+          <td>&nbsp;7
+          <td>?
+          <td>473
+          <td>0.08
+          <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./binarytrees-racket-3.html"><span>binary-trees&nbsp;&nbsp;#3</span></a>
+          <td>0.16
+          <td>&nbsp;14
+          <td>?
+          <td>473
+          <td>0.15
+          <td class="message">0%&nbsp;0%&nbsp;94%&nbsp;0%
+        <tr>
+          <td><a href="./binarytrees-racket-3.html"><span>binary-trees&nbsp;&nbsp;#3</span></a>
+          <td>28.31
+          <td>&nbsp;21
+          <td>493,956
+          <td>473
+          <td>28.29
+          <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./chameneosredux-racket-2.html"><span>chameneos-redux&nbsp;&nbsp;#2</span></a>
+          <td>2.74
+          <td>&nbsp;60,000
+          <td>85,832
+          <td>855
+          <td>2.74
+          <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;0%
+        <tr>
+          <td><a href="./chameneosredux-racket-2.html"><span>chameneos-redux&nbsp;&nbsp;#2</span></a>
+          <td>24.85
+          <td>&nbsp;600,000
+          <td>107,148
+          <td>855
+          <td>24.85
+          <td class="message">45%&nbsp;0%&nbsp;1%&nbsp;56%
+        <tr>
+          <td><a href="./chameneosredux-racket-2.html"><span>chameneos-redux&nbsp;&nbsp;#2</span></a>
+          <td>249.94
+          <td>&nbsp;6,000,000
+          <td>107,480
+          <td>855
+          <td>249.91
+          <td class="message">84%&nbsp;1%&nbsp;1%&nbsp;17%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./chameneosredux-racket-1.html"><span>chameneos-redux&nbsp;</span></a>
+          <td>4.98
+          <td>&nbsp;60,000
+          <td>99,884
+          <td>805
+          <td>4.98
+          <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;2%
+        <tr>
+          <td><a href="./chameneosredux-racket-1.html"><span>chameneos-redux&nbsp;</span></a>
+          <td>47.26
+          <td>&nbsp;600,000
+          <td>107,680
+          <td>805
+          <td>47.25
+          <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;0%
+        <tr>
+          <td><a href="./chameneosredux-racket-1.html"><span>chameneos-redux&nbsp;</span></a>
+          <td>467.33
+          <td>&nbsp;6,000,000
+          <td>114,068
+          <td>805
+          <td>467.26
+          <td class="message">0%&nbsp;24%&nbsp;77%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fannkuchredux-racket-3.html"><span>fannkuch-redux&nbsp;&nbsp;#3</span></a>
+          <td>0.61
+          <td>&nbsp;10
+          <td>23,380
+          <td>1101
+          <td>1.99
+          <td class="message">83%&nbsp;85%&nbsp;72%&nbsp;87%
+        <tr>
+          <td><a href="./fannkuchredux-racket-3.html"><span>fannkuch-redux&nbsp;&nbsp;#3</span></a>
+          <td>6.60
+          <td>&nbsp;11
+          <td>23,416
+          <td>1101
+          <td>23.79
+          <td class="message">99%&nbsp;96%&nbsp;67%&nbsp;99%
+        <tr>
+          <td><a href="./fannkuchredux-racket-3.html"><span>fannkuch-redux&nbsp;&nbsp;#3</span></a>
+          <td>91.11
+          <td>&nbsp;12
+          <td>23,348
+          <td>1101
+          <td>337.43
+          <td class="message">90%&nbsp;90%&nbsp;90%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fannkuchredux-racket-2.html"><span>fannkuch-redux&nbsp;&nbsp;#2</span></a>
+          <td>1.83
+          <td>&nbsp;10
+          <td>23,192
+          <td>908
+          <td>1.83
+          <td class="message">1%&nbsp;100%&nbsp;1%&nbsp;1%
+        <tr>
+          <td><a href="./fannkuchredux-racket-2.html"><span>fannkuch-redux&nbsp;&nbsp;#2</span></a>
+          <td>21.96
+          <td>&nbsp;11
+          <td>23,300
+          <td>908
+          <td>21.96
+          <td class="message">0%&nbsp;27%&nbsp;75%&nbsp;0%
+        <tr>
+          <td><a href="./fannkuchredux-racket-2.html"><span>fannkuch-redux&nbsp;&nbsp;#2</span></a>
+          <td>292.79
+          <td>&nbsp;12
+          <td>23,304
+          <td>908
+          <td>292.87
+          <td class="message">0%&nbsp;1%&nbsp;1%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fannkuchredux-racket-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>1.93
+          <td>&nbsp;10
+          <td>23,376
+          <td>649
+          <td>1.93
+          <td class="message">0%&nbsp;100%&nbsp;2%&nbsp;0%
+        <tr>
+          <td><a href="./fannkuchredux-racket-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>22.20
+          <td>&nbsp;11
+          <td>23,348
+          <td>649
+          <td>22.20
+          <td class="message">1%&nbsp;0%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./fannkuchredux-racket-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>304.29
+          <td>&nbsp;12
+          <td>23,284
+          <td>649
+          <td>304.30
+          <td class="message">0%&nbsp;39%&nbsp;62%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fasta-racket-3.html"><span>fasta&nbsp;&nbsp;#3</span></a>
+          <td>0.28
+          <td>&nbsp;250,000
+          <td>2,904
+          <td>1280
+          <td>0.27
+          <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./fasta-racket-3.html"><span>fasta&nbsp;&nbsp;#3</span></a>
+          <td>1.90
+          <td>&nbsp;2,500,000
+          <td>26,136
+          <td>1280
+          <td>1.89
+          <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;1%
+        <tr>
+          <td><a href="./fasta-racket-3.html"><span>fasta&nbsp;&nbsp;#3</span></a>
+          <td>17.47
+          <td>&nbsp;25,000,000
+          <td>26,148
+          <td>1280
+          <td>17.46
+          <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fasta-racket-1.html"><span>fasta&nbsp;</span></a>
+          <td>0.53
+          <td>&nbsp;250,000
+          <td>24,784
+          <td>1066
+          <td>0.53
+          <td class="message">0%&nbsp;4%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./fasta-racket-1.html"><span>fasta&nbsp;</span></a>
+          <td>4.44
+          <td>&nbsp;2,500,000
+          <td>24,768
+          <td>1066
+          <td>4.43
+          <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;1%
+        <tr>
+          <td><a href="./fasta-racket-1.html"><span>fasta&nbsp;</span></a>
+          <td>42.62
+          <td>&nbsp;25,000,000
+          <td>24,936
+          <td>1066
+          <td>42.62
+          <td class="message">1%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./knucleotide-racket-4.html"><span>k-nucleotide&nbsp;&nbsp;#4</span></a>
+          <td>1.14
+          <td>&nbsp;250,000
+          <td>49,096
+          <td>885
+          <td>1.14
+          <td class="message">0%&nbsp;100%&nbsp;3%&nbsp;0%
+        <tr>
+          <td><a href="./knucleotide-racket-4.html"><span>k-nucleotide&nbsp;&nbsp;#4</span></a>
+          <td>9.18
+          <td>&nbsp;2,500,000
+          <td>94,640
+          <td>885
+          <td>9.18
+          <td class="message">0%&nbsp;38%&nbsp;63%&nbsp;0%
+        <tr>
+          <td><a href="./knucleotide-racket-4.html"><span>k-nucleotide&nbsp;&nbsp;#4</span></a>
+          <td>88.05
+          <td>&nbsp;25,000,000
+          <td>367,936
+          <td>885
+          <td>88.05
+          <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./knucleotide-racket-1.html"><span>k-nucleotide&nbsp;</span></a>
+          <td>2.86
+          <td>&nbsp;250,000
+          <td>79,336
+          <td>547
+          <td>2.85
+          <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;0%
+        <tr>
+          <td><a href="./knucleotide-racket-1.html"><span>k-nucleotide&nbsp;</span></a>
+          <td>25.44
+          <td>&nbsp;2,500,000
+          <td>183,028
+          <td>547
+          <td>25.42
+          <td class="message">1%&nbsp;0%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./knucleotide-racket-1.html"><span>k-nucleotide&nbsp;</span></a>
+          <td>243.41
+          <td>&nbsp;25,000,000
+          <td>1,313,516
+          <td>547
+          <td>243.38
+          <td class="message">94%&nbsp;0%&nbsp;1%&nbsp;6%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-racket-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>0.44
+          <td>&nbsp;1,000
+          <td>25,040
+          <td>585
+          <td>0.44
+          <td class="message">0%&nbsp;100%&nbsp;5%&nbsp;0%
+        <tr>
+          <td><a href="./mandelbrot-racket-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>5.56
+          <td>&nbsp;4,000
+          <td>24,888
+          <td>585
+          <td>5.56
+          <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;1%
+        <tr>
+          <td><a href="./mandelbrot-racket-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>86.13
+          <td>&nbsp;16,000
+          <td>25,132
+          <td>585
+          <td>86.12
+          <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-racket-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>0.55
+          <td>&nbsp;1,000
+          <td>24,616
+          <td>517
+          <td>0.55
+          <td class="message">0%&nbsp;100%&nbsp;4%&nbsp;0%
+        <tr>
+          <td><a href="./mandelbrot-racket-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>7.49
+          <td>&nbsp;4,000
+          <td>24,560
+          <td>517
+          <td>7.49
+          <td class="message">1%&nbsp;0%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./mandelbrot-racket-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>118.15
+          <td>&nbsp;16,000
+          <td>26,836
+          <td>517
+          <td>118.15
+          <td class="message">54%&nbsp;31%&nbsp;18%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-racket-3.html"><span>mandelbrot&nbsp;&nbsp;#3</span></a>
+          <td>0.38
+          <td>&nbsp;1,000
+          <td>2,928
+          <td>802
+          <td>0.38
+          <td class="message">0%&nbsp;5%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./mandelbrot-racket-3.html"><span>mandelbrot&nbsp;&nbsp;#3</span></a>
+          <td>4.79
+          <td>&nbsp;4,000
+          <td>26,012
+          <td>802
+          <td>4.79
+          <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;0%
+        <tr>
+          <td><a href="./mandelbrot-racket-3.html"><span>mandelbrot&nbsp;&nbsp;#3</span></a>
+          <td>73.57
+          <td>&nbsp;16,000
+          <td>26,064
+          <td>802
+          <td>73.57
+          <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-racket-4.html"><span>mandelbrot&nbsp;&nbsp;#4</span></a>
+          <td>0.19
+          <td>&nbsp;1,000
+          <td>?
+          <td>801
+          <td>0.42
+          <td class="message">44%&nbsp;42%&nbsp;85%&nbsp;44%
+        <tr>
+          <td><a href="./mandelbrot-racket-4.html"><span>mandelbrot&nbsp;&nbsp;#4</span></a>
+          <td>1.47
+          <td>&nbsp;4,000
+          <td>35,304
+          <td>801
+          <td>4.95
+          <td class="message">84%&nbsp;90%&nbsp;86%&nbsp;79%
+        <tr>
+          <td><a href="./mandelbrot-racket-4.html"><span>mandelbrot&nbsp;&nbsp;#4</span></a>
+          <td>19.60
+          <td>&nbsp;16,000
+          <td>114,768
+          <td>801
+          <td>74.76
+          <td class="message">95%&nbsp;95%&nbsp;96%&nbsp;96%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./meteor-racket-1.html"><span>meteor-contest&nbsp;</span></a>
+          <td>0.61
+          <td>&nbsp;2,098
+          <td>24,880
+          <td>1907
+          <td>0.61
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;3%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-racket-1.html"><span>n-body&nbsp;</span></a>
+          <td>1.17
+          <td>&nbsp;500,000
+          <td>24,796
+          <td>1496
+          <td>1.17
+          <td class="message">36%&nbsp;0%&nbsp;0%&nbsp;68%
+        <tr>
+          <td><a href="./nbody-racket-1.html"><span>n-body&nbsp;</span></a>
+          <td>11.36
+          <td>&nbsp;5,000,000
+          <td>26,148
+          <td>1496
+          <td>11.36
+          <td class="message">0%&nbsp;2%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-racket-1.html"><span>n-body&nbsp;</span></a>
+          <td>108.53
+          <td>&nbsp;50,000,000
+          <td>26,300
+          <td>1496
+          <td>108.50
+          <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-racket-2.html"><span>n-body&nbsp;&nbsp;#2</span></a>
+          <td>0.66
+          <td>&nbsp;500,000
+          <td>25,224
+          <td>1689
+          <td>0.66
+          <td class="message">2%&nbsp;100%&nbsp;2%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-racket-2.html"><span>n-body&nbsp;&nbsp;#2</span></a>
+          <td>5.72
+          <td>&nbsp;5,000,000
+          <td>25,008
+          <td>1689
+          <td>5.72
+          <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;1%
+        <tr>
+          <td><a href="./nbody-racket-2.html"><span>n-body&nbsp;&nbsp;#2</span></a>
+          <td>53.89
+          <td>&nbsp;50,000,000
+          <td>26,192
+          <td>1689
+          <td>53.89
+          <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./pidigits-racket-2.html"><span>pidigits&nbsp;&nbsp;#2</span></a>
+          <td>0.22
+          <td>&nbsp;2,000
+          <td>1,456
+          <td>1136
+          <td>0.20
+          <td class="message">5%&nbsp;0%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./pidigits-racket-2.html"><span>pidigits&nbsp;&nbsp;#2</span></a>
+          <td>0.85
+          <td>&nbsp;6,000
+          <td>26,104
+          <td>1136
+          <td>0.85
+          <td class="message">1%&nbsp;99%&nbsp;1%&nbsp;0%
+        <tr>
+          <td><a href="./pidigits-racket-2.html"><span>pidigits&nbsp;&nbsp;#2</span></a>
+          <td>2.19
+          <td>&nbsp;10,000
+          <td>26,440
+          <td>1136
+          <td>2.18
+          <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./pidigits-racket-1.html"><span>pidigits&nbsp;</span></a>
+          <td>0.51
+          <td>&nbsp;2,000
+          <td>28,660
+          <td>453
+          <td>0.50
+          <td class="message">2%&nbsp;0%&nbsp;4%&nbsp;100%
+        <tr>
+          <td><a href="./pidigits-racket-1.html"><span>pidigits&nbsp;</span></a>
+          <td>7.60
+          <td>&nbsp;6,000
+          <td>126,740
+          <td>453
+          <td>7.59
+          <td class="message">1%&nbsp;0%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./pidigits-racket-1.html"><span>pidigits&nbsp;</span></a>
+          <td>27.58
+          <td>&nbsp;10,000
+          <td>124,156
+          <td>453
+          <td>27.56
+          <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./regexredux-racket-1.html"><span>regex-redux&nbsp;</span></a>
+          <td>0.69
+          <td>&nbsp;50,000
+          <td>39,436
+          <td>541
+          <td>0.68
+          <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;0%
+        <tr>
+          <td><a href="./regexredux-racket-1.html"><span>regex-redux&nbsp;</span></a>
+          <td>5.46
+          <td>&nbsp;500,000
+          <td>200,840
+          <td>541
+          <td>5.39
+          <td class="message">1%&nbsp;1%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./regexredux-racket-1.html"><span>regex-redux&nbsp;</span></a>
+          <td>54.09
+          <td>&nbsp;5,000,000
+          <td>1,006,828
+          <td>541
+          <td>54.09
+          <td class="message">90%&nbsp;0%&nbsp;0%&nbsp;11%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./revcomp-racket-1.html"><span>reverse-complement&nbsp;</span></a>
+          <td>0.22
+          <td>&nbsp;250,000
+          <td>3,032
+          <td>553
+          <td>0.20
+          <td class="message">96%&nbsp;0%&nbsp;0%&nbsp;0%
+        <tr>
+          <td><a href="./revcomp-racket-1.html"><span>reverse-complement&nbsp;</span></a>
+          <td>55.21
+          <td>&nbsp;100,000,000
+          <td>1,726,720
+          <td>553
+          <td>55.19
+          <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./revcomp-racket-2.html"><span>reverse-complement&nbsp;&nbsp;#2</span></a>
+          <td>0.16
+          <td>&nbsp;250,000
+          <td>?
+          <td>1030
+          <td>0.13
+          <td class="message">0%&nbsp;6%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./revcomp-racket-2.html"><span>reverse-complement&nbsp;&nbsp;#2</span></a>
+          <td>17.08
+          <td>&nbsp;100,000,000
+          <td>555,148
+          <td>1030
+          <td>17.07
+          <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;2%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-racket-3.html"><span>spectral-norm&nbsp;&nbsp;#3</span></a>
+          <td>0.17
+          <td>&nbsp;500
+          <td>?
+          <td>627
+          <td>0.27
+          <td class="message">72%&nbsp;39%&nbsp;33%&nbsp;39%
+        <tr>
+          <td><a href="./spectralnorm-racket-3.html"><span>spectral-norm&nbsp;&nbsp;#3</span></a>
+          <td>1.70
+          <td>&nbsp;3,000
+          <td>25,116
+          <td>627
+          <td>6.19
+          <td class="message">95%&nbsp;90%&nbsp;91%&nbsp;90%
+        <tr>
+          <td><a href="./spectralnorm-racket-3.html"><span>spectral-norm&nbsp;&nbsp;#3</span></a>
+          <td>5.32
+          <td>&nbsp;5,500
+          <td>27,228
+          <td>627
+          <td>20.55
+          <td class="message">98%&nbsp;96%&nbsp;96%&nbsp;96%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-racket-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>0.42
+          <td>&nbsp;500
+          <td>2,756
+          <td>446
+          <td>0.41
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;2%
+        <tr>
+          <td><a href="./spectralnorm-racket-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>12.05
+          <td>&nbsp;3,000
+          <td>24,692
+          <td>446
+          <td>12.05
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;1%
+        <tr>
+          <td><a href="./spectralnorm-racket-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>40.31
+          <td>&nbsp;5,500
+          <td>24,820
+          <td>446
+          <td>40.32
+          <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-racket-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>0.40
+          <td>&nbsp;500
+          <td>2,772
+          <td>532
+          <td>0.40
+          <td class="message">100%&nbsp;2%&nbsp;0%&nbsp;3%
+        <tr>
+          <td><a href="./spectralnorm-racket-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>11.30
+          <td>&nbsp;3,000
+          <td>25,088
+          <td>532
+          <td>11.30
+          <td class="message">100%&nbsp;0%&nbsp;1%&nbsp;1%
+        <tr>
+          <td><a href="./spectralnorm-racket-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>37.76
+          <td>&nbsp;5,500
+          <td>28,480
+          <td>532
+          <td>37.76
+          <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./threadring-racket-1.html"><span>thread-ring&nbsp;</span></a>
+          <td>2.94
+          <td>&nbsp;500,000
+          <td>42,600
+          <td>262
+          <td>2.94
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;1%
+        <tr>
+          <td><a href="./threadring-racket-1.html"><span>thread-ring&nbsp;</span></a>
+          <td>27.34
+          <td>&nbsp;5,000,000
+          <td>55,852
+          <td>262
+          <td>27.33
+          <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;0%
+        <tr>
+          <td><a href="./threadring-racket-1.html"><span>thread-ring&nbsp;</span></a>
+          <td>272.64
+          <td>&nbsp;50,000,000
+          <td>104,920
+          <td>262
+          <td>272.58
+          <td class="message">55%&nbsp;1%&nbsp;1%&nbsp;45%
+    </table>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./why-measure-toy-benchmark-programs.html"><span>toy programs</span></a>
+      <li><a href="./how-programs-are-measured.html"><span>details</span></a>
+      <li><a href="./dont-jump-to-conclusions.html"><span>conclusions</span></a>
+    </ul>
+  </nav>
+  <aside>
+    <p>We want easy answers, but easy answers are often incomplete or wrong. You and I know, there's more we need to understand.
+  </aside>
+</footer>
+

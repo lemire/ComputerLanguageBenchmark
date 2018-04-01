@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>reverse-complement Ruby program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>reverse-complement Ruby program</h2>
+    <aside>
+      <p><a href="./revcomp-description.html#revcomp">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc"># The Computer Language Benchmarks Game</span>
+<span class="slc"># http://benchmarksgame.alioth.debian.org</span>
+<span class="slc">#</span>
+<span class="slc"># Contributed by Aaron Tavistock</span>
+
+<span class="kwa">def</span> <span class="kwd">process_segment</span><span class="opt">(</span>segment<span class="opt">)</span>
+  <span class="opt">(</span>header<span class="opt">, *</span>body<span class="opt">,</span> tail<span class="opt">) =</span> segment<span class="opt">.</span><span class="kwd">split</span><span class="opt">(</span><span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">)</span>
+
+  <span class="slc"># This is an ugly way to handle the first row, but returning nil causes the fork to implode</span>
+  <span class="kwa">return</span> <span class="str">&apos;&apos;</span> <span class="kwa">if</span> <span class="opt">!</span>tail
+  body <span class="opt">&lt;&lt;</span> tail <span class="kwa">if</span> tail <span class="opt">!=</span> <span class="str">&apos;&gt;&apos;</span>
+
+  sequence <span class="opt">=</span> body<span class="opt">.</span>join
+  sequence<span class="opt">.</span>reverse<span class="opt">!</span>
+  sequence<span class="opt">.</span>tr<span class="opt">!(</span>
+    <span class="str">&apos;wsatugcyrkmbdhvnATUGCYRKMBDHVN&apos;</span><span class="opt">,</span>
+    <span class="str">&apos;WSTAACGRYMKVHDBNTAACGRYMKVHDBN&apos;</span>
+  <span class="opt">)</span>
+
+  results <span class="opt">= [</span><span class="str">&quot;&gt;</span><span class="ipl">#{header}</span><span class="str">&quot;</span><span class="opt">]</span>
+
+  idx <span class="opt">=</span> <span class="num">0</span>
+  length <span class="opt">=</span> sequence<span class="opt">.</span>length
+  <span class="kwa">while</span> idx <span class="opt">&lt;</span> length
+    results <span class="opt">&lt;&lt;</span> sequence<span class="opt">[</span>idx<span class="opt">,</span><span class="num">60</span><span class="opt">]</span>
+    idx <span class="opt">+=</span> <span class="num">60</span>
+  <span class="kwa">end</span>
+
+  results<span class="opt">.</span><span class="kwd">join</span><span class="opt">(</span><span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">)</span>
+<span class="kwa">end</span>
+
+<span class="kwa">def</span> <span class="kwd">forking_worker</span><span class="opt">(</span>segment<span class="opt">)</span>
+  reader<span class="opt">,</span> writer <span class="opt">=</span> IO<span class="opt">.</span>pipe
+
+  pid <span class="opt">=</span> Process<span class="opt">.</span>fork <span class="kwa">do</span>
+    <span class="kwa">begin</span>
+      reader<span class="opt">.</span>close
+      results <span class="opt">=</span> <span class="kwd">process_segment</span><span class="opt">(</span>segment<span class="opt">)</span>
+      Marshal<span class="opt">.</span><span class="kwd">dump</span><span class="opt">(</span>results<span class="opt">,</span> writer<span class="opt">)</span> <span class="kwa">if</span> results
+    <span class="kwa">ensure</span>
+      writer<span class="opt">.</span>close
+    <span class="kwa">end</span>
+  <span class="kwa">end</span>
+
+  writer<span class="opt">.</span>close
+  <span class="kwa">begin</span>
+    results <span class="opt">=</span> Marshal<span class="opt">.</span><span class="kwd">load</span><span class="opt">(</span>reader<span class="opt">)</span>
+  <span class="kwa">ensure</span>
+    reader<span class="opt">.</span>close
+  <span class="kwa">end</span>
+  Process<span class="opt">.</span><span class="kwd">waitpid</span><span class="opt">(</span>pid<span class="opt">)</span>
+
+  results
+<span class="kwa">end</span>
+
+threads <span class="opt">= []</span>
+<span class="kwb">$stdin</span><span class="opt">.</span><span class="kwd">each_line</span><span class="opt">(</span><span class="str">&apos;&gt;&apos;</span><span class="opt">)</span> <span class="kwa">do</span> <span class="opt">|</span>segment<span class="opt">|</span>
+  threads <span class="opt">&lt;&lt;</span> Thread<span class="opt">.</span>new <span class="kwa">do</span>
+    <span class="kwa">if</span> <span class="kwc">RUBY_PLATFORM</span> <span class="opt">==</span> <span class="str">&apos;java&apos;</span>
+      Thread<span class="opt">.</span>current<span class="opt">[</span><span class="kwc">:output</span><span class="opt">] =</span> <span class="kwd">process_segment</span><span class="opt">(</span>segment<span class="opt">)</span>
+    <span class="kwa">else</span>
+      Thread<span class="opt">.</span>current<span class="opt">[</span><span class="kwc">:output</span><span class="opt">] =</span> <span class="kwd">forking_worker</span><span class="opt">(</span>segment<span class="opt">)</span>
+    <span class="kwa">end</span>
+  <span class="kwa">end</span>
+<span class="kwa">end</span>
+threads<span class="opt">.</span><span class="kwd">each</span><span class="opt">(&amp;</span><span class="kwc">:join</span><span class="opt">)</span>
+threads<span class="opt">.</span>each <span class="kwa">do</span> <span class="opt">|</span>thread<span class="opt">|</span>
+  <span class="kwa">if</span> <span class="opt">!</span>thread<span class="opt">[</span><span class="kwc">:output</span><span class="opt">].</span>empty<span class="opt">?</span>  <span class="slc"># Artifact of non-empty results from forking worker</span>
+    puts thread<span class="opt">[</span><span class="kwc">:output</span><span class="opt">]</span>
+  <span class="kwa">end</span>
+<span class="kwa">end</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+ruby 2.5.0p0 (2017-12-25 revision 61468) [x86_64-linux]
+
+
+Mon, 26 Mar 2018 23:10:55 GMT
+
+COMMAND LINE:
+/opt/src/ruby-2.5.0/bin/ruby -W0 revcomp.yarv 0 &lt; revcomp-input100000000.txt
+
+PROGRAM FAILED 
+
+
+PROGRAM OUTPUT:
+
+revcomp.yarv:35:in `fork': failed to allocate memory (NoMemoryError)
+#&lt;Thread:0x0000556b721dffa0@revcomp.yarv:58 run&gt; terminated with exception (report_on_exception is true):
+revcomp.yarv:47:in `load': end of file reached (EOFError)
+	from revcomp.yarv:47:in `forking_worker'
+	from revcomp.yarv:62:in `block (2 levels) in &lt;main&gt;'
+revcomp.yarv:47:in `load': end of file reached (EOFError)
+	from revcomp.yarv:47:in `forking_worker'
+	from revcomp.yarv:62:in `block (2 levels) in &lt;main&gt;'
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

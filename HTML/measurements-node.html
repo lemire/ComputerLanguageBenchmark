@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="all" />
+<meta name="description" content="Performance measurements for all the Node.js programs implementing ~12 simple benchmark tasks, (64-bit Ubuntu quad core)." />
+<title>Node.js measurements (64-bit Ubuntu quad core) | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article,footer{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}code,h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}nav p{margin:0 .5em}ul{clear:left;margin:-0.3em 0 1.5em;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,span{border-bottom:.1em solid #333;padding-bottom:.1em}
+#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.best{font-weight:bold}.message{font-size:.8em}table{color:#333;margin:1.3em auto 0;text-align:right}tbody:after{content:"-";display:block;line-height:2.6em;visibility:hidden}td{border-bottom:.15em dotted #eee;padding:.7em 0 0 1em}td a,th a{display:block}td:first-child,th:first-child{text-align:left;padding-left:0}th{font-weight:normal;padding:0 0 0 1em}
+@media only screen{th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6),th:nth-child(7),td:nth-child(7){display:none}}@media only screen and (min-width:27em){th:nth-child(3),td:nth-child(3){display:table-cell}}@media only screen and (min-width:38em){th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:table-cell}}@media only screen and (min-width:47em){th:nth-child(7),td:nth-child(7){display:table-cell}}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+
+<article>
+  <div>
+    <h2>all Node.js programs & measurements</h2>
+    <aside>
+      <p>&nbsp;</a>
+    </aside>
+  </div>
+  <section>
+    <table>
+      <tbody>
+      <tr>
+        <td colspan="7" class="message"><p>v9.4.0
+
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./binarytrees-node-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>0.10
+          <td>&nbsp;7
+          <td>?
+          <td>440
+          <td>0.09
+          <td class="message">9%&nbsp;0%&nbsp;13%&nbsp;82%
+        <tr>
+          <td><a href="./binarytrees-node-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>0.24
+          <td>&nbsp;14
+          <td>924
+          <td>440
+          <td>0.25
+          <td class="message">50%&nbsp;4%&nbsp;4%&nbsp;64%
+        <tr>
+          <td><a href="./binarytrees-node-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>45.39
+          <td>&nbsp;21
+          <td>658,324
+          <td>440
+          <td>81.91
+          <td class="message">37%&nbsp;39%&nbsp;59%&nbsp;46%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fannkuchredux-node-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>0.70
+          <td>&nbsp;10
+          <td>30,924
+          <td>471
+          <td>0.70
+          <td class="message">4%&nbsp;0%&nbsp;1%&nbsp;100%
+        <tr>
+          <td><a href="./fannkuchredux-node-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>9.69
+          <td>&nbsp;11
+          <td>30,712
+          <td>471
+          <td>9.69
+          <td class="message">1%&nbsp;1%&nbsp;100%&nbsp;2%
+        <tr>
+          <td><a href="./fannkuchredux-node-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>109.14
+          <td>&nbsp;12
+          <td>31,028
+          <td>471
+          <td>109.12
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fannkuchredux-node-4.html"><span>fannkuch-redux&nbsp;&nbsp;#4</span></a>
+          <td>0.66
+          <td>&nbsp;10
+          <td>30,660
+          <td>473
+          <td>0.66
+          <td class="message">2%&nbsp;0%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./fannkuchredux-node-4.html"><span>fannkuch-redux&nbsp;&nbsp;#4</span></a>
+          <td>6.53
+          <td>&nbsp;11
+          <td>30,712
+          <td>473
+          <td>6.53
+          <td class="message">1%&nbsp;0%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./fannkuchredux-node-4.html"><span>fannkuch-redux&nbsp;&nbsp;#4</span></a>
+          <td>89.63
+          <td>&nbsp;12
+          <td>30,960
+          <td>473
+          <td>89.61
+          <td class="message">0%&nbsp;100%&nbsp;0%&nbsp;1%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fasta-node-1.html"><span>fasta&nbsp;</span></a>
+          <td>1.39
+          <td>&nbsp;250,000
+          <td>52,148
+          <td>809
+          <td>1.44
+          <td class="message">0%&nbsp;37%&nbsp;66%&nbsp;2%
+        <tr>
+          <td><a href="./fasta-node-1.html"><span>fasta&nbsp;</span></a>
+          <td>10.73
+          <td>&nbsp;2,500,000
+          <td>134,348
+          <td>809
+          <td>11.14
+          <td class="message">16%&nbsp;42%&nbsp;35%&nbsp;13%
+        <tr>
+          <td><a href="./fasta-node-1.html"><span>fasta&nbsp;</span></a>
+          <td>83.12
+          <td>&nbsp;25,000,000
+          <td>797,988
+          <td>809
+          <td>88.25
+          <td class="message">18%&nbsp;29%&nbsp;25%&nbsp;35%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fasta-node-3.html"><span>fasta&nbsp;&nbsp;#3</span></a>
+          <td>0.24
+          <td>&nbsp;250,000
+          <td>952
+          <td>1128
+          <td>0.24
+          <td class="message">100%&nbsp;0%&nbsp;8%&nbsp;0%
+        <tr>
+          <td><a href="./fasta-node-3.html"><span>fasta&nbsp;&nbsp;#3</span></a>
+          <td>1.23
+          <td>&nbsp;2,500,000
+          <td>33,592
+          <td>1128
+          <td>1.23
+          <td class="message">0%&nbsp;2%&nbsp;99%&nbsp;1%
+        <tr>
+          <td><a href="./fasta-node-3.html"><span>fasta&nbsp;&nbsp;#3</span></a>
+          <td>10.74
+          <td>&nbsp;25,000,000
+          <td>34,596
+          <td>1128
+          <td>10.74
+          <td class="message">10%&nbsp;0%&nbsp;0%&nbsp;90%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fasta-node-2.html"><span>fasta&nbsp;&nbsp;#2</span></a>
+          <td>1.11
+          <td>&nbsp;250,000
+          <td>69,928
+          <td>931
+          <td>1.22
+          <td class="message">6%&nbsp;97%&nbsp;3%&nbsp;5%
+        <tr>
+          <td><a href="./fasta-node-2.html"><span>fasta&nbsp;&nbsp;#2</span></a>
+          <td>6.97
+          <td>&nbsp;2,500,000
+          <td>120,404
+          <td>931
+          <td>7.36
+          <td class="message">56%&nbsp;3%&nbsp;3%&nbsp;46%
+        <tr>
+          <td><a href="./fasta-node-2.html"><span>fasta&nbsp;&nbsp;#2</span></a>
+          <td>47.15
+          <td>&nbsp;25,000,000
+          <td>652,684
+          <td>931
+          <td>50.80
+          <td class="message">14%&nbsp;29%&nbsp;48%&nbsp;17%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fasta-node-4.html"><span>fasta&nbsp;&nbsp;#4</span></a>
+          <td>0.22
+          <td>&nbsp;250,000
+          <td>956
+          <td>1785
+          <td>0.22
+          <td class="message">0%&nbsp;0%&nbsp;95%&nbsp;0%
+        <tr>
+          <td><a href="./fasta-node-4.html"><span>fasta&nbsp;&nbsp;#4</span></a>
+          <td>1.12
+          <td>&nbsp;2,500,000
+          <td>32,864
+          <td>1785
+          <td>1.12
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;2%
+        <tr>
+          <td><a href="./fasta-node-4.html"><span>fasta&nbsp;&nbsp;#4</span></a>
+          <td>9.80
+          <td>&nbsp;25,000,000
+          <td>34,804
+          <td>1785
+          <td>9.82
+          <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./knucleotide-node-1.html"><span>k-nucleotide&nbsp;</span></a>
+          <td>1.25
+          <td>&nbsp;250,000
+          <td>238,556
+          <td>1008
+          <td>2.24
+          <td class="message">75%&nbsp;54%&nbsp;48%&nbsp;87%
+        <tr>
+          <td><a href="./knucleotide-node-1.html"><span>k-nucleotide&nbsp;</span></a>
+          <td>7.14
+          <td>&nbsp;2,500,000
+          <td>488,884
+          <td>1008
+          <td>15.25
+          <td class="message">77%&nbsp;81%&nbsp;76%&nbsp;71%
+        <tr>
+          <td><a href="./knucleotide-node-1.html"><span>k-nucleotide&nbsp;</span></a>
+          <td>69.42
+          <td>&nbsp;25,000,000
+          <td>1,843,020
+          <td>1008
+          <td>144.14
+          <td class="message">86%&nbsp;69%&nbsp;78%&nbsp;67%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./knucleotide-node-2.html"><span>k-nucleotide&nbsp;&nbsp;#2</span></a>
+          <td>1.16
+          <td>&nbsp;250,000
+          <td>250,036
+          <td>935
+          <td>2.18
+          <td class="message">86%&nbsp;53%&nbsp;90%&nbsp;53%
+        <tr>
+          <td><a href="./knucleotide-node-2.html"><span>k-nucleotide&nbsp;&nbsp;#2</span></a>
+          <td>6.48
+          <td>&nbsp;2,500,000
+          <td>479,864
+          <td>935
+          <td>14.37
+          <td class="message">70%&nbsp;96%&nbsp;71%&nbsp;82%
+        <tr>
+          <td><a href="./knucleotide-node-2.html"><span>k-nucleotide&nbsp;&nbsp;#2</span></a>
+          <td>61.24
+          <td>&nbsp;25,000,000
+          <td>1,739,992
+          <td>935
+          <td>137.09
+          <td class="message">80%&nbsp;75%&nbsp;95%&nbsp;71%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-node-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>0.45
+          <td>&nbsp;1,000
+          <td>222,460
+          <td>748
+          <td>1.35
+          <td class="message">98%&nbsp;75%&nbsp;66%&nbsp;73%
+        <tr>
+          <td><a href="./mandelbrot-node-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>1.46
+          <td>&nbsp;4,000
+          <td>293,760
+          <td>748
+          <td>4.98
+          <td class="message">86%&nbsp;87%&nbsp;81%&nbsp;92%
+        <tr>
+          <td><a href="./mandelbrot-node-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>17.72
+          <td>&nbsp;16,000
+          <td>613,608
+          <td>748
+          <td>63.70
+          <td class="message">85%&nbsp;94%&nbsp;99%&nbsp;83%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-node-4.html"><span>n-body&nbsp;&nbsp;#4</span></a>
+          <td>0.42
+          <td>&nbsp;500,000
+          <td>32,312
+          <td>1279
+          <td>0.42
+          <td class="message">0%&nbsp;100%&nbsp;3%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-node-4.html"><span>n-body&nbsp;&nbsp;#4</span></a>
+          <td>3.26
+          <td>&nbsp;5,000,000
+          <td>32,428
+          <td>1279
+          <td>3.26
+          <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-node-4.html"><span>n-body&nbsp;&nbsp;#4</span></a>
+          <td>31.69
+          <td>&nbsp;50,000,000
+          <td>32,632
+          <td>1279
+          <td>31.69
+          <td class="message">1%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-node-5.html"><span>n-body&nbsp;&nbsp;#5</span></a>
+          <td>0.41
+          <td>&nbsp;500,000
+          <td>960
+          <td>1193
+          <td>0.41
+          <td class="message">100%&nbsp;0%&nbsp;2%&nbsp;5%
+        <tr>
+          <td><a href="./nbody-node-5.html"><span>n-body&nbsp;&nbsp;#5</span></a>
+          <td>3.02
+          <td>&nbsp;5,000,000
+          <td>32,980
+          <td>1193
+          <td>3.02
+          <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;1%
+        <tr>
+          <td><a href="./nbody-node-5.html"><span>n-body&nbsp;&nbsp;#5</span></a>
+          <td>29.09
+          <td>&nbsp;50,000,000
+          <td>32,948
+          <td>1193
+          <td>29.09
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;1%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-node-2.html"><span>n-body&nbsp;&nbsp;#2</span></a>
+          <td>0.51
+          <td>&nbsp;500,000
+          <td>32,672
+          <td>1537
+          <td>0.51
+          <td class="message">2%&nbsp;100%&nbsp;2%&nbsp;2%
+        <tr>
+          <td><a href="./nbody-node-2.html"><span>n-body&nbsp;&nbsp;#2</span></a>
+          <td>4.30
+          <td>&nbsp;5,000,000
+          <td>32,528
+          <td>1537
+          <td>4.31
+          <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;1%
+        <tr>
+          <td><a href="./nbody-node-2.html"><span>n-body&nbsp;&nbsp;#2</span></a>
+          <td>39.54
+          <td>&nbsp;50,000,000
+          <td>32,584
+          <td>1537
+          <td>39.54
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-node-1.html"><span>n-body&nbsp;</span></a>
+          <td>0.39
+          <td>&nbsp;500,000
+          <td>960
+          <td>1297
+          <td>0.40
+          <td class="message">0%&nbsp;100%&nbsp;5%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-node-1.html"><span>n-body&nbsp;</span></a>
+          <td>2.76
+          <td>&nbsp;5,000,000
+          <td>33,276
+          <td>1297
+          <td>2.77
+          <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;1%
+        <tr>
+          <td><a href="./nbody-node-1.html"><span>n-body&nbsp;</span></a>
+          <td>26.61
+          <td>&nbsp;50,000,000
+          <td>33,152
+          <td>1297
+          <td>26.61
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;1%
+      <tbody>
+        <tr>
+          <td><a href="./pidigits-node-2.html"><span>pidigits&nbsp;&nbsp;#2</span></a>
+          <td class="message">Bad&nbsp;Output
+          <td>&nbsp;2,000
+          <td>
+          <td>
+          <td>
+          <td class="message">
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./regexredux-node-1.html"><span>regex-redux&nbsp;</span></a>
+          <td>0.16
+          <td>&nbsp;50,000
+          <td>?
+          <td>408
+          <td>0.13
+          <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./regexredux-node-1.html"><span>regex-redux&nbsp;</span></a>
+          <td>0.59
+          <td>&nbsp;500,000
+          <td>44,380
+          <td>408
+          <td>0.49
+          <td class="message">0%&nbsp;2%&nbsp;100%&nbsp;2%
+        <tr>
+          <td><a href="./regexredux-node-1.html"><span>regex-redux&nbsp;</span></a>
+          <td>4.30
+          <td>&nbsp;5,000,000
+          <td>652,092
+          <td>408
+          <td>4.30
+          <td class="message">0%&nbsp;2%&nbsp;99%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./regexredux-node-2.html"><span>regex-redux&nbsp;&nbsp;#2</span></a>
+          <td>0.13
+          <td>&nbsp;50,000
+          <td>?
+          <td>432
+          <td>0.13
+          <td class="message">100%&nbsp;7%&nbsp;0%&nbsp;0%
+        <tr>
+          <td><a href="./regexredux-node-2.html"><span>regex-redux&nbsp;&nbsp;#2</span></a>
+          <td>0.49
+          <td>&nbsp;500,000
+          <td>44,796
+          <td>432
+          <td>0.49
+          <td class="message">2%&nbsp;100%&nbsp;4%&nbsp;0%
+        <tr>
+          <td><a href="./regexredux-node-2.html"><span>regex-redux&nbsp;&nbsp;#2</span></a>
+          <td>4.22
+          <td>&nbsp;5,000,000
+          <td>596,420
+          <td>432
+          <td>4.24
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;1%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./revcomp-node-2.html"><span>reverse-complement&nbsp;&nbsp;#2</span></a>
+          <td>1.55
+          <td>&nbsp;250,000
+          <td>?
+          <td>1221
+          <td>?
+          <td class="message">14%&nbsp;19%&nbsp;6%&nbsp;3%
+        <tr>
+          <td><a href="./revcomp-node-2.html"><span>reverse-complement&nbsp;&nbsp;#2</span></a>
+          <td>24.06
+          <td>&nbsp;100,000,000
+          <td>706,548
+          <td>1221
+          <td>25.14
+          <td class="message">8%&nbsp;49%&nbsp;26%&nbsp;24%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./revcomp-node-7.html"><span>reverse-complement&nbsp;&nbsp;#7</span></a>
+          <td>1.51
+          <td>&nbsp;250,000
+          <td>?
+          <td>1103
+          <td>?
+          <td class="message">7%&nbsp;97%&nbsp;3%&nbsp;3%
+        <tr>
+          <td><a href="./revcomp-node-7.html"><span>reverse-complement&nbsp;&nbsp;#7</span></a>
+          <td>16.66
+          <td>&nbsp;100,000,000
+          <td>706,256
+          <td>1103
+          <td>17.71
+          <td class="message">71%&nbsp;51%&nbsp;40%&nbsp;48%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-node-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>0.23
+          <td>&nbsp;500
+          <td>940
+          <td>336
+          <td>0.23
+          <td class="message">5%&nbsp;8%&nbsp;96%&nbsp;4%
+        <tr>
+          <td><a href="./spectralnorm-node-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>4.77
+          <td>&nbsp;3,000
+          <td>31,040
+          <td>336
+          <td>4.77
+          <td class="message">0%&nbsp;100%&nbsp;0%&nbsp;0%
+        <tr>
+          <td><a href="./spectralnorm-node-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>15.79
+          <td>&nbsp;5,500
+          <td>31,908
+          <td>336
+          <td>15.79
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-node-5.html"><span>spectral-norm&nbsp;&nbsp;#5</span></a>
+          <td>0.23
+          <td>&nbsp;500
+          <td>952
+          <td>393
+          <td>0.23
+          <td class="message">8%&nbsp;0%&nbsp;4%&nbsp;100%
+        <tr>
+          <td><a href="./spectralnorm-node-5.html"><span>spectral-norm&nbsp;&nbsp;#5</span></a>
+          <td>4.77
+          <td>&nbsp;3,000
+          <td>31,092
+          <td>393
+          <td>4.77
+          <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./spectralnorm-node-5.html"><span>spectral-norm&nbsp;&nbsp;#5</span></a>
+          <td>15.79
+          <td>&nbsp;5,500
+          <td>31,952
+          <td>393
+          <td>15.79
+          <td class="message">100%&nbsp;0%&nbsp;1%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-node-3.html"><span>spectral-norm&nbsp;&nbsp;#3</span></a>
+          <td>0.23
+          <td>&nbsp;500
+          <td>920
+          <td>381
+          <td>0.23
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;0%
+        <tr>
+          <td><a href="./spectralnorm-node-3.html"><span>spectral-norm&nbsp;&nbsp;#3</span></a>
+          <td>4.77
+          <td>&nbsp;3,000
+          <td>31,068
+          <td>381
+          <td>4.77
+          <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;0%
+        <tr>
+          <td><a href="./spectralnorm-node-3.html"><span>spectral-norm&nbsp;&nbsp;#3</span></a>
+          <td>15.79
+          <td>&nbsp;5,500
+          <td>31,900
+          <td>381
+          <td>15.79
+          <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-node-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>0.24
+          <td>&nbsp;500
+          <td>936
+          <td>319
+          <td>0.24
+          <td class="message">100%&nbsp;4%&nbsp;4%&nbsp;4%
+        <tr>
+          <td><a href="./spectralnorm-node-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>4.78
+          <td>&nbsp;3,000
+          <td>32,356
+          <td>319
+          <td>4.78
+          <td class="message">0%&nbsp;100%&nbsp;0%&nbsp;0%
+        <tr>
+          <td><a href="./spectralnorm-node-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>15.80
+          <td>&nbsp;5,500
+          <td>33,412
+          <td>319
+          <td>15.80
+          <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;0%
+    </table>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./why-measure-toy-benchmark-programs.html"><span>toy programs</span></a>
+      <li><a href="./how-programs-are-measured.html"><span>details</span></a>
+      <li><a href="./dont-jump-to-conclusions.html"><span>conclusions</span></a>
+    </ul>
+  </nav>
+  <aside>
+    <p>We want easy answers, but easy answers are often incomplete or wrong. You and I know, there's more we need to understand.
+  </aside>
+</footer>
+

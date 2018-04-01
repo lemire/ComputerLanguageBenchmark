@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>reverse-complement Smalltalk VW program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>reverse-complement Smalltalk VW program</h2>
+    <aside>
+      <p><a href="./revcomp-description.html#revcomp">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">&quot;* The Computer Language Benchmarks Game</span>
+<span class="com">    http://benchmarksgame.alioth.debian.org/</span>
+<span class="com">   contributed by Eliot Miranda and Isaac Gouy *&quot;</span><span class="opt">!</span>
+
+
+<span class="kwc">Smalltalk</span><span class="opt">.</span><span class="kwc">Core</span> <span class="kwb">defineClass:</span> <span class="kwd">#BenchmarksGame</span>
+	<span class="kwb">superclass:</span> <span class="opt">#{</span><span class="kwc">Core</span><span class="opt">.</span><span class="kwc">Object</span><span class="opt">}</span>
+	<span class="kwb">indexedType:</span> <span class="kwd">#none</span>
+	<span class="kwb">private:</span> <span class="kwa">false</span>
+	<span class="kwb">instanceVariableNames:</span> <span class="str">&apos;&apos;</span>
+	<span class="kwb">classInstanceVariableNames:</span> <span class="str">&apos;&apos;</span>
+	<span class="kwb">imports:</span> <span class="str">&apos;&apos;</span>
+	<span class="kwb">category:</span> <span class="str">&apos;&apos;</span><span class="opt">!</span>
+
+
+<span class="opt">!</span><span class="kwc">Core</span><span class="opt">.</span><span class="kwc">BenchmarksGame</span> class <span class="kwb">methodsFor:</span> <span class="str">&apos;private&apos;</span><span class="opt">!</span>
+
+<span class="kwb">readFasta:</span> sequenceName <span class="kwb">from:</span> input
+   <span class="kwd">| prefix newline buffer description line char |</span>
+   prefix <span class="opt">:</span><span class="kwb">=</span> <span class="str">&apos;&gt;&apos;</span>,sequenceName<span class="opt">.</span>
+   newline <span class="opt">:</span><span class="kwb">=</span> <span class="kwc">Character</span> cr<span class="opt">.</span>
+
+   <span class="com">&quot;* find start of particular fasta sequence *&quot;</span>
+   <span class="opt">[(</span>input atEnd<span class="opt">)</span> <span class="kwb">or:</span> <span class="opt">[</span>
+         <span class="opt">(</span>input peek <span class="kwb">=</span> <span class="opt">$</span>&gt;<span class="opt">)</span> 
+            <span class="kwb">ifTrue:</span> <span class="opt">[((</span>line <span class="opt">:</span><span class="kwb">=</span> input <span class="kwb">upTo:</span> newline<span class="opt">)</span> 
+               <span class="kwb">indexOfSubCollection:</span> prefix <span class="kwb">startingAt:</span> <span class="num">1</span><span class="opt">)</span> <span class="kwb">=</span> <span class="num">1</span><span class="opt">]</span>
+            <span class="kwb">ifFalse:</span> <span class="opt">[</span>input <span class="kwb">skipThrough:</span> newline<span class="opt">.</span> <span class="kwa">false</span><span class="opt">]]</span>
+      <span class="opt">]</span> whileFalse<span class="opt">.</span>
+
+   <span class="com">&quot;* line-by-line read - it would be a lot faster to block read *&quot;</span>
+   description <span class="opt">:</span><span class="kwb">=</span> line<span class="opt">.</span>
+   buffer <span class="opt">:</span><span class="kwb">=</span> <span class="kwc">ReadWriteStream</span> <span class="kwb">on:</span> <span class="opt">(</span><span class="kwc">String</span> <span class="kwb">new:</span> <span class="num">1028</span><span class="opt">).</span>
+   <span class="opt">[(</span>input atEnd<span class="opt">)</span> <span class="kwb">or:</span> <span class="opt">[(</span>char <span class="opt">:</span><span class="kwb">=</span> input peek<span class="opt">)</span> <span class="kwb">=</span> <span class="opt">$</span>&gt;<span class="opt">]]</span> <span class="kwb">whileFalse:</span> <span class="opt">[</span>
+      <span class="opt">(</span>char <span class="kwb">=</span> <span class="opt">$;)</span> 
+         <span class="kwb">ifTrue:</span> <span class="opt">[</span>input <span class="kwb">upTo:</span> newline<span class="opt">]</span> 
+         <span class="kwb">ifFalse:</span> <span class="opt">[</span>buffer <span class="kwb">nextPutAll:</span> <span class="opt">(</span>input <span class="kwb">upTo:</span> newline<span class="opt">)]</span>
+      <span class="opt">].</span>
+   <span class="opt">^</span><span class="kwc">Association</span> <span class="kwb">key:</span> description <span class="kwb">value:</span> buffer contents<span class="opt">!</span>
+
+<span class="kwb">reverseComplement:</span> sequence <span class="kwb">named:</span> sequenceName <span class="kwb">to:</span> output
+   <span class="kwd">| complement newline lineLength n |</span>
+   <span class="opt">(</span>sequenceName isNil<span class="opt">)</span> <span class="kwb">ifTrue:</span> <span class="opt">[^</span><span class="kwa">self</span><span class="opt">].</span>
+
+   complement <span class="opt">:</span><span class="kwb">=</span> <span class="kwc">String</span> <span class="kwb">new:</span> <span class="num">128</span> <span class="kwb">withAll:</span> <span class="opt">$</span><span class="kwb">*</span><span class="opt">.</span>
+
+   <span class="str">&apos;ABCDGHKMNRSTVWY&apos;</span> <span class="kwb">with:</span> 
+   <span class="str">&apos;TVGHCDMKNYSABWR&apos;</span>
+      <span class="kwb">do:</span> <span class="opt">[</span><span class="kwd">:a :b</span>|
+         complement <span class="kwb">at:</span> a asInteger <span class="kwb">put:</span> b<span class="opt">.</span>
+         complement <span class="kwb">at:</span> a asLowercase asInteger <span class="kwb">put:</span> b<span class="opt">].</span>
+
+   newline <span class="opt">:</span><span class="kwb">=</span> <span class="kwc">Character</span> lf<span class="opt">.</span>
+   lineLength <span class="opt">:</span><span class="kwb">=</span> <span class="num">60</span><span class="opt">.</span>
+   n <span class="opt">:</span><span class="kwb">=</span> sequence size<span class="opt">.</span>
+
+   output <span class="kwb">nextPutAll:</span> sequenceName<span class="opt">;</span> <span class="kwb">nextPut:</span> newline<span class="opt">.</span>
+
+   <span class="opt">[</span>n &gt; <span class="num">0</span><span class="opt">]</span> <span class="kwb">whileTrue:</span> <span class="opt">[</span> 
+         <span class="num">1</span> <span class="kwb">to:</span> <span class="opt">((</span>n &lt; lineLength<span class="opt">)</span> <span class="kwb">ifTrue:</span> <span class="opt">[</span>n<span class="opt">]</span> <span class="kwb">ifFalse:</span> <span class="opt">[</span>lineLength<span class="opt">])</span> <span class="kwb">do:</span>
+            <span class="opt">[</span><span class="kwd">:i</span> | output <span class="kwb">nextPut:</span> 
+               <span class="opt">(</span>complement <span class="kwb">at:</span> <span class="opt">(</span>sequence <span class="kwb">at:</span> n <span class="kwb">-</span> i <span class="kwb">+</span> <span class="num">1</span><span class="opt">)</span> asInteger<span class="opt">)].</span>
+         output <span class="kwb">nextPut:</span> newline<span class="opt">.</span>
+         n <span class="opt">:</span><span class="kwb">=</span> n <span class="kwb">-</span> lineLength<span class="opt">.</span> 
+      <span class="opt">]! !</span>
+
+<span class="opt">!</span><span class="kwc">Core</span><span class="opt">.</span><span class="kwc">BenchmarksGame</span> class <span class="kwb">methodsFor:</span> <span class="str">&apos;initialize-release&apos;</span><span class="opt">!</span>
+
+<span class="kwb">program</span>
+   <span class="kwd">| input output |</span>
+   input <span class="opt">:</span><span class="kwb">=</span> <span class="kwc">ExternalReadStream</span> <span class="kwb">on:</span>
+      <span class="opt">(</span><span class="kwc">ExternalConnection</span> <span class="kwb">ioAccessor:</span> <span class="opt">(</span><span class="kwc">UnixDiskFileAccessor</span> new <span class="kwb">handle:</span> <span class="num">0</span><span class="opt">)).</span>
+   output <span class="opt">:</span><span class="kwb">=</span> <span class="kwc">ExternalWriteStream</span> <span class="kwb">on:</span>
+      <span class="opt">(</span><span class="kwc">ExternalConnection</span> <span class="kwb">ioAccessor:</span> <span class="opt">(</span><span class="kwc">UnixDiskFileAccessor</span> new <span class="kwb">handle:</span> <span class="num">1</span><span class="opt">)).</span>
+
+   <span class="opt">#(</span><span class="str">&apos;ONE&apos;</span> <span class="str">&apos;TWO&apos;</span> <span class="str">&apos;THREE&apos;</span><span class="opt">)</span> <span class="kwb">do:</span>
+      <span class="opt">[</span><span class="kwd">:sequenceName</span>|   <span class="kwd">| fasta |</span>
+         fasta <span class="opt">:</span><span class="kwb">=</span> <span class="kwa">self</span> <span class="kwb">readFasta:</span> sequenceName <span class="kwb">from:</span> input<span class="opt">.</span>
+         <span class="kwa">self</span> <span class="kwb">reverseComplement:</span> fasta value <span class="kwb">named:</span> fasta key <span class="kwb">to:</span> output<span class="opt">.</span>
+      <span class="opt">].</span>
+
+   output flush<span class="opt">.</span> 
+   <span class="opt">^</span><span class="str">&apos;&apos;</span><span class="opt">! !</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+VisualWorks&#174; Personal Use Edition Release 8.2 of July 15, 2016
+
+
+
+
+Mon, 26 Mar 2018 19:13:17 GMT
+
+MAKE:
+make: *** No rule to make target 'revcomp.vw_run'.  Stop.
+
+0.07s to complete and log all make actions
+
+COMMAND LINE:
+/usr/local/src/vw8.2pul/bin/linuxx86_64/vwlinuxx86_64 revcomp.vw_run.im -nogui -evaluate &quot;BenchmarksGame program&quot; -a 0 &lt; revcomp-input250000.txt
+
+MAKE ERROR 
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

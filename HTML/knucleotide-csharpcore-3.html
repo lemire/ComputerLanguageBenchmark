@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>k-nucleotide C# .NET Core&nbsp;#3 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>k-nucleotide C# .NET Core&nbsp;#3 program</h2>
+    <aside>
+      <p><a href="./knucleotide-description.html#knucleotide">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">/* The Computer Language Benchmarks Game</span>
+<span class="com">   http://benchmarksgame.alioth.debian.org/</span>
+<span class="com"> *</span>
+<span class="com"> * contributed by Isaac Gouy</span>
+<span class="com"> * modified by Antti Lankila for generics</span>
+<span class="com"> * modified by A.Nahr for performance and throwing unneccesary stuff out</span>
+<span class="com"> * remove unsafe code &amp; add multithread by The Anh Tran</span>
+<span class="com"> */</span>
+
+<span class="kwa">using</span> System<span class="opt">;</span>
+<span class="kwa">using</span> System<span class="opt">.</span>IO<span class="opt">;</span>
+<span class="kwa">using</span> System<span class="opt">.</span>Collections<span class="opt">.</span>Generic<span class="opt">;</span>
+<span class="kwa">using</span> System<span class="opt">.</span>Text<span class="opt">;</span>
+<span class="kwa">using</span> System<span class="opt">.</span>Threading<span class="opt">;</span>
+
+<span class="kwa">public class</span> knucleotide
+<span class="opt">{</span>
+    <span class="kwa">static private string</span>   input<span class="opt">;</span>
+    <span class="kwa">static private int</span>      task_count <span class="opt">=</span> <span class="num">7</span><span class="opt">;</span>
+    <span class="kwa">static private string</span><span class="opt">[]</span> result <span class="opt">=</span> <span class="kwa">new string</span><span class="opt">[</span><span class="num">7</span><span class="opt">];</span>
+
+   <span class="kwa">public static void</span> <span class="kwd">Main</span><span class="opt">(</span><span class="com">/*string[] arg*/</span><span class="opt">)</span>
+   <span class="opt">{</span>
+      StreamReader source <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">StreamReader</span><span class="opt">(</span>Console<span class="opt">.</span><span class="kwd">OpenStandardInput</span><span class="opt">());</span>
+        
+        <span class="kwa">string</span> line<span class="opt">;</span>
+      <span class="kwa">while</span> <span class="opt">((</span>line <span class="opt">=</span> source<span class="opt">.</span><span class="kwd">ReadLine</span><span class="opt">()) !=</span> <span class="kwa">null</span><span class="opt">)</span>
+      <span class="opt">{</span>
+         <span class="kwa">if</span> <span class="opt">(</span>line<span class="opt">.</span><span class="kwd">StartsWith</span><span class="opt">(</span><span class="str">&quot;&gt;THREE&quot;</span><span class="opt">,</span> StringComparison<span class="opt">.</span>CurrentCultureIgnoreCase<span class="opt">))</span>
+            <span class="kwa">break</span><span class="opt">;</span>
+      <span class="opt">}</span>
+
+      StringBuilder buf <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">StringBuilder</span><span class="opt">(</span><span class="num">64</span> <span class="opt">*</span> <span class="num">1024</span> <span class="opt">*</span> <span class="num">1024</span><span class="opt">);</span> <span class="slc">// 64mb</span>
+      <span class="kwa">while</span> <span class="opt">((</span>line <span class="opt">=</span> source<span class="opt">.</span><span class="kwd">ReadLine</span><span class="opt">()) !=</span> <span class="kwa">null</span><span class="opt">)</span>
+         buf<span class="opt">.</span><span class="kwd">Append</span><span class="opt">(</span>line<span class="opt">);</span>
+
+        input <span class="opt">=</span> buf<span class="opt">.</span><span class="kwd">ToString</span><span class="opt">();</span>
+      buf <span class="opt">=</span> <span class="kwa">null</span><span class="opt">;</span>
+
+        Thread<span class="opt">[]</span> threads <span class="opt">=</span> <span class="kwa">new</span> Thread<span class="opt">[</span>Environment<span class="opt">.</span>ProcessorCount<span class="opt">];</span>
+        <span class="kwa">for</span> <span class="opt">(</span><span class="kwa">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> threads<span class="opt">.</span>Length<span class="opt">;</span> i<span class="opt">++)</span>
+        <span class="opt">{</span>
+            threads<span class="opt">[</span>i<span class="opt">] =</span> <span class="kwa">new</span> <span class="kwd">Thread</span><span class="opt">(</span>worker<span class="opt">);</span>
+            threads<span class="opt">[</span>i<span class="opt">].</span><span class="kwd">Start</span><span class="opt">();</span>
+        <span class="opt">}</span>
+
+        <span class="kwa">foreach</span> <span class="opt">(</span>Thread t <span class="kwa">in</span> threads<span class="opt">)</span>
+            t<span class="opt">.</span><span class="kwd">Join</span><span class="opt">();</span>
+        <span class="kwa">foreach</span> <span class="opt">(</span><span class="kwa">string</span> s <span class="kwa">in</span> result<span class="opt">)</span>
+            Console<span class="opt">.</span>Out<span class="opt">.</span><span class="kwd">WriteLine</span><span class="opt">(</span>s<span class="opt">);</span>
+   <span class="opt">}</span>
+
+    <span class="kwa">private static void</span> <span class="kwd">worker</span><span class="opt">()</span>
+    <span class="opt">{</span>
+        <span class="kwa">int</span> j<span class="opt">;</span>
+        <span class="kwa">while</span> <span class="opt">((</span>j <span class="opt">=</span> Interlocked<span class="opt">.</span><span class="kwd">Decrement</span><span class="opt">(</span><span class="kwa">ref</span> task_count<span class="opt">)) &gt;=</span> <span class="num">0</span><span class="opt">)</span>
+        <span class="opt">{</span>
+            <span class="kwa">switch</span> <span class="opt">(</span>j<span class="opt">)</span>
+            <span class="opt">{</span>
+                <span class="kwa">case</span> <span class="num">0</span><span class="opt">:</span>
+                    result<span class="opt">[</span>j<span class="opt">] =</span> <span class="kwd">WriteFrequencies</span><span class="opt">(</span><span class="num">1</span><span class="opt">);</span>
+                    <span class="kwa">break</span><span class="opt">;</span>
+                <span class="kwa">case</span> <span class="num">1</span><span class="opt">:</span>
+                    result<span class="opt">[</span>j<span class="opt">] =</span> <span class="kwd">WriteFrequencies</span><span class="opt">(</span><span class="num">2</span><span class="opt">);</span>
+                    <span class="kwa">break</span><span class="opt">;</span>
+                <span class="kwa">case</span> <span class="num">2</span><span class="opt">:</span>
+                    result<span class="opt">[</span>j<span class="opt">] =</span> <span class="kwd">WriteCount</span><span class="opt">(</span><span class="str">&quot;ggt&quot;</span><span class="opt">);</span>
+                    <span class="kwa">break</span><span class="opt">;</span>
+                <span class="kwa">case</span> <span class="num">3</span><span class="opt">:</span>
+                    result<span class="opt">[</span>j<span class="opt">] =</span> <span class="kwd">WriteCount</span><span class="opt">(</span><span class="str">&quot;ggta&quot;</span><span class="opt">);</span>
+                    <span class="kwa">break</span><span class="opt">;</span>
+                <span class="kwa">case</span> <span class="num">4</span><span class="opt">:</span>
+                    result<span class="opt">[</span>j<span class="opt">] =</span> <span class="kwd">WriteCount</span><span class="opt">(</span><span class="str">&quot;ggtatt&quot;</span><span class="opt">);</span>
+                    <span class="kwa">break</span><span class="opt">;</span>
+                <span class="kwa">case</span> <span class="num">5</span><span class="opt">:</span>
+                    result<span class="opt">[</span>j<span class="opt">] =</span> <span class="kwd">WriteCount</span><span class="opt">(</span><span class="str">&quot;ggtattttaatt&quot;</span><span class="opt">);</span>
+                    <span class="kwa">break</span><span class="opt">;</span>
+                <span class="kwa">case</span> <span class="num">6</span><span class="opt">:</span>
+                    result<span class="opt">[</span>j<span class="opt">] =</span> <span class="kwd">WriteCount</span><span class="opt">(</span><span class="str">&quot;ggtattttaatttatagt&quot;</span><span class="opt">);</span>
+                    <span class="kwa">break</span><span class="opt">;</span>
+            <span class="opt">}</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+
+    <span class="kwa">private static string</span> <span class="kwd">WriteFrequencies</span><span class="opt">(</span><span class="kwa">int</span> nucleotideLength<span class="opt">)</span>
+   <span class="opt">{</span>
+        Dictionary<span class="opt">&lt;</span>Key<span class="opt">,</span> Value<span class="opt">&gt;</span> frequencies <span class="opt">=</span> <span class="kwd">GenerateFrequencies</span><span class="opt">(</span>nucleotideLength<span class="opt">);</span>
+
+        List<span class="opt">&lt;</span>KeyValuePair<span class="opt">&lt;</span>Key<span class="opt">,</span> Value<span class="opt">&gt;&gt;</span> items <span class="opt">=</span> <span class="kwa">new</span> List<span class="opt">&lt;</span>KeyValuePair<span class="opt">&lt;</span>Key<span class="opt">,</span> Value<span class="opt">&gt;&gt;(</span>frequencies<span class="opt">);</span>
+      items<span class="opt">.</span><span class="kwd">Sort</span><span class="opt">(</span>SortByFrequencyAndCode<span class="opt">);</span>
+
+        StringBuilder buf <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">StringBuilder</span><span class="opt">();</span>
+      <span class="kwa">int</span> sum <span class="opt">=</span> input<span class="opt">.</span>Length <span class="opt">-</span> nucleotideLength <span class="opt">+</span> <span class="num">1</span><span class="opt">;</span>
+
+        <span class="kwa">foreach</span> <span class="opt">(</span>KeyValuePair<span class="opt">&lt;</span>Key<span class="opt">,</span> Value<span class="opt">&gt;</span> element <span class="kwa">in</span> items<span class="opt">)</span>
+      <span class="opt">{</span>
+         <span class="kwa">float</span> percent <span class="opt">=</span> element<span class="opt">.</span>Value<span class="opt">.</span><span class="kwa">value</span> <span class="opt">*</span> <span class="num">100.0</span>f <span class="opt">/</span> sum<span class="opt">;</span>
+            buf<span class="opt">.</span><span class="kwd">AppendFormat</span><span class="opt">(</span><span class="str">&quot;</span><span class="ipl">{0} {1:f3}</span><span class="str"></span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span> element<span class="opt">.</span>Key<span class="opt">,</span> percent<span class="opt">);</span>
+      <span class="opt">}</span>
+
+        <span class="kwa">return</span> buf<span class="opt">.</span><span class="kwd">ToString</span><span class="opt">();</span>
+   <span class="opt">}</span>
+
+   <span class="kwa">private static string</span> <span class="kwd">WriteCount</span><span class="opt">(</span><span class="kwa">string</span> nucleotideFragment<span class="opt">)</span>
+   <span class="opt">{</span>
+        Dictionary<span class="opt">&lt;</span>Key<span class="opt">,</span> Value<span class="opt">&gt;</span> frequencies <span class="opt">=</span> <span class="kwd">GenerateFrequencies</span><span class="opt">(</span>nucleotideFragment<span class="opt">.</span>Length<span class="opt">);</span>
+        Key specific <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">Key</span><span class="opt">(</span>nucleotideFragment<span class="opt">);</span>
+      
+        <span class="kwa">int</span> count <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+      <span class="kwa">if</span> <span class="opt">(</span>frequencies<span class="opt">.</span><span class="kwd">ContainsKey</span><span class="opt">(</span>specific<span class="opt">))</span>
+         count <span class="opt">=</span> frequencies<span class="opt">[</span>specific<span class="opt">].</span><span class="kwa">value</span><span class="opt">;</span>
+      
+        <span class="kwa">return string</span><span class="opt">.</span><span class="kwd">Format</span><span class="opt">(</span><span class="str">&quot;</span><span class="ipl">{0}</span><span class="str"></span><span class="esc">\t</span><span class="str"></span><span class="ipl">{1}</span><span class="str">&quot;</span><span class="opt">,</span> count<span class="opt">,</span> nucleotideFragment<span class="opt">.</span><span class="kwd">ToUpper</span><span class="opt">());</span>
+   <span class="opt">}</span>
+
+    <span class="kwa">private static</span> Dictionary<span class="opt">&lt;</span>Key<span class="opt">,</span> Value<span class="opt">&gt;</span> <span class="kwd">GenerateFrequencies</span><span class="opt">(</span><span class="kwa">int</span> frame_size<span class="opt">)</span>
+   <span class="opt">{</span>
+        Dictionary<span class="opt">&lt;</span>Key<span class="opt">,</span> Value<span class="opt">&gt;</span> frequencies <span class="opt">=</span> <span class="kwa">new</span> Dictionary<span class="opt">&lt;</span>Key<span class="opt">,</span> Value<span class="opt">&gt;();</span>
+        
+        Key k <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">Key</span><span class="opt">(</span>frame_size<span class="opt">);</span>
+        Value val<span class="opt">;</span>
+
+        <span class="kwa">int</span> end <span class="opt">=</span> input<span class="opt">.</span>Length <span class="opt">-</span> frame_size <span class="opt">+</span> <span class="num">1</span><span class="opt">;</span>
+        <span class="kwa">for</span> <span class="opt">(</span><span class="kwa">int</span> index <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> index <span class="opt">&lt;</span> end<span class="opt">;</span> index<span class="opt">++)</span>
+        <span class="opt">{</span>
+            k<span class="opt">.</span><span class="kwd">ReHash</span><span class="opt">(</span>input<span class="opt">,</span> index<span class="opt">);</span>
+
+            frequencies<span class="opt">.</span><span class="kwd">TryGetValue</span><span class="opt">(</span>k<span class="opt">,</span> <span class="kwa">out</span> val<span class="opt">);</span>
+            <span class="kwa">if</span> <span class="opt">(</span>val <span class="opt">!=</span> <span class="kwa">null</span><span class="opt">)</span>   <span class="slc">// must use a class type in order to compare reference with null</span>
+                val<span class="opt">.</span><span class="kwa">value</span><span class="opt">++;</span>   <span class="slc">// if we use &apos;int&apos;, this step require 1 more lookup</span>
+            <span class="kwa">else</span>
+                frequencies<span class="opt">.</span><span class="kwd">Add</span><span class="opt">(</span><span class="kwa">new</span> <span class="kwd">Key</span><span class="opt">(</span>k<span class="opt">),</span> <span class="kwa">new</span> <span class="kwd">Value</span><span class="opt">());</span>
+        <span class="opt">}</span>
+        <span class="kwa">return</span> frequencies<span class="opt">;</span>
+   <span class="opt">}</span>
+
+   <span class="kwa">private static int</span> <span class="kwd">SortByFrequencyAndCode</span><span class="opt">(</span>KeyValuePair<span class="opt">&lt;</span>Key<span class="opt">,</span> Value<span class="opt">&gt;</span> item1<span class="opt">,</span> KeyValuePair<span class="opt">&lt;</span>Key<span class="opt">,</span> Value<span class="opt">&gt;</span> item2<span class="opt">)</span>
+   <span class="opt">{</span>
+      <span class="kwa">int</span> comparison <span class="opt">=</span> item2<span class="opt">.</span>Value<span class="opt">.</span><span class="kwa">value</span> <span class="opt">-</span> item1<span class="opt">.</span>Value<span class="opt">.</span><span class="kwa">value</span><span class="opt">;</span>
+      <span class="kwa">if</span> <span class="opt">(</span>comparison <span class="opt">==</span> <span class="num">0</span><span class="opt">)</span> 
+            <span class="kwa">return</span> item1<span class="opt">.</span>Key<span class="opt">.</span>key<span class="opt">.</span><span class="kwd">ToString</span><span class="opt">().</span><span class="kwd">CompareTo</span><span class="opt">(</span>item2<span class="opt">.</span>Key<span class="opt">.</span>key<span class="opt">.</span><span class="kwd">ToString</span><span class="opt">());</span>
+      <span class="kwa">else</span> 
+            <span class="kwa">return</span> comparison<span class="opt">;</span>
+   <span class="opt">}</span>
+
+    <span class="kwa">internal class</span> Key
+    <span class="opt">{</span>
+        <span class="kwa">internal int</span>    hash<span class="opt">;</span>
+        <span class="kwa">internal char</span><span class="opt">[]</span> key<span class="opt">;</span>
+
+        <span class="kwa">public</span> <span class="kwd">Key</span><span class="opt">(</span><span class="kwa">int</span> frame<span class="opt">)</span>
+        <span class="opt">{</span>
+            key <span class="opt">=</span> <span class="kwa">new char</span><span class="opt">[</span>frame<span class="opt">];</span>
+        <span class="opt">}</span>
+
+        <span class="kwa">public</span> <span class="kwd">Key</span><span class="opt">(</span>Key k<span class="opt">)</span>
+        <span class="opt">{</span>
+            hash <span class="opt">=</span> k<span class="opt">.</span>hash<span class="opt">;</span>
+            <span class="kwa">this</span><span class="opt">.</span>key <span class="opt">= (</span><span class="kwa">char</span><span class="opt">[])</span>k<span class="opt">.</span>key<span class="opt">.</span><span class="kwd">Clone</span><span class="opt">();</span>
+        <span class="opt">}</span>
+        
+        <span class="kwa">public</span> <span class="kwd">Key</span><span class="opt">(</span><span class="kwa">string</span> s<span class="opt">)</span>
+        <span class="opt">{</span>
+            key <span class="opt">=</span> <span class="kwa">new char</span><span class="opt">[</span>s<span class="opt">.</span>Length<span class="opt">];</span>
+            <span class="kwd">ReHash</span><span class="opt">(</span>s<span class="opt">,</span> <span class="num">0</span><span class="opt">);</span>
+        <span class="opt">}</span>
+        <span class="kwa">public void</span> <span class="kwd">ReHash</span><span class="opt">(</span><span class="kwa">string</span> k<span class="opt">,</span> <span class="kwa">int</span> offset<span class="opt">)</span>
+        <span class="opt">{</span>
+            hash <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+            <span class="kwa">for</span> <span class="opt">(</span><span class="kwa">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> key<span class="opt">.</span>Length<span class="opt">;</span> i<span class="opt">++)</span>
+            <span class="opt">{</span>
+                key<span class="opt">[</span>i<span class="opt">] =</span> k<span class="opt">[</span>offset <span class="opt">+</span> i<span class="opt">];</span>
+                hash <span class="opt">=</span> hash <span class="opt">*</span> <span class="num">31</span> <span class="opt">+</span> key<span class="opt">[</span>i<span class="opt">];</span>
+            <span class="opt">}</span>
+        <span class="opt">}</span>
+
+        <span class="kwa">public override int</span> <span class="kwd">GetHashCode</span><span class="opt">()</span>
+        <span class="opt">{</span>
+            <span class="kwa">return</span> hash<span class="opt">;</span>
+        <span class="opt">}</span>
+
+        <span class="kwa">public override string</span> <span class="kwd">ToString</span><span class="opt">()</span>
+        <span class="opt">{</span>
+            <span class="kwa">return new string</span><span class="opt">(</span>key<span class="opt">).</span><span class="kwd">ToUpper</span><span class="opt">();</span>
+        <span class="opt">}</span>
+
+        <span class="kwa">public override bool</span> <span class="kwd">Equals</span><span class="opt">(</span><span class="kwa">object</span> k<span class="opt">)</span>
+        <span class="opt">{</span>
+            <span class="kwa">return this</span><span class="opt">.</span>hash <span class="opt">== ((</span>Key<span class="opt">)</span>k<span class="opt">).</span>hash<span class="opt">;</span>
+        <span class="opt">}</span>
+        <span class="com">/*</span>
+<span class="com">        public bool Equals (Key k)</span>
+<span class="com">        {</span>
+<span class="com">         return this.hash == k.hash;</span>
+<span class="com">        }</span>
+<span class="com">        */</span>
+    <span class="opt">}</span>
+
+    <span class="kwa">internal class</span> Value
+    <span class="opt">{</span>
+        <span class="kwa">internal int value</span><span class="opt">;</span>
+
+        <span class="kwa">public</span> <span class="kwd">Value</span><span class="opt">()</span>
+        <span class="opt">{</span>
+            <span class="kwa">value</span> <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+<span class="opt">}</span>
+
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+2.0.2 a04b4bf512
+"System.GC.Server": true
+
+
+Fri, 27 Oct 2017 00:24:53 GMT
+
+MAKE:
+cp knucleotide.csharpcore-3.csharpcore Program.cs
+cp Include/csharpcore/tmp.csproj .
+cp Include/csharpcore/runtimeconfig.template.json .
+mkdir obj
+cp Include/csharpcore/tmp.csproj.nuget.g.props ./obj
+cp Include/csharpcore/tmp.csproj.nuget.g.targets ./obj
+/usr/bin/dotnet build -c Release
+Microsoft (R) Build Engine version 15.4.8.50001 for .NET Core
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  tmp -&gt; /home/dunham/benchmarksgame_quadcore/knucleotide/tmp/bin/Release/netcoreapp2.0/tmp.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.74
+
+6.31s to complete and log all make actions
+
+COMMAND LINE:
+/usr/bin/dotnet ./bin/Release/netcoreapp2.0/tmp.dll 0 &lt; knucleotide-input25000000.txt
+
+PROGRAM OUTPUT:
+A 30.295
+T 30.151
+C 19.800
+G 19.754
+
+AA 9.177
+TA 9.132
+AT 9.131
+TT 9.091
+CA 6.002
+AC 6.001
+AG 5.987
+GA 5.984
+CT 5.971
+TC 5.971
+GT 5.957
+TG 5.956
+CC 3.917
+GC 3.911
+CG 3.909
+GG 3.902
+
+1471758	GGT
+446535	GGTA
+47336	GGTATT
+893	GGTATTTTAATT
+893	GGTATTTTAATTTATAGT
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

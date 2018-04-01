@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>reverse-complement C gcc&nbsp;#6 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>reverse-complement C gcc&nbsp;#6 program</h2>
+    <aside>
+      <p><a href="./revcomp-description.html#revcomp">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">// The Computer Language Benchmarks Game</span>
+<span class="slc">// http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">//</span>
+<span class="slc">// Contributed by Jeremy Zerfas</span>
+
+<span class="slc">// This string/character array is used to convert characters into the</span>
+<span class="slc">// complementing character.</span>
+<span class="ppc">#define COMPLEMENT_LOOKUP \</span>
+<span class="ppc"></span>  <span class="pps">&quot;                                                                &quot;</span><span class="ppc">\</span>
+<span class="ppc"></span>  <span class="com">/*ABCDEFGHIJKLMNOPQRSTUVWXYZ      abcdefghijklmnopqrstuvwxyz    */</span><span class="ppc">\</span>
+<span class="ppc"></span>  <span class="pps">&quot; TVGH  CD  M KN   YSAABW R       TVGH  CD  M KN   YSAABW R&quot;</span><span class="ppc"></span>
+
+<span class="slc">// This controls the size of reads from the input and is also used as the</span>
+<span class="slc">// initial sequence_Capacity.</span>
+<span class="ppc">#define READ_SIZE 16384</span>
+
+<span class="ppc">#include &lt;stdio.h&gt;</span>
+<span class="ppc">#include &lt;stdlib.h&gt;</span>
+<span class="ppc">#include &lt;string.h&gt;</span>
+<span class="ppc">#include &lt;stdint.h&gt;</span>
+
+<span class="slc">// intptr_t should be the native integer type on most sane systems.</span>
+<span class="kwc">typedef</span> <span class="kwb">intptr_t</span> intnative_t<span class="opt">;</span>
+
+
+<span class="kwb">static</span> intnative_t next_Sequence_Number_To_Output<span class="opt">=</span><span class="num">1</span><span class="opt">;</span>
+
+<span class="kwb">static void</span> <span class="kwd">process_Sequence</span><span class="opt">(</span><span class="kwb">char</span> <span class="opt">*</span> sequence<span class="opt">,</span> <span class="kwb">const</span> intnative_t sequence_Size
+  <span class="opt">,</span> <span class="kwb">const</span> intnative_t sequence_Number<span class="opt">){</span>
+   <span class="slc">// Free up any memory we didn&apos;t need.</span>
+   sequence<span class="opt">=</span><span class="kwd">realloc</span><span class="opt">(</span>sequence<span class="opt">,</span> sequence_Size<span class="opt">);</span>
+
+   <span class="slc">// Set up pointers to the front_Pos and bac_Pos, advance front_Pos to the</span>
+   <span class="slc">// first character on the next line, and then make sure front_Pos and</span>
+   <span class="slc">// back_Pos start out pointing to non-line feed characters (unless all the</span>
+   <span class="slc">// characters happen to be line feeds in which case front_Pos will go past</span>
+   <span class="slc">// back_Pos causing the reversing and complementing loop to do nothing.</span>
+   <span class="kwb">char</span> <span class="opt">*</span> front_Pos<span class="opt">=</span>sequence<span class="opt">, *</span> back_Pos<span class="opt">=</span>sequence<span class="opt">+</span>sequence_Size<span class="opt">-</span><span class="num">1</span><span class="opt">;</span>
+   <span class="kwa">while</span><span class="opt">(*</span>front_Pos<span class="opt">++!=</span><span class="str">&apos;</span><span class="esc">\n</span><span class="str">&apos;</span><span class="opt">);</span>
+   <span class="kwa">while</span><span class="opt">(*</span>front_Pos<span class="opt">==</span><span class="str">&apos;</span><span class="esc">\n</span><span class="str">&apos;</span> <span class="opt">&amp;&amp;</span> front_Pos<span class="opt">&lt;=</span>back_Pos<span class="opt">)</span> front_Pos<span class="opt">++;</span>
+   <span class="kwa">while</span><span class="opt">(*</span>back_Pos<span class="opt">==</span><span class="str">&apos;</span><span class="esc">\n</span><span class="str">&apos;</span> <span class="opt">&amp;&amp;</span> front_Pos<span class="opt">&lt;=</span>back_Pos<span class="opt">)</span> back_Pos<span class="opt">--;</span>
+
+   <span class="slc">// Reverse and complement the sequence.</span>
+   <span class="kwa">while</span><span class="opt">(</span>front_Pos<span class="opt">&lt;=</span>back_Pos<span class="opt">){</span>
+      <span class="kwb">const char</span> temp<span class="opt">=</span>COMPLEMENT_LOOKUP<span class="opt">[(</span><span class="kwb">unsigned char</span><span class="opt">)*</span>front_Pos<span class="opt">];</span>
+      <span class="opt">*</span>front_Pos<span class="opt">=</span>COMPLEMENT_LOOKUP<span class="opt">[(</span><span class="kwb">unsigned char</span><span class="opt">)*</span>back_Pos<span class="opt">];</span>
+      <span class="opt">*</span>back_Pos<span class="opt">=</span>temp<span class="opt">;</span>
+
+      <span class="slc">// Skip over line feeds.</span>
+      <span class="kwa">while</span><span class="opt">(*++</span>front_Pos<span class="opt">==</span><span class="str">&apos;</span><span class="esc">\n</span><span class="str">&apos;</span><span class="opt">);</span>
+      <span class="kwa">while</span><span class="opt">(*--</span>back_Pos<span class="opt">==</span><span class="str">&apos;</span><span class="esc">\n</span><span class="str">&apos;</span><span class="opt">);</span>
+   <span class="opt">}</span>
+
+   <span class="slc">// Wait for our turn to output the altered sequence and then output it.</span>
+   <span class="ppc">#pragma omp flush(next_Sequence_Number_To_Output)</span>
+   <span class="kwa">while</span><span class="opt">(</span>sequence_Number<span class="opt">!=</span>next_Sequence_Number_To_Output<span class="opt">){</span>
+      <span class="ppc">#pragma omp flush(next_Sequence_Number_To_Output)</span>
+   <span class="opt">}</span>
+   <span class="kwd">fwrite</span><span class="opt">(</span>sequence<span class="opt">,</span> <span class="num">1</span><span class="opt">,</span> sequence_Size<span class="opt">,</span> stdout<span class="opt">);</span>
+   next_Sequence_Number_To_Output<span class="opt">++;</span>
+   <span class="ppc">#pragma omp flush(next_Sequence_Number_To_Output)</span>
+
+   <span class="slc">// Free the memory for the altered sequence.</span>
+   <span class="kwd">free</span><span class="opt">(</span>sequence<span class="opt">);</span>
+<span class="opt">}</span>
+
+
+<span class="kwb">int</span> <span class="kwd">main</span><span class="opt">(){</span>
+   <span class="ppc">#pragma omp parallel</span>
+   <span class="opt">{</span>
+      <span class="ppc">#pragma omp single</span>
+      <span class="opt">{</span>
+         <span class="slc">// Allocate memory for the initial sequence (assuming there is one).</span>
+         intnative_t sequence_Capacity<span class="opt">=</span>READ_SIZE<span class="opt">,</span> sequence_Size<span class="opt">=</span><span class="num">0</span>
+           <span class="opt">,</span> sequence_Number<span class="opt">=</span><span class="num">1</span><span class="opt">;</span>
+         <span class="kwb">char</span> <span class="opt">*</span> sequence<span class="opt">=</span><span class="kwd">malloc</span><span class="opt">(</span>sequence_Capacity<span class="opt">);</span>
+
+         <span class="slc">// Read in sequence data until we reach the end of the file or</span>
+         <span class="slc">// encounter an error.</span>
+         <span class="kwa">for</span><span class="opt">(</span>intnative_t bytes_Read<span class="opt">; (</span>bytes_Read
+           <span class="opt">=</span><span class="kwd">fread</span><span class="opt">(&amp;</span>sequence<span class="opt">[</span>sequence_Size<span class="opt">],</span> <span class="num">1</span><span class="opt">,</span> READ_SIZE<span class="opt">,</span> stdin<span class="opt">)); ){</span>
+
+
+            <span class="slc">// Search the read in chunk of data for a &apos;&gt;&apos; to see if any</span>
+            <span class="slc">// sequences are being started.</span>
+            <span class="kwa">for</span><span class="opt">(</span><span class="kwb">char</span> <span class="opt">*</span> sequence_Start<span class="opt">; (</span>sequence_Start
+              <span class="opt">=</span><span class="kwd">memchr</span><span class="opt">(&amp;</span>sequence<span class="opt">[</span>sequence_Size<span class="opt">],</span> <span class="str">&apos;&gt;&apos;</span><span class="opt">,</span> bytes_Read<span class="opt">)); ){</span>
+
+               <span class="slc">// Update the sequence_Size to reflect any data before the</span>
+               <span class="slc">// &apos;&gt;&apos; that was read in.</span>
+               <span class="kwb">const</span> intnative_t number_Of_Preceding_Bytes
+                 <span class="opt">=</span>sequence_Start<span class="opt">-&amp;</span>sequence<span class="opt">[</span>sequence_Size<span class="opt">];</span>
+               sequence_Size<span class="opt">+=</span>number_Of_Preceding_Bytes<span class="opt">;</span>
+
+
+               <span class="slc">// If there is any data for the current sequence, then</span>
+               <span class="slc">// start processing it.</span>
+               <span class="kwa">if</span><span class="opt">(</span>sequence_Size<span class="opt">){</span>
+
+                  <span class="slc">// Allocate memory for a new sequence and copy the &apos;&gt;&apos;</span>
+                  <span class="slc">// &amp; any data following it to the new sequence.</span>
+                  <span class="kwb">char</span> <span class="opt">*</span> <span class="kwb">const</span> new_Sequence<span class="opt">=</span><span class="kwd">malloc</span><span class="opt">(</span>READ_SIZE<span class="opt">);</span>
+                  <span class="kwd">memcpy</span><span class="opt">(</span>new_Sequence<span class="opt">,</span> sequence_Start
+                    <span class="opt">,</span> bytes_Read<span class="opt">-</span>number_Of_Preceding_Bytes<span class="opt">);</span>
+
+                  <span class="slc">// Process the current sequence and have another thread</span>
+                  <span class="slc">// do the work if OpenMP is enabled and there is more</span>
+                  <span class="slc">// than one CPU core.</span>
+                  <span class="ppc">#pragma omp task\</span>
+<span class="ppc">                    firstprivate(sequence, sequence_Size, sequence_Number)</span>
+                  <span class="opt">{</span>
+                     <span class="kwd">process_Sequence</span><span class="opt">(</span>sequence<span class="opt">,</span> sequence_Size
+                       <span class="opt">,</span> sequence_Number<span class="opt">);</span>
+                  <span class="opt">}</span>
+
+                  <span class="slc">// Update variables to reflect the new sequence.</span>
+                  sequence<span class="opt">=</span>new_Sequence<span class="opt">;</span>
+                  sequence_Capacity<span class="opt">=</span>READ_SIZE<span class="opt">;</span>
+                  sequence_Size<span class="opt">=</span><span class="num">0</span><span class="opt">;</span>
+                  sequence_Number<span class="opt">++;</span>
+               <span class="opt">}</span>
+
+
+               <span class="slc">// Update sequence_Size and bytes_Read to reflect the read</span>
+               <span class="slc">// in &apos;&gt;&apos; and any data that preceded it.</span>
+               sequence_Size<span class="opt">++;</span>
+               bytes_Read<span class="opt">-=</span>number_Of_Preceding_Bytes<span class="opt">+</span><span class="num">1</span><span class="opt">;</span>
+            <span class="opt">}</span>
+
+
+            <span class="slc">// Update sequence_Size to reflect the bytes that were read in.</span>
+            sequence_Size<span class="opt">+=</span>bytes_Read<span class="opt">;</span>
+
+            <span class="slc">// If there potentially isn&apos;t enough free space for all the data</span>
+            <span class="slc">// from the next read, then double the capacity of the sequence.</span>
+            <span class="kwa">if</span><span class="opt">(</span>sequence_Size<span class="opt">&gt;</span>sequence_Capacity<span class="opt">-</span>READ_SIZE<span class="opt">)</span>
+               sequence<span class="opt">=</span><span class="kwd">realloc</span><span class="opt">(</span>sequence<span class="opt">,</span> sequence_Capacity<span class="opt">*=</span><span class="num">2</span><span class="opt">);</span>
+         <span class="opt">}</span>
+
+
+         <span class="slc">// If there is any data for a last sequence, process it, otherwise</span>
+         <span class="slc">// just free the sequence memory.</span>
+         <span class="kwa">if</span><span class="opt">(</span>sequence_Size<span class="opt">)</span>
+            <span class="kwd">process_Sequence</span><span class="opt">(</span>sequence<span class="opt">,</span> sequence_Size<span class="opt">,</span> sequence_Number<span class="opt">);</span>
+         <span class="kwa">else</span>
+            <span class="kwd">free</span><span class="opt">(</span>sequence<span class="opt">);</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+
+   <span class="kwa">return</span> <span class="num">0</span><span class="opt">;</span>
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+gcc (Ubuntu 7.2.0-8ubuntu3) 7.2.0
+
+
+Mon, 26 Mar 2018 22:34:14 GMT
+
+MAKE:
+/usr/bin/gcc -pipe -Wall -O3 -fomit-frame-pointer -march=native -fopenmp revcomp.gcc-6.c -o revcomp.gcc-6.gcc_run 
+rm revcomp.gcc-6.c
+
+2.42s to complete and log all make actions
+
+COMMAND LINE:
+./revcomp.gcc-6.gcc_run 0 &lt; revcomp-input100000000.txt
+
+(TRUNCATED) PROGRAM OUTPUT:
+&gt;ONE Homo sapiens alu
+GGGATTACAGGCGTGAGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGC
+CCAGGCTGGAGTGCAGTGGCGCGATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAA
+GCGATTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCACCACGCCC
+GGCTAATTTTTGTATTTTTAGTAGAGACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCG
+AACTCCTGACCTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTACAGGCG
+TGAGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTG
+CAGTGGCGCGATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTGC
+CTCAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCACCACGCCCGGCTAATTTTTGT
+ATTTTTAGTAGAGACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAACTCCTGACCTC
+AGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTACAGGCGTGAGCCACCGCGC
+CCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTGGCGCGATC
+TCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCAGCCTCCCGA
+GTAGCTGGGATTACAGGCGCGCGCCACCACGCCCGGCTAATTTTTGTATTTTTAGTAGAG
+ACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAACTCCTGACCTCAGGTGATCCGCCC
+GCCTCGGCCTCCCAAAGTGCTGGGATTACAGGCGTGAGCCACCGCGCCCGGCCTTTTTGA
+GACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTGGCGCGATCTCGGCTCACTGCA
+ACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATTA
+CAGGCGCGCGCCACCACGCCCGGCTAATTTTTGTATTTTTAGTAGAGACGGGGTTTCACC
+ATGTTGGCCAGGCTGGTCTCGAACTCCTGACCTCAGGTGATCCGCCCGCCTCGGCCTCCC
+AAAGTGCTGGGATTACAGGCGTGAGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGC
+TCTGTCGCCCAGGCTGGAGTGCAGTGGCGCGATCTCGGCTCACTGCAACCTCCGCCTCCC
+GGGTTCAAGCGATTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCA
+CCACGCCCGGCTAATTTTTGTATTTTTAGTAGAGACGGGGTTTCACCATGTTGGCCAGGC
+TGGTCTCGAACTCCTGACCTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGAT
+TACAGGCGTGAGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGG
+CTGGAGTGCAGTGGCGCGATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGAT
+TCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCACCACGCCCGGCTA
+ATTTTTGTATTTTTAGTAGAGACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAACTC
+CTGACCTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTACAGGCGTGAGC
+CACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTG
+GCGCGATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCAG
+CCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCACCACGCCCGGCTAATTTTTGTATTTT
+TAGTAGAGACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAACTCCTGACCTCAGGTG
+ATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTACAGGCGTGAGCCACCGCGCCCGGC
+CTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTGGCGCGATCTCGGC
+TCACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCAGCCTCCCGAGTAGC
+TGGGATTACAGGCGCGCGCCACCACGCCCGGCTAATTTTTGTATTTTTAGTAGAGACGGG
+GTTTCACCATGTTGGCCAGGCTGGTCTCGAACTCCTGACCTCAGGTGATCCGCCCGCCTC
+GGCCTCCCAAAGTGCTGGGATTACAGGCGTGAGCCACCGCGCCCGGCCTTTTTGAGACGG
+AGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTGGCGCGATCTCGGCTCACTGCAACCTC
+CGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATTACAGGC
+GCGCGCCACCACGCCCGGCTAATTTTTGTATTTTTAGTAGAGACGGGGTTTCACCATGTT
+GGCCAGGCTGGTCTCGAACTCCTGACCTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAGT
+GCTGGGATTACAGGCGTGAGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGT
+CGCCCAGGCTGGAGTGCAGTGGCGCGATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTT
+CAAGCGATTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCACCACG
+CCCGGCTAATTTTTGTATTTTTAGTAGAGACGGGGTTTCACCATGTTGGCCAGGCTGGTC
+TCGAACTCCTGACCTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTACAG
+GCGTGAGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGGA
+GTGCAGTGGCGCGATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTCTCC
+TGCCTCAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCACCACGCCCGGCTAATTTT
+TGTATTTTTAGTAGAGACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAACTCCTGAC
+CTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTACAGGCGTGAGCCACCG
+CGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTGGCGCG
+ATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCAGCCTCC
+CGAGTAGCTGGGATTACAGGCGCGCGCCACCACGCCCGGCTAATTTTTGTATTTTTAGTA
+GAGACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAACTCCTGACCTCAGGTGATCCG
+CCCGCCTCGGCCTCCCAAAGTGCTGGGATTACAGGCGTGAGCCACCGCGCCCGGCCTTTT
+TGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTGGCGCGATCTCGGCTCACT
+GCAACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGA
+TTACAGGCGCGCGCCACCACGCCCGGCTAATTTTTGTATTTTTAGTAGAGACGGGGTTTC
+ACCATGTTGGCCAGGCTGGTCTCGAACTCCTGACCTCAGGTGATCCGCCCGCCTCGGCCT
+CCCAAAGTGCTGGGATTACAGGCGTGAGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCT
+CGCTCTGTCGCCCAGGCTGGAGTGCAGTGGCGCGATCTCGGCTCACTGCAACCTCCGCCT
+CCCGGGTTCAAGCGATTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCG
+CCACCACGCCCGGCTAATTTTTGTATTTTTAGTAGAGACGGGGTTTCACCATGTTGGCCA
+GGCTGGTCTCGAACTCCTGACCTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGG
+GATTACAGGCGTGAGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCC
+AGGCTGGAGTGCAGTGGCGCGATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGC
+GATTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCACCACGCCCGG
+CTAATTTTTGTATTTTTAGTAGAGACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAA
+CTCCTGACCTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTACAGGCGTG
+AGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCA
+GTGGCGCGATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTGCCT
+CAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCACCACGCCCGGCTAATTTTTGTAT
+TTTTAGTAGAGACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAACTCCTGACCTCAG
+GTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTACAGGCGTGAGCCACCGCGCCC
+GGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTGGCGCGATCTC
+GGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCAGCCTCCCGAGT
+AGCTGGGATTACAGGCGCGCGCCACCACGCCCGGCTAATTTTTGTATTTTTAGTAGAGAC
+GGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAACTCCTGACCTCAGGTGATCCGCCCGC
+CTCGGCCTCCCAAAGTGCTGGGATTACAGGCGTGAGCCACCGCGCCCGGCCTTTTTGAGA
+CGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTGGCGCGATCTCGGCTCACTGCAAC
+CTCCGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATTACA
+GGCGCGCGCCACCACGCCCGGCTAATTTTTGTATTTTTAGTAGAGACGGGGTTTCACCAT
+GTTGGCCAGGCTGGTCTCGAACTCCTGACCTCAGGTGATCCGCCCGCCTCGGCCTCCCAA
+AGTGCTGGGATTACAGGCGTGAGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTC
+TGTCGCCCAGGCTGGAGTGCAGTGGCGCGATCTCGGCTCACTGCAACCTCCGCCTCCCGG
+GTTCAAGCGATTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCACC
+ACGCCCGGCTAATTTTTGTATTTTTAGTAGAGACGGGGTTTCACCATGTTGGCCAGGCTG
+GTCTCGAACTCCTGACCTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTA
+CAGGCGTGAGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCT
+GGAGTGCAGTGGCGCGATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTC
+TCCTGCCTCAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCACCACGCCCGGCTAAT
+TTTTGTATTTTTAGTAGAGACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAACTCCT
+GACCTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTACAGGCGTGAGCCA
+CCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTGGC
+GCGATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCAGCC
+TCCCGAGTAGCTGGGATTACAGGCGCGCGCCACCACGCCCGGCTAATTTTTGTATTTTTA
+GTAGAGACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAACTCCTGACCTCAGGTGAT
+CCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTACAGGCGTGAGCCACCGCGCCCGGCCT
+TTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTGGCGCGATCTCGGCTC
+ACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCAGCCTCCCGAGTAGCTG
+GGATTACAGGCGCGCGCCACCACGCCCGGCTAATTTTTGTATTTTTAGTAGAGACGGGGT
+TTCACCATGTTGGCCAGGCTGGTCTCGAACTCCTGACCTCAGGTGATCCGCCCGCCTCGG
+CCTCCCAAAGTGCTGGGATTACAGGCGTGAGCCACCGCGCCCGGCCTTTTTGAGACGGAG
+TCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTGGCGCGATCTCGGCTCACTGCAACCTCCG
+CCTCCCGGGTTCAAGCGATTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATTACAGGCGC
+GCGCCACCACGCCCGGCTAATTTTTGTATTTTTAGTAGAGACGGGGTTTCACCATGTTGG
+CCAGGCTGGTCTCGAACTCCTGACCTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGC
+TGGGATTACAGGCGTGAGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCG
+CCCAGGCTGGAGTGCAGTGGCGCGATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCA
+AGCGATTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCACCACGCC
+CGGCTAATTTTTGTATTTTTAGTAGAGACGGGGTTTCACCATGTTGGCCAGGCTGGTCTC
+GAACTCCTGACCTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTACAGGC
+GTGAGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGT
+GCAGTGGCGCGATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTG
+CCTCAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCACCACGCCCGGCTAATTTTTG
+TATTTTTAGTAGAGACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAACTCCTGACCT
+CAGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTACAGGCGTGAGCCACCGCG
+CCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTGGCGCGAT
+CTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCAGCCTCCCG
+AGTAGCTGGGATTACAGGCGCGCGCCACCACGCCCGGCTAATTTTTGTATTTTTAGTAGA
+GACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAACTCCTGACCTCAGGTGATCCGCC
+CGCCTCGGCCTCCCAAAGTGCTGGGATTACAGGCGTGAGCCACCGCGCCCGGCCTTTTTG
+AGACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTGGCGCGATCTCGGCTCACTGC
+AACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATT
+ACAGGCGCGCGCCACCACGCCCGGCTAATTTTTGTATTTTTAGTAGAGACGGGGTTTCAC
+CATGTTGGCCAGGCTGGTCTCGAACTCCTGACCTCAGGTGATCCGCCCGCCTCGGCCTCC
+CAAAGTGCTGGGATTACAGGCGTGAGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCG
+CTCTGTCGCCCAGGCTGGAGTGCAGTGGCGCGATCTCGGCTCACTGCAACCTCCGCCTCC
+CGGGTTCAAGCGATTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCC
+ACCACGCCCGGCTAATTTTTGTATTTTTAGTAGAGACGGGGTTTCACCATGTTGGCCAGG
+CTGGTCTCGAACTCCTGACCTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGA
+TTACAGGCGTGAGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAG
+GCTGGAGTGCAGTGGCGCGATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGA
+TTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCACCACGCCCGGCT
+AATTTTTGTATTTTTAGTAGAGACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAACT
+CCTGACCTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTACAGGCGTGAG
+CCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGT
+GGCGCGATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCA
+GCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCACCACGCCCGGCTAATTTTTGTATTT
+TTAGTAGAGACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAACTCCTGACCTCAGGT
+GATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTACAGGCGTGAGCCACCGCGCCCGG
+CCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTGGCGCGATCTCGG
+CTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCAGCCTCCCGAGTAG
+CTGGGATTACAGGCGCGCGCCACCACGCCCGGCTAATTTTTGTATTTTTAGTAGAGACGG
+GGTTTCACCATGTTGGCCAGGCTGGTCTCGAACTCCTGACCTCAGGTGATCCGCCCGCCT
+CGGCCTCCCAAAGTGCTGGGATTACAGGCGTGAGCCACCGCGCCCGGCCTTTTTGAGACG
+GAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTGGCGCGATCTCGGCTCACTGCAACCT
+CCGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATTACAGG
+CGCGCGCCACCACGCCCGGCTAATTTTTGTATTTTTAGTAGAGACGGGGTTTCACCATGT
+TGGCCAGGCTGGTCTCGAACTCCTGACCTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAG
+TGCTGGGATTACAGGCGTGAGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTG
+TCGCCCAGGCTGGAGTGCAGTGGCGCGATCTCGGCTCACTGCAACCTCCGCCTCCCGGGT
+TCAAGCGATTCTCCTGCCTCAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCACCAC
+GCCCGGCTAATTTTTGTATTTTTAGTAGAGACGGGGTTTCACCATGTTGGCCAGGCTGGT
+CTCGAACTCCTGACCTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTACA
+GGCGTGAGCCACCGCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGG
+AGTGCAGTGGCGCGATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTCTC
+CTGCCTCAGCCTCCCGAGTAGCTGGGATTACAGGCGCGCGCCACCACGCCCGGCTAATTT
+TTGTATTTTTAGTAGAGACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAACTCCTGA
+CCTCAGGTGATCCGCCCGCCTCGGCCTCCCAAAGTGCTGGGATTACAGGCGTGAGCCACC
+GCGCCCGGCCTTTTTGAGACGGAGTCTCGCTCTGTCGCCCAGGCTGGAGTGCAGTGGCGC
+GATCTCGGCTCACTGCAACCTCCGCCTCCCGGGTTCAAGCGATTCTCCTGCCTCAGCCTC
+CCGAGTAGCTGGGATTACAGGCGCGCGCCACCACGCCCGGCTAATTTTTGTATTTTTAGT
+AGAGACGGGGTTTCACCATGTTGGCCAGGCTGGTCTCGAACTCCTGACCTCAGGTGATCC
+GCCCGCCTCGGCCTCCCAAAGTGCTGGGATT    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

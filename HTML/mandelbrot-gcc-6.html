@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>mandelbrot C gcc&nbsp;#6 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>mandelbrot C gcc&nbsp;#6 program</h2>
+    <aside>
+      <p><a href="./mandelbrot-description.html#mandelbrot">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+﻿<span class="slc">// The Computer Language Benchmarks Game</span>
+<span class="slc">// http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">//</span>
+<span class="slc">// Contributed by Kevin Miller</span>
+<span class="slc">//</span>
+<span class="slc">// ver 2: added a couple of optimizations</span>
+<span class="slc">// - Reduced number of times a vector of 8 was checked to see if</span>
+<span class="slc">//    they had all escaped, similar to Dominic Letz&apos;s C #5 entry.</span>
+<span class="slc">// - Processed 64 pixels at a time if width was a multiple of 64,</span>
+<span class="slc">//    thereby reducing writes to the bitmap.</span>
+<span class="slc">//</span>
+<span class="slc">// compile with following gcc flags</span>
+<span class="slc">//  -pipe -Wall -O3 -ffast-math -fno-finite-math-only -march=native -mfpmath=sse -msse3 -fopenmp</span>
+
+
+<span class="ppc">#include &lt;stdlib.h&gt;</span>
+<span class="ppc">#include &lt;stdio.h&gt;</span>
+<span class="ppc">#include &lt;unistd.h&gt;</span>
+<span class="ppc">#include &lt;emmintrin.h&gt;</span>
+
+
+<span class="kwb">long</span> <span class="kwd">numDigits</span><span class="opt">(</span><span class="kwb">long</span> n<span class="opt">)</span>
+<span class="opt">{</span>
+    <span class="kwb">long</span> len <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+    <span class="kwa">while</span><span class="opt">(</span>n<span class="opt">)</span>
+    <span class="opt">{</span>
+        n<span class="opt">=</span>n<span class="opt">/</span><span class="num">10</span><span class="opt">;</span>
+        len<span class="opt">++;</span>
+    <span class="opt">}</span>
+    <span class="kwa">return</span> len<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwc">inline</span> <span class="kwb">long</span> <span class="kwd">vec_nle</span><span class="opt">(</span>__m128d <span class="opt">*</span>v<span class="opt">,</span> <span class="kwb">double</span> f<span class="opt">)</span>
+<span class="opt">{</span>
+    <span class="kwa">return</span> <span class="opt">(</span>v<span class="opt">[</span><span class="num">0</span><span class="opt">][</span><span class="num">0</span><span class="opt">] &lt;=</span> f <span class="opt">||</span>
+        v<span class="opt">[</span><span class="num">0</span><span class="opt">][</span><span class="num">1</span><span class="opt">] &lt;=</span> f <span class="opt">||</span>
+        v<span class="opt">[</span><span class="num">1</span><span class="opt">][</span><span class="num">0</span><span class="opt">] &lt;=</span> f <span class="opt">||</span>
+        v<span class="opt">[</span><span class="num">1</span><span class="opt">][</span><span class="num">1</span><span class="opt">] &lt;=</span> f <span class="opt">||</span>
+        v<span class="opt">[</span><span class="num">2</span><span class="opt">][</span><span class="num">0</span><span class="opt">] &lt;=</span> f <span class="opt">||</span>
+        v<span class="opt">[</span><span class="num">2</span><span class="opt">][</span><span class="num">1</span><span class="opt">] &lt;=</span> f <span class="opt">||</span>
+        v<span class="opt">[</span><span class="num">3</span><span class="opt">][</span><span class="num">0</span><span class="opt">] &lt;=</span> f <span class="opt">||</span>
+        v<span class="opt">[</span><span class="num">3</span><span class="opt">][</span><span class="num">1</span><span class="opt">] &lt;=</span> f<span class="opt">) ?</span> <span class="num">0</span> <span class="opt">: -</span><span class="num">1</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwc">inline</span> <span class="kwb">void</span> <span class="kwd">clrPixels_nle</span><span class="opt">(</span>__m128d <span class="opt">*</span>v<span class="opt">,</span> <span class="kwb">double</span> f<span class="opt">,</span> <span class="kwb">unsigned long</span> <span class="opt">*</span> pix8<span class="opt">)</span>
+<span class="opt">{</span>
+    <span class="kwa">if</span><span class="opt">(!(</span>v<span class="opt">[</span><span class="num">0</span><span class="opt">][</span><span class="num">0</span><span class="opt">] &lt;=</span> f<span class="opt">)) *</span>pix8 <span class="opt">&amp;=</span> <span class="num">0x7f</span><span class="opt">;</span>
+    <span class="kwa">if</span><span class="opt">(!(</span>v<span class="opt">[</span><span class="num">0</span><span class="opt">][</span><span class="num">1</span><span class="opt">] &lt;=</span> f<span class="opt">)) *</span>pix8 <span class="opt">&amp;=</span> <span class="num">0xbf</span><span class="opt">;</span>
+    <span class="kwa">if</span><span class="opt">(!(</span>v<span class="opt">[</span><span class="num">1</span><span class="opt">][</span><span class="num">0</span><span class="opt">] &lt;=</span> f<span class="opt">)) *</span>pix8 <span class="opt">&amp;=</span> <span class="num">0xdf</span><span class="opt">;</span>
+    <span class="kwa">if</span><span class="opt">(!(</span>v<span class="opt">[</span><span class="num">1</span><span class="opt">][</span><span class="num">1</span><span class="opt">] &lt;=</span> f<span class="opt">)) *</span>pix8 <span class="opt">&amp;=</span> <span class="num">0xef</span><span class="opt">;</span>
+    <span class="kwa">if</span><span class="opt">(!(</span>v<span class="opt">[</span><span class="num">2</span><span class="opt">][</span><span class="num">0</span><span class="opt">] &lt;=</span> f<span class="opt">)) *</span>pix8 <span class="opt">&amp;=</span> <span class="num">0xf7</span><span class="opt">;</span>
+    <span class="kwa">if</span><span class="opt">(!(</span>v<span class="opt">[</span><span class="num">2</span><span class="opt">][</span><span class="num">1</span><span class="opt">] &lt;=</span> f<span class="opt">)) *</span>pix8 <span class="opt">&amp;=</span> <span class="num">0xfb</span><span class="opt">;</span>
+    <span class="kwa">if</span><span class="opt">(!(</span>v<span class="opt">[</span><span class="num">3</span><span class="opt">][</span><span class="num">0</span><span class="opt">] &lt;=</span> f<span class="opt">)) *</span>pix8 <span class="opt">&amp;=</span> <span class="num">0xfd</span><span class="opt">;</span>
+    <span class="kwa">if</span><span class="opt">(!(</span>v<span class="opt">[</span><span class="num">3</span><span class="opt">][</span><span class="num">1</span><span class="opt">] &lt;=</span> f<span class="opt">)) *</span>pix8 <span class="opt">&amp;=</span> <span class="num">0xfe</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwc">inline</span> <span class="kwb">void</span> <span class="kwd">calcSum</span><span class="opt">(</span>__m128d <span class="opt">*</span>r<span class="opt">,</span> __m128d <span class="opt">*</span>i<span class="opt">,</span> __m128d <span class="opt">*</span>sum<span class="opt">,</span> __m128d <span class="opt">*</span>init_r<span class="opt">,</span> __m128d init_i<span class="opt">)</span>
+<span class="opt">{</span>
+    <span class="kwa">for</span><span class="opt">(</span><span class="kwb">long</span> pair<span class="opt">=</span><span class="num">0</span><span class="opt">;</span> pair<span class="opt">&lt;</span><span class="num">4</span><span class="opt">;</span> pair<span class="opt">++)</span>
+    <span class="opt">{</span>
+        __m128d r2 <span class="opt">=</span> r<span class="opt">[</span>pair<span class="opt">] *</span> r<span class="opt">[</span>pair<span class="opt">];</span>
+        __m128d i2 <span class="opt">=</span> i<span class="opt">[</span>pair<span class="opt">] *</span> i<span class="opt">[</span>pair<span class="opt">];</span>
+        __m128d ri <span class="opt">=</span> r<span class="opt">[</span>pair<span class="opt">] *</span> i<span class="opt">[</span>pair<span class="opt">];</span>
+
+        sum<span class="opt">[</span>pair<span class="opt">] =</span> r2 <span class="opt">+</span> i2<span class="opt">;</span>
+
+        r<span class="opt">[</span>pair<span class="opt">]=</span>r2 <span class="opt">-</span> i2 <span class="opt">+</span> init_r<span class="opt">[</span>pair<span class="opt">];</span>
+        i<span class="opt">[</span>pair<span class="opt">]=</span>ri <span class="opt">+</span> ri <span class="opt">+</span> init_i<span class="opt">;</span>
+    <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="kwc">inline</span> <span class="kwb">unsigned long</span> <span class="kwd">mand8</span><span class="opt">(</span>__m128d <span class="opt">*</span>init_r<span class="opt">,</span> __m128d init_i<span class="opt">)</span>
+<span class="opt">{</span>
+    __m128d r<span class="opt">[</span><span class="num">4</span><span class="opt">],</span> i<span class="opt">[</span><span class="num">4</span><span class="opt">],</span> sum<span class="opt">[</span><span class="num">4</span><span class="opt">];</span>
+    <span class="kwa">for</span><span class="opt">(</span><span class="kwb">long</span> pair<span class="opt">=</span><span class="num">0</span><span class="opt">;</span> pair<span class="opt">&lt;</span><span class="num">4</span><span class="opt">;</span> pair<span class="opt">++)</span>
+    <span class="opt">{</span>
+        r<span class="opt">[</span>pair<span class="opt">]=</span>init_r<span class="opt">[</span>pair<span class="opt">];</span>
+        i<span class="opt">[</span>pair<span class="opt">]=</span>init_i<span class="opt">;</span>
+    <span class="opt">}</span>
+
+    <span class="kwb">unsigned long</span> pix8 <span class="opt">=</span> <span class="num">0xff</span><span class="opt">;</span>
+
+    <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">long</span> j <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> j <span class="opt">&lt;</span> <span class="num">6</span><span class="opt">;</span> j<span class="opt">++)</span>
+    <span class="opt">{</span>
+        <span class="kwa">for</span><span class="opt">(</span><span class="kwb">long</span> k<span class="opt">=</span><span class="num">0</span><span class="opt">;</span> k<span class="opt">&lt;</span><span class="num">8</span><span class="opt">;</span> k<span class="opt">++)</span>
+            <span class="kwd">calcSum</span><span class="opt">(</span>r<span class="opt">,</span> i<span class="opt">,</span> sum<span class="opt">,</span> init_r<span class="opt">,</span> init_i<span class="opt">);</span>
+
+        <span class="kwa">if</span> <span class="opt">(</span><span class="kwd">vec_nle</span><span class="opt">(</span>sum<span class="opt">,</span> <span class="num">4.0</span><span class="opt">))</span>
+        <span class="opt">{</span>
+            pix8 <span class="opt">=</span> <span class="num">0x00</span><span class="opt">;</span>
+            <span class="kwa">break</span><span class="opt">;</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+    <span class="kwa">if</span> <span class="opt">(</span>pix8<span class="opt">)</span>
+    <span class="opt">{</span>
+        <span class="kwd">calcSum</span><span class="opt">(</span>r<span class="opt">,</span> i<span class="opt">,</span> sum<span class="opt">,</span> init_r<span class="opt">,</span> init_i<span class="opt">);</span>
+        <span class="kwd">calcSum</span><span class="opt">(</span>r<span class="opt">,</span> i<span class="opt">,</span> sum<span class="opt">,</span> init_r<span class="opt">,</span> init_i<span class="opt">);</span>
+        <span class="kwd">clrPixels_nle</span><span class="opt">(</span>sum<span class="opt">,</span> <span class="num">4.0</span><span class="opt">, &amp;</span>pix8<span class="opt">);</span>
+    <span class="opt">}</span>
+
+    <span class="kwa">return</span> pix8<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwb">unsigned long</span> <span class="kwd">mand64</span><span class="opt">(</span>__m128d <span class="opt">*</span>init_r<span class="opt">,</span> __m128d init_i<span class="opt">)</span>
+<span class="opt">{</span>
+    <span class="kwb">unsigned long</span> pix64 <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+
+    <span class="kwa">for</span><span class="opt">(</span><span class="kwb">long</span> byte<span class="opt">=</span><span class="num">0</span><span class="opt">;</span> byte<span class="opt">&lt;</span><span class="num">8</span><span class="opt">;</span> byte<span class="opt">++)</span>
+    <span class="opt">{</span>
+        <span class="kwb">unsigned long</span> pix8 <span class="opt">=</span> <span class="kwd">mand8</span><span class="opt">(</span>init_r<span class="opt">,</span> init_i<span class="opt">);</span>
+
+        pix64 <span class="opt">= (</span>pix64 <span class="opt">&gt;&gt;</span> <span class="num">8</span><span class="opt">) | (</span>pix8 <span class="opt">&lt;&lt;</span> <span class="num">56</span><span class="opt">);</span>
+        init_r <span class="opt">+=</span> <span class="num">4</span><span class="opt">;</span>
+    <span class="opt">}</span>
+
+    <span class="kwa">return</span> pix64<span class="opt">;</span>
+<span class="opt">}</span>
+
+
+
+<span class="kwb">int</span> <span class="kwd">main</span><span class="opt">(</span><span class="kwb">int</span> argc<span class="opt">,</span> <span class="kwb">char</span> <span class="opt">**</span> argv<span class="opt">)</span>
+<span class="opt">{</span>
+    <span class="slc">// get width/height from arguments</span>
+
+    <span class="kwb">long</span> wid_ht <span class="opt">=</span> <span class="num">16000</span><span class="opt">;</span>
+    <span class="kwa">if</span> <span class="opt">(</span>argc <span class="opt">&gt;=</span> <span class="num">2</span><span class="opt">)</span>
+    <span class="opt">{</span>
+        wid_ht <span class="opt">=</span> <span class="kwd">atoi</span><span class="opt">(</span>argv<span class="opt">[</span><span class="num">1</span><span class="opt">]);</span>
+    <span class="opt">}</span>
+    wid_ht <span class="opt">= (</span>wid_ht<span class="opt">+</span><span class="num">7</span><span class="opt">) &amp; ~</span><span class="num">7</span><span class="opt">;</span>
+
+
+    <span class="slc">// allocate memory for header and pixels</span>
+
+    <span class="kwb">long</span> headerLength <span class="opt">=</span> <span class="kwd">numDigits</span><span class="opt">(</span>wid_ht<span class="opt">)*</span><span class="num">2</span><span class="opt">+</span><span class="num">5</span><span class="opt">;</span>
+    <span class="kwb">long</span> pad <span class="opt">= ((</span>headerLength <span class="opt">+</span> <span class="num">7</span><span class="opt">) &amp; ~</span><span class="num">7</span><span class="opt">) -</span> headerLength<span class="opt">;</span> <span class="slc">// pad aligns pixels on 8</span>
+    <span class="kwb">long</span> dataLength <span class="opt">=</span> headerLength <span class="opt">+</span> wid_ht<span class="opt">*(</span>wid_ht<span class="opt">&gt;&gt;</span><span class="num">3</span><span class="opt">);</span>
+    <span class="kwb">unsigned char</span> <span class="opt">*</span> <span class="kwb">const</span> buffer <span class="opt">=</span> <span class="kwd">malloc</span><span class="opt">(</span>pad <span class="opt">+</span> dataLength<span class="opt">);</span>
+    <span class="kwb">unsigned char</span> <span class="opt">*</span> <span class="kwb">const</span> header <span class="opt">=</span> buffer <span class="opt">+</span> pad<span class="opt">;</span>
+    <span class="kwb">unsigned char</span> <span class="opt">*</span> <span class="kwb">const</span> pixels <span class="opt">=</span> header <span class="opt">+</span> headerLength<span class="opt">;</span>
+
+
+    <span class="slc">// generate the bitmap header</span>
+
+    <span class="kwd">sprintf</span><span class="opt">((</span><span class="kwb">char</span> <span class="opt">*)</span>header<span class="opt">,</span> <span class="str">&quot;P4</span><span class="esc">\n</span><span class="str">%ld %ld</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span> wid_ht<span class="opt">,</span> wid_ht<span class="opt">);</span>
+
+
+    <span class="slc">// calculate initial values, store in r0, i0</span>
+
+    __m128d r0<span class="opt">[</span>wid_ht<span class="opt">/</span><span class="num">2</span><span class="opt">];</span>
+    <span class="kwb">double</span> i0<span class="opt">[</span>wid_ht<span class="opt">];</span>
+
+    <span class="kwa">for</span><span class="opt">(</span><span class="kwb">long</span> xy<span class="opt">=</span><span class="num">0</span><span class="opt">;</span> xy<span class="opt">&lt;</span>wid_ht<span class="opt">;</span> xy<span class="opt">+=</span><span class="num">2</span><span class="opt">)</span>
+    <span class="opt">{</span>
+        r0<span class="opt">[</span>xy<span class="opt">&gt;&gt;</span><span class="num">1</span><span class="opt">] =</span> <span class="num">2.0</span> <span class="opt">/</span> wid_ht <span class="opt">* (</span>__m128d<span class="opt">){</span>xy<span class="opt">,</span>  xy<span class="opt">+</span><span class="num">1</span><span class="opt">} -</span> <span class="num">1.5</span><span class="opt">;</span>
+        i0<span class="opt">[</span>xy<span class="opt">]    =</span> <span class="num">2.0</span> <span class="opt">/</span> wid_ht <span class="opt">*</span>  xy    <span class="opt">-</span> <span class="num">1.0</span><span class="opt">;</span>
+        i0<span class="opt">[</span>xy<span class="opt">+</span><span class="num">1</span><span class="opt">]  =</span> <span class="num">2.0</span> <span class="opt">/</span> wid_ht <span class="opt">* (</span>xy<span class="opt">+</span><span class="num">1</span><span class="opt">) -</span> <span class="num">1.0</span><span class="opt">;</span>
+    <span class="opt">}</span>
+
+
+    <span class="slc">// generate the bitmap</span>
+
+    <span class="kwb">long</span> use8 <span class="opt">=</span> wid_ht<span class="opt">%</span><span class="num">64</span><span class="opt">;</span>
+    <span class="kwa">if</span> <span class="opt">(</span>use8<span class="opt">)</span>
+    <span class="opt">{</span>
+        <span class="slc">// process 8 pixels (one byte) at a time    </span>
+        <span class="ppc">#pragma omp parallel for schedule(guided)</span>
+        <span class="kwa">for</span><span class="opt">(</span><span class="kwb">long</span> y<span class="opt">=</span><span class="num">0</span><span class="opt">;</span> y<span class="opt">&lt;</span>wid_ht<span class="opt">;</span> y<span class="opt">++)</span>
+        <span class="opt">{</span>
+            __m128d init_i <span class="opt">= (</span>__m128d<span class="opt">){</span>i0<span class="opt">[</span>y<span class="opt">],</span> i0<span class="opt">[</span>y<span class="opt">]};</span>
+            <span class="kwb">long</span> rowstart <span class="opt">=</span> y<span class="opt">*</span>wid_ht<span class="opt">/</span><span class="num">8</span><span class="opt">;</span>
+            <span class="kwa">for</span><span class="opt">(</span><span class="kwb">long</span> x<span class="opt">=</span><span class="num">0</span><span class="opt">;</span> x<span class="opt">&lt;</span>wid_ht<span class="opt">;</span> x<span class="opt">+=</span><span class="num">8</span><span class="opt">)</span>
+            <span class="opt">{</span>
+                pixels<span class="opt">[</span>rowstart <span class="opt">+</span> x<span class="opt">/</span><span class="num">8</span><span class="opt">] =</span> <span class="kwd">mand8</span><span class="opt">(</span>r0<span class="opt">+</span>x<span class="opt">/</span><span class="num">2</span><span class="opt">,</span> init_i<span class="opt">);</span>
+            <span class="opt">}</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+    <span class="kwa">else</span>
+    <span class="opt">{</span>
+        <span class="slc">// process 64 pixels (8 bytes) at a time</span>
+        <span class="ppc">#pragma omp parallel for schedule(guided)</span>
+        <span class="kwa">for</span><span class="opt">(</span><span class="kwb">long</span> y<span class="opt">=</span><span class="num">0</span><span class="opt">;</span> y<span class="opt">&lt;</span>wid_ht<span class="opt">;</span> y<span class="opt">++)</span>
+        <span class="opt">{</span>
+            __m128d init_i <span class="opt">= (</span>__m128d<span class="opt">){</span>i0<span class="opt">[</span>y<span class="opt">],</span> i0<span class="opt">[</span>y<span class="opt">]};</span>
+            <span class="kwb">long</span> rowstart <span class="opt">=</span> y<span class="opt">*</span>wid_ht<span class="opt">/</span><span class="num">64</span><span class="opt">;</span>
+            <span class="kwa">for</span><span class="opt">(</span><span class="kwb">long</span> x<span class="opt">=</span><span class="num">0</span><span class="opt">;</span> x<span class="opt">&lt;</span>wid_ht<span class="opt">;</span> x<span class="opt">+=</span><span class="num">64</span><span class="opt">)</span>
+            <span class="opt">{</span>
+                <span class="opt">((</span><span class="kwb">unsigned long</span> <span class="opt">*)</span>pixels<span class="opt">)[</span>rowstart <span class="opt">+</span> x<span class="opt">/</span><span class="num">64</span><span class="opt">] =</span> <span class="kwd">mand64</span><span class="opt">(</span>r0<span class="opt">+</span>x<span class="opt">/</span><span class="num">2</span><span class="opt">,</span> init_i<span class="opt">);</span>
+            <span class="opt">}</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+
+    <span class="slc">// write the data</span>
+
+    <span class="kwb">long</span> ret <span class="opt">=</span> ret <span class="opt">=</span> <span class="kwd">write</span><span class="opt">(</span>STDOUT_FILENO<span class="opt">,</span> header<span class="opt">,</span> dataLength<span class="opt">);</span>
+
+
+    <span class="kwd">free</span><span class="opt">(</span>buffer<span class="opt">);</span>
+
+    <span class="kwa">return</span> <span class="num">0</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+gcc (Ubuntu 7.2.0-8ubuntu3) 7.2.0
+
+
+Tue, 31 Oct 2017 18:30:32 GMT
+
+MAKE:
+/usr/bin/gcc -pipe -Wall -O3 -fomit-frame-pointer -march=native -mno-fma -fno-finite-math-only -fopenmp mandelbrot.gcc-6.c -o mandelbrot.gcc-6.gcc_run 
+rm mandelbrot.gcc-6.c
+
+0.36s to complete and log all make actions
+
+COMMAND LINE:
+./mandelbrot.gcc-6.gcc_run 16000
+
+(BINARY) PROGRAM OUTPUT NOT SHOWN
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

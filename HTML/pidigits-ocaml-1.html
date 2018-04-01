@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>pidigits OCaml program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>pidigits OCaml program</h2>
+    <aside>
+      <p><a href="./pidigits-description.html#pidigits">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">(*</span>
+<span class="com"> * The Computer Language Benchmarks Game </span>
+<span class="com"> * http://benchmarksgame.alioth.debian.org/</span>
+<span class="com"> *</span>
+<span class="com"> * contributed by Christophe TROESTLER</span>
+<span class="com"> * modified by Matthias Giovannini?</span>
+<span class="com"> * ported to Gmp by David Teller</span>
+<span class="com"> *)</span>
+<span class="kwa">open</span> Printf
+<span class="kwa">open</span> <span class="kwc">Gmp</span><span class="opt">.</span>Z2
+<span class="kwa">open</span> <span class="kwc">Gmp</span><span class="opt">.</span><span class="kwc">Z</span><span class="opt">.</span>Infixes
+
+<span class="kwa">let</span> <span class="kwd">big_0</span>      <span class="opt">=</span> <span class="kwc">Gmp</span><span class="opt">.</span><span class="kwc">Z</span><span class="opt">.</span>zero
+<span class="kwa">let</span> <span class="kwd">big_1</span>      <span class="opt">=</span> <span class="kwc">Gmp</span><span class="opt">.</span><span class="kwc">Z</span><span class="opt">.</span>one
+<span class="kwa">let</span> <span class="kwd">big_3</span>      <span class="opt">=</span> <span class="kwc">Gmp</span><span class="opt">.</span><span class="kwc">Z</span><span class="opt">.</span>of_int <span class="num">3</span>
+<span class="kwa">let</span> <span class="kwd">big_4</span>      <span class="opt">=</span> <span class="kwc">Gmp</span><span class="opt">.</span><span class="kwc">Z</span><span class="opt">.</span>of_int <span class="num">4</span>
+<span class="kwa">let</span> <span class="kwd">big_10</span>     <span class="opt">=</span> <span class="kwc">Gmp</span><span class="opt">.</span><span class="kwc">Z</span><span class="opt">.</span>of_int <span class="num">10</span>
+<span class="kwa">let</span> <span class="kwd">big_10_neg</span> <span class="opt">=</span> <span class="kwc">Gmp</span><span class="opt">.</span><span class="kwc">Z</span><span class="opt">.</span>of_int <span class="opt">(-</span><span class="num">10</span><span class="opt">)</span>
+
+<span class="kwa">let</span> <span class="kwd">q</span> <span class="opt">=</span> <span class="kwc">Gmp</span><span class="opt">.</span><span class="kwc">Z</span><span class="opt">.</span>of_int <span class="num">1</span> 
+<span class="kwa">and</span> r <span class="opt">=</span> <span class="kwc">Gmp</span><span class="opt">.</span><span class="kwc">Z</span><span class="opt">.</span>of_int <span class="num">0</span>
+<span class="kwa">and</span> s <span class="opt">=</span> <span class="kwc">Gmp</span><span class="opt">.</span><span class="kwc">Z</span><span class="opt">.</span>of_int <span class="num">0</span>
+<span class="kwa">and</span> t <span class="opt">=</span> <span class="kwc">Gmp</span><span class="opt">.</span><span class="kwc">Z</span><span class="opt">.</span>of_int <span class="num">1</span>
+
+<span class="kwa">let</span> <span class="kwd">u</span> <span class="opt">=</span> create <span class="opt">()</span> <span class="kwa">and</span> v <span class="opt">=</span> create <span class="opt">()</span> <span class="kwa">and</span> w <span class="opt">=</span> create <span class="opt">()</span>
+
+<span class="kwa">let</span> <span class="kwd">k</span> <span class="opt">=</span> <span class="kwb">ref</span> <span class="num">0</span> <span class="kwa">and</span> digit <span class="opt">=</span> create <span class="opt">()</span>
+
+<span class="com">(* Entier part of the linear fractional transform qrst of x *)</span>
+<span class="kwa">let</span> <span class="kwd">extract</span> x ~out<span class="opt">:</span>item<span class="opt">=</span> 
+  mul <span class="kwd">u q</span> x<span class="opt">;</span>
+  add <span class="kwd">u u</span> r<span class="opt">;</span>
+  mul v s x<span class="opt">;</span>
+  add v v t<span class="opt">;</span>
+  tdiv_q item <span class="kwd">u</span> v
+
+<span class="kwa">let</span> <span class="kwd">next</span> <span class="opt">() =</span> <span class="kwd">extract big_3</span> ~out<span class="opt">:</span>digit
+<span class="kwa">and</span> safe <span class="opt">() =</span> <span class="kwd">extract big_4</span> ~out<span class="opt">:</span>w<span class="opt">;</span> <span class="kwc">Gmp</span><span class="opt">.</span><span class="kwc">Z</span><span class="opt">.</span>equal w digit
+<span class="kwa">and</span> produce <span class="opt">() =</span> 
+  mul r r <span class="kwd">big_10</span><span class="opt">;</span>
+  mul w <span class="kwd">big_10_neg</span> digit<span class="opt">;</span>
+  mul v t w<span class="opt">;</span>
+  add r r v<span class="opt">;</span>
+  mul <span class="kwd">q q big_10</span><span class="opt">;</span>  
+<span class="kwa">and</span> consume <span class="opt">() =</span>
+  incr <span class="kwd">k</span><span class="opt">;</span>
+  <span class="kwa">let</span> <span class="kwd">big_k</span> <span class="opt">=</span> <span class="kwc">Gmp</span><span class="opt">.</span><span class="kwc">Z</span><span class="opt">.</span>of_int <span class="opt">!</span><span class="kwd">k</span> <span class="kwa">in</span>
+  <span class="kwa">let</span> <span class="kwd">den</span> <span class="opt">=</span> <span class="kwc">Gmp</span><span class="opt">.</span><span class="kwc">Z</span><span class="opt">.</span>of_int <span class="opt">(</span><span class="num">2</span> <span class="opt">* !</span><span class="kwd">k</span> <span class="opt">+</span> <span class="num">1</span><span class="opt">)</span> <span class="kwa">in</span>
+  <span class="kwa">let</span> <span class="kwd">den2</span> <span class="opt">=</span> <span class="kwc">Gmp</span><span class="opt">.</span><span class="kwc">Z</span><span class="opt">.</span>mul_2exp <span class="kwd">den</span> <span class="num">1</span> <span class="kwa">in</span>
+  mul r r <span class="kwd">den</span><span class="opt">;</span>
+  mul <span class="kwd">u q den2</span><span class="opt">;</span>
+  add r r <span class="kwd">u</span><span class="opt">;</span>
+  mul t t <span class="kwd">den</span><span class="opt">;</span>
+  mul v s <span class="kwd">den2</span><span class="opt">;</span>
+  add t t v<span class="opt">;</span>
+  mul s s <span class="kwd">big_k</span><span class="opt">;</span>
+  mul <span class="kwd">q q big_k</span>
+
+<span class="kwa">let</span> <span class="kwd">digits</span> n <span class="opt">=</span> 
+  <span class="kwa">for</span> i <span class="opt">=</span> <span class="num">1</span> <span class="kwa">to</span> n <span class="kwa">do</span>
+    <span class="kwd">next</span> <span class="opt">();</span>
+    <span class="kwa">while</span> not <span class="opt">(</span>safe <span class="opt">())</span> <span class="kwa">do</span>
+      consume <span class="opt">();</span>
+      <span class="kwd">next</span> <span class="opt">();</span>
+    <span class="kwa">done</span><span class="opt">;</span>
+    produce <span class="opt">();</span>
+    print_string <span class="opt">(</span><span class="kwc">Gmp</span><span class="opt">.</span><span class="kwc">Z</span><span class="opt">.</span>to_string digit<span class="opt">);</span>
+    <span class="kwa">if</span> i <span class="kwa">mod</span> <span class="num">10</span> <span class="opt">=</span> <span class="num">0</span> <span class="kwa">then</span> 
+      printf <span class="str">&quot;</span><span class="esc">\t</span><span class="str">:</span><span class="ipl">%i</span><span class="str"></span><span class="esc">\n</span><span class="str">&quot;</span> i<span class="opt">;</span>
+  <span class="kwa">done</span><span class="opt">;</span>
+  <span class="kwa">if</span> n <span class="kwa">mod</span> <span class="num">10</span> <span class="opt">!=</span> <span class="num">0</span> <span class="kwa">then</span> 
+    printf <span class="str">&quot;%*s</span><span class="esc">\t</span><span class="str">:</span><span class="ipl">%i</span><span class="str"></span><span class="esc">\n</span><span class="str">&quot;</span> <span class="opt">(</span><span class="num">10</span><span class="opt">-</span> n <span class="kwa">mod</span> <span class="num">10</span><span class="opt">)</span> <span class="str">&quot;&quot;</span> n
+
+<span class="kwa">let</span> <span class="opt">() =</span> <span class="kwd">digits</span> <span class="opt">(</span><span class="kwa">try</span> int_of_string <span class="opt">(</span><span class="kwc">Array</span><span class="opt">.</span>get <span class="kwc">Sys</span><span class="opt">.</span>argv <span class="num">1</span><span class="opt">)</span> <span class="kwa">with</span> _ <span class="opt">-&gt;</span> <span class="num">27</span><span class="opt">)</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+The OCaml native-code compiler, version 4.06.0
+
+
+Sun, 05 Nov 2017 22:27:14 GMT
+
+MAKE:
+mv pidigits.ocaml pidigits.ml
+/opt/src/ocaml-4.06.0/bin/ocamlopt -noassert -unsafe -fPIC -nodynlink -inline 100 -O3 -I /usr/local/lib/ocaml/gmp gmp.cmxa pidigits.ml -o pidigits.ocaml_run
+File &quot;pidigits.ml&quot;, line 10, characters 5-11:
+Error: Unbound module Gmp
+/home/dunham/benchmarksgame/nanobench/makefiles/u64q.programs.Makefile:417: recipe for target 'pidigits.ocaml_run' failed
+make: [pidigits.ocaml_run] Error 2 (ignored)
+rm pidigits.ml
+
+0.02s to complete and log all make actions
+
+COMMAND LINE:
+./pidigits.ocaml_run 2000
+
+MAKE ERROR 
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

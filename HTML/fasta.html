@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="all">
+<meta name="description" content="Compare programs that generate and write random DNA sequences for ~24 programming languages (64-bit Ubuntu quad core).">
+<title>fasta (64-bit Ubuntu quad core) | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article,footer{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.best{font-weight:bold}.message{font-size:.8em}table{color:#333;margin:1.3em auto 0;text-align:right}tbody:after{content:"-";display:block;line-height:2.6em;visibility:hidden}td{border-bottom:.15em dotted #eee;padding:.7em 0 0 1em}td a,th a{display:block}th{font-weight:normal;padding:0 0 0 1em}td:first-child{padding-left:0}td:nth-child(2),th:nth-child(2){text-align:left}
+
+@media only screen{th:nth-child(1),td:nth-child(1),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6),th:nth-child(7),td:nth-child(7){display:none}}
+@media only screen and (min-width:23em){th:nth-child(1),td:nth-child(1){display:table-cell}}@media only screen and (min-width:37em){th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:table-cell}li{display:inline-block}}@media only screen and (min-width:43em){th:nth-child(7),td:nth-child(7){display:table-cell}}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>fasta</h2>
+    <aside>
+      <p><a href="./fasta-description.html#fasta">description</a>
+    </aside>
+  </div>
+  <section>
+    <div>
+      <h3>program source code, command-line and measurements</h3>
+    </div>
+    <table>
+      <tr>
+        <th>&#215;
+        <th>source
+        <th class="best">secs
+        <th><a href="./fasta-mem.html"><span>mem</span></a>
+        <th><a href="./fasta-gz.html"><span>gz</span></a>
+        <th><a href="./fasta-cpu.html"><span>cpu</span></a>
+        <th>cpu load
+      <tr>
+        <td>1.0
+        <td><a href="./fasta-gcc-2.html"><span><strong>C</strong>&nbsp;gcc&nbsp;#2</span></a>
+        <td class="best">1.32
+        <td>2,912
+        <td>2268
+        <td>5.25
+        <td class="message">100%&nbsp;99%&nbsp;100%&nbsp;99%
+      <tr>
+        <td>1.0
+        <td><a href="./fasta-gpp-7.html"><span><strong>C++</strong>&nbsp;g++&nbsp;#7</span></a>
+        <td class="best">1.35
+        <td>1,952
+        <td>2711
+        <td>4.18
+        <td class="message">79%&nbsp;78%&nbsp;78%&nbsp;79%
+      <tr>
+        <td>1.0
+        <td><a href="./fasta-gcc-7.html"><span>C gcc&nbsp;#7</span></a>
+        <td>1.36
+        <td>2,896
+        <td>2011
+        <td>5.28
+        <td class="message">100%&nbsp;98%&nbsp;97%&nbsp;96%
+      <tr>
+        <td>1.1
+        <td><a href="./fasta-gpp-6.html"><span>C++ g++&nbsp;#6</span></a>
+        <td>1.49
+        <td>4,372
+        <td>2324
+        <td>5.28
+        <td class="message">89%&nbsp;88%&nbsp;90%&nbsp;90%
+      <tr>
+        <td>1.2
+        <td><a href="./fasta-gpp-5.html"><span>C++ g++&nbsp;#5</span></a>
+        <td>1.52
+        <td>4,352
+        <td>2344
+        <td>5.32
+        <td class="message">89%&nbsp;89%&nbsp;86%&nbsp;89%
+      <tr>
+        <td>1.3
+        <td><a href="./fasta-fsharpcore-3.html"><span><strong>F#</strong>&nbsp;.NET&nbsp;Core&nbsp;#3</span></a>
+        <td class="best">1.67
+        <td>123,472
+        <td>1350
+        <td>6.27
+        <td class="message">93%&nbsp;99%&nbsp;93%&nbsp;93%
+      <tr>
+        <td>1.3
+        <td><a href="./fasta-chapel-2.html"><span><strong>Chapel</strong>&nbsp;#2</span></a>
+        <td class="best">1.69
+        <td>5,728
+        <td>1392
+        <td>5.83
+        <td class="message">100%&nbsp;82%&nbsp;82%&nbsp;83%
+      <tr>
+        <td>1.4
+        <td><a href="./fasta-gcc-6.html"><span>C gcc&nbsp;#6</span></a>
+        <td>1.82
+        <td>2,660
+        <td>1930
+        <td>5.37
+        <td class="message">5%&nbsp;98%&nbsp;98%&nbsp;100%
+      <tr>
+        <td>1.6
+        <td><a href="./fasta-go-3.html"><span><strong>Go</strong>&nbsp;#3</span></a>
+        <td class="best">2.08
+        <td>3,640
+        <td>1358
+        <td>5.69
+        <td class="message">84%&nbsp;66%&nbsp;70%&nbsp;56%
+      <tr>
+        <td>1.6
+        <td><a href="./fasta-csharpcore-1.html"><span><strong>C#</strong>&nbsp;.NET&nbsp;Core</span></a>
+        <td class="best">2.09
+        <td>65,216
+        <td>2098
+        <td>7.97
+        <td class="message">95%&nbsp;99%&nbsp;95%&nbsp;95%
+      <tr>
+        <td>1.7
+        <td><a href="./fasta-csharpcore-3.html"><span>C# .NET Core&nbsp;#3</span></a>
+        <td>2.25
+        <td>65,188
+        <td>1916
+        <td>8.02
+        <td class="message">98%&nbsp;86%&nbsp;87%&nbsp;87%
+      <tr>
+        <td>1.7
+        <td><a href="./fasta-java-5.html"><span><strong>Java</strong>&nbsp;&nbsp;#5</span></a>
+        <td class="best">2.27
+        <td>43,628
+        <td>2473
+        <td>5.93
+        <td class="message">51%&nbsp;75%&nbsp;57%&nbsp;81%
+      <tr>
+        <td>1.8
+        <td><a href="./fasta-swift-3.html"><span><strong>Swift</strong>&nbsp;#3</span></a>
+        <td class="best">2.37
+        <td>31,132
+        <td>2096
+        <td>7.85
+        <td class="message">83%&nbsp;85%&nbsp;71%&nbsp;94%
+      <tr>
+        <td>2.1
+        <td><a href="./fasta-go-2.html"><span>Go&nbsp;#2</span></a>
+        <td>2.72
+        <td>10,808
+        <td>1404
+        <td>6.31
+        <td class="message">57%&nbsp;47%&nbsp;79%&nbsp;49%
+      <tr>
+        <td>2.1
+        <td><a href="./fasta-gcc-5.html"><span>C gcc&nbsp;#5</span></a>
+        <td>2.74
+        <td>860
+        <td>1281
+        <td>2.73
+        <td class="message">0%&nbsp;1%&nbsp;1%&nbsp;100%
+      <tr>
+        <td>2.1
+        <td><a href="./fasta-swift-2.html"><span>Swift&nbsp;#2</span></a>
+        <td>2.78
+        <td>9,004
+        <td>1953
+        <td>4.36
+        <td class="message">71%&nbsp;3%&nbsp;82%&nbsp;4%
+      <tr>
+        <td>2.1
+        <td><a href="./fasta-csharpcore-4.html"><span>C# .NET Core&nbsp;#4</span></a>
+        <td>2.81
+        <td>177,428
+        <td>1524
+        <td>10.15
+        <td class="message">88%&nbsp;88%&nbsp;99%&nbsp;88%
+      <tr>
+        <td>2.2
+        <td><a href="./fasta-ifc-4.html"><span><strong>Fortran</strong>&nbsp;Intel&nbsp;#4</span></a>
+        <td class="best">2.91
+        <td>8
+        <td>1351
+        <td>2.90
+        <td class="message">100%&nbsp;0%&nbsp;1%&nbsp;2%
+      <tr>
+        <td>2.9
+        <td><a href="./fasta-rust-3.html"><span><strong>Rust</strong>&nbsp;#3</span></a>
+        <td class="best">3.84
+        <td>2,904
+        <td>1233
+        <td>3.84
+        <td class="message">0%&nbsp;0%&nbsp;1%&nbsp;100%
+      <tr>
+        <td>3.1
+        <td><a href="./fasta-gnat-5.html"><span><strong>Ada</strong>&nbsp;2005&nbsp;GNAT&nbsp;#5</span></a>
+        <td class="best">4.08
+        <td>2,092
+        <td>2221
+        <td>4.08
+        <td class="message">0%&nbsp;29%&nbsp;72%&nbsp;3%
+      <tr>
+        <td>3.2
+        <td><a href="./fasta-gpp-3.html"><span>C++ g++&nbsp;#3</span></a>
+        <td>4.18
+        <td>1,888
+        <td>1307
+        <td>4.18
+        <td class="message">1%&nbsp;1%&nbsp;1%&nbsp;100%
+      <tr>
+        <td>3.6
+        <td><a href="./fasta-ifc-3.html"><span>Fortran Intel&nbsp;#3</span></a>
+        <td>4.73
+        <td>8
+        <td>1215
+        <td>4.73
+        <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;2%
+      <tr>
+        <td>3.9
+        <td><a href="./fasta-gpp-2.html"><span>C++ g++&nbsp;#2</span></a>
+        <td>5.10
+        <td>1,860
+        <td>1127
+        <td>5.10
+        <td class="message">25%&nbsp;77%&nbsp;1%&nbsp;0%
+      <tr>
+        <td>3.9
+        <td><a href="./fasta-java-4.html"><span>Java&nbsp;#4</span></a>
+        <td>5.11
+        <td>36,388
+        <td>1524
+        <td>5.35
+        <td class="message">2%&nbsp;3%&nbsp;3%&nbsp;98%
+      <tr>
+        <td>4.5
+        <td><a href="./fasta-ocaml-6.html"><span><strong>OCaml</strong>&nbsp;#6</span></a>
+        <td class="best">6.00
+        <td>199,732
+        <td>1189
+        <td>5.99
+        <td class="message">0%&nbsp;2%&nbsp;100%&nbsp;0%
+      <tr>
+        <td>4.6
+        <td><a href="./fasta-gpp-4.html"><span>C++ g++&nbsp;#4</span></a>
+        <td>6.06
+        <td>896
+        <td>1287
+        <td>6.06
+        <td class="message">0%&nbsp;0%&nbsp;1%&nbsp;100%
+      <tr>
+        <td>4.6
+        <td><a href="./fasta-gcc-4.html"><span>C gcc&nbsp;#4</span></a>
+        <td>6.07
+        <td>896
+        <td>1240
+        <td>6.06
+        <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;1%
+      <tr>
+        <td>4.7
+        <td><a href="./fasta-ifc-1.html"><span>Fortran Intel</span></a>
+        <td>6.22
+        <td>8
+        <td>1190
+        <td>6.22
+        <td class="message">0%&nbsp;61%&nbsp;40%&nbsp;0%
+      <tr>
+        <td>4.8
+        <td><a href="./fasta-csharpcore-2.html"><span>C# .NET Core&nbsp;#2</span></a>
+        <td>6.35
+        <td>32,336
+        <td>1195
+        <td>6.35
+        <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;1%
+      <tr>
+        <td>5.4
+        <td><a href="./fasta-rust-4.html"><span>Rust&nbsp;#4</span></a>
+        <td>7.15
+        <td>124,384
+        <td>939
+        <td>7.14
+        <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;0%
+      <tr>
+        <td>5.4
+        <td><a href="./fasta-go-1.html"><span>Go</span></a>
+        <td>7.16
+        <td>1,472
+        <td>1053
+        <td>7.15
+        <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;0%
+      <tr>
+        <td>5.4
+        <td><a href="./fasta-gpp-1.html"><span>C++ g++</span></a>
+        <td>7.19
+        <td>1,824
+        <td>1057
+        <td>7.18
+        <td class="message">1%&nbsp;100%&nbsp;1%&nbsp;1%
+      <tr>
+        <td>5.7
+        <td><a href="./fasta-rust-1.html"><span>Rust</span></a>
+        <td>7.48
+        <td>1,752
+        <td>1237
+        <td>7.48
+        <td class="message">1%&nbsp;100%&nbsp;0%&nbsp;0%
+      <tr>
+        <td>5.8
+        <td><a href="./fasta-gcc-1.html"><span>C gcc</span></a>
+        <td>7.66
+        <td>900
+        <td>1206
+        <td>7.66
+        <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;0%
+      <tr>
+        <td>5.9
+        <td><a href="./fasta-java-2.html"><span>Java&nbsp;#2</span></a>
+        <td>7.82
+        <td>36,844
+        <td>1257
+        <td>8.06
+        <td class="message">11%&nbsp;91%&nbsp;2%&nbsp;1%
+      <tr>
+        <td>6.0
+        <td><a href="./fasta-sbcl-6.html"><span><strong>Lisp</strong>&nbsp;SBCL&nbsp;#6</span></a>
+        <td class="best">7.99
+        <td>19,688
+        <td>1757
+        <td>7.99
+        <td class="message">33%&nbsp;1%&nbsp;1%&nbsp;68%
+      <tr>
+        <td>6.1
+        <td><a href="./fasta-dart-1.html"><span><strong>Dart</strong></span></a>
+        <td class="best">8.10
+        <td>50,560
+        <td>1403
+        <td>8.19
+        <td class="message">1%&nbsp;1%&nbsp;99%&nbsp;1%
+      <tr>
+        <td>6.5
+        <td><a href="./fasta-fsharpcore-2.html"><span>F# .NET Core&nbsp;#2</span></a>
+        <td>8.59
+        <td>313,120
+        <td>1308
+        <td>17.03
+        <td class="message">52%&nbsp;47%&nbsp;56%&nbsp;45%
+      <tr>
+        <td>6.7
+        <td><a href="./fasta-fsharpcore-1.html"><span>F# .NET Core</span></a>
+        <td>8.82
+        <td>35,732
+        <td>1002
+        <td>8.81
+        <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;0%
+      <tr>
+        <td>6.9
+        <td><a href="./fasta-chapel-1.html"><span>Chapel</span></a>
+        <td>9.09
+        <td>4,820
+        <td>1218
+        <td>9.10
+        <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;0%
+      <tr>
+        <td>7.2
+        <td><a href="./fasta-ghc-1.html"><span><strong>Haskell</strong>&nbsp;GHC</span></a>
+        <td class="best">9.56
+        <td>5,164
+        <td>969
+        <td>10.09
+        <td class="message">100%&nbsp;2%&nbsp;2%&nbsp;3%
+      <tr>
+        <td>7.4
+        <td><a href="./fasta-node-4.html"><span><strong>Node.js</strong>&nbsp;#4</span></a>
+        <td class="best">9.80
+        <td>34,804
+        <td>1785
+        <td>9.82
+        <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;0%
+      <tr>
+        <td>7.7
+        <td><a href="./fasta-sbcl-3.html"><span>Lisp SBCL&nbsp;#3</span></a>
+        <td>10.21
+        <td>18,008
+        <td>1587
+        <td>10.21
+        <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;0%
+      <tr>
+        <td>7.8
+        <td><a href="./fasta-gnat-1.html"><span>Ada 2005 GNAT</span></a>
+        <td>10.36
+        <td>2,124
+        <td>1379
+        <td>10.36
+        <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;1%
+      <tr>
+        <td>8.1
+        <td><a href="./fasta-node-3.html"><span>Node.js&nbsp;#3</span></a>
+        <td>10.74
+        <td>34,596
+        <td>1128
+        <td>10.74
+        <td class="message">10%&nbsp;0%&nbsp;0%&nbsp;90%
+      <tr>
+        <td>8.2
+        <td><a href="./fasta-fpascal-4.html"><span><strong>Pascal</strong>&nbsp;Free&nbsp;Pascal&nbsp;#4</span></a>
+        <td class="best">10.85
+        <td>8
+        <td>1140
+        <td>10.85
+        <td class="message">100%&nbsp;0%&nbsp;1%&nbsp;0%
+      <tr>
+        <td>9.0
+        <td><a href="./fasta-swift-1.html"><span>Swift</span></a>
+        <td>11.98
+        <td>7,592
+        <td>1527
+        <td>11.98
+        <td class="message">0%&nbsp;1%&nbsp;0%&nbsp;100%
+      <tr>
+        <td>10
+        <td><a href="./fasta-ghc-2.html"><span>Haskell GHC&nbsp;#2</span></a>
+        <td>13.71
+        <td>447,320
+        <td>1319
+        <td>45.34
+        <td class="message">88%&nbsp;82%&nbsp;86%&nbsp;78%
+      <tr>
+        <td>12
+        <td><a href="./fasta-typescript-1.html"><span><strong>TypeScript</strong></span></a>
+        <td class="best">15.95
+        <td>34,000
+        <td>1229
+        <td>15.95
+        <td class="message">0%&nbsp;74%&nbsp;26%&nbsp;1%
+      <tr>
+        <td>13
+        <td><a href="./fasta-racket-3.html"><span><strong>Racket</strong>&nbsp;#3</span></a>
+        <td class="best">17.47
+        <td>26,148
+        <td>1280
+        <td>17.46
+        <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;0%
+      <tr>
+        <td>14
+        <td><a href="./fasta-sbcl-2.html"><span>Lisp SBCL&nbsp;#2</span></a>
+        <td>17.88
+        <td>22,792
+        <td>1622
+        <td>17.87
+        <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;0%
+      <tr>
+        <td>14
+        <td><a href="./fasta-sbcl-1.html"><span>Lisp SBCL</span></a>
+        <td>19.08
+        <td>22,728
+        <td>1424
+        <td>19.07
+        <td class="message">0%&nbsp;100%&nbsp;0%&nbsp;0%
+      <tr>
+        <td>21
+        <td><a href="./fasta-hipe-2.html"><span><strong>Erlang</strong>&nbsp;HiPE&nbsp;#2</span></a>
+        <td class="best">27.90
+        <td>21,756
+        <td>1164
+        <td>29.15
+        <td class="message">2%&nbsp;1%&nbsp;47%&nbsp;54%
+      <tr>
+        <td>31
+        <td><a href="./fasta-hack-4.html"><span><strong>Hack</strong>&nbsp;#4</span></a>
+        <td class="best">41.54
+        <td>86,892
+        <td>1147
+        <td>41.52
+        <td class="message">69%&nbsp;4%&nbsp;4%&nbsp;32%
+      <tr>
+        <td>32
+        <td><a href="./fasta-racket-1.html"><span>Racket</span></a>
+        <td>42.62
+        <td>24,936
+        <td>1066
+        <td>42.62
+        <td class="message">1%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tr>
+        <td>34
+        <td><a href="./fasta-hack-2.html"><span>Hack&nbsp;#2</span></a>
+        <td>44.47
+        <td>86,872
+        <td>1047
+        <td>44.45
+        <td class="message">0%&nbsp;46%&nbsp;56%&nbsp;0%
+      <tr>
+        <td>36
+        <td><a href="./fasta-node-2.html"><span>Node.js&nbsp;#2</span></a>
+        <td>47.15
+        <td>652,684
+        <td>931
+        <td>50.80
+        <td class="message">14%&nbsp;29%&nbsp;48%&nbsp;17%
+      <tr>
+        <td>36
+        <td><a href="./fasta-vw-1.html"><span><strong>Smalltalk</strong>&nbsp;VW</span></a>
+        <td class="best">47.34
+        <td>56,084
+        <td>1536
+        <td>47.32
+        <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;0%
+      <tr>
+        <td>38
+        <td><a href="./fasta-lua-2.html"><span><strong>Lua</strong>&nbsp;#2</span></a>
+        <td class="best">50.08
+        <td>2,920
+        <td>1061
+        <td>50.06
+        <td class="message">0%&nbsp;7%&nbsp;94%&nbsp;0%
+      <tr>
+        <td>38
+        <td><a href="./fasta-lua-3.html"><span>Lua&nbsp;#3</span></a>
+        <td>50.71
+        <td>2,968
+        <td>1061
+        <td>50.70
+        <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;0%
+      <tr>
+        <td>45
+        <td><a href="./fasta-php-3.html"><span><strong>PHP</strong>&nbsp;#3</span></a>
+        <td class="best">59.12
+        <td>9,412
+        <td>1062
+        <td>59.11
+        <td class="message">40%&nbsp;0%&nbsp;1%&nbsp;60%
+      <tr>
+        <td>45
+        <td><a href="./fasta-python3-5.html"><span><strong>Python&nbsp;3</strong>&nbsp;#5</span></a>
+        <td class="best">59.47
+        <td>15,996
+        <td>1947
+        <td>138.97
+        <td class="message">55%&nbsp;55%&nbsp;63%&nbsp;66%
+      <tr>
+        <td>53
+        <td><a href="./fasta-hack-3.html"><span>Hack&nbsp;#3</span></a>
+        <td>69.66
+        <td>87,024
+        <td>1061
+        <td>69.63
+        <td class="message">1%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tr>
+        <td>63
+        <td><a href="./fasta-node-1.html"><span>Node.js</span></a>
+        <td>83.12
+        <td>797,988
+        <td>809
+        <td>88.25
+        <td class="message">18%&nbsp;29%&nbsp;25%&nbsp;35%
+      <tr>
+        <td>75
+        <td><a href="./fasta-php-2.html"><span>PHP&nbsp;#2</span></a>
+        <td>98.92
+        <td>9,332
+        <td>1050
+        <td>98.90
+        <td class="message">23%&nbsp;0%&nbsp;1%&nbsp;77%
+      <tr>
+        <td>75
+        <td><a href="./fasta-perl-1.html"><span><strong>Perl</strong></span></a>
+        <td class="best">99.64
+        <td>54,044
+        <td>871
+        <td>99.61
+        <td class="message">0%&nbsp;1%&nbsp;0%&nbsp;100%
+      <tr>
+        <td>75
+        <td><a href="./fasta-yarv-3.html"><span><strong>Ruby</strong>&nbsp;#3</span></a>
+        <td class="best">99.67
+        <td>106,544
+        <td>1002
+        <td>99.65
+        <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;0%
+      <tr>
+        <td>80
+        <td><a href="./fasta-hipe-1.html"><span>Erlang HiPE</span></a>
+        <td>105.45
+        <td>20,868
+        <td>1039
+        <td>151.65
+        <td class="message">33%&nbsp;39%&nbsp;49%&nbsp;24%
+      <tr>
+        <td>83
+        <td><a href="./fasta-python3-3.html"><span>Python 3&nbsp;#3</span></a>
+        <td>109.39
+        <td>10,460
+        <td>1003
+        <td>109.36
+        <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tr>
+        <td>83
+        <td><a href="./fasta-python3-2.html"><span>Python 3&nbsp;#2</span></a>
+        <td>109.55
+        <td>10,456
+        <td>1121
+        <td>109.53
+        <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;0%
+      <tr>
+        <td>99
+        <td><a href="./fasta-jruby-3.html"><span><strong>Ruby</strong>&nbsp;JRuby&nbsp;#3</span></a>
+        <td class="best">131.71
+        <td>823,720
+        <td>1002
+        <td>141.58
+        <td class="message">9%&nbsp;19%&nbsp;27%&nbsp;53%
+      <tr>
+        <td>109
+        <td><a href="./fasta-python3-1.html"><span>Python 3</span></a>
+        <td>143.82
+        <td>10,236
+        <td>817
+        <td>143.64
+        <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;1%
+      <tr>
+        <td>113
+        <td><a href="./fasta-yarv-4.html"><span>Ruby&nbsp;#4</span></a>
+        <td>149.34
+        <td>191,216
+        <td>913
+        <td>149.19
+        <td class="message">0%&nbsp;7%&nbsp;0%&nbsp;94%
+      <tr>
+        <td>117
+        <td><a href="./fasta-yarv-5.html"><span>Ruby&nbsp;#5</span></a>
+        <td>154.38
+        <td>8,892
+        <td>995
+        <td>154.24
+        <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;1%
+      <tr>
+        <td>153
+        <td><a href="./fasta-yarv-2.html"><span>Ruby&nbsp;#2</span></a>
+        <td>202.55
+        <td>204,492
+        <td>743
+        <td>202.48
+        <td class="message">26%&nbsp;75%&nbsp;0%&nbsp;0%
+      <tr>
+        <td>160
+        <td><a href="./fasta-perl-4.html"><span>Perl&nbsp;#4</span></a>
+        <td>212.37
+        <td>4,864
+        <td>966
+        <td>212.25
+        <td class="message">0%&nbsp;48%&nbsp;7%&nbsp;46%
+      <tr>
+        <td>212
+        <td><a href="./fasta-perl-2.html"><span>Perl&nbsp;#2</span></a>
+        <td>281.33
+        <td>5,040
+        <td>922
+        <td>281.21
+        <td class="message">0%&nbsp;1%&nbsp;17%&nbsp;83%
+      <tr>
+        <td>297
+        <td><a href="./fasta-jruby-1.html"><span>Ruby JRuby</span></a>
+        <td>6&nbsp;min
+        <td>1,034,820
+        <td>770
+        <td>6&nbsp;min
+        <td class="message">7%&nbsp;12%&nbsp;32%&nbsp;54%
+      <tr>
+        <td>402
+        <td><a href="./fasta-mri-4.html"><span><strong>Ruby</strong>&nbsp;MRI&nbsp;#4</span></a>
+        <td class="best">8&nbsp;min
+        <td>275,524
+        <td>913
+        <td>8&nbsp;min
+        <td class="message">68%&nbsp;0%&nbsp;1%&nbsp;32%
+      <tr>
+        <td>421
+        <td><a href="./fasta-mri-5.html"><span>Matz's Interpreter&nbsp;#5</span></a>
+        <td>9&nbsp;min
+        <td>4,372
+        <td>995
+        <td>9&nbsp;min
+        <td class="message">2%&nbsp;41%&nbsp;12%&nbsp;47%
+      <tr>
+        <td>532
+        <td><a href="./fasta-mri-2.html"><span>Matz's Interpreter&nbsp;#2</span></a>
+        <td>11&nbsp;min
+        <td>248,152
+        <td>743
+        <td>11&nbsp;min
+        <td class="message">39%&nbsp;15%&nbsp;7%&nbsp;44%
+      <tr>
+        <td>
+        <td><a href="./fasta-ocaml-3.html"><span>OCaml&nbsp;#3</span></a>
+        <td class="message">Make&nbsp;Error
+        <td>
+        <td>
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./fasta-mri-3.html"><span>Matz's Interpreter&nbsp;#3</span></a>
+        <td class="message">Failed
+        <td>
+        <td>
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./fasta-rust-2.html"><span>Rust&nbsp;#2</span></a>
+        <td class="message">Make&nbsp;Error
+        <td>
+        <td>
+        <td>
+        <td>
+      <tr>
+        <td>
+        <td><a href="./fasta-rust-5.html"><span>Rust&nbsp;#5</span></a>
+        <td class="message">Make&nbsp;Error
+        <td>
+        <td>
+        <td>
+        <td>
+      </table>
+      <nav>
+        <ul>
+          <li class="best">by secs
+          <li><a href="./fasta-mem.html"><span>by mem</span></a>
+          <li><a href="./fasta-gz.html"><span>by gz</span></a>
+          <li><a href="./fasta-cpu.html"><span>by cpu</span></a>
+        </ul>
+      </nav>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./why-measure-toy-benchmark-programs.html"><span>toy programs</span></a>
+      <li><a href="./how-programs-are-measured.html"><span>details</span></a>
+      <li><a href="./dont-jump-to-conclusions.html"><span>conclusions</span></a>
+    </ul>
+  </nav>
+  <aside>
+    <p>We want easy answers, but easy answers are often incomplete or wrong. You and I know, <a href="../index.html"><span>there's more we need to understand</span></a>.
+  </aside>
+</footer>
+

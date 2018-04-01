@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>mandelbrot C++ g++&nbsp;#9 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>mandelbrot C++ g++&nbsp;#9 program</h2>
+    <aside>
+      <p><a href="./mandelbrot-description.html#mandelbrot">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">// The Computer Language Benchmarks Game</span>
+<span class="slc">// http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">//</span>
+<span class="slc">// contributed by Elam Kolenovic</span>
+<span class="slc">//</span>
+<span class="slc">// Changes (2013-05-07)</span>
+<span class="slc">//   - changed omp schedule for more even distribution of work</span>
+<span class="slc">//   - changed loop variables to signed integer because msvc was complaining</span>
+<span class="slc">//     when omp was enabled</span>
+<span class="slc">//   - replaced std::copy and std::fill by one loop. slightly faster.</span>
+<span class="slc">//   - swapped order of tests in for-i-loop. slightly faster.</span>
+<span class="slc">//</span>
+<span class="slc">// Changes (2013-04-19)</span>
+<span class="slc">//   - using omp</span>
+<span class="slc">//   - use buffer and fwrite at end instead of putchar</span>
+<span class="slc">//   - pre-calculate cr0[]</span>
+<span class="slc">//   - rename variables and use underscore before the index part of the name</span>
+<span class="slc">//   - inverted bit tests, better performance under MSVC</span>
+<span class="slc">//   - optional argument for file output, usefull in windows shell</span>
+<span class="slc">//</span>
+<span class="slc">// Changes (2013-04-07):</span>
+<span class="slc">//   - removed unnecessary arrays, faster especially on 32 bits</span>
+<span class="slc">//   - using putchar instead of iostreams, slightly faster</span>
+<span class="slc">//   - using namespace std for readability</span>
+<span class="slc">//   - replaced size_t with unsigned</span>
+<span class="slc">//   - removed some includes</span>
+
+<span class="ppc">#include &lt;cstdio&gt;</span>
+<span class="ppc">#include &lt;cstdlib&gt;</span>
+<span class="ppc">#include &lt;vector&gt;</span>
+
+<span class="kwc">typedef</span> <span class="kwb">unsigned char</span> Byte<span class="opt">;</span>
+
+<span class="kwa">using namespace</span> std<span class="opt">;</span>
+
+<span class="kwb">int</span> <span class="kwd">main</span><span class="opt">(</span><span class="kwb">int</span> argc<span class="opt">,</span> <span class="kwb">char</span><span class="opt">*</span> argv<span class="opt">[])</span>
+<span class="opt">{</span>
+    <span class="kwb">const int</span>    N              <span class="opt">=</span> <span class="kwd">max</span><span class="opt">(</span><span class="num">0</span><span class="opt">, (</span>argc <span class="opt">&gt;</span> <span class="num">1</span><span class="opt">) ?</span> <span class="kwd">atoi</span><span class="opt">(</span>argv<span class="opt">[</span><span class="num">1</span><span class="opt">]) :</span> <span class="num">0</span><span class="opt">);</span>
+    <span class="kwb">const int</span>    width          <span class="opt">=</span> N<span class="opt">;</span>
+    <span class="kwb">const int</span>    height         <span class="opt">=</span> N<span class="opt">;</span>
+    <span class="kwb">const int</span>    max_x          <span class="opt">= (</span>width <span class="opt">+</span> <span class="num">7</span><span class="opt">) /</span> <span class="num">8</span><span class="opt">;</span>
+    <span class="kwb">const int</span>    max_iterations <span class="opt">=</span> <span class="num">50</span><span class="opt">;</span>
+    <span class="kwb">const double</span> limit          <span class="opt">=</span> <span class="num">2.0</span><span class="opt">;</span>
+    <span class="kwb">const double</span> limit_sq       <span class="opt">=</span> limit <span class="opt">*</span> limit<span class="opt">;</span>
+
+    vector<span class="opt">&lt;</span>Byte<span class="opt">&gt;</span> <span class="kwd">buffer</span><span class="opt">(</span>height <span class="opt">*</span> max_x<span class="opt">);</span>
+
+    vector<span class="opt">&lt;</span><span class="kwb">double</span><span class="opt">&gt;</span> <span class="kwd">cr0</span><span class="opt">(</span><span class="num">8</span> <span class="opt">*</span> max_x<span class="opt">);</span>
+<span class="ppc">#pragma omp parallel for</span>
+    <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> x <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> x <span class="opt">&lt;</span> max_x<span class="opt">; ++</span>x<span class="opt">)</span>
+    <span class="opt">{</span>
+        <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> k <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> k <span class="opt">&lt;</span> <span class="num">8</span><span class="opt">; ++</span>k<span class="opt">)</span>
+        <span class="opt">{</span>
+            <span class="kwb">const int</span> xk <span class="opt">=</span> <span class="num">8</span> <span class="opt">*</span> x <span class="opt">+</span> k<span class="opt">;</span>
+            cr0<span class="opt">[</span>xk<span class="opt">] = (</span><span class="num">2.0</span> <span class="opt">*</span> xk<span class="opt">) /</span> width <span class="opt">-</span> <span class="num">1.5</span><span class="opt">;</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+
+<span class="ppc">#pragma omp parallel for schedule(guided)</span>
+    <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> y <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> y <span class="opt">&lt;</span> height<span class="opt">; ++</span>y<span class="opt">)</span>
+    <span class="opt">{</span>
+        Byte<span class="opt">*</span> line <span class="opt">= &amp;</span>buffer<span class="opt">[</span>y <span class="opt">*</span> max_x<span class="opt">];</span>
+
+        <span class="kwb">const double</span> ci0 <span class="opt">=</span> <span class="num">2.0</span> <span class="opt">*</span> y <span class="opt">/</span> height <span class="opt">-</span> <span class="num">1.0</span><span class="opt">;</span>
+
+        <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> x <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> x <span class="opt">&lt;</span> max_x<span class="opt">; ++</span>x<span class="opt">)</span>
+        <span class="opt">{</span>
+            <span class="kwb">const double</span><span class="opt">*</span> cr0_x <span class="opt">= &amp;</span>cr0<span class="opt">[</span><span class="num">8</span> <span class="opt">*</span> x<span class="opt">];</span>
+            <span class="kwb">double</span> cr<span class="opt">[</span><span class="num">8</span><span class="opt">];</span>
+            <span class="kwb">double</span> ci<span class="opt">[</span><span class="num">8</span><span class="opt">];</span>
+            <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> k <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> k <span class="opt">&lt;</span> <span class="num">8</span><span class="opt">; ++</span>k<span class="opt">)</span>
+            <span class="opt">{</span>
+                cr<span class="opt">[</span>k<span class="opt">] =</span> cr0_x<span class="opt">[</span>k<span class="opt">];</span>
+                ci<span class="opt">[</span>k<span class="opt">] =</span> ci0<span class="opt">;</span>
+            <span class="opt">}</span>
+
+            Byte bits <span class="opt">=</span> <span class="num">0xFF</span><span class="opt">;</span>
+            <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> bits <span class="opt">&amp;&amp;</span> i <span class="opt">&lt;</span> max_iterations<span class="opt">; ++</span>i<span class="opt">)</span>
+            <span class="opt">{</span>
+                Byte bit_k <span class="opt">=</span> <span class="num">0x80</span><span class="opt">;</span>
+                <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> k <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> k <span class="opt">&lt;</span> <span class="num">8</span><span class="opt">; ++</span>k<span class="opt">)</span>
+                <span class="opt">{</span>
+                    <span class="kwa">if</span> <span class="opt">(</span>bits <span class="opt">&amp;</span> bit_k<span class="opt">)</span>
+                    <span class="opt">{</span>
+                        <span class="kwb">const double</span> cr_k    <span class="opt">=</span> cr<span class="opt">[</span>k<span class="opt">];</span>
+                        <span class="kwb">const double</span> ci_k    <span class="opt">=</span> ci<span class="opt">[</span>k<span class="opt">];</span>
+                        <span class="kwb">const double</span> cr_k_sq <span class="opt">=</span> cr_k <span class="opt">*</span> cr_k<span class="opt">;</span>
+                        <span class="kwb">const double</span> ci_k_sq <span class="opt">=</span> ci_k <span class="opt">*</span> ci_k<span class="opt">;</span>
+
+                        cr<span class="opt">[</span>k<span class="opt">] =</span> cr_k_sq <span class="opt">-</span> ci_k_sq <span class="opt">+</span> cr0_x<span class="opt">[</span>k<span class="opt">];</span>
+                        ci<span class="opt">[</span>k<span class="opt">] =</span> <span class="num">2.0</span> <span class="opt">*</span> cr_k <span class="opt">*</span> ci_k <span class="opt">+</span> ci0<span class="opt">;</span>
+
+                        <span class="kwa">if</span> <span class="opt">(</span>cr_k_sq <span class="opt">+</span> ci_k_sq <span class="opt">&gt;</span> limit_sq<span class="opt">)</span>
+                        <span class="opt">{</span>
+                            bits <span class="opt">^=</span> bit_k<span class="opt">;</span>
+                        <span class="opt">}</span>
+                    <span class="opt">}</span>
+                    bit_k <span class="opt">&gt;&gt;=</span> <span class="num">1</span><span class="opt">;</span>
+                <span class="opt">}</span>
+            <span class="opt">}</span>
+            line<span class="opt">[</span>x<span class="opt">] =</span> bits<span class="opt">;</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+
+    <span class="kwb">FILE</span><span class="opt">*</span> out <span class="opt">= (</span>argc <span class="opt">==</span> <span class="num">3</span><span class="opt">) ?</span> <span class="kwd">fopen</span><span class="opt">(</span>argv<span class="opt">[</span><span class="num">2</span><span class="opt">],</span> <span class="str">&quot;wb&quot;</span><span class="opt">) :</span> stdout<span class="opt">;</span>
+    <span class="kwd">fprintf</span><span class="opt">(</span>out<span class="opt">,</span> <span class="str">&quot;P4</span><span class="esc">\n</span><span class="str">%u %u</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span> width<span class="opt">,</span> height<span class="opt">);</span>
+    <span class="kwd">fwrite</span><span class="opt">(&amp;</span>buffer<span class="opt">[</span><span class="num">0</span><span class="opt">],</span> buffer<span class="opt">.</span><span class="kwd">size</span><span class="opt">(),</span> <span class="num">1</span><span class="opt">,</span> out<span class="opt">);</span>
+
+    <span class="kwa">if</span> <span class="opt">(</span>out <span class="opt">!=</span> stdout<span class="opt">)</span>
+    <span class="opt">{</span>
+        <span class="kwd">fclose</span><span class="opt">(</span>out<span class="opt">);</span>
+    <span class="opt">}</span>
+
+    <span class="kwa">return</span> <span class="num">0</span><span class="opt">;</span>
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+g++ (Ubuntu 7.2.0-8ubuntu3) 7.2.0
+
+
+Mon, 30 Oct 2017 21:52:44 GMT
+
+MAKE:
+/usr/bin/g++ -c -pipe -O3 -fomit-frame-pointer -march=native -mfpmath=sse -msse2 -fopenmp mandelbrot.gpp-9.c++ -o mandelbrot.gpp-9.c++.o &amp;&amp;  \
+        /usr/bin/g++ mandelbrot.gpp-9.c++.o -o mandelbrot.gpp-9.gpp_run -fopenmp 
+rm mandelbrot.gpp-9.c++
+
+0.63s to complete and log all make actions
+
+COMMAND LINE:
+./mandelbrot.gpp-9.gpp_run 16000
+
+(BINARY) PROGRAM OUTPUT NOT SHOWN
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

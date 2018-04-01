@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>spectral-norm Erlang HiPE&nbsp;#2 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>spectral-norm Erlang HiPE&nbsp;#2 program</h2>
+    <aside>
+      <p><a href="./spectralnorm-description.html#spectralnorm">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">% The Computer Language Benchmarks Game</span>
+<span class="slc">% http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">%   contributed by Fredrik Svahn</span>
+
+<span class="opt">-</span><span class="kwd">module</span><span class="opt">(</span>spectralnorm<span class="opt">).</span>
+<span class="opt">-</span><span class="kwd">export</span><span class="opt">([</span>main<span class="opt">/</span><span class="num">1</span><span class="opt">]).</span>
+<span class="opt">-</span><span class="kwd">compile</span><span class="opt">( [</span> inline<span class="opt">, {</span> inline_size<span class="opt">,</span> <span class="num">1000</span> <span class="opt">} ] ).</span>
+
+<span class="kwd">main</span><span class="opt">([</span>Arg<span class="opt">]) -&gt;</span>
+    <span class="kwb">register</span><span class="opt">(</span>server<span class="opt">,</span> <span class="kwb">self</span><span class="opt">()),</span>
+    N <span class="opt">=</span> <span class="kwb">list_to_integer</span><span class="opt">(</span>Arg<span class="opt">),</span>
+    <span class="opt">{</span>U<span class="opt">,</span> V<span class="opt">} =</span> <span class="kwd">power_method</span><span class="opt">(</span>N<span class="opt">,</span> <span class="num">10</span><span class="opt">,</span> <span class="kwc">erlang</span><span class="opt">:</span><span class="kwd">make_tuple</span><span class="opt">(</span>N<span class="opt">,</span> <span class="num">1</span><span class="opt">), []),</span>
+    <span class="kwc">io</span><span class="opt">:</span><span class="kwd">format</span><span class="opt">(</span><span class="str">&quot;~.9f</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">, [</span> <span class="kwd">eigen</span><span class="opt">(</span>N<span class="opt">,</span> U<span class="opt">,</span> V<span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">) ]),</span>
+    <span class="kwc">erlang</span><span class="opt">:</span><span class="kwb">halt</span><span class="opt">(</span><span class="num">0</span><span class="opt">).</span>
+
+<span class="slc">% eigenvalue of V</span>
+<span class="kwd">eigen</span><span class="opt">(</span><span class="num">0</span><span class="opt">,</span> _<span class="opt">,</span> _<span class="opt">,</span> VBV<span class="opt">,</span> VV<span class="opt">)</span> <span class="kwa">when</span> VV <span class="opt">/=</span> <span class="num">0</span> <span class="opt">-&gt;</span> <span class="kwb">math</span><span class="opt">:</span><span class="kwb">sqrt</span><span class="opt">(</span>VBV <span class="opt">/</span> VV<span class="opt">);</span>
+
+<span class="kwd">eigen</span><span class="opt">(</span>I<span class="opt">,</span> U<span class="opt">,</span> V<span class="opt">,</span> VBV<span class="opt">,</span> VV<span class="opt">)</span> <span class="kwa">when</span> I <span class="opt">/=</span> <span class="num">0</span> <span class="opt">-&gt;</span>
+    VI <span class="opt">=</span> <span class="kwb">element</span><span class="opt">(</span>I<span class="opt">,</span> V<span class="opt">),</span>
+    <span class="kwd">eigen</span><span class="opt">(</span>I<span class="opt">-</span><span class="num">1</span><span class="opt">,</span> U<span class="opt">,</span> V<span class="opt">,</span> VBV <span class="opt">+</span> <span class="kwb">element</span><span class="opt">(</span>I<span class="opt">,</span> U<span class="opt">)*</span>VI<span class="opt">,</span> VV <span class="opt">+</span> VI<span class="opt">*</span>VI<span class="opt">).</span>
+
+<span class="slc">% 2I steps of the power method</span>
+<span class="kwd">power_method</span><span class="opt">(</span>_<span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> A<span class="opt">,</span> B<span class="opt">) -&gt; {</span>A<span class="opt">,</span> B<span class="opt">};</span>
+<span class="kwd">power_method</span><span class="opt">(</span>N<span class="opt">,</span> I<span class="opt">,</span> A<span class="opt">,</span> _B<span class="opt">) -&gt;</span>
+    V <span class="opt">=</span> <span class="kwd">atav</span><span class="opt">(</span>N<span class="opt">,</span> A<span class="opt">),</span>
+    U <span class="opt">=</span> <span class="kwd">atav</span><span class="opt">(</span>N<span class="opt">,</span> V<span class="opt">),</span>
+    <span class="kwd">power_method</span><span class="opt">(</span>N<span class="opt">,</span> I<span class="opt">-</span><span class="num">1</span><span class="opt">,</span> U<span class="opt">,</span> V<span class="opt">).</span>
+
+
+<span class="slc">% return element i,j of infinite matrix A</span>
+<span class="kwd">a</span><span class="opt">(</span>II<span class="opt">,</span>JJ<span class="opt">) -&gt;</span> <span class="num">1</span><span class="opt">/((</span>II<span class="opt">+</span>JJ<span class="opt">-</span><span class="num">2</span><span class="opt">)*(</span>II<span class="opt">-</span><span class="num">1</span><span class="opt">+</span>JJ<span class="opt">)/</span><span class="num">2</span><span class="opt">+</span>II<span class="opt">).</span>
+
+
+<span class="slc">% multiply vector v by matrix A</span>
+<span class="kwd">av</span><span class="opt">(</span>N<span class="opt">,</span> V<span class="opt">) -&gt;</span> <span class="kwd">pmap</span><span class="opt">(</span>N<span class="opt">,</span> <span class="kwa">fun</span><span class="opt">(</span>Begin<span class="opt">,</span> End<span class="opt">) -&gt;</span> <span class="kwd">av</span><span class="opt">(</span>N<span class="opt">,</span> Begin<span class="opt">,</span> End<span class="opt">,</span> V<span class="opt">)</span> <span class="kwa">end</span><span class="opt">).</span>
+
+<span class="kwd">av</span><span class="opt">(</span>N<span class="opt">,</span> Begin<span class="opt">,</span> End<span class="opt">,</span> V<span class="opt">) -&gt;</span> server <span class="opt">! {</span> <span class="kwb">self</span><span class="opt">(), [</span> <span class="kwd">avloop</span><span class="opt">(</span>N<span class="opt">,</span> I<span class="opt">,</span> V<span class="opt">,</span> <span class="num">0.0</span><span class="opt">) ||</span> I <span class="opt">&lt;-</span> <span class="kwc">lists</span><span class="opt">:</span><span class="kwd">seq</span><span class="opt">(</span>Begin<span class="opt">,</span> End<span class="opt">) ]}.</span>
+
+<span class="kwd">avloop</span><span class="opt">(</span><span class="num">0</span><span class="opt">,</span> _<span class="opt">,</span> _<span class="opt">,</span> X<span class="opt">) -&gt;</span>  X<span class="opt">;</span>
+<span class="kwd">avloop</span><span class="opt">(</span>J<span class="opt">,</span> I<span class="opt">,</span> V<span class="opt">,</span> X<span class="opt">) -&gt;</span>  <span class="kwd">avloop</span><span class="opt">(</span>J<span class="opt">-</span><span class="num">1</span><span class="opt">,</span> I<span class="opt">,</span> V<span class="opt">,</span> X <span class="opt">+</span> <span class="kwd">a</span><span class="opt">(</span>I<span class="opt">,</span> J<span class="opt">)*</span><span class="kwb">element</span><span class="opt">(</span>J<span class="opt">,</span> V<span class="opt">) ).</span>
+
+
+<span class="slc">% multiply vector v by matrix A transposed</span>
+<span class="kwd">atv</span><span class="opt">(</span>N<span class="opt">,</span> V<span class="opt">) -&gt;</span> <span class="kwd">pmap</span><span class="opt">(</span>N<span class="opt">,</span> <span class="kwa">fun</span><span class="opt">(</span>Begin<span class="opt">,</span> End<span class="opt">)-&gt;</span> <span class="kwd">atv</span><span class="opt">(</span>N<span class="opt">,</span> Begin<span class="opt">,</span> End<span class="opt">,</span> V<span class="opt">)</span> <span class="kwa">end</span><span class="opt">).</span>
+
+<span class="kwd">atv</span><span class="opt">(</span>N<span class="opt">,</span> Begin<span class="opt">,</span> End<span class="opt">,</span> V<span class="opt">) -&gt;</span> server <span class="opt">! {</span> <span class="kwb">self</span><span class="opt">(), [</span> <span class="kwd">atvloop</span><span class="opt">(</span>N<span class="opt">,</span> I<span class="opt">,</span> V<span class="opt">,</span> <span class="num">0.0</span><span class="opt">) ||</span> I <span class="opt">&lt;-</span> <span class="kwc">lists</span><span class="opt">:</span><span class="kwd">seq</span><span class="opt">(</span>Begin<span class="opt">,</span> End<span class="opt">) ]}.</span>
+
+<span class="kwd">atvloop</span><span class="opt">(</span><span class="num">0</span><span class="opt">,</span> _<span class="opt">,</span> _<span class="opt">,</span> X<span class="opt">) -&gt;</span> X<span class="opt">;</span>
+<span class="kwd">atvloop</span><span class="opt">(</span>J<span class="opt">,</span> I<span class="opt">,</span> V<span class="opt">,</span> X<span class="opt">) -&gt;</span> <span class="kwd">atvloop</span><span class="opt">(</span>J<span class="opt">-</span><span class="num">1</span><span class="opt">,</span> I<span class="opt">,</span> V<span class="opt">,</span> X <span class="opt">+</span> <span class="kwd">a</span><span class="opt">(</span>J<span class="opt">,</span> I<span class="opt">)*</span><span class="kwb">element</span><span class="opt">(</span>J<span class="opt">,</span> V<span class="opt">) ).</span>
+
+
+<span class="slc">% multiply vector v by matrix A and then by matrix A transposed</span>
+<span class="kwd">atav</span><span class="opt">(</span>N<span class="opt">,</span> V<span class="opt">) -&gt;</span> <span class="kwd">atv</span><span class="opt">(</span>N<span class="opt">,</span> <span class="kwd">av</span><span class="opt">(</span>N<span class="opt">,</span> V<span class="opt">)).</span>
+
+
+<span class="slc">%Helper function for multicore</span>
+<span class="kwd">pmap</span><span class="opt">(</span>N<span class="opt">,</span> F<span class="opt">) -&gt;</span>
+    Chunks <span class="opt">=</span> <span class="kwd">chunks</span><span class="opt">(</span><span class="num">0</span><span class="opt">,</span> <span class="kwc">erlang</span><span class="opt">:</span><span class="kwd">system_info</span><span class="opt">(</span>logical_processors<span class="opt">),</span> N<span class="opt">, []),</span>
+    Pids <span class="opt">= [</span><span class="kwb">spawn</span><span class="opt">(</span><span class="kwa">fun</span><span class="opt">()-&gt;</span> <span class="kwd">F</span><span class="opt">(</span>Begin<span class="opt">,</span> End<span class="opt">)</span> <span class="kwa">end</span><span class="opt">) || {</span>Begin<span class="opt">,</span> End<span class="opt">} &lt;-</span> Chunks<span class="opt">],</span>
+    Res <span class="opt">= [</span> <span class="kwa">receive</span> <span class="opt">{</span>Pid<span class="opt">,</span> X<span class="opt">} -&gt;</span> X <span class="kwa">end</span> <span class="opt">||</span> Pid <span class="opt">&lt;-</span> Pids<span class="opt">],</span>
+    <span class="kwb">list_to_tuple</span><span class="opt">(</span><span class="kwc">lists</span><span class="opt">:</span><span class="kwd">flatten</span><span class="opt">(</span>Res<span class="opt">)).</span>
+
+<span class="kwd">chunks</span><span class="opt">(</span>I<span class="opt">,</span> P<span class="opt">,</span> N<span class="opt">,</span> A<span class="opt">)</span> <span class="kwa">when</span> I <span class="opt">==</span> P<span class="opt">-</span><span class="num">1</span> <span class="opt">-&gt;</span> <span class="kwc">lists</span><span class="opt">:</span><span class="kwd">reverse</span><span class="opt">([{</span>I<span class="opt">*(</span>N div P<span class="opt">)+</span><span class="num">1</span><span class="opt">,</span> N<span class="opt">} |</span> A <span class="opt">]);</span>
+<span class="kwd">chunks</span><span class="opt">(</span>I<span class="opt">,</span> P<span class="opt">,</span> N<span class="opt">,</span> A<span class="opt">) -&gt;</span> <span class="kwd">chunks</span><span class="opt">(</span>I<span class="opt">+</span><span class="num">1</span><span class="opt">,</span> P<span class="opt">,</span> N<span class="opt">, [{</span> I<span class="opt">*(</span>N div P<span class="opt">)+</span><span class="num">1</span><span class="opt">, (</span>I<span class="opt">+</span><span class="num">1</span><span class="opt">)*(</span>N div P<span class="opt">)} |</span> A <span class="opt">]).</span>
+
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+Erlang/OTP 20 [erts-9.1] [source] [64-bit] [smp:4:4] [ds:4:4:10] [async-threads:10] [hipe] [kernel-poll:false]
+
+
+Wed, 08 Nov 2017 01:14:33 GMT
+
+MAKE:
+mv spectralnorm.hipe-2.hipe spectralnorm.erl
+/opt/src/otp_src_20.1/bin/erlc +native +&quot;{hipe, [o3]}&quot; spectralnorm.erl
+
+0.68s to complete and log all make actions
+
+COMMAND LINE:
+/opt/src/otp_src_20.1/bin/erl -smp enable -noshell -run  spectralnorm main 5500
+
+PROGRAM OUTPUT:
+1.274224153
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

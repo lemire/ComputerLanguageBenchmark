@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>meteor-contest C++ g++&nbsp;#2 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>meteor-contest C++ g++&nbsp;#2 program</h2>
+    <aside>
+      <p><a href="./meteor-description.html#meteor">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">// The Computer Language Benchmarks Game</span>
+<span class="slc">// http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">// contributed by Ben St. John</span>
+
+<span class="ppc">#include &lt;cstdio&gt;</span>
+<span class="ppc">#include &lt;cstdlib&gt;</span>
+<span class="ppc">#include &lt;iostream&gt;</span>
+<span class="ppc">#include &lt;vector&gt;</span>
+<span class="ppc">#include &lt;string&gt;</span>
+<span class="ppc">#include &lt;memory.h&gt;</span>
+
+<span class="kwa">using namespace</span> std<span class="opt">;</span>
+
+<span class="ppc">#define FREE(p) {free(p); p = NULL;}</span>
+
+<span class="kwb">enum</span> <span class="opt">{</span>X<span class="opt">,</span> Y<span class="opt">,</span> N_DIM<span class="opt">};</span>
+<span class="kwb">enum</span> <span class="opt">{</span>EVEN<span class="opt">,</span> ODD<span class="opt">,</span> N_PARITY<span class="opt">};</span>
+
+<span class="kwc">typedef</span> <span class="kwb">unsigned int</span> TUInt32<span class="opt">;</span>
+<span class="kwc">typedef</span> <span class="kwb">unsigned long long</span> TUInt64<span class="opt">;</span>
+<span class="kwc">typedef</span> <span class="kwb">signed char</span> TInt8<span class="opt">;</span>
+
+<span class="kwc">typedef</span> TUInt64 BitVec<span class="opt">;</span>
+
+<span class="kwa">namespace</span> Meteor
+<span class="opt">{</span>
+   <span class="kwb">static const int</span> N_COL <span class="opt">=</span> <span class="num">5</span><span class="opt">;</span>
+   <span class="kwb">static const int</span> N_ROW <span class="opt">=</span> <span class="num">10</span><span class="opt">;</span>
+   <span class="kwb">static const int</span> N_CELL <span class="opt">=</span> N_COL <span class="opt">*</span> N_ROW<span class="opt">;</span>
+
+   <span class="kwc">class</span> Piece<span class="opt">;</span>
+
+   <span class="slc">//------------------------------------</span>
+
+   <span class="kwc">class</span> Solution
+   <span class="opt">{</span>
+   <span class="kwc">public</span><span class="opt">:</span>
+      <span class="kwb">static const int</span> NO_PIECE <span class="opt">= -</span><span class="num">1</span><span class="opt">;</span>
+
+      <span class="kwb">void</span> <span class="kwd">addPiece</span><span class="opt">(</span><span class="kwb">const</span> BitVec <span class="opt">&amp;</span> vec<span class="opt">,</span> <span class="kwb">int</span> iPiece<span class="opt">);</span>
+      <span class="kwb">void</span> <span class="kwd">removeLastPiece</span><span class="opt">(</span><span class="kwb">void</span><span class="opt">);</span>
+      <span class="kwb">void</span> <span class="kwd">setCells</span><span class="opt">(</span><span class="kwb">void</span><span class="opt">);</span>
+      <span class="kwb">bool</span> <span class="kwd">lessThan</span><span class="opt">(</span>Solution <span class="opt">&amp;</span> r<span class="opt">);</span> <span class="slc">///&lt; I don&apos;t feel like operator overloading</span>
+      string <span class="kwd">toString</span><span class="opt">(</span><span class="kwb">void</span><span class="opt">)</span> <span class="kwb">const</span><span class="opt">;</span>
+      <span class="kwb">void</span> <span class="kwd">fill</span><span class="opt">(</span><span class="kwb">int</span> val<span class="opt">);</span>
+      <span class="kwb">bool</span> <span class="kwd">isEmpty</span><span class="opt">(</span><span class="kwb">void</span><span class="opt">) {</span><span class="kwa">return</span> <span class="opt">(</span>m_pieces<span class="opt">.</span><span class="kwd">size</span><span class="opt">() ==</span> <span class="num">0</span><span class="opt">);}</span>
+      <span class="kwb">void</span> <span class="kwd">spin</span><span class="opt">(</span>Solution <span class="opt">&amp;</span> spun<span class="opt">);</span>
+
+      <span class="kwd">Solution</span><span class="opt">(</span><span class="kwb">int</span> fillVal<span class="opt">);</span>
+      <span class="kwd">Solution</span><span class="opt">() {</span>m_synched <span class="opt">=</span> <span class="kwa">false</span><span class="opt">;}</span>
+
+   <span class="kwc">private</span><span class="opt">:</span>
+      <span class="kwb">struct</span> SPiece <span class="opt">{</span>
+         BitVec vec<span class="opt">;</span>
+         TUInt32 iPiece<span class="opt">;</span>
+      <span class="opt">};</span>
+      vector<span class="opt">&lt;</span>SPiece<span class="opt">&gt;</span> m_pieces<span class="opt">;</span>
+      TInt8 m_cells<span class="opt">[</span>N_ROW<span class="opt">][</span>N_COL<span class="opt">];</span>
+      <span class="kwb">bool</span> m_synched<span class="opt">;</span>
+   <span class="opt">};</span>
+
+   <span class="slc">//------------------------------------</span>
+
+   <span class="kwc">class</span> Board
+   <span class="opt">{</span>
+   <span class="kwc">public</span><span class="opt">:</span>
+      <span class="kwb">static const</span> BitVec L_EDGE_MASK <span class="opt">=</span>
+         <span class="opt">(</span><span class="num">1LL</span> <span class="opt">&lt;&lt;</span>  <span class="num">0</span><span class="opt">) | (</span><span class="num">1LL</span> <span class="opt">&lt;&lt;</span>  <span class="num">5</span><span class="opt">) | (</span><span class="num">1LL</span> <span class="opt">&lt;&lt;</span> <span class="num">10</span><span class="opt">) | (</span><span class="num">1LL</span> <span class="opt">&lt;&lt;</span> <span class="num">15</span><span class="opt">) |</span>
+         <span class="opt">(</span><span class="num">1LL</span> <span class="opt">&lt;&lt;</span> <span class="num">20</span><span class="opt">) | (</span><span class="num">1LL</span> <span class="opt">&lt;&lt;</span> <span class="num">25</span><span class="opt">) | (</span><span class="num">1LL</span> <span class="opt">&lt;&lt;</span> <span class="num">30</span><span class="opt">) | (</span><span class="num">1LL</span> <span class="opt">&lt;&lt;</span> <span class="num">35</span><span class="opt">) |</span>
+         <span class="opt">(</span><span class="num">1LL</span> <span class="opt">&lt;&lt;</span> <span class="num">40</span><span class="opt">) | (</span><span class="num">1LL</span> <span class="opt">&lt;&lt;</span> <span class="num">45</span><span class="opt">) | (</span><span class="num">1LL</span> <span class="opt">&lt;&lt;</span> <span class="num">50</span><span class="opt">) | (</span><span class="num">1LL</span> <span class="opt">&lt;&lt;</span> <span class="num">55</span><span class="opt">);</span>
+      <span class="kwb">static const</span> BitVec R_EDGE_MASK <span class="opt">=</span> L_EDGE_MASK <span class="opt">&lt;&lt;</span> <span class="num">4</span><span class="opt">;</span>
+      <span class="kwb">static const</span> BitVec TOP_ROW <span class="opt">=</span> <span class="num">0x1f</span>LL<span class="opt">;</span>
+      <span class="kwb">static const</span> BitVec ROW_0_MASK <span class="opt">=</span>
+         <span class="opt">(</span> TOP_ROW        <span class="opt">| (</span>TOP_ROW <span class="opt">&lt;&lt;</span> <span class="num">10</span><span class="opt">) | (</span>TOP_ROW <span class="opt">&lt;&lt;</span> <span class="num">20</span><span class="opt">) | (</span>TOP_ROW <span class="opt">&lt;&lt;</span> <span class="num">30</span><span class="opt">) |</span>
+         <span class="opt">(</span>TOP_ROW <span class="opt">&lt;&lt;</span> <span class="num">40</span><span class="opt">) | (</span>TOP_ROW <span class="opt">&lt;&lt;</span> <span class="num">50</span><span class="opt">));</span>
+      <span class="kwb">static const</span> BitVec ROW_1_MASK <span class="opt">=</span> ROW_0_MASK <span class="opt">&lt;&lt;</span> <span class="num">5</span><span class="opt">;</span>
+      <span class="kwb">static const</span> BitVec BOARD_MASK <span class="opt">= (</span><span class="num">1LL</span> <span class="opt">&lt;&lt;</span> N_CELL<span class="opt">) -</span> <span class="num">1</span><span class="opt">;</span>
+
+      <span class="kwd">Board</span><span class="opt">();</span>
+
+      <span class="kwb">static</span> TUInt32 <span class="kwd">getIndex</span><span class="opt">(</span>TUInt32 x<span class="opt">,</span> TUInt32 y<span class="opt">) {</span> <span class="kwa">return</span> y <span class="opt">*</span> N_COL <span class="opt">+</span> x<span class="opt">;    }</span>
+      <span class="kwb">static bool</span> <span class="kwd">hasBadFirstRegion</span><span class="opt">(</span>BitVec <span class="opt">&amp;</span> toFill<span class="opt">);</span>
+      <span class="kwb">static bool</span> <span class="kwd">hasBadIslands</span><span class="opt">(</span><span class="kwb">const</span> BitVec <span class="opt">&amp;</span> boardVec<span class="opt">);</span>
+
+      <span class="kwb">void</span> <span class="kwd">genAllSolutions</span><span class="opt">(</span>BitVec boardVec<span class="opt">,</span> TUInt32 placedPieces<span class="opt">,</span> TUInt32 iNextFill<span class="opt">,</span> <span class="kwb">const</span> BitVec <span class="opt">&amp;</span> maskNextFill<span class="opt">);</span>
+      <span class="kwb">void</span> <span class="kwd">recordSolution</span><span class="opt">(</span>Solution <span class="opt">&amp;</span> s<span class="opt">);</span>
+
+      Solution m_curSolution<span class="opt">;</span>
+      Solution m_minSolution<span class="opt">;</span>
+      Solution m_maxSolution<span class="opt">;</span>
+      TUInt32 m_nSolutionFound<span class="opt">;</span>
+   <span class="opt">};</span>
+
+   <span class="slc">//------------------------------------</span>
+
+   <span class="kwc">class</span> Piece
+   <span class="opt">{</span>
+   <span class="kwc">public</span><span class="opt">:</span>
+      <span class="kwb">struct</span> Instance <span class="opt">{</span>
+         BitVec m_vec<span class="opt">;</span>
+         BitVec m_allowed<span class="opt">;</span>
+         TUInt32 m_offset<span class="opt">;</span>
+         TUInt32 m_w<span class="opt">;</span>
+         TUInt32 m_h<span class="opt">;</span>
+      <span class="opt">};</span>
+
+      <span class="kwb">static const int</span> N_ELEM <span class="opt">=</span> <span class="num">5</span><span class="opt">;</span>
+      <span class="kwb">static const int</span> N_ORIENT <span class="opt">=</span> <span class="num">12</span><span class="opt">;</span>
+      <span class="kwb">static const int</span> N_TYPE <span class="opt">=</span> <span class="num">10</span><span class="opt">;</span>
+      <span class="kwb">static const int</span> ALL_PIECE_MASK <span class="opt">= (</span><span class="num">1</span> <span class="opt">&lt;&lt;</span> N_TYPE<span class="opt">) -</span> <span class="num">1</span><span class="opt">;</span>
+      <span class="kwb">static const</span> TUInt32 SKIP_PIECE <span class="opt">=</span> <span class="num">5</span><span class="opt">;</span> <span class="slc">// it&apos;s magic!</span>
+
+      <span class="kwc">typedef</span> <span class="kwb">int</span> TCoordList<span class="opt">[</span>N_ELEM<span class="opt">][</span>N_DIM<span class="opt">];</span>
+
+      <span class="kwb">static const</span> BitVec BaseDefinitions<span class="opt">[</span>N_TYPE<span class="opt">];</span>
+      <span class="kwb">static</span> Piece s_basePiece<span class="opt">[</span>N_TYPE<span class="opt">][</span>N_ORIENT<span class="opt">];</span>
+
+      <span class="kwb">static const</span> Instance <span class="opt">&amp;</span> <span class="kwd">getPiece</span><span class="opt">(</span>TUInt32 iPiece<span class="opt">,</span> TUInt32 iOrient<span class="opt">,</span> TUInt32 iParity<span class="opt">);</span>
+      <span class="kwb">static bool</span> <span class="kwd">checkBaseDefinitions</span><span class="opt">(</span><span class="kwb">void</span><span class="opt">);</span>
+      <span class="kwb">static</span> BitVec <span class="kwd">toBitVector</span><span class="opt">(</span><span class="kwb">const</span> TCoordList <span class="opt">&amp;</span> coords<span class="opt">);</span>
+      <span class="kwb">static void</span> <span class="kwd">genOrientation</span><span class="opt">(</span><span class="kwb">const</span> BitVec <span class="opt">&amp;</span> vec<span class="opt">,</span> TUInt32 iOrient<span class="opt">,</span> Piece <span class="opt">&amp;</span> target<span class="opt">);</span>
+      <span class="kwb">static void</span> <span class="kwd">setCoordList</span><span class="opt">(</span><span class="kwb">const</span> BitVec <span class="opt">&amp;</span> vec<span class="opt">,</span> TCoordList <span class="opt">&amp;</span> coords<span class="opt">);</span>
+      <span class="kwb">static void</span> <span class="kwd">shiftUpLines</span><span class="opt">(</span>TCoordList <span class="opt">&amp;</span> coords<span class="opt">,</span> <span class="kwb">int</span> shift<span class="opt">);</span>
+      <span class="kwb">static void</span> <span class="kwd">shiftToX0</span><span class="opt">(</span>TCoordList <span class="opt">&amp;</span> coords<span class="opt">,</span> Instance <span class="opt">&amp;</span> instance<span class="opt">,</span> <span class="kwb">int</span> offsetRow<span class="opt">);</span>
+      <span class="kwb">static void</span> <span class="kwd">setAllowedPositions</span><span class="opt">(</span>Instance <span class="opt">&amp;</span> p<span class="opt">);</span>
+      <span class="kwb">static void</span> <span class="kwd">genAllOrientations</span><span class="opt">(</span><span class="kwb">void</span><span class="opt">);</span>
+
+      Instance m_instance<span class="opt">[</span>N_PARITY<span class="opt">];</span>
+   <span class="opt">};</span>
+
+   <span class="slc">//------------------------------------</span>
+   <span class="kwc">Solution</span><span class="opt">::</span><span class="kwd">Solution</span><span class="opt">(</span><span class="kwb">int</span> fillVal<span class="opt">)</span>
+   <span class="opt">{</span>
+      <span class="kwd">fill</span><span class="opt">(</span>fillVal<span class="opt">);</span>
+      m_pieces<span class="opt">.</span><span class="kwd">reserve</span><span class="opt">(</span><span class="kwc">Piece</span><span class="opt">::</span>N_TYPE<span class="opt">);</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">void</span> <span class="kwc">Solution</span><span class="opt">::</span><span class="kwd">fill</span><span class="opt">(</span><span class="kwb">int</span> val<span class="opt">)</span>
+   <span class="opt">{</span>
+      m_synched <span class="opt">=</span> <span class="kwa">false</span><span class="opt">;</span>
+      <span class="kwd">memset</span><span class="opt">(&amp;</span>m_cells<span class="opt">[</span><span class="num">0</span><span class="opt">][</span><span class="num">0</span><span class="opt">],</span> val<span class="opt">,</span> N_CELL<span class="opt">);</span>
+   <span class="opt">}</span>
+
+   string <span class="kwc">Solution</span><span class="opt">::</span><span class="kwd">toString</span><span class="opt">(</span><span class="kwb">void</span><span class="opt">)</span> <span class="kwb">const</span>
+   <span class="opt">{</span>
+      string result<span class="opt">;</span>
+      result<span class="opt">.</span><span class="kwd">reserve</span><span class="opt">(</span>N_CELL <span class="opt">*</span> <span class="num">2</span><span class="opt">);</span>
+
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> y <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> y <span class="opt">&lt;</span> N_ROW<span class="opt">;</span> y<span class="opt">++) {</span>
+         <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> x <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> x <span class="opt">&lt;</span> N_COL<span class="opt">;</span> x<span class="opt">++) {</span>
+            <span class="kwb">int</span> val <span class="opt">=</span> m_cells<span class="opt">[</span>y<span class="opt">][</span>x<span class="opt">];</span>
+            result <span class="opt">+= ((</span>val <span class="opt">==</span> NO_PIECE<span class="opt">) ?</span> <span class="str">&apos;.&apos;</span> <span class="opt">:</span> <span class="kwb">char</span><span class="opt">(</span><span class="str">&apos;0&apos;</span> <span class="opt">+</span> val<span class="opt">));</span>
+            result <span class="opt">+=</span> <span class="str">&apos; &apos;</span><span class="opt">;</span>
+         <span class="opt">}</span>
+         result <span class="opt">+=</span> <span class="str">&apos;</span><span class="esc">\n</span><span class="str">&apos;</span><span class="opt">;</span>
+
+         <span class="slc">// indent every second line</span>
+         <span class="kwa">if</span> <span class="opt">(</span>y <span class="opt">%</span> <span class="num">2</span> <span class="opt">==</span> <span class="num">0</span><span class="opt">)</span>
+            result <span class="opt">+=</span> <span class="str">&quot; &quot;</span><span class="opt">;</span>
+      <span class="opt">}</span>
+
+      <span class="kwa">return</span> result<span class="opt">;</span> <span class="slc">// copies result. Oh well</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">void</span> <span class="kwc">Solution</span><span class="opt">::</span><span class="kwd">setCells</span><span class="opt">(</span><span class="kwb">void</span><span class="opt">)</span>
+   <span class="opt">{</span>
+      <span class="kwa">if</span> <span class="opt">(</span>m_synched<span class="opt">)</span>
+         <span class="kwa">return</span><span class="opt">;</span>
+
+      <span class="kwd">fill</span><span class="opt">(</span>NO_PIECE<span class="opt">);</span>
+
+      <span class="slc">// could be more efficient</span>
+      <span class="kwa">for</span> <span class="opt">(</span>TUInt32 iPiece <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> iPiece <span class="opt">&lt;</span> m_pieces<span class="opt">.</span><span class="kwd">size</span><span class="opt">();</span> iPiece<span class="opt">++) {</span>
+
+         <span class="kwb">const</span> BitVec <span class="opt">&amp;</span> vec <span class="opt">=</span> m_pieces<span class="opt">[</span>iPiece<span class="opt">].</span>vec<span class="opt">;</span>
+         <span class="kwb">int</span> pID <span class="opt">=</span> m_pieces<span class="opt">[</span>iPiece<span class="opt">].</span>iPiece<span class="opt">;</span>
+         BitVec mask <span class="opt">=</span> <span class="num">1LL</span><span class="opt">;</span>
+         <span class="kwb">int</span> nNewCells <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+
+         <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> y <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> y <span class="opt">&lt;</span> N_ROW<span class="opt">;</span> y<span class="opt">++) {</span>
+            <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> x <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> x <span class="opt">&lt;</span> N_COL<span class="opt">;</span> x<span class="opt">++) {</span>
+               <span class="kwa">if</span> <span class="opt">(</span>mask <span class="opt">&amp;</span> vec<span class="opt">) {</span>
+                  m_cells<span class="opt">[</span>y<span class="opt">][</span>x<span class="opt">] = (</span>TInt8<span class="opt">)</span>pID<span class="opt">;</span>
+
+                  nNewCells<span class="opt">++;</span>
+               <span class="opt">}</span>
+               mask <span class="opt">&lt;&lt;=</span> <span class="num">1</span><span class="opt">;</span>
+            <span class="opt">}</span>
+            <span class="kwa">if</span> <span class="opt">(</span>nNewCells <span class="opt">==</span> <span class="kwc">Piece</span><span class="opt">::</span>N_ELEM<span class="opt">)</span>
+               <span class="kwa">break</span><span class="opt">;</span>
+         <span class="opt">}</span>
+      <span class="opt">}</span>
+
+      m_synched <span class="opt">=</span> <span class="kwa">true</span><span class="opt">;</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">void</span> <span class="kwc">Solution</span><span class="opt">::</span><span class="kwd">addPiece</span><span class="opt">(</span><span class="kwb">const</span> BitVec <span class="opt">&amp;</span> vec<span class="opt">,</span> <span class="kwb">int</span> iPiece<span class="opt">) {</span>
+      SPiece p <span class="opt">= {</span>vec<span class="opt">,</span> iPiece<span class="opt">};</span>
+      m_pieces<span class="opt">.</span><span class="kwd">push_back</span><span class="opt">(</span>p<span class="opt">);</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">void</span> <span class="kwc">Solution</span><span class="opt">::</span><span class="kwd">removeLastPiece</span><span class="opt">(</span><span class="kwb">void</span><span class="opt">) {</span>
+      m_pieces<span class="opt">.</span><span class="kwd">pop_back</span><span class="opt">();</span>
+      m_synched <span class="opt">=</span> <span class="kwa">false</span><span class="opt">;</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">bool</span> <span class="kwc">Solution</span><span class="opt">::</span><span class="kwd">lessThan</span><span class="opt">(</span>Solution <span class="opt">&amp;</span> r<span class="opt">)</span>
+   <span class="opt">{</span>
+      <span class="kwa">if</span> <span class="opt">(</span>m_pieces<span class="opt">[</span><span class="num">0</span><span class="opt">].</span>iPiece <span class="opt">!=</span> r<span class="opt">.</span>m_pieces<span class="opt">[</span><span class="num">0</span><span class="opt">].</span>iPiece<span class="opt">) {</span>
+         <span class="kwa">return</span> m_pieces<span class="opt">[</span><span class="num">0</span><span class="opt">].</span>iPiece <span class="opt">&lt;</span> r<span class="opt">.</span>m_pieces<span class="opt">[</span><span class="num">0</span><span class="opt">].</span>iPiece<span class="opt">;</span>
+      <span class="opt">}</span>
+
+      <span class="kwd">setCells</span><span class="opt">();</span>
+      r<span class="opt">.</span><span class="kwd">setCells</span><span class="opt">();</span>
+
+      <span class="kwb">int</span> y<span class="opt">;</span>
+      <span class="kwa">for</span> <span class="opt">(</span>y <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> y <span class="opt">&lt;</span> N_ROW<span class="opt">;</span> y<span class="opt">++) {</span>
+         <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> x <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> x <span class="opt">&lt;</span> N_COL<span class="opt">;</span> x<span class="opt">++) {</span>
+            <span class="kwb">int</span> lval <span class="opt">=</span> m_cells<span class="opt">[</span>y<span class="opt">][</span>x<span class="opt">];</span>
+            <span class="kwb">int</span> rval <span class="opt">=</span> r<span class="opt">.</span>m_cells<span class="opt">[</span>y<span class="opt">][</span>x<span class="opt">];</span>
+
+            <span class="kwa">if</span> <span class="opt">(</span>lval <span class="opt">!=</span> rval<span class="opt">)</span>
+               <span class="kwa">return</span> <span class="opt">(</span>lval <span class="opt">&lt;</span> rval<span class="opt">);</span>
+         <span class="opt">}</span>
+      <span class="opt">}</span>
+
+      <span class="kwa">return false</span><span class="opt">;</span> <span class="slc">// solutions are equal</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">void</span> <span class="kwc">Solution</span><span class="opt">::</span><span class="kwd">spin</span><span class="opt">(</span>Solution <span class="opt">&amp;</span> spun<span class="opt">)</span>
+   <span class="opt">{</span>
+      <span class="kwd">setCells</span><span class="opt">();</span>
+
+      <span class="slc">// swap cells</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> y <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> y <span class="opt">&lt;</span> N_ROW<span class="opt">;</span> y<span class="opt">++) {</span>
+         <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> x <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> x <span class="opt">&lt;</span> N_COL<span class="opt">;</span> x<span class="opt">++) {</span>
+            TInt8 flipped <span class="opt">=</span> m_cells<span class="opt">[</span>N_ROW <span class="opt">-</span> y <span class="opt">-</span> <span class="num">1</span><span class="opt">][</span>N_COL <span class="opt">-</span> x <span class="opt">-</span> <span class="num">1</span><span class="opt">];</span>
+            spun<span class="opt">.</span>m_cells<span class="opt">[</span>y<span class="opt">][</span>x<span class="opt">] =</span> flipped<span class="opt">;</span>
+         <span class="opt">}</span>
+      <span class="opt">}</span>
+
+      <span class="slc">// swap first and last pieces (the rest aren&apos;t used)</span>
+      spun<span class="opt">.</span>m_pieces<span class="opt">.</span><span class="kwd">push_back</span><span class="opt">(</span>m_pieces<span class="opt">[</span><span class="kwc">Piece</span><span class="opt">::</span>N_TYPE <span class="opt">-</span> <span class="num">1</span><span class="opt">]);</span>
+      spun<span class="opt">.</span>m_synched <span class="opt">=</span> <span class="kwa">true</span><span class="opt">;</span>
+   <span class="opt">}</span>
+
+   <span class="slc">//------------------------------------</span>
+
+   Piece <span class="kwc">Piece</span><span class="opt">::</span>s_basePiece<span class="opt">[</span>N_TYPE<span class="opt">][</span>N_ORIENT<span class="opt">];</span>
+
+   <span class="kwb">const</span> BitVec <span class="kwc">Piece</span><span class="opt">::</span>BaseDefinitions<span class="opt">[] = {</span>
+      <span class="num">0x010f</span><span class="opt">,</span>   <span class="num">0x00cb</span><span class="opt">,</span> <span class="num">0x1087</span><span class="opt">,</span> <span class="num">0x0427</span><span class="opt">,</span> <span class="num">0x0465</span><span class="opt">,</span>
+      <span class="num">0x00c7</span><span class="opt">,</span> <span class="num">0x08423</span><span class="opt">,</span> <span class="num">0x00a7</span><span class="opt">,</span> <span class="num">0x0187</span><span class="opt">,</span> <span class="num">0x008f</span>
+   <span class="opt">};</span>
+
+   <span class="kwb">int</span> <span class="kwd">floor</span><span class="opt">(</span><span class="kwb">int</span> top<span class="opt">,</span> <span class="kwb">int</span> bot<span class="opt">) {</span>
+      <span class="kwb">int</span> toZero <span class="opt">=</span> top <span class="opt">/</span> bot<span class="opt">;</span>
+      <span class="slc">// negative numbers should be rounded down, not towards zero</span>
+      <span class="kwa">if</span> <span class="opt">((</span>toZero <span class="opt">*</span> bot <span class="opt">!=</span> top<span class="opt">) &amp;&amp; ((</span>top <span class="opt">&lt;</span> <span class="num">0</span><span class="opt">) != (</span>bot <span class="opt">&lt;=</span> <span class="num">0</span><span class="opt">)))</span>
+         toZero<span class="opt">--;</span>
+
+      <span class="kwa">return</span> toZero<span class="opt">;</span>
+   <span class="opt">}</span>
+
+   TUInt32 <span class="kwd">getFirstOne</span><span class="opt">(</span><span class="kwb">const</span> BitVec <span class="opt">&amp;</span> v<span class="opt">,</span> TUInt32 startPos <span class="opt">=</span> <span class="num">0</span><span class="opt">) {</span>
+      <span class="kwa">if</span> <span class="opt">(</span>v <span class="opt">== (</span>BitVec<span class="opt">)</span><span class="num">0</span><span class="opt">)</span>
+         <span class="kwa">return</span> <span class="num">0</span><span class="opt">;</span>
+
+      <span class="kwb">static const</span> TUInt32 firstOne<span class="opt">[</span><span class="num">16</span><span class="opt">] =   {</span>
+         <span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">1</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span>
+         <span class="num">2</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">1</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span>
+         <span class="num">3</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">1</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span>
+         <span class="num">2</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">1</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span>
+      <span class="opt">};</span>
+
+      TUInt32 iPos <span class="opt">=</span> startPos<span class="opt">;</span>
+      BitVec mask <span class="opt">=</span> <span class="num">0xff</span>LL <span class="opt">&lt;&lt;</span> startPos<span class="opt">;</span>
+      <span class="kwa">while</span> <span class="opt">((</span>mask <span class="opt">&amp;</span> v<span class="opt">) ==</span> <span class="num">0</span><span class="opt">) {</span>
+         mask <span class="opt">&lt;&lt;=</span> <span class="num">8</span><span class="opt">;</span>
+         iPos <span class="opt">+=</span> <span class="num">8</span><span class="opt">;</span>
+      <span class="opt">}</span>
+      TUInt32 result <span class="opt">=</span> <span class="kwd">TUInt32</span><span class="opt">((</span>mask <span class="opt">&amp;</span> v<span class="opt">) &gt;&gt;</span> iPos<span class="opt">);</span>
+      TUInt32 resultLow <span class="opt">=</span> result <span class="opt">&amp;</span> <span class="num">0x0f</span><span class="opt">;</span>
+      <span class="kwa">if</span> <span class="opt">(</span>resultLow <span class="opt">!=</span> <span class="num">0</span><span class="opt">)</span>
+         iPos <span class="opt">+=</span> firstOne<span class="opt">[</span>resultLow<span class="opt">];</span>
+      <span class="kwa">else</span>
+         iPos <span class="opt">+=</span> <span class="num">4</span> <span class="opt">+</span> firstOne<span class="opt">[</span>result <span class="opt">&gt;&gt;</span> <span class="num">4</span><span class="opt">];</span>
+
+      <span class="kwa">return</span> iPos<span class="opt">;</span>
+   <span class="opt">}</span>
+
+   TUInt32 <span class="kwd">countOnes</span><span class="opt">(</span>BitVec v<span class="opt">) {</span>
+      TUInt32 n <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+      <span class="kwa">while</span> <span class="opt">(</span>v<span class="opt">) {</span>
+         n<span class="opt">++;</span>
+         v <span class="opt">=</span> v <span class="opt">&amp; (</span>v <span class="opt">-</span> <span class="num">1</span><span class="opt">);</span>
+      <span class="opt">}</span>
+
+      <span class="kwa">return</span> n<span class="opt">;</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">void</span> <span class="kwc">Piece</span><span class="opt">::</span><span class="kwd">genAllOrientations</span><span class="opt">(</span><span class="kwb">void</span><span class="opt">) {</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> iPiece <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> iPiece <span class="opt">&lt;</span> N_TYPE<span class="opt">;</span> iPiece<span class="opt">++) {</span>
+         <span class="kwb">const</span> BitVec <span class="opt">&amp;</span> refPiece <span class="opt">=</span> BaseDefinitions<span class="opt">[</span>iPiece<span class="opt">];</span>
+         <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> iOrient <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> iOrient <span class="opt">&lt;</span> N_ORIENT<span class="opt">;</span> iOrient<span class="opt">++)</span>
+            <span class="kwd">genOrientation</span><span class="opt">(</span>refPiece<span class="opt">,</span> iOrient<span class="opt">,</span> s_basePiece<span class="opt">[</span>iPiece<span class="opt">][</span>iOrient<span class="opt">]);</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">void</span> <span class="kwc">Piece</span><span class="opt">::</span><span class="kwd">setCoordList</span><span class="opt">(</span><span class="kwb">const</span> BitVec <span class="opt">&amp;</span> vec<span class="opt">,</span> TCoordList <span class="opt">&amp;</span> coords<span class="opt">) {</span>
+      <span class="kwb">int</span> iCoord <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+      BitVec mask <span class="opt">=</span> <span class="num">1LL</span><span class="opt">;</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> y <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> y <span class="opt">&lt;</span> N_ROW<span class="opt">;</span> y<span class="opt">++) {</span>
+         <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> x <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> x <span class="opt">&lt;</span> N_COL<span class="opt">;</span> x<span class="opt">++) {</span>
+            <span class="kwa">if</span> <span class="opt">(</span>mask <span class="opt">&amp;</span> vec<span class="opt">) {</span>
+               coords<span class="opt">[</span>iCoord<span class="opt">][</span>X<span class="opt">] =</span> x<span class="opt">;</span>
+               coords<span class="opt">[</span>iCoord<span class="opt">][</span>Y<span class="opt">] =</span> y<span class="opt">;</span>
+
+               iCoord<span class="opt">++;</span>
+            <span class="opt">}</span>
+            mask <span class="opt">&lt;&lt;=</span> <span class="num">1</span><span class="opt">;</span>
+         <span class="opt">}</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+
+   BitVec <span class="kwc">Piece</span><span class="opt">::</span><span class="kwd">toBitVector</span><span class="opt">(</span><span class="kwb">const</span> TCoordList <span class="opt">&amp;</span> coords<span class="opt">)</span>
+   <span class="opt">{</span>
+      <span class="kwb">int</span> y<span class="opt">,</span> x<span class="opt">;</span>
+      BitVec result <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> iCoord <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> iCoord <span class="opt">&lt;</span> N_ELEM<span class="opt">;</span> iCoord<span class="opt">++) {</span>
+         x <span class="opt">=</span> coords<span class="opt">[</span>iCoord<span class="opt">][</span>X<span class="opt">];</span>
+         y <span class="opt">=</span> coords<span class="opt">[</span>iCoord<span class="opt">][</span>Y<span class="opt">];</span>
+
+         <span class="kwb">int</span> pos <span class="opt">=</span> <span class="kwc">Board</span><span class="opt">::</span><span class="kwd">getIndex</span><span class="opt">(</span>x<span class="opt">,</span> y<span class="opt">);</span>
+         result <span class="opt">|= (</span><span class="num">1LL</span> <span class="opt">&lt;&lt;</span> pos<span class="opt">);</span> <span class="slc">// to generate a 64 bit representation of 1</span>
+      <span class="opt">}</span>
+
+      <span class="kwa">return</span> result<span class="opt">;</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">void</span> <span class="kwc">Piece</span><span class="opt">::</span><span class="kwd">shiftUpLines</span><span class="opt">(</span>TCoordList <span class="opt">&amp;</span> coords<span class="opt">,</span> <span class="kwb">int</span> shift<span class="opt">)</span>
+   <span class="opt">{</span>
+      <span class="slc">// apply shifts are not so simple in the vertical direction</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> iCoord <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> iCoord <span class="opt">&lt;</span> N_ELEM<span class="opt">;</span> iCoord<span class="opt">++) {</span>
+         <span class="kwb">int</span> <span class="opt">&amp;</span> rx <span class="opt">=</span> coords<span class="opt">[</span>iCoord<span class="opt">][</span>X<span class="opt">];</span>
+         <span class="kwb">int</span> <span class="opt">&amp;</span> ry <span class="opt">=</span> coords<span class="opt">[</span>iCoord<span class="opt">][</span>Y<span class="opt">];</span>
+
+         <span class="kwa">if</span> <span class="opt">(</span>ry <span class="opt">&amp;</span> shift <span class="opt">&amp;</span> <span class="num">0x1</span><span class="opt">)</span>
+            rx<span class="opt">++;</span>
+         ry <span class="opt">-=</span> shift<span class="opt">;</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">void</span> <span class="kwc">Piece</span><span class="opt">::</span><span class="kwd">shiftToX0</span><span class="opt">(</span>TCoordList <span class="opt">&amp;</span> coords<span class="opt">,</span> <span class="kwc">Piece</span><span class="opt">::</span>Instance <span class="opt">&amp;</span> instance<span class="opt">,</span> <span class="kwb">int</span> offsetRow<span class="opt">)</span>
+   <span class="opt">{</span>
+      <span class="slc">// .. determine shift</span>
+      <span class="kwb">int</span> x<span class="opt">,</span> y<span class="opt">;</span>
+      <span class="kwb">int</span> xMin <span class="opt">=</span> coords<span class="opt">[</span><span class="num">0</span><span class="opt">][</span>X<span class="opt">];</span>
+      <span class="kwb">int</span> xMax <span class="opt">=</span> xMin<span class="opt">;</span>
+      <span class="kwb">int</span> iCoord<span class="opt">;</span>
+      <span class="kwa">for</span> <span class="opt">(</span>iCoord <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span> iCoord <span class="opt">&lt;</span> N_ELEM<span class="opt">;</span> iCoord<span class="opt">++) {</span>
+         x <span class="opt">=</span> coords<span class="opt">[</span>iCoord<span class="opt">][</span>X<span class="opt">];</span>
+         y <span class="opt">=</span> coords<span class="opt">[</span>iCoord<span class="opt">][</span>Y<span class="opt">];</span>
+
+         <span class="kwa">if</span> <span class="opt">(</span>x <span class="opt">&lt;</span> xMin<span class="opt">)</span>
+            xMin <span class="opt">=</span> x<span class="opt">;</span>
+         <span class="kwa">else if</span> <span class="opt">(</span>x <span class="opt">&gt;</span> xMax<span class="opt">)</span>
+            xMax <span class="opt">=</span> x<span class="opt">;</span>
+      <span class="opt">}</span>
+
+      <span class="slc">// I&apos;m dying for a &apos;foreach&apos; here</span>
+      <span class="kwb">int</span> offset <span class="opt">=</span> N_ELEM<span class="opt">;</span>
+
+      <span class="kwa">for</span> <span class="opt">(</span>iCoord <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> iCoord <span class="opt">&lt;</span> N_ELEM<span class="opt">;</span> iCoord<span class="opt">++) {</span>
+         <span class="kwb">int</span> <span class="opt">&amp;</span> rx <span class="opt">=</span> coords<span class="opt">[</span>iCoord<span class="opt">][</span>X<span class="opt">];</span>
+         <span class="kwb">int</span> <span class="opt">&amp;</span> ry <span class="opt">=</span> coords<span class="opt">[</span>iCoord<span class="opt">][</span>Y<span class="opt">];</span>
+
+         rx <span class="opt">-=</span> xMin<span class="opt">;</span>
+
+         <span class="slc">// check offset -- leftmost cell on top line</span>
+         <span class="kwa">if</span> <span class="opt">((</span>ry <span class="opt">==</span> offsetRow<span class="opt">) &amp;&amp; (</span>rx <span class="opt">&lt;</span> offset<span class="opt">))</span>
+            offset <span class="opt">=</span> rx<span class="opt">;</span>
+      <span class="opt">}</span>
+
+      instance<span class="opt">.</span>m_w <span class="opt">=</span> xMax <span class="opt">-</span> xMin<span class="opt">;</span>
+      instance<span class="opt">.</span>m_offset <span class="opt">=</span> offset<span class="opt">;</span>
+      instance<span class="opt">.</span>m_vec <span class="opt">=</span> <span class="kwd">toBitVector</span><span class="opt">(</span>coords<span class="opt">);</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">void</span> <span class="kwc">Piece</span><span class="opt">::</span><span class="kwd">setAllowedPositions</span><span class="opt">(</span><span class="kwc">Piece</span><span class="opt">::</span>Instance <span class="opt">&amp;</span> p<span class="opt">)</span>
+   <span class="opt">{</span>
+      BitVec <span class="opt">&amp;</span> allowed <span class="opt">=</span> p<span class="opt">.</span>m_allowed <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+      BitVec posMask <span class="opt">=</span> <span class="num">1LL</span><span class="opt">;</span>
+      TUInt32 iPos <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> y <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> y <span class="opt">&lt;</span> N_ROW<span class="opt">;</span> y<span class="opt">++) {</span>
+         <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> x <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> x <span class="opt">&lt;</span> N_COL<span class="opt">;</span> x<span class="opt">++,</span> iPos<span class="opt">++,</span> posMask <span class="opt">&lt;&lt;=</span> <span class="num">1</span><span class="opt">){</span>
+            <span class="slc">// check if the new position is on the board</span>
+            <span class="kwb">int</span> xPos <span class="opt">=</span> x <span class="opt">-</span> p<span class="opt">.</span>m_offset<span class="opt">;</span>
+            <span class="kwa">if</span> <span class="opt">((</span>xPos <span class="opt">&lt;</span> <span class="num">0</span><span class="opt">) || (</span>y <span class="opt">+</span> p<span class="opt">.</span>m_h <span class="opt">&gt;=</span> N_ROW<span class="opt">) || (</span>xPos <span class="opt">+</span> p<span class="opt">.</span>m_w <span class="opt">&gt;=</span> N_COL<span class="opt">))</span>
+               <span class="kwa">continue</span><span class="opt">;</span>
+
+            <span class="slc">// move it to the desired location</span>
+            BitVec pieceVec <span class="opt">=</span> p<span class="opt">.</span>m_vec <span class="opt">&lt;&lt; (</span>iPos <span class="opt">-</span> p<span class="opt">.</span>m_offset<span class="opt">);</span>
+
+            <span class="kwa">if</span> <span class="opt">(</span><span class="kwc">Board</span><span class="opt">::</span><span class="kwd">hasBadIslands</span><span class="opt">(</span>pieceVec<span class="opt">))</span>
+               <span class="kwa">continue</span><span class="opt">;</span>
+
+            <span class="slc">// position is allowed</span>
+            allowed <span class="opt">|=</span> posMask<span class="opt">;</span>
+         <span class="opt">}</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">void</span> <span class="kwc">Piece</span><span class="opt">::</span><span class="kwd">genOrientation</span><span class="opt">(</span><span class="kwb">const</span> BitVec <span class="opt">&amp;</span> vec<span class="opt">,</span> TUInt32 iOrient<span class="opt">,</span> Piece <span class="opt">&amp;</span> target<span class="opt">)</span>
+   <span class="opt">{</span>
+      <span class="slc">// get (x,y) coordinates</span>
+      TCoordList coords<span class="opt">;</span>
+      <span class="kwd">setCoordList</span><span class="opt">(</span>vec<span class="opt">,</span> coords<span class="opt">);</span>
+
+      <span class="kwb">int</span> y<span class="opt">,</span> x<span class="opt">;</span>
+      <span class="kwb">int</span> iCoord <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+      <span class="kwb">int</span> rot <span class="opt">=</span> iOrient <span class="opt">%</span> <span class="num">6</span><span class="opt">;</span>
+      <span class="kwb">int</span> flip <span class="opt">=</span> iOrient <span class="opt">&gt;=</span> <span class="num">6</span><span class="opt">;</span>
+      <span class="kwa">if</span> <span class="opt">(</span>flip<span class="opt">) {</span>
+         <span class="kwa">for</span> <span class="opt">(</span>iCoord <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> iCoord <span class="opt">&lt;</span> N_ELEM<span class="opt">;</span> iCoord<span class="opt">++)</span>
+            coords<span class="opt">[</span>iCoord<span class="opt">][</span>Y<span class="opt">] = -</span>coords<span class="opt">[</span>iCoord<span class="opt">][</span>Y<span class="opt">];</span>
+      <span class="opt">}</span>
+
+      <span class="slc">// rotate (if necessary)</span>
+      <span class="kwa">while</span> <span class="opt">(</span>rot<span class="opt">--) {</span>
+         <span class="kwa">for</span> <span class="opt">(</span>iCoord <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> iCoord <span class="opt">&lt;</span> N_ELEM<span class="opt">;</span> iCoord<span class="opt">++) {</span>
+            x <span class="opt">=</span> coords<span class="opt">[</span>iCoord<span class="opt">][</span>X<span class="opt">];</span>
+            y <span class="opt">=</span> coords<span class="opt">[</span>iCoord<span class="opt">][</span>Y<span class="opt">];</span>
+
+            <span class="slc">// I just worked this out by hand. Took a while.</span>
+            <span class="kwb">int</span> xNew <span class="opt">=</span> <span class="kwd">floor</span><span class="opt">((</span><span class="num">2</span> <span class="opt">*</span> x <span class="opt">-</span> <span class="num">3</span> <span class="opt">*</span> y <span class="opt">+</span> <span class="num">1</span><span class="opt">),</span> <span class="num">4</span><span class="opt">);</span>
+            <span class="kwb">int</span> yNew <span class="opt">=</span> <span class="kwd">floor</span><span class="opt">((</span><span class="num">2</span> <span class="opt">*</span> x <span class="opt">+</span> y <span class="opt">+</span> <span class="num">1</span><span class="opt">),</span> <span class="num">2</span><span class="opt">);</span>
+            coords<span class="opt">[</span>iCoord<span class="opt">][</span>X<span class="opt">] =</span> xNew<span class="opt">;</span>
+            coords<span class="opt">[</span>iCoord<span class="opt">][</span>Y<span class="opt">] =</span> yNew<span class="opt">;</span>
+         <span class="opt">}</span>
+      <span class="opt">}</span>
+
+      <span class="slc">// shift vertically</span>
+      <span class="slc">// .. determine shift</span>
+      <span class="kwb">int</span> yMin <span class="opt">=</span> coords<span class="opt">[</span><span class="num">0</span><span class="opt">][</span>Y<span class="opt">];</span>
+      <span class="kwb">int</span> yMax <span class="opt">=</span> yMin<span class="opt">;</span>
+      <span class="kwa">for</span> <span class="opt">(</span>iCoord <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span> iCoord <span class="opt">&lt;</span> N_ELEM<span class="opt">;</span> iCoord<span class="opt">++) {</span>
+         y <span class="opt">=</span> coords<span class="opt">[</span>iCoord<span class="opt">][</span>Y<span class="opt">];</span>
+
+         <span class="kwa">if</span> <span class="opt">(</span>y <span class="opt">&lt;</span> yMin<span class="opt">)</span>
+            yMin <span class="opt">=</span> y<span class="opt">;</span>
+         <span class="kwa">else if</span> <span class="opt">(</span>y <span class="opt">&gt;</span> yMax<span class="opt">)</span>
+            yMax <span class="opt">=</span> y<span class="opt">;</span>
+      <span class="opt">}</span>
+      TUInt32 h <span class="opt">=</span> yMax <span class="opt">-</span> yMin<span class="opt">;</span>
+      target<span class="opt">.</span>m_instance<span class="opt">[</span>EVEN<span class="opt">].</span>m_h <span class="opt">=</span> h<span class="opt">;</span>
+      target<span class="opt">.</span>m_instance<span class="opt">[</span>ODD<span class="opt">].</span>m_h <span class="opt">=</span> h<span class="opt">;</span>
+
+      <span class="kwd">shiftUpLines</span><span class="opt">(</span>coords<span class="opt">,</span> yMin<span class="opt">);</span>
+      <span class="kwd">shiftToX0</span><span class="opt">(</span>coords<span class="opt">,</span> target<span class="opt">.</span>m_instance<span class="opt">[</span>EVEN<span class="opt">],</span> <span class="num">0</span><span class="opt">);</span>
+      <span class="kwd">setAllowedPositions</span><span class="opt">(</span>target<span class="opt">.</span>m_instance<span class="opt">[</span>EVEN<span class="opt">]);</span>
+
+      <span class="slc">// shift down one line</span>
+      <span class="kwd">shiftUpLines</span><span class="opt">(</span>coords<span class="opt">, -</span><span class="num">1</span><span class="opt">);</span>
+      <span class="kwd">shiftToX0</span><span class="opt">(</span>coords<span class="opt">,</span> target<span class="opt">.</span>m_instance<span class="opt">[</span>ODD<span class="opt">],</span> <span class="num">1</span><span class="opt">);</span>
+      <span class="slc">// shift the bitmask back one line</span>
+      target<span class="opt">.</span>m_instance<span class="opt">[</span>ODD<span class="opt">].</span>m_vec <span class="opt">&gt;&gt;=</span> N_COL<span class="opt">;</span>
+      <span class="kwd">setAllowedPositions</span><span class="opt">(</span>target<span class="opt">.</span>m_instance<span class="opt">[</span>ODD<span class="opt">]);</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">const</span> <span class="kwc">Piece</span><span class="opt">::</span>Instance <span class="opt">&amp;</span> <span class="kwc">Piece</span><span class="opt">::</span><span class="kwd">getPiece</span><span class="opt">(</span>TUInt32 iPiece<span class="opt">,</span> TUInt32 iOrient<span class="opt">,</span> TUInt32 iParity<span class="opt">) {</span>
+      <span class="kwa">return</span> s_basePiece<span class="opt">[</span>iPiece<span class="opt">][</span>iOrient<span class="opt">].</span>m_instance<span class="opt">[</span>iParity<span class="opt">];</span>
+   <span class="opt">}</span>
+
+   <span class="slc">// ------------------------------------</span>
+
+   <span class="kwc">Board</span><span class="opt">::</span><span class="kwd">Board</span><span class="opt">() :</span>
+   <span class="kwd">m_curSolution</span><span class="opt">(</span><span class="kwc">Solution</span><span class="opt">::</span>NO_PIECE<span class="opt">),</span> <span class="kwd">m_minSolution</span><span class="opt">(</span><span class="kwc">Piece</span><span class="opt">::</span>N_TYPE<span class="opt">),</span>
+      <span class="kwd">m_maxSolution</span><span class="opt">(</span><span class="kwc">Solution</span><span class="opt">::</span>NO_PIECE<span class="opt">),</span> <span class="kwd">m_nSolutionFound</span><span class="opt">(</span><span class="num">0</span><span class="opt">)</span>
+   <span class="opt">{</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">bool</span> <span class="kwc">Board</span><span class="opt">::</span><span class="kwd">hasBadFirstRegion</span><span class="opt">(</span>BitVec <span class="opt">&amp;</span> toFill<span class="opt">)</span>
+   <span class="opt">{</span>
+      <span class="kwb">int</span> iPos <span class="opt">=</span> <span class="kwd">getFirstOne</span><span class="opt">(</span>toFill<span class="opt">);</span>
+
+      <span class="slc">// grow empty region, until it doesn&apos;t change any more</span>
+      BitVec region<span class="opt">;</span>
+      BitVec rNew <span class="opt">=</span> <span class="num">1LL</span> <span class="opt">&lt;&lt;</span> iPos<span class="opt">;</span>
+      <span class="kwa">do</span> <span class="opt">{</span>
+         region <span class="opt">=</span> rNew<span class="opt">;</span>
+
+         <span class="slc">// grow right/left</span>
+         rNew <span class="opt">|= (</span>region <span class="opt">&amp; ~</span>L_EDGE_MASK<span class="opt">) &gt;&gt;</span> <span class="num">1</span><span class="opt">;</span>
+         rNew <span class="opt">|= (</span>region <span class="opt">&amp; ~</span>R_EDGE_MASK<span class="opt">) &lt;&lt;</span> <span class="num">1</span><span class="opt">;</span>
+
+         <span class="slc">// simple grow up/down</span>
+         rNew <span class="opt">|= (</span>region <span class="opt">&gt;&gt;</span> N_COL<span class="opt">);</span>
+         rNew <span class="opt">|= (</span>region <span class="opt">&lt;&lt;</span> N_COL<span class="opt">);</span>
+
+         <span class="slc">// tricky growth</span>
+         BitVec evenRegion <span class="opt">=</span> region <span class="opt">&amp; (</span>ROW_0_MASK <span class="opt">&amp; ~</span>L_EDGE_MASK<span class="opt">);</span>
+         rNew <span class="opt">|=</span> evenRegion <span class="opt">&gt;&gt; (</span>N_COL <span class="opt">+</span> <span class="num">1</span><span class="opt">);</span>
+         rNew <span class="opt">|=</span> evenRegion <span class="opt">&lt;&lt; (</span>N_COL <span class="opt">-</span> <span class="num">1</span><span class="opt">);</span>
+
+         BitVec oddRegion <span class="opt">=</span> region <span class="opt">&amp; (</span>ROW_1_MASK <span class="opt">&amp; ~</span>R_EDGE_MASK<span class="opt">);</span>
+         rNew <span class="opt">|=</span> oddRegion <span class="opt">&gt;&gt; (</span>N_COL <span class="opt">-</span> <span class="num">1</span><span class="opt">);</span>
+         rNew <span class="opt">|=</span> oddRegion <span class="opt">&lt;&lt; (</span>N_COL <span class="opt">+</span> <span class="num">1</span><span class="opt">);</span>
+
+         <span class="slc">// clamp against existing pieces</span>
+         rNew <span class="opt">&amp;=</span> toFill<span class="opt">;</span>
+      <span class="opt">}</span>
+      <span class="kwa">while</span> <span class="opt">((</span>rNew <span class="opt">!=</span> toFill<span class="opt">) &amp;&amp; (</span>rNew <span class="opt">!=</span> region<span class="opt">));</span>
+
+      <span class="slc">// subtract empty region from board</span>
+      toFill <span class="opt">^=</span> rNew<span class="opt">;</span>
+
+      TUInt32 nEmptyCells <span class="opt">=</span> <span class="kwd">countOnes</span><span class="opt">(</span>toFill<span class="opt">);</span>
+      <span class="kwa">if</span> <span class="opt">(</span>nEmptyCells <span class="opt">%</span> <span class="num">5</span> <span class="opt">!=</span> <span class="num">0</span><span class="opt">)</span>
+         <span class="kwa">return true</span><span class="opt">;</span>
+
+      <span class="kwa">return false</span><span class="opt">;</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">bool</span> <span class="kwc">Board</span><span class="opt">::</span><span class="kwd">hasBadIslands</span><span class="opt">(</span><span class="kwb">const</span> BitVec <span class="opt">&amp;</span> boardVec<span class="opt">)</span>
+   <span class="opt">{</span>
+      BitVec toFill <span class="opt">= ~</span>boardVec <span class="opt">&amp;</span> BOARD_MASK<span class="opt">;</span>
+
+      <span class="slc">// a little pre-work to speed things up</span>
+      BitVec row <span class="opt">= (</span><span class="kwc">Board</span><span class="opt">::</span>TOP_ROW <span class="opt">&lt;&lt; ((</span>N_ROW <span class="opt">-</span> <span class="num">1</span><span class="opt">) *</span> N_COL<span class="opt">));</span>
+      <span class="kwb">bool</span> filled <span class="opt">= ((</span>row <span class="opt">&amp;</span> toFill<span class="opt">) ==</span> row<span class="opt">);</span>
+      <span class="kwa">while</span> <span class="opt">((</span>row <span class="opt">&amp;</span> toFill<span class="opt">) ==</span> row<span class="opt">) {</span>
+         toFill <span class="opt">^=</span> row<span class="opt">;</span>
+         row <span class="opt">&gt;&gt;=</span> N_COL<span class="opt">;</span>
+      <span class="opt">}</span>
+      <span class="slc">// undo the last row, so regions stay connected</span>
+      <span class="kwa">if</span> <span class="opt">(</span>filled<span class="opt">)   {</span>
+         row <span class="opt">&lt;&lt;=</span> N_COL<span class="opt">;</span>
+         toFill <span class="opt">|=</span> row<span class="opt">;</span>
+      <span class="opt">}</span>
+
+      <span class="kwa">while</span> <span class="opt">(</span>toFill<span class="opt">)    {</span>
+         <span class="kwa">if</span> <span class="opt">(</span><span class="kwd">hasBadFirstRegion</span><span class="opt">(</span>toFill<span class="opt">))</span>
+            <span class="kwa">return true</span><span class="opt">;</span>
+      <span class="opt">}</span>
+
+      <span class="kwa">return false</span><span class="opt">;</span>
+   <span class="opt">}</span>
+
+   <span class="slc">// recursive vs iterative?</span>
+   <span class="kwb">void</span> <span class="kwc">Board</span><span class="opt">::</span><span class="kwd">genAllSolutions</span><span class="opt">(</span>BitVec boardVec<span class="opt">,</span> TUInt32 placedPieces<span class="opt">,</span> TUInt32 iNextFill<span class="opt">,</span> <span class="kwb">const</span> BitVec <span class="opt">&amp;</span> maskNextFill<span class="opt">)</span>
+   <span class="opt">{</span>
+      BitVec pieceVec<span class="opt">;</span>
+      <span class="kwb">int</span> pieceMask <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span>
+      <span class="kwb">int</span> y <span class="opt">=</span> iNextFill <span class="opt">/</span> N_COL<span class="opt">;</span>
+      <span class="kwb">int</span> isOddLine <span class="opt">=</span> y <span class="opt">&amp;</span> <span class="num">1</span><span class="opt">;</span>
+
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> iPlacedPiece <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> iPlacedPiece <span class="opt">&lt;</span> <span class="kwc">Piece</span><span class="opt">::</span>N_TYPE<span class="opt">;</span> iPlacedPiece<span class="opt">++,</span> pieceMask <span class="opt">&lt;&lt;=</span> <span class="num">1</span><span class="opt">)</span>
+      <span class="opt">{</span>
+         TUInt32 iPiece <span class="opt">=</span> iPlacedPiece<span class="opt">;</span> <span class="slc">// leftover from when I remapped it</span>
+
+         <span class="slc">// skip if we&apos;ve already used this piece</span>
+         <span class="kwa">if</span> <span class="opt">(</span>pieceMask <span class="opt">&amp;</span> placedPieces<span class="opt">)</span>
+            <span class="kwa">continue</span><span class="opt">;</span>
+
+         <span class="slc">// try to fit piece</span>
+         <span class="kwb">bool</span> skipFlippedOdd <span class="opt">= (</span>iPiece <span class="opt">==</span> <span class="kwc">Piece</span><span class="opt">::</span>SKIP_PIECE<span class="opt">);</span>
+         <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> iOrient <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> iOrient <span class="opt">&lt;</span> <span class="kwc">Piece</span><span class="opt">::</span>N_ORIENT<span class="opt">;</span> iOrient<span class="opt">++)</span>
+         <span class="opt">{</span>
+            <span class="kwa">if</span> <span class="opt">(</span>skipFlippedOdd <span class="opt">&amp;&amp; ((</span>iOrient <span class="opt">/</span> <span class="num">3</span><span class="opt">) &amp;</span> <span class="num">1</span><span class="opt">))</span>
+               <span class="kwa">continue</span><span class="opt">;</span>
+
+            <span class="slc">// get the particular piece in the particular orientation</span>
+            <span class="kwb">const</span> <span class="kwc">Piece</span><span class="opt">::</span>Instance <span class="opt">&amp;</span> p <span class="opt">=</span> <span class="kwc">Piece</span><span class="opt">::</span><span class="kwd">getPiece</span><span class="opt">(</span>iPiece<span class="opt">,</span> iOrient<span class="opt">,</span> isOddLine<span class="opt">);</span>
+
+            <span class="slc">// check if the new position is allowed on the board</span>
+            <span class="kwa">if</span> <span class="opt">(!(</span>p<span class="opt">.</span>m_allowed <span class="opt">&amp;</span> maskNextFill<span class="opt">))</span>
+               <span class="kwa">continue</span><span class="opt">;</span>
+
+            <span class="slc">// move it to the desired location, if possible and</span>
+            pieceVec <span class="opt">=</span> p<span class="opt">.</span>m_vec <span class="opt">&lt;&lt; (</span>iNextFill <span class="opt">-</span> p<span class="opt">.</span>m_offset<span class="opt">);</span>
+
+            <span class="slc">// check if piece conflicts with other pieces</span>
+            <span class="kwa">if</span> <span class="opt">(</span>pieceVec <span class="opt">&amp;</span> boardVec<span class="opt">)</span>
+               <span class="kwa">continue</span><span class="opt">;</span>
+
+            <span class="slc">// add the piece to the board</span>
+            boardVec <span class="opt">|=</span> pieceVec<span class="opt">;</span>
+
+            <span class="kwa">if</span> <span class="opt">((</span>boardVec <span class="opt">!=</span> pieceVec<span class="opt">) &amp;&amp;</span> <span class="kwd">hasBadIslands</span><span class="opt">(</span>boardVec<span class="opt">)) {</span>
+               <span class="slc">// remove the piece from the board vector</span>
+               boardVec <span class="opt">^=</span> pieceVec<span class="opt">;</span>
+               <span class="kwa">continue</span><span class="opt">;</span>
+            <span class="opt">}</span>
+
+            <span class="slc">// mark piece as placed</span>
+            placedPieces <span class="opt">|=</span> pieceMask<span class="opt">;</span>
+            m_curSolution<span class="opt">.</span><span class="kwd">addPiece</span><span class="opt">(</span>pieceVec<span class="opt">,</span> iPiece<span class="opt">);</span>
+
+            <span class="slc">// recur if not done</span>
+            <span class="kwa">if</span> <span class="opt">(</span>placedPieces <span class="opt">!=</span> <span class="kwc">Piece</span><span class="opt">::</span>ALL_PIECE_MASK<span class="opt">)   {</span>
+               <span class="slc">// need to find the next unfilled cell</span>
+               TUInt32 iCell <span class="opt">=</span> <span class="kwd">getFirstOne</span><span class="opt">(~</span>boardVec<span class="opt">,</span> iNextFill <span class="opt">+</span> <span class="num">1</span><span class="opt">);</span>
+               BitVec mNextFill <span class="opt">= (</span>maskNextFill <span class="opt">&lt;&lt; (</span>iCell <span class="opt">-</span> iNextFill<span class="opt">));</span>
+
+               <span class="kwd">genAllSolutions</span><span class="opt">(</span>boardVec<span class="opt">,</span> placedPieces<span class="opt">,</span> iCell<span class="opt">,</span> mNextFill<span class="opt">);</span>
+            <span class="opt">}</span>
+            <span class="kwa">else</span> <span class="opt">{</span>
+               <span class="slc">// done, record piece/solution and end recursion</span>
+               <span class="kwd">recordSolution</span><span class="opt">(</span>m_curSolution<span class="opt">);</span>
+            <span class="opt">}</span>
+
+            <span class="slc">// remove the piece before continuing with a new piece</span>
+            boardVec <span class="opt">^=</span> pieceVec<span class="opt">;</span>
+            m_curSolution<span class="opt">.</span><span class="kwd">removeLastPiece</span><span class="opt">();</span>
+         <span class="opt">}</span>
+
+         placedPieces <span class="opt">&amp;= ~</span>pieceMask<span class="opt">;</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">void</span> <span class="kwc">Board</span><span class="opt">::</span><span class="kwd">recordSolution</span><span class="opt">(</span>Solution <span class="opt">&amp;</span> s<span class="opt">)</span>
+   <span class="opt">{</span>
+      m_nSolutionFound <span class="opt">+=</span> <span class="num">2</span><span class="opt">;</span> <span class="slc">// we add the solution and its rotation</span>
+
+      <span class="kwa">if</span> <span class="opt">(</span>m_minSolution<span class="opt">.</span><span class="kwd">isEmpty</span><span class="opt">()) {</span>
+         m_minSolution <span class="opt">=</span> m_maxSolution <span class="opt">=</span> s<span class="opt">;</span>
+         <span class="kwa">return</span><span class="opt">;</span>
+      <span class="opt">}</span>
+
+      <span class="kwa">if</span> <span class="opt">(</span>s<span class="opt">.</span><span class="kwd">lessThan</span><span class="opt">(</span>m_minSolution<span class="opt">))</span>
+         m_minSolution <span class="opt">=</span> s<span class="opt">;</span>
+      <span class="kwa">else if</span> <span class="opt">(</span>m_maxSolution<span class="opt">.</span><span class="kwd">lessThan</span><span class="opt">(</span>s<span class="opt">))</span>
+         m_maxSolution <span class="opt">=</span> s<span class="opt">;</span>
+
+      Solution spun<span class="opt">;</span>
+      s<span class="opt">.</span><span class="kwd">spin</span><span class="opt">(</span>spun<span class="opt">);</span>
+      <span class="kwa">if</span> <span class="opt">(</span>spun<span class="opt">.</span><span class="kwd">lessThan</span><span class="opt">(</span>m_minSolution<span class="opt">))</span>
+         m_minSolution <span class="opt">=</span> spun<span class="opt">;</span>
+      <span class="kwa">else if</span> <span class="opt">(</span>m_maxSolution<span class="opt">.</span><span class="kwd">lessThan</span><span class="opt">(</span>s<span class="opt">))</span>
+         m_maxSolution <span class="opt">=</span> spun<span class="opt">;</span>
+   <span class="opt">}</span>
+
+<span class="opt">}</span> <span class="slc">// namespace</span>
+
+<span class="kwa">using namespace</span> Meteor<span class="opt">;</span>
+
+<span class="kwb">int</span> <span class="kwd">main</span><span class="opt">(</span><span class="kwb">int</span> argc<span class="opt">,</span> <span class="kwb">char</span> <span class="opt">*</span> argv <span class="opt">[])</span>
+<span class="opt">{</span>
+   <span class="kwb">const int</span> N_SOLUTION <span class="opt">=</span> <span class="num">2098</span><span class="opt">;</span>
+   TUInt32 nSolMax <span class="opt">=</span> N_SOLUTION<span class="opt">;</span>
+   <span class="kwa">if</span> <span class="opt">(</span>argc <span class="opt">&gt;</span> <span class="num">2</span><span class="opt">)</span>
+      <span class="kwa">return</span> <span class="num">1</span><span class="opt">;</span> <span class="slc">// spec says this is an error</span>
+   <span class="kwa">else if</span> <span class="opt">(</span>argc <span class="opt">==</span> <span class="num">2</span><span class="opt">)</span>
+      nSolMax <span class="opt">= *((</span>TUInt32 <span class="opt">*)</span>argv<span class="opt">[</span><span class="num">1</span><span class="opt">]);</span>
+
+   Board board<span class="opt">;</span>
+   <span class="kwc">Piece</span><span class="opt">::</span><span class="kwd">genAllOrientations</span><span class="opt">();</span>
+   board<span class="opt">.</span><span class="kwd">genAllSolutions</span><span class="opt">(</span><span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">1LL</span><span class="opt">);</span>
+
+   cout <span class="opt">&lt;&lt;</span> board<span class="opt">.</span>m_nSolutionFound <span class="opt">&lt;&lt;</span> <span class="str">&quot; solutions found</span><span class="esc">\n\n</span><span class="str">&quot;</span><span class="opt">;</span>
+   cout <span class="opt">&lt;&lt;</span> board<span class="opt">.</span>m_minSolution<span class="opt">.</span><span class="kwd">toString</span><span class="opt">() &lt;&lt;</span> <span class="str">&apos;</span><span class="esc">\n</span><span class="str">&apos;</span><span class="opt">;</span>
+   cout <span class="opt">&lt;&lt;</span> board<span class="opt">.</span>m_maxSolution<span class="opt">.</span><span class="kwd">toString</span><span class="opt">() &lt;&lt;</span> endl<span class="opt">;</span>
+
+   <span class="slc">//   if (nSolMax != N_SOLUTION)</span>
+   <span class="slc">//      return 1;</span>
+
+   <span class="kwa">return</span> <span class="num">0</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+g++ (Ubuntu 7.2.0-8ubuntu3) 7.2.0
+
+
+Mon, 30 Oct 2017 21:58:17 GMT
+
+MAKE:
+/usr/bin/g++ -c -pipe -O3 -fomit-frame-pointer -march=native   meteor.gpp-2.c++ -o meteor.gpp-2.c++.o &amp;&amp;  \
+        /usr/bin/g++ meteor.gpp-2.c++.o -o meteor.gpp-2.gpp_run  
+meteor.gpp-2.c++: In member function ‘void Meteor::Solution::addPiece(const BitVec&amp;, int)’:
+meteor.gpp-2.c++:198:30: warning: narrowing conversion of ‘iPiece’ from ‘int’ to ‘TUInt32 {aka unsigned int}’ inside { } [-Wnarrowing]
+       SPiece p = {vec, iPiece};
+                              ^
+rm meteor.gpp-2.c++
+
+1.45s to complete and log all make actions
+
+COMMAND LINE:
+./meteor.gpp-2.gpp_run 2098
+
+PROGRAM OUTPUT:
+2098 solutions found
+
+0 0 0 0 1 
+ 2 2 2 0 1 
+2 6 6 1 1 
+ 2 6 1 5 5 
+8 6 5 5 5 
+ 8 6 3 3 3 
+4 8 8 9 3 
+ 4 4 8 9 3 
+4 7 4 7 9 
+ 7 7 7 9 9 
+
+9 9 9 9 8 
+ 9 6 6 8 5 
+6 6 8 8 5 
+ 6 8 2 5 5 
+7 7 7 2 5 
+ 7 4 7 2 0 
+1 4 2 2 0 
+ 1 4 4 0 3 
+1 4 0 0 3 
+ 1 1 3 3 3 
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>regex-redux C++ g++&nbsp;#4 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>regex-redux C++ g++&nbsp;#4 program</h2>
+    <aside>
+      <p><a href="./regexredux-description.html#regexredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">/* The Computer Language Benchmarks Game</span>
+<span class="com">   http://benchmarksgame.alioth.debian.org/</span>
+<span class="com"></span>
+<span class="com">   contributed by Filip Sajdak</span>
+<span class="com">*/</span>
+
+<span class="ppc">#include &lt;pcre.h&gt;</span>
+<span class="ppc">#include &lt;iostream&gt;</span>
+<span class="ppc">#include &lt;memory&gt;</span>
+<span class="ppc">#include &lt;string&gt;</span>
+<span class="ppc">#include &lt;string_view&gt;</span>
+
+<span class="kwc">template</span> <span class="opt">&lt;</span>typename T<span class="opt">&gt;</span>
+<span class="kwc">auto</span> <span class="kwd">reserve</span><span class="opt">(</span><span class="kwb">size_t</span> size<span class="opt">) {</span>
+   T out<span class="opt">;</span>
+   out<span class="opt">.</span><span class="kwd">reserve</span><span class="opt">(</span>size<span class="opt">);</span>
+   <span class="kwa">return</span> out<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwc">template</span> <span class="opt">&lt;</span><span class="kwc">auto</span> initial_size <span class="opt">=</span> <span class="num">16384</span><span class="opt">,</span> <span class="kwc">auto</span> buffer_size <span class="opt">=</span> initial_size<span class="opt">&gt;</span>
+<span class="kwc">auto</span> <span class="kwd">load</span><span class="opt">(</span><span class="kwc">std</span><span class="opt">::</span>istream<span class="opt">&amp;</span> in<span class="opt">) {</span>
+      <span class="kwc">auto</span> str <span class="opt">=</span> reserve<span class="opt">&lt;</span><span class="kwc">std</span><span class="opt">::</span>string<span class="opt">&gt;(</span>initial_size<span class="opt">);</span>
+      <span class="kwc">auto</span> buffer <span class="opt">=</span> <span class="kwc">std</span><span class="opt">::</span>array<span class="opt">&lt;</span><span class="kwb">char</span><span class="opt">,</span> buffer_size<span class="opt">&gt;();</span>
+
+      <span class="kwa">while</span> <span class="opt">(</span>in<span class="opt">) {</span>
+         in<span class="opt">.</span><span class="kwd">read</span><span class="opt">(</span>buffer<span class="opt">.</span><span class="kwd">data</span><span class="opt">(),</span> buffer<span class="opt">.</span><span class="kwd">size</span><span class="opt">());</span>
+         str<span class="opt">.</span><span class="kwd">append</span><span class="opt">(</span>buffer<span class="opt">.</span><span class="kwd">cbegin</span><span class="opt">(),</span> buffer<span class="opt">.</span><span class="kwd">cbegin</span><span class="opt">()+</span>in<span class="opt">.</span><span class="kwd">gcount</span><span class="opt">());</span>
+      <span class="opt">}</span>
+      
+      <span class="kwa">return</span> str<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwc">template</span><span class="opt">&lt;</span>typename T<span class="opt">,</span> typename Deleter<span class="opt">&gt;</span>
+<span class="kwc">auto</span> <span class="kwd">make_unique_with_deleter</span><span class="opt">(</span>T<span class="opt">*</span> ptr<span class="opt">,</span> Deleter<span class="opt">&amp;&amp;</span> deleter<span class="opt">)</span>
+<span class="opt">{</span>
+    <span class="kwa">return</span> <span class="kwc">std</span><span class="opt">::</span>unique_ptr<span class="opt">&lt;</span>T<span class="opt">,</span> Deleter<span class="opt">&gt;(</span>ptr<span class="opt">,</span> <span class="kwc">std</span><span class="opt">::</span>forward<span class="opt">&lt;</span>Deleter<span class="opt">&gt;(</span>deleter<span class="opt">));</span>
+<span class="opt">}</span> 
+
+   <span class="kwc">auto</span> <span class="kwd">make_regex</span><span class="opt">(</span><span class="kwb">const</span> <span class="kwc">std</span><span class="opt">::</span>string_view pattern<span class="opt">) {</span>
+      <span class="kwb">char const</span><span class="opt">*</span> error<span class="opt">;</span>
+      <span class="kwb">int</span> offset<span class="opt">;</span>
+      <span class="kwa">return</span> <span class="kwd">make_unique_with_deleter</span><span class="opt">(</span>
+         <span class="kwd">pcre_compile</span><span class="opt">(</span>pattern<span class="opt">.</span><span class="kwd">data</span><span class="opt">(),</span> <span class="num">0</span><span class="opt">, &amp;</span>error<span class="opt">, &amp;</span>offset<span class="opt">,</span> NULL<span class="opt">),</span> pcre_free<span class="opt">);</span>
+   <span class="opt">}</span>
+   
+   <span class="kwc">auto</span> <span class="kwd">make_aid</span><span class="opt">(</span><span class="kwb">const</span> pcre<span class="opt">*</span> regex<span class="opt">) {</span>
+      <span class="kwb">char const</span><span class="opt">*</span> error<span class="opt">;</span>
+      <span class="kwa">return</span> <span class="kwd">make_unique_with_deleter</span><span class="opt">(</span>
+         <span class="kwd">pcre_study</span><span class="opt">(</span>regex<span class="opt">,</span> PCRE_STUDY_JIT_COMPILE<span class="opt">, &amp;</span>error<span class="opt">),</span> pcre_free_study<span class="opt">);</span>
+   <span class="opt">}</span>
+
+<span class="kwb">static void</span> <span class="kwd">replace</span><span class="opt">(</span><span class="kwb">const</span> <span class="kwc">std</span><span class="opt">::</span>string_view pattern<span class="opt">,</span> <span class="kwb">const</span> <span class="kwc">std</span><span class="opt">::</span>string_view replacement<span class="opt">,</span>
+       <span class="kwb">const</span> <span class="kwc">std</span><span class="opt">::</span>string_view source<span class="opt">,</span> <span class="kwc">std</span><span class="opt">::</span>string<span class="opt">&amp;</span> output<span class="opt">,</span> pcre_jit_stack<span class="opt">*</span> <span class="kwb">const</span> stack<span class="opt">){</span>
+
+   <span class="kwb">const</span> <span class="kwc">auto</span> regex <span class="opt">=</span> <span class="kwd">make_regex</span><span class="opt">(</span>pattern<span class="opt">);</span>
+   <span class="kwb">const</span> <span class="kwc">auto</span> aid   <span class="opt">=</span> <span class="kwd">make_aid</span><span class="opt">(</span>regex<span class="opt">.</span><span class="kwd">get</span><span class="opt">());</span>
+
+   <span class="kwb">int</span> pos <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+   
+   <span class="kwa">for</span><span class="opt">(</span><span class="kwb">int</span> match<span class="opt">[</span><span class="num">3</span><span class="opt">];</span> <span class="kwd">pcre_jit_exec</span><span class="opt">(</span>regex<span class="opt">.</span><span class="kwd">get</span><span class="opt">(),</span> aid<span class="opt">.</span><span class="kwd">get</span><span class="opt">(),</span> source<span class="opt">.</span><span class="kwd">data</span><span class="opt">(),</span>
+         source<span class="opt">.</span><span class="kwd">size</span><span class="opt">(),</span> pos<span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> match<span class="opt">,</span> <span class="num">3</span><span class="opt">,</span> stack<span class="opt">) &gt;=</span> <span class="num">0</span><span class="opt">;</span> pos <span class="opt">=</span> match<span class="opt">[</span><span class="num">1</span><span class="opt">]){</span>
+      output<span class="opt">.</span><span class="kwd">append</span><span class="opt">(</span><span class="kwc">std</span><span class="opt">::</span><span class="kwd">cbegin</span><span class="opt">(</span>source<span class="opt">) +</span> pos<span class="opt">,</span> <span class="kwc">std</span><span class="opt">::</span><span class="kwd">cbegin</span><span class="opt">(</span>source<span class="opt">) +</span> match<span class="opt">[</span><span class="num">0</span><span class="opt">]);</span>
+      output<span class="opt">.</span><span class="kwd">append</span><span class="opt">(</span><span class="kwc">std</span><span class="opt">::</span><span class="kwd">cbegin</span><span class="opt">(</span>replacement<span class="opt">),</span> <span class="kwc">std</span><span class="opt">::</span><span class="kwd">cend</span><span class="opt">(</span>replacement<span class="opt">));</span>
+    <span class="opt">}</span>
+
+   output<span class="opt">.</span><span class="kwd">append</span><span class="opt">(</span><span class="kwc">std</span><span class="opt">::</span><span class="kwd">cbegin</span><span class="opt">(</span>source<span class="opt">) +</span> pos<span class="opt">,</span> <span class="kwc">std</span><span class="opt">::</span><span class="kwd">cend</span><span class="opt">(</span>source<span class="opt">));</span>
+<span class="opt">}</span>
+
+
+<span class="kwb">int</span> <span class="kwd">main</span><span class="opt">(</span><span class="kwb">void</span><span class="opt">){</span>
+   <span class="kwc">std</span><span class="opt">::</span><span class="kwc">ios</span><span class="opt">::</span><span class="kwd">sync_with_stdio</span><span class="opt">(</span><span class="kwa">false</span><span class="opt">);</span>
+   
+    <span class="kwb">char const</span> <span class="opt">*</span> <span class="kwb">const</span> count_Info<span class="opt">[]={</span>
+        <span class="str">&quot;agggtaaa|tttaccct&quot;</span><span class="opt">,</span>
+        <span class="str">&quot;[cgt]gggtaaa|tttaccc[acg]&quot;</span><span class="opt">,</span>
+        <span class="str">&quot;a[act]ggtaaa|tttacc[agt]t&quot;</span><span class="opt">,</span>
+        <span class="str">&quot;ag[act]gtaaa|tttac[agt]ct&quot;</span><span class="opt">,</span>
+        <span class="str">&quot;agg[act]taaa|ttta[agt]cct&quot;</span><span class="opt">,</span>
+        <span class="str">&quot;aggg[acg]aaa|ttt[cgt]ccct&quot;</span><span class="opt">,</span>
+        <span class="str">&quot;agggt[cgt]aa|tt[acg]accct&quot;</span><span class="opt">,</span>
+        <span class="str">&quot;agggta[cgt]a|t[acg]taccct&quot;</span><span class="opt">,</span>
+        <span class="str">&quot;agggtaa[cgt]|[acg]ttaccct&quot;</span>
+      <span class="opt">}, *</span> <span class="kwb">const</span> replace_Info<span class="opt">[][</span><span class="num">2</span><span class="opt">]={</span>
+        <span class="opt">{</span><span class="str">&quot;tHa[Nt]&quot;</span><span class="opt">,</span> <span class="str">&quot;&lt;4&gt;&quot;</span><span class="opt">},</span>
+        <span class="opt">{</span><span class="str">&quot;aND|caN|Ha[DS]|WaS&quot;</span><span class="opt">,</span> <span class="str">&quot;&lt;3&gt;&quot;</span><span class="opt">},</span>
+        <span class="opt">{</span><span class="str">&quot;a[NSt]|BY&quot;</span><span class="opt">,</span> <span class="str">&quot;&lt;2&gt;&quot;</span><span class="opt">},</span>
+        <span class="opt">{</span><span class="str">&quot;&lt;[^&gt;]*&gt;&quot;</span><span class="opt">,</span> <span class="str">&quot;|&quot;</span><span class="opt">},</span>
+        <span class="opt">{</span><span class="str">&quot;</span><span class="esc">\\</span><span class="str">|[^|][^|]*</span><span class="esc">\\</span><span class="str">|&quot;</span><span class="opt">,</span> <span class="str">&quot;-&quot;</span><span class="opt">}</span>
+      <span class="opt">};</span>
+
+   <span class="kwc">auto</span> sequences <span class="opt">=</span> reserve<span class="opt">&lt;</span><span class="kwc">std</span><span class="opt">::</span>string<span class="opt">&gt;(</span><span class="num">16384</span><span class="opt">);</span>
+    <span class="kwb">size_t</span> postreplace_Size <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+
+   <span class="kwc">std</span><span class="opt">::</span>string input <span class="opt">=</span> <span class="kwd">load</span><span class="opt">(</span><span class="kwc">std</span><span class="opt">::</span>cin<span class="opt">);</span>
+
+    <span class="ppc">#pragma omp parallel</span>
+    <span class="opt">{</span>
+      <span class="kwc">auto</span> stack <span class="opt">=</span> <span class="kwd">make_unique_with_deleter</span><span class="opt">(</span>
+         <span class="kwd">pcre_jit_stack_alloc</span><span class="opt">(</span><span class="num">16384</span><span class="opt">,</span> <span class="num">16384</span><span class="opt">),</span> pcre_jit_stack_free<span class="opt">);</span>
+
+        <span class="ppc">#pragma omp single</span>
+        <span class="opt">{</span>
+            <span class="kwd">replace</span><span class="opt">(</span><span class="str">&quot;&gt;.*</span><span class="esc">\\</span><span class="str">n|</span><span class="esc">\\</span><span class="str">n&quot;</span><span class="opt">,</span> <span class="str">&quot;&quot;</span><span class="opt">,</span> input<span class="opt">,</span> sequences<span class="opt">,</span> stack<span class="opt">.</span><span class="kwd">get</span><span class="opt">());</span>
+        <span class="opt">}</span>
+
+        <span class="ppc">#pragma omp single nowait</span>
+        <span class="opt">{</span>
+            <span class="kwc">auto</span> prereplace_String <span class="opt">=</span> sequences<span class="opt">;</span>
+            <span class="kwc">auto</span> postreplace_String <span class="opt">=</span> reserve<span class="opt">&lt;</span><span class="kwc">std</span><span class="opt">::</span>string<span class="opt">&gt;(</span>sequences<span class="opt">.</span><span class="kwd">capacity</span><span class="opt">());</span>
+         
+         <span class="kwa">for</span> <span class="opt">(</span> <span class="kwb">const</span> <span class="kwc">auto</span><span class="opt">&amp; [</span>pattern<span class="opt">,</span> replacement<span class="opt">] :</span> replace_Info <span class="opt">) {</span>
+            postreplace_String<span class="opt">.</span><span class="kwd">clear</span><span class="opt">();</span>
+            <span class="kwd">replace</span><span class="opt">(</span>pattern<span class="opt">,</span> replacement<span class="opt">,</span> 
+               prereplace_String<span class="opt">,</span> postreplace_String<span class="opt">,</span> stack<span class="opt">.</span><span class="kwd">get</span><span class="opt">());</span>
+            <span class="kwc">std</span><span class="opt">::</span><span class="kwd">swap</span><span class="opt">(</span>prereplace_String<span class="opt">,</span> postreplace_String<span class="opt">);</span>
+            <span class="opt">}</span>
+
+            postreplace_Size <span class="opt">=</span> prereplace_String<span class="opt">.</span><span class="kwd">size</span><span class="opt">();</span>
+        <span class="opt">}</span>
+
+        <span class="ppc">#pragma omp for schedule(dynamic) ordered</span>
+        <span class="kwa">for</span><span class="opt">(</span><span class="kwc">auto</span> i<span class="opt">=</span><span class="num">0u</span><span class="opt">;</span> i <span class="opt">&lt;</span> <span class="kwc">std</span><span class="opt">::</span><span class="kwd">size</span><span class="opt">(</span>count_Info<span class="opt">);</span> i<span class="opt">++){</span>
+
+         <span class="kwc">auto</span> regex <span class="opt">=</span> <span class="kwd">make_regex</span><span class="opt">(</span>count_Info<span class="opt">[</span>i<span class="opt">]);</span>
+         <span class="kwc">auto</span> aid <span class="opt">=</span> <span class="kwd">make_aid</span><span class="opt">(</span>regex<span class="opt">.</span><span class="kwd">get</span><span class="opt">());</span>
+         
+         <span class="kwb">int</span> count <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+         <span class="kwa">for</span><span class="opt">(</span><span class="kwb">int</span> pos <span class="opt">=</span> <span class="num">0</span><span class="opt">,</span> match<span class="opt">[</span><span class="num">3</span><span class="opt">];</span> <span class="kwd">pcre_jit_exec</span><span class="opt">(</span>regex<span class="opt">.</span><span class="kwd">get</span><span class="opt">(),</span> aid<span class="opt">.</span><span class="kwd">get</span><span class="opt">(),</span>
+               sequences<span class="opt">.</span><span class="kwd">data</span><span class="opt">(),</span> sequences<span class="opt">.</span><span class="kwd">size</span><span class="opt">(),</span> pos<span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> match<span class="opt">,</span> <span class="num">3</span><span class="opt">,</span>
+               stack<span class="opt">.</span><span class="kwd">get</span><span class="opt">()) &gt;=</span> <span class="num">0</span><span class="opt">;</span> pos<span class="opt">=</span>match<span class="opt">[</span><span class="num">1</span><span class="opt">]) {</span>
+            <span class="opt">++</span>count<span class="opt">;</span>
+            <span class="opt">}</span>
+
+            <span class="ppc">#pragma omp ordered</span>
+            <span class="kwd">printf</span><span class="opt">(</span><span class="str">&quot;%s %d</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span> count_Info<span class="opt">[</span>i<span class="opt">],</span> count<span class="opt">);</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+
+    <span class="kwd">printf</span><span class="opt">(</span><span class="str">&quot;</span><span class="esc">\n</span><span class="str">%zu</span><span class="esc">\n</span><span class="str">%zu</span><span class="esc">\n</span><span class="str">%zu</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span> input<span class="opt">.</span><span class="kwd">size</span><span class="opt">(),</span> sequences<span class="opt">.</span><span class="kwd">size</span><span class="opt">(),</span> postreplace_Size<span class="opt">);</span>
+    <span class="kwa">return</span> <span class="num">0</span><span class="opt">;</span>
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+g++ (Ubuntu 7.2.0-8ubuntu3) 7.2.0
+
+
+Sat, 04 Nov 2017 01:01:56 GMT
+
+MAKE:
+/usr/bin/g++ -c -pipe -O3 -fomit-frame-pointer -march=native  -std=c++17 -fopenmp -flto regexredux.gpp-4.c++ -o regexredux.gpp-4.c++.o &amp;&amp;  \
+        /usr/bin/g++ regexredux.gpp-4.c++.o -o regexredux.gpp-4.gpp_run -fopenmp -lpcre 
+rm regexredux.gpp-4.c++
+
+1.38s to complete and log all make actions
+
+COMMAND LINE:
+./regexredux.gpp-4.gpp_run 0 &lt; regexredux-input5000000.txt
+
+PROGRAM OUTPUT:
+agggtaaa|tttaccct 356
+[cgt]gggtaaa|tttaccc[acg] 1250
+a[act]ggtaaa|tttacc[agt]t 4252
+ag[act]gtaaa|tttac[agt]ct 2894
+agg[act]taaa|ttta[agt]cct 5435
+aggg[acg]aaa|ttt[cgt]ccct 1537
+agggt[cgt]aa|tt[acg]accct 1431
+agggta[cgt]a|t[acg]taccct 1608
+agggtaa[cgt]|[acg]ttaccct 2178
+
+50833411
+50000000
+27388361
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

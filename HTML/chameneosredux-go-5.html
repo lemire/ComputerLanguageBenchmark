@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>chameneos-redux Go&nbsp;#5 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>chameneos-redux Go&nbsp;#5 program</h2>
+    <aside>
+      <p><a href="./chameneosredux-description.html#chameneosredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">/* The Computer Language Benchmarks Game</span>
+<span class="com"> * http://benchmarksgameshootout.alioth.debian.org/</span>
+<span class="com"> *</span>
+<span class="com"> * contributed by The Go Authors.</span>
+<span class="com"> * modified by roger peppe</span>
+<span class="com"> * </span>
+<span class="com"> */</span>
+
+<span class="kwa">package</span> main
+
+<span class="kwa">import</span> <span class="opt">(</span>
+   <span class="str">&quot;flag&quot;</span>
+   <span class="str">&quot;fmt&quot;</span>
+   <span class="str">&quot;strconv&quot;</span>
+   <span class="str">&quot;sync&quot;</span>
+<span class="opt">)</span>
+
+<span class="kwa">const</span> <span class="opt">(</span>
+   blue <span class="opt">=</span> <span class="kwb">iota</span>
+   red
+   yellow
+   ncol
+<span class="opt">)</span>
+
+<span class="kwa">var</span> complement <span class="opt">= [...]</span><span class="kwb">int</span><span class="opt">{</span>
+   red | red<span class="opt">&lt;&lt;</span><span class="num">2</span><span class="opt">:</span> red<span class="opt">,</span>
+   red | yellow<span class="opt">&lt;&lt;</span><span class="num">2</span><span class="opt">:</span> blue<span class="opt">,</span>
+   red | blue<span class="opt">&lt;&lt;</span><span class="num">2</span><span class="opt">:</span> yellow<span class="opt">,</span>
+   yellow | red<span class="opt">&lt;&lt;</span><span class="num">2</span><span class="opt">:</span> blue<span class="opt">,</span>
+   yellow | yellow<span class="opt">&lt;&lt;</span><span class="num">2</span><span class="opt">:</span> yellow<span class="opt">,</span>
+   yellow | blue<span class="opt">&lt;&lt;</span><span class="num">2</span><span class="opt">:</span> red<span class="opt">,</span>
+   blue | red<span class="opt">&lt;&lt;</span><span class="num">2</span><span class="opt">:</span> yellow<span class="opt">,</span>
+   blue | yellow<span class="opt">&lt;&lt;</span><span class="num">2</span><span class="opt">:</span> red<span class="opt">,</span>
+   blue | blue<span class="opt">&lt;&lt;</span><span class="num">2</span><span class="opt">:</span> blue<span class="opt">,</span>
+<span class="opt">}</span>
+
+<span class="kwa">var</span> colname <span class="opt">= [...]</span><span class="kwb">string</span><span class="opt">{</span>
+   blue<span class="opt">:</span> <span class="str">&quot;blue&quot;</span><span class="opt">,</span>
+   red<span class="opt">:</span> <span class="str">&quot;red&quot;</span><span class="opt">,</span>
+   yellow<span class="opt">:</span> <span class="str">&quot;yellow&quot;</span><span class="opt">,</span>
+<span class="opt">}</span>
+
+<span class="slc">// information about the current state of a creature.</span>
+<span class="kwa">type</span> info <span class="kwa">struct</span> <span class="opt">{</span>
+   colour <span class="kwb">int</span> <span class="slc">// creature&apos;s current colour.</span>
+   name   <span class="kwb">int</span> <span class="slc">// creature&apos;s name.</span>
+<span class="opt">}</span>
+
+<span class="slc">// if mate is nil, it indicates there&apos;s no creature currently waiting</span>
+<span class="slc">// otherwise the creature&apos;s info is stored in info, and</span>
+<span class="slc">// it is waiting to receive its mate&apos;s information on the mate channel.</span>
+<span class="kwa">type</span> Place <span class="kwa">struct</span> <span class="opt">{</span>
+   sync<span class="opt">.</span>Mutex
+   n    <span class="kwb">int</span>         <span class="slc">// current number of encounters.</span>
+   mate <span class="kwa">chan</span><span class="opt">&lt;-</span> info <span class="slc">// creature waiting when non-nil.</span>
+   info info        <span class="slc">// info about creature waiting.</span>
+<span class="opt">}</span>
+
+<span class="slc">// result sent by each creature at the end of processing.</span>
+<span class="kwa">type</span> result <span class="kwa">struct</span> <span class="opt">{</span>
+   met  <span class="kwb">int</span>
+   same <span class="kwb">int</span>
+<span class="opt">}</span>
+
+<span class="kwa">var</span> n <span class="opt">=</span> <span class="num">600</span>
+
+<span class="kwa">func</span> <span class="kwd">main</span><span class="opt">() {</span>
+   flag<span class="opt">.</span><span class="kwd">Parse</span><span class="opt">()</span>
+   <span class="kwa">if</span> flag<span class="opt">.</span><span class="kwd">NArg</span><span class="opt">() &gt;</span> <span class="num">0</span> <span class="opt">{</span>
+      n<span class="opt">,</span> _ <span class="opt">=</span> strconv<span class="opt">.</span><span class="kwd">Atoi</span><span class="opt">(</span>flag<span class="opt">.</span><span class="kwd">Arg</span><span class="opt">(</span><span class="num">0</span><span class="opt">))</span>
+   <span class="opt">}</span>
+
+   <span class="kwa">for</span> c0 <span class="opt">:=</span> <span class="num">0</span><span class="opt">;</span> c0 <span class="opt">&lt;</span> ncol<span class="opt">;</span> c0<span class="opt">++ {</span>
+      <span class="kwa">for</span> c1 <span class="opt">:=</span> <span class="num">0</span><span class="opt">;</span> c1 <span class="opt">&lt;</span> ncol<span class="opt">;</span> c1<span class="opt">++ {</span>
+         fmt<span class="opt">.</span><span class="kwd">Printf</span><span class="opt">(</span><span class="str">&quot;</span><span class="ipl">%s</span> <span class="str">+</span> <span class="ipl">%s</span> <span class="str">-&gt;</span> <span class="ipl">%s</span><span class="str"></span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span> colname<span class="opt">[</span>c0<span class="opt">],</span> colname<span class="opt">[</span>c1<span class="opt">],</span> colname<span class="opt">[</span>complement<span class="opt">[</span>c0|c1<span class="opt">&lt;&lt;</span><span class="num">2</span><span class="opt">]])</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+   fmt<span class="opt">.</span><span class="kwd">Print</span><span class="opt">(</span><span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">)</span>
+
+   <span class="kwd">pallmall</span><span class="opt">([]</span><span class="kwb">int</span><span class="opt">{</span>blue<span class="opt">,</span> red<span class="opt">,</span> yellow<span class="opt">})</span>
+   <span class="kwd">pallmall</span><span class="opt">([]</span><span class="kwb">int</span><span class="opt">{</span>blue<span class="opt">,</span> red<span class="opt">,</span> yellow<span class="opt">,</span> red<span class="opt">,</span> yellow<span class="opt">,</span> blue<span class="opt">,</span> red<span class="opt">,</span> yellow<span class="opt">,</span> red<span class="opt">,</span> blue<span class="opt">})</span>
+<span class="opt">}</span>
+
+<span class="kwa">func</span> <span class="kwd">pallmall</span><span class="opt">(</span>cols <span class="opt">[]</span><span class="kwb">int</span><span class="opt">) {</span>
+
+   <span class="slc">// invariant: meetingplace always contains a value unless a creature</span>
+   <span class="slc">// is currently dealing with it (whereupon it must put it back).</span>
+   meetingplace <span class="opt">:=</span> <span class="kwb">new</span><span class="opt">(</span>Place<span class="opt">)</span>
+   ended <span class="opt">:=</span> <span class="kwb">make</span><span class="opt">(</span><span class="kwa">chan</span> result<span class="opt">)</span>
+   msg <span class="opt">:=</span> <span class="str">&quot;&quot;</span>
+   <span class="kwa">for</span> i<span class="opt">,</span> col <span class="opt">:=</span> <span class="kwa">range</span> cols <span class="opt">{</span>
+      <span class="kwa">go</span> <span class="kwd">creature</span><span class="opt">(</span>info<span class="opt">{</span>col<span class="opt">,</span> i<span class="opt">},</span> meetingplace<span class="opt">,</span> ended<span class="opt">)</span>
+      msg <span class="opt">+=</span> <span class="str">&quot; &quot;</span> <span class="opt">+</span> colname<span class="opt">[</span>col<span class="opt">]</span>
+   <span class="opt">}</span>
+   fmt<span class="opt">.</span><span class="kwd">Println</span><span class="opt">(</span>msg<span class="opt">)</span>
+   tot <span class="opt">:=</span> <span class="num">0</span>
+   <span class="slc">// wait for all results</span>
+   <span class="kwa">for</span> _ <span class="opt">=</span> <span class="kwa">range</span> <span class="opt">(</span>cols<span class="opt">) {</span>
+      result <span class="opt">:= &lt;-</span>ended
+      tot <span class="opt">+=</span> result<span class="opt">.</span>met
+      fmt<span class="opt">.</span><span class="kwd">Printf</span><span class="opt">(</span><span class="str">&quot;</span><span class="ipl">%v%v</span><span class="str"></span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span> result<span class="opt">.</span>met<span class="opt">,</span> <span class="kwd">spell</span><span class="opt">(</span>result<span class="opt">.</span>same<span class="opt">,</span> <span class="kwb">true</span><span class="opt">))</span>
+   <span class="opt">}</span>
+   fmt<span class="opt">.</span><span class="kwd">Printf</span><span class="opt">(</span><span class="str">&quot;</span><span class="ipl">%v</span><span class="str"></span><span class="esc">\n\n</span><span class="str">&quot;</span><span class="opt">,</span> <span class="kwd">spell</span><span class="opt">(</span>tot<span class="opt">,</span> <span class="kwb">true</span><span class="opt">))</span>
+<span class="opt">}</span>
+
+<span class="slc">// in this function, variables ending in 0 refer to the local creature,</span>
+<span class="slc">// variables ending in 1 to the creature we&apos;ve met.</span>
+<span class="kwa">func</span> <span class="kwd">creature</span><span class="opt">(</span>info0 info<span class="opt">,</span> m <span class="opt">*</span>Place<span class="opt">,</span> ended <span class="kwa">chan</span> result<span class="opt">) {</span>
+   c0 <span class="opt">:=</span> <span class="kwb">make</span><span class="opt">(</span><span class="kwa">chan</span> info<span class="opt">)</span>
+   met <span class="opt">:=</span> <span class="num">0</span>
+   same <span class="opt">:=</span> <span class="num">0</span>
+   <span class="kwa">for</span> <span class="opt">{</span>
+      <span class="kwa">var</span> othername <span class="kwb">int</span>
+      <span class="slc">// get access to rendez data and decide what to do.</span>
+      m<span class="opt">.</span><span class="kwd">Lock</span><span class="opt">()</span>
+      <span class="kwa">switch</span> <span class="opt">{</span>
+      <span class="kwa">case</span> m<span class="opt">.</span>n <span class="opt">&gt;=</span> n<span class="opt">:</span>
+         <span class="slc">// if no more meetings left, then send our result data and exit.</span>
+         m<span class="opt">.</span><span class="kwd">Unlock</span><span class="opt">()</span>
+         ended <span class="opt">&lt;-</span> result<span class="opt">{</span>met<span class="opt">,</span> same<span class="opt">}</span>
+         <span class="kwa">return</span>
+
+      <span class="kwa">case</span> m<span class="opt">.</span>mate <span class="opt">==</span> <span class="kwb">nil</span><span class="opt">:</span>
+         <span class="slc">// no creature waiting wait for someone to meet us,</span>
+         <span class="slc">// get their info and send our info in reply.</span>
+         m<span class="opt">.</span>info <span class="opt">=</span> info0
+         m<span class="opt">.</span>mate <span class="opt">=</span> c0
+         m<span class="opt">.</span><span class="kwd">Unlock</span><span class="opt">()</span>
+         info1 <span class="opt">:= &lt;-</span>c0
+         othername <span class="opt">=</span> info1<span class="opt">.</span>name
+         info0<span class="opt">.</span>colour <span class="opt">=</span> complement<span class="opt">[</span>info0<span class="opt">.</span>colour|info1<span class="opt">.</span>colour<span class="opt">&lt;&lt;</span><span class="num">2</span><span class="opt">]</span>
+
+      <span class="kwa">default</span><span class="opt">:</span>
+         <span class="slc">// another creature is waiting for us with its info</span>
+         <span class="slc">// increment meeting count,</span>
+         <span class="slc">// send them our info in reply.</span>
+         mate <span class="opt">:=</span> m<span class="opt">.</span>mate
+         m<span class="opt">.</span>n<span class="opt">++</span>
+         m<span class="opt">.</span>mate <span class="opt">=</span> <span class="kwb">nil</span>
+         info1 <span class="opt">:=</span> m<span class="opt">.</span>info
+         m<span class="opt">.</span><span class="kwd">Unlock</span><span class="opt">()</span>
+         mate <span class="opt">&lt;-</span> info0
+         othername <span class="opt">=</span> info1<span class="opt">.</span>name
+         info0<span class="opt">.</span>colour <span class="opt">=</span> complement<span class="opt">[</span>info0<span class="opt">.</span>colour|info1<span class="opt">.</span>colour<span class="opt">&lt;&lt;</span><span class="num">2</span><span class="opt">]</span>
+      <span class="opt">}</span>
+      <span class="kwa">if</span> othername <span class="opt">==</span> info0<span class="opt">.</span>name <span class="opt">{</span>
+         same<span class="opt">++</span>
+      <span class="opt">}</span>
+      met<span class="opt">++</span>
+   <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="kwa">var</span> digits <span class="opt">= [...]</span><span class="kwb">string</span><span class="opt">{</span><span class="str">&quot;zero&quot;</span><span class="opt">,</span> <span class="str">&quot;one&quot;</span><span class="opt">,</span> <span class="str">&quot;two&quot;</span><span class="opt">,</span> <span class="str">&quot;three&quot;</span><span class="opt">,</span> <span class="str">&quot;four&quot;</span><span class="opt">,</span> <span class="str">&quot;five&quot;</span><span class="opt">,</span> <span class="str">&quot;six&quot;</span><span class="opt">,</span> <span class="str">&quot;seven&quot;</span><span class="opt">,</span> <span class="str">&quot;eight&quot;</span><span class="opt">,</span> <span class="str">&quot;nine&quot;</span><span class="opt">}</span>
+
+<span class="kwa">func</span> <span class="kwd">spell</span><span class="opt">(</span>n <span class="kwb">int</span><span class="opt">,</span> required <span class="kwb">bool</span><span class="opt">)</span> <span class="kwb">string</span> <span class="opt">{</span>
+   <span class="kwa">if</span> n <span class="opt">==</span> <span class="num">0</span> <span class="opt">&amp;&amp; !</span>required <span class="opt">{</span>
+      <span class="kwa">return</span> <span class="str">&quot;&quot;</span>
+   <span class="opt">}</span>
+   <span class="kwa">return</span> <span class="kwd">spell</span><span class="opt">(</span>n<span class="opt">/</span><span class="num">10</span><span class="opt">,</span> <span class="kwb">false</span><span class="opt">) +</span> <span class="str">&quot; &quot;</span> <span class="opt">+</span> digits<span class="opt">[</span>n%10<span class="opt">]</span>
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+go version go1.10 linux/amd64
+
+
+Sat, 17 Feb 2018 18:46:09 GMT
+
+MAKE:
+/opt/src/go1.10.linux-amd64/go/bin/go build -o chameneosredux.go-5.go_run
+
+0.39s to complete and log all make actions
+
+COMMAND LINE:
+./chameneosredux.go-5.go_run 6000000
+
+PROGRAM OUTPUT:
+blue + blue -&gt; blue
+blue + red -&gt; yellow
+blue + yellow -&gt; red
+red + blue -&gt; yellow
+red + red -&gt; red
+red + yellow -&gt; blue
+yellow + blue -&gt; red
+yellow + red -&gt; blue
+yellow + yellow -&gt; yellow
+
+ blue red yellow
+3968167 zero
+4008428 zero
+4023405 zero
+ one two zero zero zero zero zero zero
+
+ blue red yellow red yellow blue red yellow red blue
+1215084 zero
+1188280 zero
+1210920 zero
+1180111 zero
+1212895 zero
+1190343 zero
+1202855 zero
+1195551 zero
+1194534 zero
+1209427 zero
+ one two zero zero zero zero zero zero
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

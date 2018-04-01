@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="all" />
+<meta name="description" content="Performance measurements for all the Pascal Free Pascal programs implementing ~12 simple benchmark tasks, (64-bit Ubuntu quad core)." />
+<title>Pascal Free Pascal measurements (64-bit Ubuntu quad core) | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article,footer{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}code,h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}nav p{margin:0 .5em}ul{clear:left;margin:-0.3em 0 1.5em;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,span{border-bottom:.1em solid #333;padding-bottom:.1em}
+#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.best{font-weight:bold}.message{font-size:.8em}table{color:#333;margin:1.3em auto 0;text-align:right}tbody:after{content:"-";display:block;line-height:2.6em;visibility:hidden}td{border-bottom:.15em dotted #eee;padding:.7em 0 0 1em}td a,th a{display:block}td:first-child,th:first-child{text-align:left;padding-left:0}th{font-weight:normal;padding:0 0 0 1em}
+@media only screen{th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6),th:nth-child(7),td:nth-child(7){display:none}}@media only screen and (min-width:27em){th:nth-child(3),td:nth-child(3){display:table-cell}}@media only screen and (min-width:38em){th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:table-cell}}@media only screen and (min-width:47em){th:nth-child(7),td:nth-child(7){display:table-cell}}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+
+<article>
+  <div>
+    <h2>all Pascal Free Pascal programs & measurements</h2>
+    <aside>
+      <p>&nbsp;</a>
+    </aside>
+  </div>
+  <section>
+    <table>
+      <tbody>
+      <tr>
+        <td colspan="7" class="message"><p>Free Pascal Compiler version 3.0.4 [2017/10/03] for x86_64
+
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./binarytrees-fpascal-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>0.02
+          <td>&nbsp;7
+          <td>?
+          <td>715
+          <td>?
+          <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./binarytrees-fpascal-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>0.16
+          <td>&nbsp;14
+          <td>?
+          <td>715
+          <td>0.16
+          <td class="message">0%&nbsp;19%&nbsp;100%&nbsp;6%
+        <tr>
+          <td><a href="./binarytrees-fpascal-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>36.42
+          <td>&nbsp;21
+          <td>262,180
+          <td>715
+          <td>36.40
+          <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fannkuchredux-fpascal-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>0.11
+          <td>&nbsp;10
+          <td>?
+          <td>1050
+          <td>0.42
+          <td class="message">91%&nbsp;90%&nbsp;92%&nbsp;91%
+        <tr>
+          <td><a href="./fannkuchredux-fpascal-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>1.35
+          <td>&nbsp;11
+          <td>1,960
+          <td>1050
+          <td>5.20
+          <td class="message">98%&nbsp;99%&nbsp;96%&nbsp;96%
+        <tr>
+          <td><a href="./fannkuchredux-fpascal-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>17.90
+          <td>&nbsp;12
+          <td>1,984
+          <td>1050
+          <td>71.35
+          <td class="message">100%&nbsp;100%&nbsp;100%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fasta-fpascal-4.html"><span>fasta&nbsp;&nbsp;#4</span></a>
+          <td>0.12
+          <td>&nbsp;250,000
+          <td>?
+          <td>1140
+          <td>0.12
+          <td class="message">92%&nbsp;0%&nbsp;8%&nbsp;0%
+        <tr>
+          <td><a href="./fasta-fpascal-4.html"><span>fasta&nbsp;&nbsp;#4</span></a>
+          <td>1.12
+          <td>&nbsp;2,500,000
+          <td>8
+          <td>1140
+          <td>1.12
+          <td class="message">99%&nbsp;0%&nbsp;1%&nbsp;1%
+        <tr>
+          <td><a href="./fasta-fpascal-4.html"><span>fasta&nbsp;&nbsp;#4</span></a>
+          <td>10.85
+          <td>&nbsp;25,000,000
+          <td>8
+          <td>1140
+          <td>10.85
+          <td class="message">100%&nbsp;0%&nbsp;1%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-fpascal-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>0.10
+          <td>&nbsp;1,000
+          <td>?
+          <td>846
+          <td>0.25
+          <td class="message">33%&nbsp;50%&nbsp;89%&nbsp;89%
+        <tr>
+          <td><a href="./mandelbrot-fpascal-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>1.48
+          <td>&nbsp;4,000
+          <td>3,836
+          <td>846
+          <td>3.90
+          <td class="message">92%&nbsp;36%&nbsp;36%&nbsp;99%
+        <tr>
+          <td><a href="./mandelbrot-fpascal-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>23.30
+          <td>&nbsp;16,000
+          <td>33,144
+          <td>846
+          <td>61.87
+          <td class="message">36%&nbsp;43%&nbsp;94%&nbsp;93%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-fpascal-5.html"><span>mandelbrot&nbsp;&nbsp;#5</span></a>
+          <td>0.07
+          <td>&nbsp;1,000
+          <td>?
+          <td>845
+          <td>0.24
+          <td class="message">86%&nbsp;100%&nbsp;83%&nbsp;100%
+        <tr>
+          <td><a href="./mandelbrot-fpascal-5.html"><span>mandelbrot&nbsp;&nbsp;#5</span></a>
+          <td>0.93
+          <td>&nbsp;4,000
+          <td>1,716
+          <td>845
+          <td>3.68
+          <td class="message">99%&nbsp;99%&nbsp;100%&nbsp;99%
+        <tr>
+          <td><a href="./mandelbrot-fpascal-5.html"><span>mandelbrot&nbsp;&nbsp;#5</span></a>
+          <td>14.62
+          <td>&nbsp;16,000
+          <td>30,016
+          <td>845
+          <td>58.40
+          <td class="message">100%&nbsp;100%&nbsp;100%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-fpascal-3.html"><span>mandelbrot&nbsp;&nbsp;#3</span></a>
+          <td>0.23
+          <td>&nbsp;1,000
+          <td>8
+          <td>526
+          <td>0.23
+          <td class="message">0%&nbsp;0%&nbsp;4%&nbsp;100%
+        <tr>
+          <td><a href="./mandelbrot-fpascal-3.html"><span>mandelbrot&nbsp;&nbsp;#3</span></a>
+          <td>3.54
+          <td>&nbsp;4,000
+          <td>8
+          <td>526
+          <td>3.54
+          <td class="message">1%&nbsp;0%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./mandelbrot-fpascal-3.html"><span>mandelbrot&nbsp;&nbsp;#3</span></a>
+          <td>56.32
+          <td>&nbsp;16,000
+          <td>8
+          <td>526
+          <td>56.31
+          <td class="message">55%&nbsp;0%&nbsp;1%&nbsp;45%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-fpascal-4.html"><span>mandelbrot&nbsp;&nbsp;#4</span></a>
+          <td>0.07
+          <td>&nbsp;1,000
+          <td>?
+          <td>774
+          <td>0.27
+          <td class="message">88%&nbsp;88%&nbsp;88%&nbsp;88%
+        <tr>
+          <td><a href="./mandelbrot-fpascal-4.html"><span>mandelbrot&nbsp;&nbsp;#4</span></a>
+          <td>1.05
+          <td>&nbsp;4,000
+          <td>1,888
+          <td>774
+          <td>4.17
+          <td class="message">99%&nbsp;99%&nbsp;99%&nbsp;100%
+        <tr>
+          <td><a href="./mandelbrot-fpascal-4.html"><span>mandelbrot&nbsp;&nbsp;#4</span></a>
+          <td>16.59
+          <td>&nbsp;16,000
+          <td>30,112
+          <td>774
+          <td>66.32
+          <td class="message">100%&nbsp;100%&nbsp;100%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-fpascal-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>0.10
+          <td>&nbsp;1,000
+          <td>?
+          <td>846
+          <td>0.26
+          <td class="message">91%&nbsp;33%&nbsp;50%&nbsp;89%
+        <tr>
+          <td><a href="./mandelbrot-fpascal-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>1.49
+          <td>&nbsp;4,000
+          <td>3,728
+          <td>846
+          <td>3.92
+          <td class="message">44%&nbsp;92%&nbsp;36%&nbsp;93%
+        <tr>
+          <td><a href="./mandelbrot-fpascal-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>23.30
+          <td>&nbsp;16,000
+          <td>33,144
+          <td>846
+          <td>61.86
+          <td class="message">93%&nbsp;37%&nbsp;93%&nbsp;43%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./meteor-fpascal-3.html"><span>meteor-contest&nbsp;&nbsp;#3</span></a>
+          <td>0.08
+          <td>&nbsp;2,098
+          <td>?
+          <td>5517
+          <td>0.08
+          <td class="message">0%&nbsp;100%&nbsp;0%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-fpascal-1.html"><span>n-body&nbsp;</span></a>
+          <td>0.23
+          <td>&nbsp;500,000
+          <td>8
+          <td>1325
+          <td>0.23
+          <td class="message">96%&nbsp;0%&nbsp;0%&nbsp;4%
+        <tr>
+          <td><a href="./nbody-fpascal-1.html"><span>n-body&nbsp;</span></a>
+          <td>2.24
+          <td>&nbsp;5,000,000
+          <td>8
+          <td>1325
+          <td>2.24
+          <td class="message">0%&nbsp;100%&nbsp;2%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-fpascal-1.html"><span>n-body&nbsp;</span></a>
+          <td>22.35
+          <td>&nbsp;50,000,000
+          <td>8
+          <td>1325
+          <td>22.34
+          <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-fpascal-2.html"><span>n-body&nbsp;&nbsp;#2</span></a>
+          <td>0.23
+          <td>&nbsp;500,000
+          <td>8
+          <td>1339
+          <td>0.23
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-fpascal-2.html"><span>n-body&nbsp;&nbsp;#2</span></a>
+          <td>2.28
+          <td>&nbsp;5,000,000
+          <td>8
+          <td>1339
+          <td>2.28
+          <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-fpascal-2.html"><span>n-body&nbsp;&nbsp;#2</span></a>
+          <td>22.74
+          <td>&nbsp;50,000,000
+          <td>8
+          <td>1339
+          <td>22.74
+          <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-fpascal-3.html"><span>n-body&nbsp;&nbsp;#3</span></a>
+          <td>0.25
+          <td>&nbsp;500,000
+          <td>8
+          <td>1435
+          <td>0.25
+          <td class="message">0%&nbsp;100%&nbsp;4%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-fpascal-3.html"><span>n-body&nbsp;&nbsp;#3</span></a>
+          <td>2.50
+          <td>&nbsp;5,000,000
+          <td>8
+          <td>1435
+          <td>2.49
+          <td class="message">0%&nbsp;100%&nbsp;0%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-fpascal-3.html"><span>n-body&nbsp;&nbsp;#3</span></a>
+          <td>24.92
+          <td>&nbsp;50,000,000
+          <td>8
+          <td>1435
+          <td>24.91
+          <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./pidigits-fpascal-1.html"><span>pidigits&nbsp;</span></a>
+          <td>0.86
+          <td>&nbsp;2,000
+          <td>284
+          <td>3060
+          <td>0.86
+          <td class="message">2%&nbsp;0%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./pidigits-fpascal-1.html"><span>pidigits&nbsp;</span></a>
+          <td>8.75
+          <td>&nbsp;6,000
+          <td>648
+          <td>3060
+          <td>8.74
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;1%
+        <tr>
+          <td><a href="./pidigits-fpascal-1.html"><span>pidigits&nbsp;</span></a>
+          <td>25.22
+          <td>&nbsp;10,000
+          <td>652
+          <td>3060
+          <td>25.22
+          <td class="message">100%&nbsp;0%&nbsp;1%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./pidigits-fpascal-2.html"><span>pidigits&nbsp;&nbsp;#2</span></a>
+          <td>0.22
+          <td>&nbsp;2,000
+          <td>992
+          <td>828
+          <td>0.21
+          <td class="message">0%&nbsp;5%&nbsp;0%&nbsp;95%
+        <tr>
+          <td><a href="./pidigits-fpascal-2.html"><span>pidigits&nbsp;&nbsp;#2</span></a>
+          <td>3.07
+          <td>&nbsp;6,000
+          <td>2,096
+          <td>828
+          <td>3.07
+          <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./pidigits-fpascal-2.html"><span>pidigits&nbsp;&nbsp;#2</span></a>
+          <td>10.93
+          <td>&nbsp;10,000
+          <td>2,628
+          <td>828
+          <td>10.93
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./pidigits-fpascal-3.html"><span>pidigits&nbsp;&nbsp;#3</span></a>
+          <td>0.07
+          <td>&nbsp;2,000
+          <td>?
+          <td>530
+          <td>0.07
+          <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./pidigits-fpascal-3.html"><span>pidigits&nbsp;&nbsp;#3</span></a>
+          <td>0.59
+          <td>&nbsp;6,000
+          <td>1,844
+          <td>530
+          <td>0.59
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;3%
+        <tr>
+          <td><a href="./pidigits-fpascal-3.html"><span>pidigits&nbsp;&nbsp;#3</span></a>
+          <td>1.73
+          <td>&nbsp;10,000
+          <td>2,428
+          <td>530
+          <td>1.72
+          <td class="message">0%&nbsp;2%&nbsp;100%&nbsp;1%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./regexredux-fpascal-1.html"><span>regex-redux&nbsp;</span></a>
+          <td>0.08
+          <td>&nbsp;50,000
+          <td>?
+          <td>1273
+          <td>0.08
+          <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./regexredux-fpascal-1.html"><span>regex-redux&nbsp;</span></a>
+          <td>0.74
+          <td>&nbsp;500,000
+          <td>6,712
+          <td>1273
+          <td>0.74
+          <td class="message">1%&nbsp;0%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./regexredux-fpascal-1.html"><span>regex-redux&nbsp;</span></a>
+          <td>7.80
+          <td>&nbsp;5,000,000
+          <td>99,480
+          <td>1273
+          <td>7.79
+          <td class="message">0%&nbsp;0%&nbsp;1%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./regexredux-fpascal-2.html"><span>regex-redux&nbsp;&nbsp;#2</span></a>
+          <td>0.13
+          <td>&nbsp;50,000
+          <td>?
+          <td>1503
+          <td>0.12
+          <td class="message">21%&nbsp;7%&nbsp;7%&nbsp;69%
+        <tr>
+          <td><a href="./regexredux-fpascal-2.html"><span>regex-redux&nbsp;&nbsp;#2</span></a>
+          <td>0.56
+          <td>&nbsp;500,000
+          <td>7,204
+          <td>1503
+          <td>0.59
+          <td class="message">14%&nbsp;11%&nbsp;7%&nbsp;98%
+        <tr>
+          <td><a href="./regexredux-fpascal-2.html"><span>regex-redux&nbsp;&nbsp;#2</span></a>
+          <td>3.81
+          <td>&nbsp;5,000,000
+          <td>102,432
+          <td>1503
+          <td>5.24
+          <td class="message">19%&nbsp;90%&nbsp;15%&nbsp;14%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./revcomp-fpascal-2.html"><span>reverse-complement&nbsp;&nbsp;#2</span></a>
+          <td>0.07
+          <td>&nbsp;250,000
+          <td>?
+          <td>771
+          <td>?
+          <td class="message">0%&nbsp;100%&nbsp;14%&nbsp;0%
+        <tr>
+          <td><a href="./revcomp-fpascal-2.html"><span>reverse-complement&nbsp;&nbsp;#2</span></a>
+          <td>8.32
+          <td>&nbsp;100,000,000
+          <td>509,364
+          <td>771
+          <td>8.31
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-fpascal-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>0.14
+          <td>&nbsp;500
+          <td>?
+          <td>423
+          <td>0.14
+          <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./spectralnorm-fpascal-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>4.77
+          <td>&nbsp;3,000
+          <td>8
+          <td>423
+          <td>4.77
+          <td class="message">1%&nbsp;0%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./spectralnorm-fpascal-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>15.97
+          <td>&nbsp;5,500
+          <td>8
+          <td>423
+          <td>15.97
+          <td class="message">100%&nbsp;0%&nbsp;1%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-fpascal-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>0.06
+          <td>&nbsp;500
+          <td>?
+          <td>542
+          <td>0.16
+          <td class="message">67%&nbsp;71%&nbsp;60%&nbsp;60%
+        <tr>
+          <td><a href="./spectralnorm-fpascal-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>1.20
+          <td>&nbsp;3,000
+          <td>1,848
+          <td>542
+          <td>4.74
+          <td class="message">99%&nbsp;99%&nbsp;98%&nbsp;99%
+        <tr>
+          <td><a href="./spectralnorm-fpascal-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>3.98
+          <td>&nbsp;5,500
+          <td>1,980
+          <td>542
+          <td>15.81
+          <td class="message">99%&nbsp;99%&nbsp;99%&nbsp;99%
+      <tbody>
+        <tr>
+          <td><a href="./threadring-fpascal-1.html"><span>thread-ring&nbsp;</span></a>
+          <td class="message">Make&nbsp;Error
+          <td>&nbsp;500,000
+          <td>
+          <td>
+          <td>
+          <td class="message">
+    </table>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./why-measure-toy-benchmark-programs.html"><span>toy programs</span></a>
+      <li><a href="./how-programs-are-measured.html"><span>details</span></a>
+      <li><a href="./dont-jump-to-conclusions.html"><span>conclusions</span></a>
+    </ul>
+  </nav>
+  <aside>
+    <p>We want easy answers, but easy answers are often incomplete or wrong. You and I know, there's more we need to understand.
+  </aside>
+</footer>
+

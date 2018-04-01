@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>thread-ring Ada 2005 GNAT&nbsp;#3 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>thread-ring Ada 2005 GNAT&nbsp;#3 program</h2>
+    <aside>
+      <p><a href="./threadring-description.html#threadring">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">-- The Computer Language Benchmarks Game</span>
+<span class="slc">-- http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">--</span>
+<span class="slc">--  Contributed by Francois Fabien (23 octobre 2011)</span>
+<span class="slc">--</span>
+<span class="slc">-- Os threads are Ada tasks. Transfer of control is done synchronously by an</span>
+<span class="slc">-- array of semaphores using a predefined Ada package.</span>
+<span class="slc">-- The token is a global data that needs no protection since only one</span>
+<span class="slc">-- thread at a time will use it.</span>
+<span class="slc">--</span>
+<span class="slc">-- Directives are in the source code, so compile only with:</span>
+<span class="slc">--    gnatchop threadring.gnat</span>
+<span class="slc">--    gnatmake -O3 -gnatn -march=native threadring.adb</span>
+<span class="slc">-----------------------------------------------------------------------------</span>
+<span class="kwa">pragma</span> Suppress <span class="opt">(</span>All_Checks<span class="opt">);</span> <span class="slc">-- go for speed not safety</span>
+<span class="slc">--</span>
+<span class="slc">-- pragmas used for optimization of the run-time.</span>
+<span class="kwa">pragma</span> Restrictions <span class="opt">(</span>No_Abort_Statements<span class="opt">);</span>
+<span class="kwa">pragma</span> Restrictions <span class="opt">(</span>Max_Asynchronous_Select_Nesting <span class="opt">=&gt;</span> <span class="num">0</span><span class="opt">);</span>
+
+<span class="slc">-----------------------------------------------------------------------------</span>
+
+<span class="kwa">with</span> Ada<span class="opt">.</span>Command_Line<span class="opt">;</span>             <span class="kwa">use</span> Ada<span class="opt">.</span>Command_Line<span class="opt">;</span>
+<span class="kwa">with</span> Ada<span class="opt">.</span>Synchronous_Task_Control<span class="opt">;</span> <span class="kwa">use</span> Ada<span class="opt">;</span>
+<span class="kwa">with</span> Threadring_Pool<span class="opt">;</span>              <span class="kwa">use</span> Threadring_Pool<span class="opt">;</span>
+
+<span class="kwa">pragma</span> Elaborate_All <span class="opt">(</span>Threadring_Pool<span class="opt">);</span>
+
+<span class="kwa">procedure</span> Threadring <span class="kwa">is</span>
+   <span class="slc">-- GNU ld will remove unused sections; GNAT specific</span>
+   <span class="kwa">pragma</span> Linker_Options <span class="opt">(</span><span class="str">&quot;-Wl,--gc-sections&quot;</span><span class="opt">);</span>
+
+<span class="kwa">begin</span>
+   <span class="kwa">if</span> Argument_Count <span class="opt">&gt;</span> <span class="num">0</span> <span class="kwa">then</span>
+      Token <span class="opt">:=</span> Tokens<span class="kwd">&apos;Value</span> <span class="opt">(</span>Argument <span class="opt">(</span><span class="num">1</span><span class="opt">));</span>
+   <span class="kwa">end if</span><span class="opt">;</span>
+   Synchronous_Task_Control<span class="opt">.</span>Set_True <span class="opt">(</span>Semaphores <span class="opt">(</span>Ring_Nbr<span class="kwd">&apos;First</span><span class="opt">));</span>
+
+<span class="kwa">end</span> Threadring<span class="opt">;</span>
+<span class="slc">-----------------------------------------------------------------------------</span>
+
+<span class="kwa">with</span> Ada<span class="opt">.</span>Synchronous_Task_Control<span class="opt">;</span> <span class="kwa">use</span> Ada<span class="opt">,</span> Ada<span class="opt">.</span>Synchronous_Task_Control<span class="opt">;</span>
+
+<span class="kwa">package</span> Threadring_Pool <span class="kwa">is</span>
+
+   Ring_Size <span class="opt">:</span> <span class="kwa">constant</span> <span class="opt">:=</span> <span class="num">503</span><span class="opt">;</span>
+   <span class="kwa">type</span> Ring_Nbr <span class="kwa">is range</span> <span class="num">1</span> <span class="opt">..</span> Ring_Size<span class="opt">;</span>
+
+   <span class="kwa">type</span> Tokens <span class="kwa">is range</span> <span class="opt">-</span><span class="num">1</span> <span class="opt">.. +(</span><span class="num">2</span> <span class="opt">**</span> <span class="num">31</span> <span class="opt">-</span> <span class="num">1</span><span class="opt">);</span>
+   <span class="slc">---- -1 =&gt; flag for task termination</span>
+   <span class="kwa">for</span> Tokens<span class="kwd">&apos;Size</span> <span class="kwa">use</span> <span class="num">32</span><span class="opt">;</span>
+
+   Token <span class="opt">:</span> Tokens <span class="opt">:=</span> <span class="num">2</span> <span class="opt">*</span> Ring_Size <span class="opt">-</span> <span class="num">1</span><span class="opt">;</span> <span class="slc">-- default value for testing</span>
+
+   Semaphores <span class="opt">:</span> <span class="kwa">array</span> <span class="opt">(</span>Ring_Nbr<span class="opt">)</span> <span class="kwa">of</span> Suspension_Object<span class="opt">;</span>
+
+<span class="kwa">private</span>
+
+   <span class="kwa">task type</span> Threads <span class="kwa">is</span>
+      <span class="kwa">entry</span> Initialize <span class="opt">(</span>Identifier <span class="opt">:</span> <span class="kwa">in</span> Ring_Nbr<span class="opt">);</span>
+   <span class="kwa">end</span> Threads<span class="opt">;</span>
+
+   Ring <span class="opt">:</span> <span class="kwa">array</span> <span class="opt">(</span>Ring_Nbr<span class="opt">)</span> <span class="kwa">of</span> Threads<span class="opt">;</span>
+
+<span class="kwa">end</span> Threadring_Pool<span class="opt">;</span>
+<span class="slc">-----------------------------------------------------------------------------</span>
+
+<span class="kwa">with</span> Ada<span class="opt">.</span>Text_IO<span class="opt">;</span> <span class="kwa">use</span> Ada<span class="opt">.</span>Text_IO<span class="opt">;</span>
+
+<span class="kwa">package body</span> Threadring_Pool <span class="kwa">is</span>
+
+   <span class="kwa">package</span> Ring_IO <span class="kwa">is new</span> Integer_IO <span class="opt">(</span>Ring_Nbr<span class="opt">);</span>
+
+   <span class="kwa">task body</span> Threads <span class="kwa">is</span>
+      ID<span class="opt">,</span> Next <span class="opt">:</span> Ring_Nbr<span class="opt">;</span>
+   <span class="kwa">begin</span>
+      <span class="kwa">accept</span> Initialize <span class="opt">(</span>Identifier <span class="opt">:</span> <span class="kwa">in</span> Ring_Nbr<span class="opt">)</span> <span class="kwa">do</span>
+         ID   <span class="opt">:=</span> Identifier<span class="opt">;</span>
+         Next <span class="opt">:=</span> ID <span class="kwa">mod</span> Ring_Size <span class="opt">+</span> <span class="num">1</span><span class="opt">;</span>
+         Set_False <span class="opt">(</span>Semaphores <span class="opt">(</span>ID<span class="opt">));</span>
+      <span class="kwa">end</span> Initialize<span class="opt">;</span>
+
+      <span class="kwa">loop</span>
+         Suspend_Until_True <span class="opt">(</span>Semaphores <span class="opt">(</span>ID<span class="opt">));</span>
+         Set_False <span class="opt">(</span>Semaphores <span class="opt">(</span>ID<span class="opt">));</span>
+         <span class="kwa">if</span> Token <span class="opt">&gt;</span> <span class="num">0</span> <span class="kwa">then</span>
+            Token <span class="opt">:=</span> Token <span class="opt">-</span> <span class="num">1</span><span class="opt">;</span>
+            Set_True <span class="opt">(</span>Semaphores <span class="opt">(</span>Next<span class="opt">));</span>
+         <span class="kwa">else</span>
+            <span class="kwa">exit</span><span class="opt">;</span>
+         <span class="kwa">end if</span><span class="opt">;</span>
+      <span class="kwa">end loop</span><span class="opt">;</span>
+
+      <span class="kwa">if</span> Token <span class="opt">=</span> <span class="num">0</span> <span class="kwa">then</span>
+         Ring_IO<span class="opt">.</span>Put <span class="opt">(</span>ID<span class="opt">,</span> Width <span class="opt">=&gt;</span> <span class="num">0</span><span class="opt">);</span>
+         New_Line<span class="opt">;</span>
+         Token <span class="opt">:= -</span><span class="num">1</span><span class="opt">;</span>
+      <span class="kwa">end if</span><span class="opt">;</span>
+      Set_True <span class="opt">(</span>Semaphores <span class="opt">(</span>Next<span class="opt">));</span>
+   <span class="kwa">end</span> Threads<span class="opt">;</span>
+
+<span class="kwa">begin</span>
+   <span class="kwa">for</span> T <span class="kwa">in</span> Ring<span class="kwd">&apos;Range</span> <span class="kwa">loop</span>
+      Ring <span class="opt">(</span>T<span class="opt">).</span>Initialize <span class="opt">(</span>Identifier <span class="opt">=&gt;</span> T<span class="opt">);</span>
+   <span class="kwa">end loop</span><span class="opt">;</span>
+<span class="kwa">end</span> Threadring_Pool<span class="opt">;</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+GNATMAKE 7.2.0
+gcc (Ubuntu 7.2.0-8ubuntu3) 7.2.0
+
+
+
+Thu, 26 Oct 2017 15:22:34 GMT
+
+MAKE:
+gnatchop -r -w threadring.gnat-3.gnat
+splitting threadring.gnat-3.gnat into:
+   threadring.adb
+   threadring_pool.ads
+   threadring_pool.adb
+gnatmake -O3 -fomit-frame-pointer -march=native -msse3 -mfpmath=sse -gnatNp -f threadring.adb -o threadring.gnat-3.gnat_run 
+gcc-7 -c -O3 -fomit-frame-pointer -march=native -msse3 -mfpmath=sse -gnatNp threadring.adb
+gcc-7 -c -O3 -fomit-frame-pointer -march=native -msse3 -mfpmath=sse -gnatNp threadring_pool.adb
+gnatbind-7 -x threadring.ali
+gnatlink-7 threadring.ali -O3 -fomit-frame-pointer -march=native -msse3 -mfpmath=sse -o threadring.gnat-3.gnat_run
+
+0.96s to complete and log all make actions
+
+COMMAND LINE:
+./threadring.gnat-3.gnat_run 50000000
+
+PROGRAM OUTPUT:
+292
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

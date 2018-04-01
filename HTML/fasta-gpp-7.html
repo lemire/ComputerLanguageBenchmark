@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>fasta C++ g++&nbsp;#7 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>fasta C++ g++&nbsp;#7 program</h2>
+    <aside>
+      <p><a href="./fasta-description.html#fasta">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">/* The Computer Language Benchmarks Game</span>
+<span class="com">http://benchmarksgame.alioth.debian.org/</span>
+<span class="com"></span>
+<span class="com">contributed by Sylvester Saguban</span>
+<span class="com">inspired from C++ G++ #7 from Rafal Rusin and contributors</span>
+<span class="com">- uses more features of C++17 and TS concept&apos;s &apos;auto&apos; function parameters</span>
+<span class="com">- more efficient multi-threading, which sadly is the reason why this</span>
+<span class="com"> this has more code than other implementations.</span>
+<span class="com">- data structure from array of struct to struct of arrays for better</span>
+<span class="com">  cache locality and higher chance of vectorization</span>
+<span class="com"></span>
+<span class="com">compile with g++ 7.2</span>
+<span class="com">with these flags -std=c++17 -march=native -O3 -msse -msse2 -msse3</span>
+<span class="com">*/</span>
+
+<span class="ppc">#include &lt;array&gt;</span>
+<span class="ppc">#include &lt;cstdio&gt;</span>
+<span class="ppc">#include &lt;thread&gt;</span>
+<span class="ppc">#include &lt;algorithm&gt;</span>
+<span class="ppc">#include &lt;mutex&gt;</span>
+<span class="ppc">#include &lt;condition_variable&gt;</span>
+<span class="ppc">#include &lt;atomic&gt;</span>
+
+<span class="kwb">struct</span> Config
+<span class="opt">{</span>
+    <span class="kwb">static</span> <span class="kwc">constexpr</span> <span class="kwb">unsigned</span> max_threads <span class="opt">=</span> <span class="num">8</span><span class="opt">;</span>
+    <span class="kwb">static</span> <span class="kwc">constexpr</span> <span class="kwb">unsigned</span> min_threads <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span>
+    <span class="kwb">static</span> <span class="kwc">constexpr</span> <span class="kwb">unsigned</span> chars_per_line <span class="opt">=</span> <span class="num">60</span><span class="opt">;</span>
+    <span class="kwb">static</span> <span class="kwc">constexpr</span> <span class="kwb">unsigned</span> max_proc <span class="opt">=</span> <span class="num">4</span><span class="opt">;</span>
+    <span class="kwb">static</span> <span class="kwc">constexpr</span> <span class="kwb">unsigned</span> min_thread_work <span class="opt">= (</span>chars_per_line <span class="opt">+</span> <span class="num">1</span><span class="opt">) *</span> <span class="num">84</span><span class="opt">;</span>
+    <span class="kwb">static</span> <span class="kwc">constexpr</span> <span class="kwb">unsigned</span> max_thread_buff <span class="opt">= (</span>chars_per_line <span class="opt">+</span> <span class="num">1</span><span class="opt">) *</span> <span class="num">1024</span><span class="opt">;</span>
+
+    <span class="kwb">static</span> <span class="kwc">constexpr</span> <span class="kwb">unsigned</span> im <span class="opt">=</span> <span class="num">139968</span><span class="opt">,</span> ia <span class="opt">=</span> <span class="num">3877</span><span class="opt">,</span> ic <span class="opt">=</span> <span class="num">29573</span><span class="opt">;</span>
+    <span class="kwb">static</span> <span class="kwc">constexpr</span> <span class="kwb">float</span> reciprocal <span class="opt">=</span> <span class="num">1.0</span>f <span class="opt">/</span> im<span class="opt">;</span>
+    <span class="kwb">static</span> <span class="kwc">inline</span> <span class="kwb">FILE</span><span class="opt">*</span> output <span class="opt">=</span> stdout<span class="opt">;</span>
+<span class="opt">};</span>
+
+<span class="kwc">class</span> ThreadMgr
+<span class="opt">{</span>
+    <span class="kwb">struct</span> Proc <span class="opt">{</span>
+        <span class="kwc">std</span><span class="opt">::</span>atomic<span class="opt">&lt;</span><span class="kwb">bool</span><span class="opt">&gt;</span>   once<span class="opt">;</span>
+        <span class="kwc">std</span><span class="opt">::</span>mutex          mtx<span class="opt">;</span>
+        <span class="kwb">unsigned</span>            index<span class="opt">,</span> index_reset<span class="opt">;</span>
+    <span class="opt">};</span>
+    <span class="kwc">std</span><span class="opt">::</span>atomic<span class="opt">&lt;</span><span class="kwb">unsigned</span><span class="opt">&gt;</span>       _out_sequence <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+    <span class="kwc">std</span><span class="opt">::</span>mutex                  _gen_mutex<span class="opt">,</span> _out_mutex<span class="opt">;</span>
+    <span class="kwc">std</span><span class="opt">::</span>condition_variable     _cv<span class="opt">;</span>
+    Proc                        _proc<span class="opt">[</span> <span class="kwc">Config</span><span class="opt">::</span>max_proc <span class="opt">];</span>
+    <span class="kwb">unsigned</span>                    _id_ctr <span class="opt">=</span> <span class="num">0</span><span class="opt">,</span> _threads <span class="opt">=</span> <span class="num">1</span><span class="opt">,</span> _proc_ctr <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+<span class="kwc">public</span><span class="opt">:</span>
+    <span class="kwb">struct</span> Context <span class="opt">{</span>
+        <span class="kwb">unsigned</span>        index<span class="opt">;</span>
+        <span class="kwb">union</span> <span class="opt">{</span>
+            <span class="kwd">alignas</span><span class="opt">(</span><span class="num">16</span><span class="opt">)</span> <span class="kwc">std</span><span class="opt">::</span>array<span class="opt">&lt;</span> <span class="kwb">int</span><span class="opt">,</span> <span class="kwc">Config</span><span class="opt">::</span>max_thread_buff <span class="opt">&gt;</span> ibuff<span class="opt">;</span>
+            <span class="kwd">alignas</span><span class="opt">(</span><span class="num">16</span><span class="opt">)</span> <span class="kwc">std</span><span class="opt">::</span>array<span class="opt">&lt;</span> <span class="kwb">char</span><span class="opt">,</span> <span class="kwc">Config</span><span class="opt">::</span>max_thread_buff <span class="opt">&gt;</span> cbuff<span class="opt">;</span>
+        <span class="opt">};</span>
+    <span class="opt">};</span>
+
+    <span class="kwb">void</span> <span class="kwd">SetThreadCount</span><span class="opt">(</span> <span class="kwb">unsigned</span> count <span class="opt">) {</span>
+        _threads <span class="opt">=</span> <span class="kwc">std</span><span class="opt">::</span><span class="kwd">clamp</span><span class="opt">(</span> count<span class="opt">,</span> <span class="kwc">Config</span><span class="opt">::</span>min_threads<span class="opt">,</span>
+                               <span class="kwc">Config</span><span class="opt">::</span>max_threads <span class="opt">);</span>
+    <span class="opt">}</span>
+
+    <span class="kwc">inline</span> <span class="kwb">void</span> <span class="kwd">SyncOutput</span><span class="opt">(</span> <span class="kwb">unsigned</span> index<span class="opt">,</span> <span class="kwb">const</span> <span class="kwc">auto</span><span class="opt">&amp;</span> function <span class="opt">) {</span>
+        <span class="kwc">std</span><span class="opt">::</span>unique_lock <span class="kwd">lock</span><span class="opt">(</span>_out_mutex<span class="opt">);</span>
+        _cv<span class="opt">.</span><span class="kwd">wait</span><span class="opt">(</span> lock<span class="opt">, [=]{</span> <span class="kwa">return</span> index <span class="opt">==</span> _out_sequence<span class="opt">; });</span>
+        <span class="kwd">function</span><span class="opt">();</span>
+        <span class="opt">++</span>_out_sequence<span class="opt">;</span>
+        _cv<span class="opt">.</span><span class="kwd">notify_all</span><span class="opt">();</span>
+    <span class="opt">}</span>
+
+    <span class="kwc">auto</span> <span class="kwd">Make</span><span class="opt">(</span> <span class="kwb">const</span> <span class="kwc">std</span><span class="opt">::</span>string_view<span class="opt">&amp;</span> text<span class="opt">,</span> <span class="kwb">unsigned</span> size<span class="opt">,</span> <span class="kwc">auto</span> output <span class="opt">) {</span>
+        <span class="kwb">unsigned</span> id <span class="opt">=</span> _id_ctr<span class="opt">++;</span>
+        <span class="kwc">auto</span><span class="opt">&amp;</span> proc <span class="opt">=</span> _proc<span class="opt">[</span> _proc_ctr<span class="opt">++ ];</span>
+        <span class="kwa">return</span> <span class="opt">[=, &amp;</span>proc<span class="opt">](</span> <span class="kwc">ThreadMgr</span><span class="opt">::</span>Context<span class="opt">&amp;</span> tdata <span class="opt">) {</span>
+            <span class="kwa">if</span><span class="opt">(</span> proc<span class="opt">.</span>once<span class="opt">.</span><span class="kwd">exchange</span><span class="opt">(</span><span class="kwa">false</span><span class="opt">) )</span>
+                <span class="kwa">this</span><span class="opt">-&gt;</span><span class="kwd">SyncOutput</span><span class="opt">(</span> id<span class="opt">, [&amp;]{</span>
+                <span class="kwc">std</span><span class="opt">::</span><span class="kwd">fwrite</span><span class="opt">(</span> text<span class="opt">.</span><span class="kwd">data</span><span class="opt">(),</span> <span class="num">1</span><span class="opt">,</span> text<span class="opt">.</span><span class="kwd">size</span><span class="opt">(),</span> <span class="kwc">Config</span><span class="opt">::</span>output <span class="opt">);</span>
+                <span class="kwd">output</span><span class="opt">(</span> size<span class="opt">,</span> tdata <span class="opt">);</span>
+            <span class="opt">});</span>
+        <span class="opt">};</span>
+    <span class="opt">}</span>
+
+    <span class="kwc">auto</span> <span class="kwd">Make</span><span class="opt">(</span> <span class="kwb">const</span> <span class="kwc">std</span><span class="opt">::</span>string_view<span class="opt">&amp;</span> text<span class="opt">,</span> <span class="kwb">unsigned</span> size<span class="opt">,</span>
+               <span class="kwc">auto</span> generate<span class="opt">,</span> <span class="kwc">auto</span> convert<span class="opt">,</span> <span class="kwc">auto</span> output <span class="opt">) {</span>
+        <span class="kwb">unsigned</span> work_count <span class="opt">=</span> <span class="kwc">std</span><span class="opt">::</span><span class="kwd">clamp</span><span class="opt">(</span> size <span class="opt">/</span> _threads<span class="opt">,</span>
+                                          <span class="kwc">Config</span><span class="opt">::</span>min_thread_work<span class="opt">,</span>
+                                          <span class="kwc">Config</span><span class="opt">::</span>max_thread_buff <span class="opt">);</span>
+        <span class="kwb">unsigned</span> id <span class="opt">=</span> _id_ctr<span class="opt">++;</span>
+        <span class="kwb">unsigned</span> limit <span class="opt">=</span> id <span class="opt">+ (</span>size <span class="opt">/</span> work_count<span class="opt">) + (</span>size <span class="opt">%</span> work_count <span class="opt">!=</span> <span class="num">0</span><span class="opt">);</span>
+        _id_ctr <span class="opt">=</span> limit <span class="opt">+</span> <span class="num">1</span><span class="opt">;</span>
+        <span class="kwc">auto</span><span class="opt">&amp;</span> proc <span class="opt">=</span> _proc<span class="opt">[</span> _proc_ctr<span class="opt">++ ];</span>
+        proc<span class="opt">.</span>index_reset <span class="opt">=</span> id <span class="opt">+</span> <span class="num">1</span><span class="opt">;</span>
+
+        <span class="kwa">return</span> <span class="opt">[=, &amp;</span>proc<span class="opt">](</span> <span class="kwc">ThreadMgr</span><span class="opt">::</span>Context<span class="opt">&amp;</span> tdata <span class="opt">) {</span>
+            <span class="kwa">if</span><span class="opt">(</span> proc<span class="opt">.</span>once<span class="opt">.</span><span class="kwd">exchange</span><span class="opt">(</span><span class="kwa">false</span><span class="opt">) )</span>
+                <span class="kwa">this</span><span class="opt">-&gt;</span><span class="kwd">SyncOutput</span><span class="opt">(</span> id<span class="opt">, [&amp;] {</span>
+                <span class="kwc">std</span><span class="opt">::</span><span class="kwd">fwrite</span><span class="opt">(</span> text<span class="opt">.</span><span class="kwd">data</span><span class="opt">(),</span> <span class="num">1</span><span class="opt">,</span> text<span class="opt">.</span><span class="kwd">size</span><span class="opt">(),</span> <span class="kwc">Config</span><span class="opt">::</span>output <span class="opt">);</span>
+            <span class="opt">});</span>
+
+            <span class="kwb">unsigned</span> start_index <span class="opt">=</span> id <span class="opt">+</span> <span class="num">1</span><span class="opt">;</span>
+            <span class="kwa">while</span><span class="opt">(</span><span class="kwa">true</span><span class="opt">) {</span>
+                <span class="kwb">unsigned</span> cvsize<span class="opt">;</span>
+                <span class="opt">{</span>
+                    <span class="kwc">std</span><span class="opt">::</span>scoped_lock <span class="kwd">lock</span><span class="opt">(</span>_gen_mutex<span class="opt">);</span>
+                    <span class="opt">{</span>
+                        <span class="kwc">std</span><span class="opt">::</span>scoped_lock <span class="kwd">lock</span><span class="opt">(</span>proc<span class="opt">.</span>mtx<span class="opt">);</span>
+                        <span class="kwa">if</span><span class="opt">(</span> proc<span class="opt">.</span>index <span class="opt">&gt;</span> limit <span class="opt">)</span>
+                            <span class="kwa">break</span><span class="opt">;</span>
+                        tdata<span class="opt">.</span>index <span class="opt">=</span> proc<span class="opt">.</span>index<span class="opt">++;</span>
+                    <span class="opt">}</span>
+                    cvsize <span class="opt">=</span> <span class="kwc">std</span><span class="opt">::</span><span class="kwd">min</span><span class="opt">(</span> work_count<span class="opt">,</span> size <span class="opt">-</span>
+                                       <span class="opt">(((</span>tdata<span class="opt">.</span>index <span class="opt">-</span> start_index<span class="opt">)</span>
+                                         <span class="opt">*</span> work_count<span class="opt">)) );</span>
+                    <span class="kwd">generate</span><span class="opt">(</span> cvsize<span class="opt">,</span> tdata <span class="opt">);</span>
+                <span class="opt">}</span>
+
+                <span class="kwb">unsigned</span> char_count <span class="opt">=</span> <span class="kwd">convert</span><span class="opt">(</span> cvsize<span class="opt">,</span> start_index<span class="opt">,</span>
+                                               work_count<span class="opt">,</span> tdata <span class="opt">);</span>
+
+                <span class="kwa">this</span><span class="opt">-&gt;</span><span class="kwd">SyncOutput</span><span class="opt">(</span> tdata<span class="opt">.</span>index<span class="opt">, [&amp;] {</span>
+                    <span class="kwa">if</span><span class="opt">(</span> tdata<span class="opt">.</span>index <span class="opt">==</span> limit <span class="opt">&amp;&amp;</span>
+                            tdata<span class="opt">.</span>cbuff<span class="opt">[</span>char_count<span class="opt">-</span><span class="num">1</span><span class="opt">] !=</span> <span class="str">&apos;</span><span class="esc">\n</span><span class="str">&apos;</span> <span class="opt">)</span>
+                        tdata<span class="opt">.</span>cbuff<span class="opt">[</span>char_count<span class="opt">++] =</span> <span class="str">&apos;</span><span class="esc">\n</span><span class="str">&apos;</span><span class="opt">;</span>
+                    <span class="kwd">output</span><span class="opt">(</span> char_count<span class="opt">,</span> tdata <span class="opt">);</span>
+                <span class="opt">});</span>
+            <span class="opt">}</span>
+        <span class="opt">};</span>
+    <span class="opt">}</span>
+
+    <span class="kwb">void</span> <span class="kwd">RunSequence</span><span class="opt">(</span> <span class="kwc">auto</span><span class="opt">...</span> f <span class="opt">){</span>
+        <span class="kwa">static_assert</span><span class="opt">(</span> <span class="kwa">sizeof</span><span class="opt">...(</span>f<span class="opt">) &lt;=</span> <span class="kwc">Config</span><span class="opt">::</span>max_proc<span class="opt">,</span>
+                       <span class="str">&quot;function chain is too large, &quot;</span>
+                       <span class="str">&quot;increase Config::max_proc.&quot;</span> <span class="opt">);</span>
+        <span class="kwc">std</span><span class="opt">::</span>thread threads<span class="opt">[</span> <span class="kwc">Config</span><span class="opt">::</span>max_threads <span class="opt">];</span>
+
+        _out_sequence <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+        _proc_ctr <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+        <span class="kwa">for</span><span class="opt">(</span> <span class="kwc">auto</span><span class="opt">&amp;</span> i <span class="opt">:</span> _proc <span class="opt">) {</span>
+            i<span class="opt">.</span>once <span class="opt">=</span> <span class="kwa">true</span><span class="opt">;</span>
+            i<span class="opt">.</span>index <span class="opt">=</span> i<span class="opt">.</span>index_reset<span class="opt">;</span>
+        <span class="opt">}</span>
+
+        <span class="kwa">for</span><span class="opt">(</span> <span class="kwb">unsigned</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> _threads<span class="opt">; ++</span>i <span class="opt">)</span>
+            threads<span class="opt">[</span>i<span class="opt">] =</span> <span class="kwc">std</span><span class="opt">::</span><span class="kwd">thread</span><span class="opt">( [=]{</span>
+                Context tdata <span class="opt">= {</span><span class="num">0</span><span class="opt">};</span>
+                <span class="opt">(</span><span class="kwd">f</span><span class="opt">(</span> tdata <span class="opt">), ...);</span>
+            <span class="opt">});</span>
+
+        <span class="kwa">for</span><span class="opt">(</span> <span class="kwb">unsigned</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> _threads<span class="opt">; ++</span>i <span class="opt">)</span>
+            threads<span class="opt">[</span>i<span class="opt">].</span><span class="kwd">join</span><span class="opt">();</span>
+    <span class="opt">}</span>
+<span class="opt">}</span> gdata<span class="opt">;</span>
+
+<span class="kwb">int</span> <span class="kwd">main</span><span class="opt">(</span><span class="kwb">int</span> argc<span class="opt">,</span> <span class="kwb">char</span> <span class="opt">*</span>argv<span class="opt">[])</span>
+<span class="opt">{</span>
+    <span class="kwb">static</span> <span class="kwc">constexpr</span> <span class="kwb">char</span> alu<span class="opt">[] =</span>
+        <span class="str">&quot;GGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAG&quot;</span>
+        <span class="str">&quot;GTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGC&quot;</span>
+        <span class="str">&quot;CGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCC&quot;</span>
+        <span class="str">&quot;GGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTC&quot;</span>
+        <span class="str">&quot;CGTCTCAAAAA&quot;</span><span class="opt">;</span>
+
+    <span class="kwb">static</span> <span class="kwc">constexpr std</span><span class="opt">::</span>array<span class="opt">&lt;</span> <span class="kwc">std</span><span class="opt">::</span>pair<span class="opt">&lt;</span> <span class="kwb">float</span><span class="opt">,</span> <span class="kwb">char</span> <span class="opt">&gt;,</span> <span class="num">15</span><span class="opt">&gt;</span> iub <span class="opt">= {{</span>
+         <span class="opt">{</span> <span class="num">0.27</span>f<span class="opt">,</span> <span class="str">&apos;a&apos;</span> <span class="opt">}, {</span> <span class="num">0.12</span>f<span class="opt">,</span> <span class="str">&apos;c&apos;</span> <span class="opt">}, {</span> <span class="num">0.12</span>f<span class="opt">,</span> <span class="str">&apos;g&apos;</span> <span class="opt">}, {</span> <span class="num">0.27</span>f<span class="opt">,</span> <span class="str">&apos;t&apos;</span> <span class="opt">},</span>
+         <span class="opt">{</span> <span class="num">0.02</span>f<span class="opt">,</span> <span class="str">&apos;B&apos;</span> <span class="opt">}, {</span> <span class="num">0.02</span>f<span class="opt">,</span> <span class="str">&apos;D&apos;</span> <span class="opt">}, {</span> <span class="num">0.02</span>f<span class="opt">,</span> <span class="str">&apos;H&apos;</span> <span class="opt">}, {</span> <span class="num">0.02</span>f<span class="opt">,</span> <span class="str">&apos;K&apos;</span> <span class="opt">},</span>
+         <span class="opt">{</span> <span class="num">0.02</span>f<span class="opt">,</span> <span class="str">&apos;M&apos;</span> <span class="opt">}, {</span> <span class="num">0.02</span>f<span class="opt">,</span> <span class="str">&apos;N&apos;</span> <span class="opt">}, {</span> <span class="num">0.02</span>f<span class="opt">,</span> <span class="str">&apos;R&apos;</span> <span class="opt">}, {</span> <span class="num">0.02</span>f<span class="opt">,</span> <span class="str">&apos;S&apos;</span> <span class="opt">},</span>
+         <span class="opt">{</span> <span class="num">0.02</span>f<span class="opt">,</span> <span class="str">&apos;V&apos;</span> <span class="opt">}, {</span> <span class="num">0.02</span>f<span class="opt">,</span> <span class="str">&apos;W&apos;</span> <span class="opt">}, {</span> <span class="num">0.02</span>f<span class="opt">,</span> <span class="str">&apos;Y&apos;</span> <span class="opt">}</span>
+    <span class="opt">}};</span>
+
+    <span class="kwb">static</span> <span class="kwc">constexpr std</span><span class="opt">::</span>array<span class="opt">&lt;</span> <span class="kwc">std</span><span class="opt">::</span>pair<span class="opt">&lt;</span> <span class="kwb">float</span><span class="opt">,</span> <span class="kwb">char</span> <span class="opt">&gt;,</span> <span class="num">4</span><span class="opt">&gt;</span> homosapiens <span class="opt">= {{</span>
+         <span class="opt">{</span> <span class="num">0.3029549426680</span>f<span class="opt">,</span> <span class="str">&apos;a&apos;</span> <span class="opt">},</span>
+         <span class="opt">{</span> <span class="num">0.1979883004921</span>f<span class="opt">,</span> <span class="str">&apos;c&apos;</span> <span class="opt">},</span>
+         <span class="opt">{</span> <span class="num">0.1975473066391</span>f<span class="opt">,</span> <span class="str">&apos;g&apos;</span> <span class="opt">},</span>
+         <span class="opt">{</span> <span class="num">0.3015094502008</span>f<span class="opt">,</span> <span class="str">&apos;t&apos;</span> <span class="opt">}</span>
+    <span class="opt">}};</span>
+
+    <span class="kwb">static</span> <span class="kwc">auto</span> make_commulative <span class="opt">= [](</span> <span class="kwb">const</span> <span class="kwc">auto</span><span class="opt">&amp;</span> p <span class="opt">) {</span>
+        <span class="kwb">struct</span> Ret <span class="opt">{</span>
+            <span class="kwd">alignas</span><span class="opt">(</span><span class="num">16</span><span class="opt">)</span> <span class="kwc">std</span><span class="opt">::</span>array<span class="opt">&lt;</span> <span class="kwb">float</span><span class="opt">,</span> p<span class="opt">.</span><span class="kwd">size</span><span class="opt">() &gt;</span>  real<span class="opt">;</span>
+            <span class="kwd">alignas</span><span class="opt">(</span><span class="num">16</span><span class="opt">)</span> <span class="kwc">std</span><span class="opt">::</span>array<span class="opt">&lt;</span> <span class="kwb">char</span><span class="opt">,</span> p<span class="opt">.</span><span class="kwd">size</span><span class="opt">() &gt;</span>  ch<span class="opt">;</span>
+        <span class="opt">}</span> ret<span class="opt">{{</span>p<span class="opt">[</span><span class="num">0</span><span class="opt">].</span>first<span class="opt">}, {</span>p<span class="opt">[</span><span class="num">0</span><span class="opt">].</span>second<span class="opt">}};</span>
+
+        <span class="kwa">for</span><span class="opt">(</span><span class="kwb">unsigned</span> i <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span> i <span class="opt">&lt;</span> p<span class="opt">.</span><span class="kwd">size</span><span class="opt">(); ++</span>i <span class="opt">) {</span>
+            ret<span class="opt">.</span>real<span class="opt">[</span>i<span class="opt">] =</span> ret<span class="opt">.</span>real<span class="opt">[</span>i<span class="opt">-</span><span class="num">1</span><span class="opt">] +</span> p<span class="opt">[</span>i<span class="opt">].</span>first<span class="opt">;</span>
+            ret<span class="opt">.</span>ch<span class="opt">[</span>i<span class="opt">] =</span> p<span class="opt">[</span>i<span class="opt">].</span>second<span class="opt">;</span>
+        <span class="opt">}</span>
+        <span class="kwa">return</span> ret<span class="opt">;</span>
+    <span class="opt">};</span>
+
+    <span class="kwb">static</span> <span class="kwc">auto</span> get_random <span class="opt">= [] {</span>
+        <span class="kwb">static unsigned</span> last <span class="opt">=</span> <span class="num">42</span><span class="opt">;</span>
+        <span class="kwa">return</span> <span class="opt">(</span>last <span class="opt">= (</span>last <span class="opt">*</span> <span class="kwc">Config</span><span class="opt">::</span>ia <span class="opt">+</span> <span class="kwc">Config</span><span class="opt">::</span>ic<span class="opt">) %</span> <span class="kwc">Config</span><span class="opt">::</span>im<span class="opt">);</span>
+    <span class="opt">};</span>
+
+    <span class="kwb">static</span> <span class="kwc">auto</span> convert <span class="opt">= [](</span> <span class="kwb">const</span> <span class="kwc">auto</span><span class="opt">&amp;</span> data<span class="opt">,</span> <span class="kwb">unsigned</span> size<span class="opt">,</span>
+            <span class="kwb">unsigned</span> start_index<span class="opt">,</span> <span class="kwb">unsigned</span> max_work<span class="opt">,</span>
+            <span class="kwc">ThreadMgr</span><span class="opt">::</span>Context<span class="opt">&amp;</span> tdata <span class="opt">) {</span>
+        <span class="kwc">auto</span> iitr <span class="opt">=</span> tdata<span class="opt">.</span>ibuff<span class="opt">.</span><span class="kwd">begin</span><span class="opt">(),</span> iend <span class="opt">=</span> iitr <span class="opt">+</span> size<span class="opt">;</span>
+        <span class="kwc">auto</span> citr <span class="opt">=</span> tdata<span class="opt">.</span>cbuff<span class="opt">.</span><span class="kwd">begin</span><span class="opt">();</span>
+        <span class="kwc">auto</span> inner_loop <span class="opt">= [&amp;](</span> <span class="kwc">auto</span> end <span class="opt">) {</span>
+            <span class="kwa">while</span><span class="opt">(</span> iitr <span class="opt">!=</span> end <span class="opt">) {</span>
+                <span class="kwc">auto</span> f <span class="opt">= *</span>iitr<span class="opt">++ *</span> <span class="kwc">Config</span><span class="opt">::</span>reciprocal<span class="opt">;</span>
+                <span class="kwc">auto</span> i <span class="opt">=</span> <span class="kwc">std</span><span class="opt">::</span><span class="kwd">find_if</span><span class="opt">(</span> data<span class="opt">.</span>real<span class="opt">.</span><span class="kwd">begin</span><span class="opt">(),</span>
+                                       data<span class="opt">.</span>real<span class="opt">.</span><span class="kwd">end</span><span class="opt">(),</span>
+                                       <span class="opt">[</span>f<span class="opt">](</span> <span class="kwc">auto</span> t <span class="opt">){</span> <span class="kwa">return</span> f <span class="opt">&lt;=</span> t<span class="opt">; });</span>
+                <span class="opt">*</span>citr<span class="opt">++ =</span> data<span class="opt">.</span>ch<span class="opt">[</span> i <span class="opt">-</span> data<span class="opt">.</span>real<span class="opt">.</span><span class="kwd">begin</span><span class="opt">() ];</span>
+            <span class="opt">}</span>
+            <span class="opt">*</span>citr<span class="opt">++ =</span> <span class="str">&apos;</span><span class="esc">\n</span><span class="str">&apos;</span><span class="opt">;</span>
+        <span class="opt">};</span>
+
+        <span class="kwb">unsigned</span> aligner_count <span class="opt">=</span> <span class="kwc">Config</span><span class="opt">::</span>chars_per_line <span class="opt">-</span>
+                <span class="opt">((</span>max_work <span class="opt">* (</span>tdata<span class="opt">.</span>index <span class="opt">-</span> start_index<span class="opt">))</span>
+                 <span class="opt">%</span> <span class="kwc">Config</span><span class="opt">::</span>chars_per_line<span class="opt">);</span>
+
+        <span class="kwa">if</span><span class="opt">(</span> aligner_count <span class="opt">&gt;</span> <span class="num">0</span> <span class="opt">)</span>
+            <span class="kwd">inner_loop</span><span class="opt">(</span> iitr <span class="opt">+</span> aligner_count <span class="opt">);</span>
+
+        <span class="kwb">unsigned</span> odd_count <span class="opt">= (</span>iend <span class="opt">-</span> iitr<span class="opt">) %</span> <span class="kwc">Config</span><span class="opt">::</span>chars_per_line<span class="opt">;</span>
+        <span class="kwc">auto</span> iend_blocks <span class="opt">=</span> iend <span class="opt">-</span> odd_count<span class="opt">;</span>
+        <span class="kwa">while</span><span class="opt">(</span> iitr <span class="opt">&lt;</span> iend_blocks <span class="opt">)</span>
+            <span class="kwd">inner_loop</span><span class="opt">(</span> iitr <span class="opt">+</span> <span class="kwc">Config</span><span class="opt">::</span>chars_per_line <span class="opt">);</span>
+
+        <span class="kwa">if</span><span class="opt">(</span> odd_count <span class="opt">) {</span>
+            <span class="kwd">inner_loop</span><span class="opt">(</span> iitr <span class="opt">+</span> odd_count <span class="opt">);</span>
+            citr <span class="opt">-=</span> <span class="num">1</span><span class="opt">;</span>
+        <span class="opt">}</span>
+        <span class="kwa">return</span> citr <span class="opt">-</span> tdata<span class="opt">.</span>cbuff<span class="opt">.</span><span class="kwd">begin</span><span class="opt">();</span>
+    <span class="opt">};</span>
+
+    <span class="kwc">auto</span> generate <span class="opt">= [](</span> <span class="kwb">unsigned</span> size<span class="opt">,</span> <span class="kwc">ThreadMgr</span><span class="opt">::</span>Context<span class="opt">&amp;</span> tdata <span class="opt">) {</span>
+        <span class="kwa">for</span><span class="opt">(</span> <span class="kwc">auto</span> i <span class="opt">=</span> tdata<span class="opt">.</span>ibuff<span class="opt">.</span><span class="kwd">begin</span><span class="opt">(),</span> end <span class="opt">=</span> i <span class="opt">+</span> size<span class="opt">;</span> i <span class="opt">!=</span> end<span class="opt">; ++</span>i <span class="opt">)</span>
+            <span class="opt">*</span>i <span class="opt">=</span> <span class="kwd">get_random</span><span class="opt">();</span>
+    <span class="opt">};</span>
+
+    <span class="kwc">auto</span> output <span class="opt">= [](</span> <span class="kwb">unsigned</span> size<span class="opt">,</span> <span class="kwc">ThreadMgr</span><span class="opt">::</span>Context<span class="opt">&amp;</span> tdata <span class="opt">) {</span>
+        <span class="kwc">std</span><span class="opt">::</span><span class="kwd">fwrite</span><span class="opt">(</span> tdata<span class="opt">.</span>cbuff<span class="opt">.</span><span class="kwd">data</span><span class="opt">(),</span> <span class="num">1</span><span class="opt">,</span> size<span class="opt">,</span> <span class="kwc">Config</span><span class="opt">::</span>output <span class="opt">);</span>
+    <span class="opt">};</span>
+
+    <span class="kwc">auto</span> alu_out <span class="opt">= [&amp;](</span> <span class="kwb">unsigned</span> size<span class="opt">,</span> <span class="kwc">ThreadMgr</span><span class="opt">::</span>Context<span class="opt">&amp; ) {</span>
+        <span class="kwb">static</span> <span class="kwc">constexpr auto</span> alu_data <span class="opt">= [&amp;] {</span>
+            <span class="kwc">constexpr</span> <span class="kwb">unsigned</span> char_count <span class="opt">= (</span><span class="kwc">Config</span><span class="opt">::</span>chars_per_line <span class="opt">+</span> <span class="num">1</span><span class="opt">)</span>
+                    <span class="opt">* (</span><span class="kwa">sizeof</span><span class="opt">(</span>alu<span class="opt">) -</span> <span class="num">1</span><span class="opt">);</span>
+
+            <span class="kwc">std</span><span class="opt">::</span>array<span class="opt">&lt;</span> <span class="kwb">char</span><span class="opt">,</span> char_count <span class="opt">&gt;</span> ret<span class="opt">{};</span>
+            <span class="kwa">for</span><span class="opt">(</span><span class="kwb">unsigned</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">,</span> j <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> char_count<span class="opt">; ++</span>i<span class="opt">, ++</span>j<span class="opt">) {</span>
+                <span class="kwb">unsigned</span> ul <span class="opt">=</span> <span class="kwc">std</span><span class="opt">::</span><span class="kwd">min</span><span class="opt">(</span>i <span class="opt">+</span> <span class="kwc">Config</span><span class="opt">::</span>chars_per_line<span class="opt">,</span> char_count<span class="opt">);</span>
+                <span class="kwa">for</span><span class="opt">(;</span> i <span class="opt">&lt;</span> ul<span class="opt">; ++</span>i <span class="opt">)</span>
+                    ret<span class="opt">[</span>i<span class="opt">] =</span> alu<span class="opt">[ (</span>i <span class="opt">-</span> j<span class="opt">) % (</span><span class="kwa">sizeof</span><span class="opt">(</span>alu<span class="opt">) -</span> <span class="num">1</span><span class="opt">)];</span>
+                ret<span class="opt">[</span>i<span class="opt">] =</span> <span class="str">&apos;</span><span class="esc">\n</span><span class="str">&apos;</span><span class="opt">;</span>
+            <span class="opt">}</span>
+            <span class="kwa">return</span> ret<span class="opt">;</span>
+        <span class="opt">}();</span>
+
+        <span class="kwc">constexpr</span> <span class="kwb">unsigned</span> char_count <span class="opt">=</span> <span class="kwc">Config</span><span class="opt">::</span>chars_per_line <span class="opt">*</span>
+                <span class="opt">(</span><span class="kwa">sizeof</span><span class="opt">(</span>alu<span class="opt">) -</span> <span class="num">1</span><span class="opt">);</span>
+        <span class="kwa">for</span><span class="opt">(;</span> size <span class="opt">&gt;=</span> char_count<span class="opt">;</span> size <span class="opt">-=</span> char_count <span class="opt">)</span>
+            <span class="kwc">std</span><span class="opt">::</span><span class="kwd">fwrite</span><span class="opt">(</span> alu_data<span class="opt">.</span><span class="kwd">data</span><span class="opt">(),</span> <span class="num">1</span><span class="opt">,</span> alu_data<span class="opt">.</span><span class="kwd">size</span><span class="opt">(),</span> <span class="kwc">Config</span><span class="opt">::</span>output <span class="opt">);</span>
+        <span class="kwc">std</span><span class="opt">::</span><span class="kwd">fwrite</span><span class="opt">(</span> alu_data<span class="opt">.</span><span class="kwd">data</span><span class="opt">(),</span> <span class="num">1</span><span class="opt">,</span> size <span class="opt">+</span>
+                     <span class="opt">(</span>size <span class="opt">/</span> <span class="kwc">Config</span><span class="opt">::</span>chars_per_line<span class="opt">),</span> <span class="kwc">Config</span><span class="opt">::</span>output <span class="opt">);</span>
+        <span class="kwc">std</span><span class="opt">::</span><span class="kwd">putc</span><span class="opt">(</span><span class="str">&apos;</span><span class="esc">\n</span><span class="str">&apos;</span><span class="opt">,</span> <span class="kwc">Config</span><span class="opt">::</span>output <span class="opt">);</span>
+    <span class="opt">};</span>
+
+    <span class="kwc">auto</span> iub_convert <span class="opt">= [](</span> <span class="kwb">unsigned</span> size<span class="opt">,</span> <span class="kwb">unsigned</span> start_index<span class="opt">,</span>
+            <span class="kwb">unsigned</span> max_work<span class="opt">,</span> <span class="kwc">ThreadMgr</span><span class="opt">::</span>Context<span class="opt">&amp;</span> tdata <span class="opt">) {</span>
+        <span class="kwb">static</span> <span class="kwc">constexpr auto</span> iub_data <span class="opt">=</span> <span class="kwd">make_commulative</span><span class="opt">(</span> iub <span class="opt">);</span>
+        <span class="kwa">return</span> <span class="kwd">convert</span><span class="opt">(</span> iub_data<span class="opt">,</span> size<span class="opt">,</span> start_index<span class="opt">,</span> max_work<span class="opt">,</span> tdata  <span class="opt">);</span>
+    <span class="opt">};</span>
+
+    <span class="kwc">auto</span> homo_convert <span class="opt">= [](</span> <span class="kwb">unsigned</span> size<span class="opt">,</span> <span class="kwb">unsigned</span> start_index<span class="opt">,</span>
+            <span class="kwb">unsigned</span> max_work<span class="opt">,</span> <span class="kwc">ThreadMgr</span><span class="opt">::</span>Context<span class="opt">&amp;</span> tdata <span class="opt">) {</span>
+        <span class="kwb">static</span> <span class="kwc">constexpr auto</span> hom_data <span class="opt">=</span> <span class="kwd">make_commulative</span><span class="opt">(</span> homosapiens <span class="opt">);</span>
+        <span class="kwa">return</span> <span class="kwd">convert</span><span class="opt">(</span> hom_data<span class="opt">,</span> size<span class="opt">,</span> start_index<span class="opt">,</span> max_work<span class="opt">,</span> tdata  <span class="opt">);</span>
+    <span class="opt">};</span>
+
+    gdata<span class="opt">.</span><span class="kwd">SetThreadCount</span><span class="opt">(</span> <span class="kwc">std</span><span class="opt">::</span><span class="kwc">thread</span><span class="opt">::</span><span class="kwd">hardware_concurrency</span><span class="opt">() );</span>
+
+    <span class="kwb">unsigned</span> n <span class="opt">=</span> <span class="kwc">std</span><span class="opt">::</span><span class="kwd">max</span><span class="opt">(</span> <span class="num">1000</span><span class="opt">,</span> <span class="kwc">std</span><span class="opt">::</span><span class="kwd">atoi</span><span class="opt">(</span> argv<span class="opt">[</span><span class="num">1</span><span class="opt">] ) );</span>
+
+    <span class="kwb">const</span> <span class="kwc">auto</span> alu_proc <span class="opt">=</span> gdata<span class="opt">.</span><span class="kwd">Make</span><span class="opt">(</span> <span class="str">&quot;&gt;ONE Homo sapiens alu</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span>
+                                      n <span class="opt">*</span> <span class="num">2</span><span class="opt">,</span> alu_out <span class="opt">);</span>
+
+    <span class="kwb">const</span> <span class="kwc">auto</span> iub_proc <span class="opt">=</span> gdata<span class="opt">.</span><span class="kwd">Make</span><span class="opt">(</span> <span class="str">&quot;&gt;TWO IUB ambiguity codes</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span>
+                                      n <span class="opt">*</span> <span class="num">3</span><span class="opt">,</span> generate<span class="opt">,</span> iub_convert<span class="opt">,</span> output <span class="opt">);</span>
+
+    <span class="kwb">const</span> <span class="kwc">auto</span> homo_proc <span class="opt">=</span> gdata<span class="opt">.</span><span class="kwd">Make</span><span class="opt">(</span> <span class="str">&quot;&gt;THREE Homo sapiens frequency</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span>
+                                       n <span class="opt">*</span> <span class="num">5</span><span class="opt">,</span> generate<span class="opt">,</span> homo_convert<span class="opt">,</span> output <span class="opt">);</span>
+
+    gdata<span class="opt">.</span><span class="kwd">RunSequence</span><span class="opt">(</span> alu_proc<span class="opt">,</span> iub_proc<span class="opt">,</span> homo_proc <span class="opt">);</span>
+    <span class="kwa">return</span> <span class="num">0</span><span class="opt">;</span>
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+g++ (Ubuntu 7.2.0-8ubuntu3) 7.2.0
+
+
+Thu, 08 Feb 2018 18:52:33 GMT
+
+MAKE:
+/usr/bin/g++ -c -pipe -O3 -fomit-frame-pointer -march=native -mfpmath=sse -msse3 -std=c++17 fasta.gpp-7.c++ -o fasta.gpp-7.c++.o &amp;&amp;  \
+        /usr/bin/g++ fasta.gpp-7.c++.o -o fasta.gpp-7.gpp_run -lpthread 
+rm fasta.gpp-7.c++
+
+4.57s to complete and log all make actions
+
+COMMAND LINE:
+./fasta.gpp-7.gpp_run 25000000
+
+(TRUNCATED) PROGRAM OUTPUT:
+&gt;ONE Homo sapiens alu
+GGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGA
+TCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACT
+AAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAG
+GCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCG
+CCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGT
+GGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCA
+GGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAA
+TTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAG
+AATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCA
+GCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGT
+AATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACC
+AGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTG
+GTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACC
+CGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAG
+AGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTT
+TGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACA
+TGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCT
+GTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGG
+TTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGT
+CTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGG
+CGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCG
+TCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTA
+CTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCG
+AGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCG
+GGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACC
+TGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAA
+TACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGA
+GGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACT
+GCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTC
+ACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGT
+TCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGC
+CGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCG
+CTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTG
+GGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCC
+CAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCT
+GGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGC
+GCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGA
+GGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGA
+GACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGA
+GGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTG
+AAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAAT
+CCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCA
+GTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAA
+AAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGC
+GGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCT
+ACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGG
+GAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATC
+GCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGC
+GGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGG
+TCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAA
+AAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAG
+GAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACT
+CCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCC
+TGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAG
+ACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGC
+GTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGA
+ACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGA
+CAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCA
+CTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCA
+ACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCG
+CCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGG
+AGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTC
+CGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCG
+AGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACC
+CCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAG
+CTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAG
+CCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGG
+CCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATC
+ACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAA
+AAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGC
+TGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCC
+ACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGG
+CTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGG
+AGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATT
+AGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAA
+TCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGC
+CTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAA
+TCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAG
+CCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGT
+GGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCG
+GGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAG
+CGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTG
+GGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATG
+GTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGT
+AATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTT
+GCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCT
+CAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCG
+GGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTC
+TCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACT
+CGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAG
+ATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGG
+CGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTG
+AGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATA
+CAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGG
+CAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGC
+ACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCAC
+GCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTC
+GAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCG
+GGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCT
+TGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGG
+CGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCA
+GCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGG
+CCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGC
+GCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGG
+CGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGA
+CTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGG
+CCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAA
+ACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCC
+CAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGT
+GAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAA
+AGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGG
+ATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTAC
+TAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGA
+GGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGC
+GCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGG
+TGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTC
+AGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAA
+ATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGA
+GAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCC
+AGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTG
+TAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGAC
+CAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGT
+GGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAAC
+CCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACA
+GAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACT
+TTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAAC
+ATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCC
+TGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAG
+GTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCG
+TCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAG
+GCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCC
+GTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCT
+ACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCC
+GAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCC
+GGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCAC
+CTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAA
+ATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTG
+AGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCAC
+TGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCT
+CACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAG
+TTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAG
+CCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATC
+GCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCT
+GGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATC
+CCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCC
+TGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGG
+CGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGG
+AGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCG
+AGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGG
+AGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGT
+GAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAA
+TCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGC
+AGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCA
+AAAAGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGG
+CGGATCACCTGAGGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTC
+TACTAAAAATACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCG
+GGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGAT
+CGCGCCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCG
+CGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAG
+GTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACA
+AAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCA
+GGAGAATCGCTTGAACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCAC
+TCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAGGCCGGGCGCGGTGGCTCACGC
+CTGTAATCCCAGCACTTTGGGAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGA
+GACCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGGG
+CGTGGTGGCGCGCGCCTGTAATCCCAGCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTG
+AACCCGGGAGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCCAGCCTGGGCG
+ACAGAGCGAGACTCCGTCTCAAAAAGGCCGG    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>meteor-contest Perl program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>meteor-contest Perl program</h2>
+    <aside>
+      <p><a href="./meteor-description.html#meteor">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc"># The Computer Language Benchmarks Game</span>
+<span class="slc"># http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">#</span>
+<span class="slc"># contributed by Daniel Green, 2010-04-30</span>
+<span class="slc"># based on python 3 #3</span>
+
+
+<span class="kwa">use</span> <span class="num">5.10.1</span><span class="opt">;</span>
+<span class="kwa">use</span> warnings<span class="opt">;</span>
+<span class="kwa">use</span> strict<span class="opt">;</span>
+<span class="kwa">use</span> integer<span class="opt">;</span>
+<span class="kwa">use</span> List<span class="opt">::</span>Util <span class="str">qw(min)</span><span class="opt">;</span>
+
+<span class="kwc">my</span> <span class="opt">(</span><span class="kwb">$w</span><span class="opt">,</span> <span class="kwb">$h</span><span class="opt">) = (</span><span class="num">5</span><span class="opt">,</span> <span class="num">10</span><span class="opt">);</span>
+<span class="kwc">my</span> <span class="kwb">$dir_no</span> <span class="opt">=</span> <span class="num">6</span><span class="opt">;</span>
+<span class="kwc">my</span> <span class="opt">(</span><span class="kwb">$S</span><span class="opt">,</span> <span class="kwb">$E</span><span class="opt">) = (</span><span class="kwb">$w</span> <span class="opt">*</span> <span class="kwb">$h</span><span class="opt">,</span> <span class="num">2</span><span class="opt">);</span>
+<span class="kwc">my</span> <span class="kwb">$SE</span> <span class="opt">=</span> <span class="kwb">$S</span> <span class="opt">+ (</span><span class="kwb">$E</span> <span class="opt">/</span> <span class="num">2</span><span class="opt">);</span>
+<span class="kwc">my</span> <span class="kwb">$SW</span> <span class="opt">=</span> <span class="kwb">$SE</span> <span class="opt">-</span> <span class="kwb">$E</span><span class="opt">;</span>
+<span class="kwc">my</span> <span class="opt">(</span><span class="kwb">$W</span><span class="opt">,</span> <span class="kwb">$NW</span><span class="opt">,</span> <span class="kwb">$NE</span><span class="opt">) = (-</span><span class="kwb">$E</span><span class="opt">, -</span><span class="kwb">$SE</span><span class="opt">, -</span><span class="kwb">$SW</span><span class="opt">);</span>
+
+<span class="kwc">my</span> <span class="kwb">%rd</span> <span class="opt">= (</span><span class="kwb">$E</span> <span class="opt">=&gt;</span> <span class="kwb">$NE</span><span class="opt">,</span> <span class="kwb">$NE</span> <span class="opt">=&gt;</span> <span class="kwb">$NW</span><span class="opt">,</span> <span class="kwb">$NW</span> <span class="opt">=&gt;</span> <span class="kwb">$W</span><span class="opt">,</span> <span class="kwb">$W</span> <span class="opt">=&gt;</span> <span class="kwb">$SW</span><span class="opt">,</span> <span class="kwb">$SW</span> <span class="opt">=&gt;</span> <span class="kwb">$SE</span><span class="opt">,</span> <span class="kwb">$SE</span> <span class="opt">=&gt;</span> <span class="kwb">$E</span><span class="opt">);</span>
+<span class="kwc">my</span> <span class="kwb">%fd</span> <span class="opt">= (</span><span class="kwb">$E</span> <span class="opt">=&gt;</span> <span class="kwb">$E</span><span class="opt">,</span> <span class="kwb">$NE</span> <span class="opt">=&gt;</span> <span class="kwb">$SE</span><span class="opt">,</span> <span class="kwb">$NW</span> <span class="opt">=&gt;</span> <span class="kwb">$SW</span><span class="opt">,</span> <span class="kwb">$W</span> <span class="opt">=&gt;</span> <span class="kwb">$W</span><span class="opt">,</span> <span class="kwb">$SW</span> <span class="opt">=&gt;</span> <span class="kwb">$NW</span><span class="opt">,</span> <span class="kwb">$SE</span> <span class="opt">=&gt;</span> <span class="kwb">$NE</span><span class="opt">);</span>
+
+<span class="kwc">my</span> <span class="opt">(</span><span class="kwb">$na</span><span class="opt">,</span> <span class="kwb">$nb</span><span class="opt">,</span> <span class="kwb">$nc</span><span class="opt">);</span>
+<span class="kwc">my</span> <span class="opt">(</span><span class="kwb">$board</span><span class="opt">,</span> <span class="kwb">$cti</span><span class="opt">,</span> <span class="kwb">$pieces</span><span class="opt">) =</span> get_puzzle<span class="opt">();</span>
+<span class="kwc">my</span> <span class="kwb">&#64;fps</span> <span class="opt">=</span> get_footprints<span class="opt">(</span><span class="kwb">$board</span><span class="opt">,</span> <span class="kwb">$cti</span><span class="opt">,</span> <span class="kwb">$pieces</span><span class="opt">);</span>
+<span class="kwc">my</span> <span class="kwb">&#64;se_nh</span> <span class="opt">=</span> get_senh<span class="opt">(</span><span class="kwb">$board</span><span class="opt">,</span> <span class="kwb">$cti</span><span class="opt">);</span>
+
+<span class="kwc">my</span> <span class="kwb">%free</span> <span class="opt">=</span> <span class="kwc">map</span> <span class="opt">{</span> <span class="kwb">$_</span> <span class="opt">=&gt;</span> <span class="kwc">undef</span> <span class="opt">}</span> <span class="num">0</span> <span class="opt">..</span> <span class="kwc">scalar</span> &#64;<span class="opt">{</span><span class="kwb">$board</span><span class="opt">} -</span> <span class="num">1</span><span class="opt">;</span>
+<span class="kwc">my</span> <span class="kwb">&#64;curr_board</span> <span class="opt">= (-</span><span class="num">1</span><span class="opt">)</span> x <span class="kwc">scalar</span> &#64;<span class="opt">{</span><span class="kwb">$board</span><span class="opt">};</span>
+<span class="kwc">my</span> <span class="kwb">&#64;pieces_left</span> <span class="opt">=</span> <span class="num">0</span> <span class="opt">..</span> <span class="kwc">scalar</span> &#64;<span class="opt">{</span><span class="kwb">$pieces</span><span class="opt">} -</span> <span class="num">1</span><span class="opt">;</span>
+<span class="kwc">my</span> <span class="kwb">&#64;solutions</span> <span class="opt">= ();</span>
+<span class="kwc">my</span> <span class="kwb">$needed</span> <span class="opt">=</span> <span class="kwb">$ARGV</span><span class="opt">[</span><span class="num">0</span><span class="opt">];</span>
+
+solve<span class="opt">(</span><span class="num">0</span><span class="opt">,</span> \<span class="kwb">%free</span><span class="opt">,</span> \<span class="kwb">&#64;pieces_left</span><span class="opt">);</span>
+<span class="kwb">&#64;solutions</span> <span class="opt">=</span> <span class="kwc">sort</span> <span class="kwb">&#64;solutions</span><span class="opt">;</span>
+
+<span class="kwc">say scalar</span> <span class="kwb">&#64;solutions</span><span class="opt">,</span>  <span class="str">&apos; solutions found&apos;</span><span class="opt">;</span>
+print_board<span class="opt">(</span><span class="kwb">$solutions</span><span class="opt">[</span><span class="num">0</span><span class="opt">]);</span>
+print_board<span class="opt">(</span><span class="kwb">$solutions</span><span class="opt">[-</span><span class="num">1</span><span class="opt">]);</span>
+<span class="kwc">print</span> <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+
+
+<span class="kwa">sub</span> rotate <span class="opt">{</span>
+    <span class="kwa">return</span> <span class="opt">[</span><span class="kwc">map</span> <span class="opt">{</span><span class="kwb">$rd</span><span class="opt">{</span><span class="kwb">$_</span><span class="opt">}}</span> &#64;<span class="opt">{</span><span class="kwb">$_</span><span class="opt">[</span><span class="num">0</span><span class="opt">]}];</span>
+<span class="opt">}</span>
+
+<span class="kwa">sub</span> flip <span class="opt">{</span>
+    <span class="kwa">return</span> <span class="opt">[</span><span class="kwc">map</span> <span class="opt">{</span><span class="kwb">$fd</span><span class="opt">{</span><span class="kwb">$_</span><span class="opt">}}</span> &#64;<span class="opt">{</span><span class="kwb">$_</span><span class="opt">[</span><span class="num">0</span><span class="opt">]}];</span>
+<span class="opt">}</span>
+
+<span class="kwa">sub</span> permute <span class="opt">{</span>
+    <span class="kwc">my</span> <span class="opt">(</span><span class="kwb">$ido</span><span class="opt">,</span> <span class="kwb">$r_ido</span><span class="opt">) =</span> <span class="kwb">&#64;_</span><span class="opt">;</span>
+
+    <span class="kwc">my</span> <span class="kwb">&#64;ps</span> <span class="opt">= (</span><span class="kwb">$ido</span><span class="opt">);</span>
+    <span class="kwa">for</span> <span class="kwc">my</span> <span class="kwb">$r</span> <span class="opt">(</span><span class="num">0</span> <span class="opt">..</span> <span class="kwb">$dir_no</span> <span class="opt">-</span> <span class="num">2</span><span class="opt">) {</span>
+        <span class="kwc">push</span> <span class="kwb">&#64;ps</span><span class="opt">,</span> rotate<span class="opt">(</span><span class="kwb">$ps</span><span class="opt">[-</span><span class="num">1</span><span class="opt">]);</span>
+
+        <span class="kwa">if</span> <span class="opt">(</span>&#64;<span class="opt">{</span><span class="kwb">$ido</span><span class="opt">} ~~</span> &#64;<span class="opt">{</span><span class="kwb">$r_ido</span><span class="opt">}) {</span>
+            <span class="kwc">my</span> <span class="kwb">$end</span> <span class="opt">=</span> min<span class="opt">(</span><span class="kwc">scalar</span> <span class="kwb">&#64;ps</span><span class="opt">,</span> <span class="kwc">int</span><span class="opt">(</span><span class="kwb">$dir_no</span><span class="opt">/</span><span class="num">2</span><span class="opt">));</span>
+            <span class="kwb">&#64;ps</span> <span class="opt">=</span> <span class="kwb">&#64;ps</span><span class="opt">[</span><span class="num">0</span> <span class="opt">..</span> <span class="kwb">$end</span><span class="opt">-</span><span class="num">1</span><span class="opt">];</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+    
+    <span class="kwc">push</span> <span class="kwb">&#64;ps</span><span class="opt">,</span> <span class="kwc">map</span> <span class="opt">{</span> flip<span class="opt">(</span><span class="kwb">$_</span><span class="opt">) }</span> <span class="kwb">&#64;ps</span><span class="opt">;</span>
+
+    <span class="kwa">return</span> \<span class="kwb">&#64;ps</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwa">sub</span> convert <span class="opt">{</span>
+    <span class="kwc">my</span> <span class="opt">(</span><span class="kwb">$ido</span><span class="opt">) =</span> <span class="kwb">&#64;_</span><span class="opt">;</span>
+
+    <span class="kwc">my</span> <span class="kwb">&#64;out</span> <span class="opt">= (</span><span class="num">0</span><span class="opt">);</span>
+    <span class="kwa">for</span> <span class="kwc">my</span> <span class="kwb">$o</span> <span class="opt">(</span>&#64;<span class="opt">{</span><span class="kwb">$ido</span><span class="opt">}) {</span>
+        <span class="kwc">push</span> <span class="kwb">&#64;out</span><span class="opt">,</span> <span class="kwb">$out</span><span class="opt">[-</span><span class="num">1</span><span class="opt">] +</span> <span class="kwb">$o</span><span class="opt">;</span>
+    <span class="opt">}</span>
+    
+    <span class="kwc">my</span> <span class="kwb">%unique</span><span class="opt">;</span>
+    <span class="kwa">return</span> <span class="opt">[</span><span class="kwc">grep</span> <span class="opt">{ !</span><span class="kwb">$unique</span><span class="opt">{</span><span class="kwb">$_</span><span class="opt">}++ }</span> <span class="kwb">&#64;out</span><span class="opt">];</span>
+<span class="opt">}</span>
+
+<span class="kwa">sub</span> get_footprints <span class="opt">{</span>
+    <span class="kwc">my</span> <span class="opt">(</span><span class="kwb">$bd</span><span class="opt">,</span> <span class="kwb">$ct</span><span class="opt">,</span> <span class="kwb">$ps</span><span class="opt">) =</span> <span class="kwb">&#64;_</span><span class="opt">;</span>
+
+    <span class="kwc">my</span> <span class="kwb">&#64;fp</span><span class="opt">;</span>
+    <span class="kwa">foreach</span> <span class="kwc">my</span> <span class="kwb">$p</span> <span class="opt">(</span><span class="num">0</span> <span class="opt">..</span> <span class="kwc">scalar</span> &#64;<span class="opt">{</span><span class="kwb">$ps</span><span class="opt">} -</span> <span class="num">1</span><span class="opt">) {</span>
+        <span class="kwa">foreach</span> <span class="kwc">my</span> <span class="kwb">$ci</span> <span class="opt">(</span><span class="num">0</span> <span class="opt">..</span> <span class="kwc">scalar</span> &#64;<span class="opt">{</span><span class="kwb">$bd</span><span class="opt">} -</span> <span class="num">1</span><span class="opt">) {</span>
+            <span class="kwb">$fp</span><span class="opt">[</span><span class="kwb">$ci</span><span class="opt">]-&gt;[</span><span class="kwb">$p</span><span class="opt">] = [];</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+
+    <span class="kwa">for</span> <span class="kwc">my</span> <span class="kwb">$c</span> <span class="opt">(</span>&#64;<span class="opt">{</span><span class="kwb">$bd</span><span class="opt">}) {</span>
+        <span class="kwa">for</span> <span class="opt">(</span><span class="kwc">my</span> <span class="kwb">$pi</span> <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> <span class="kwb">$pi</span> <span class="opt">&lt;</span> <span class="kwc">scalar</span> &#64;<span class="opt">{</span><span class="kwb">$ps</span><span class="opt">};</span> <span class="kwb">$pi</span><span class="opt">++) {</span>
+            <span class="kwa">for</span> <span class="kwc">my</span> <span class="kwb">$pp</span> <span class="opt">(</span>&#64;<span class="opt">{</span><span class="kwb">$ps</span><span class="opt">-&gt;[</span><span class="kwb">$pi</span><span class="opt">]}) {</span>
+                <span class="kwc">my</span> <span class="kwb">%f</span> <span class="opt">= ();</span>
+                <span class="kwa">for</span> <span class="kwc">my</span> <span class="kwb">$o</span> <span class="opt">(</span>&#64;<span class="opt">{</span><span class="kwb">$pp</span><span class="opt">}) {</span>
+                    <span class="kwa">if</span> <span class="opt">(</span><span class="kwc">exists</span> <span class="kwb">$ct</span><span class="opt">-&gt;{</span><span class="kwb">$c</span> <span class="opt">+</span> <span class="kwb">$o</span><span class="opt">}) {</span>
+                        <span class="kwb">$f</span><span class="opt">{</span><span class="kwb">$ct</span><span class="opt">-&gt;{</span><span class="kwb">$c</span> <span class="opt">+</span> <span class="kwb">$o</span><span class="opt">}}++;</span>
+                    <span class="opt">}</span>
+                <span class="opt">}</span>
+
+                <span class="kwa">if</span> <span class="opt">(</span><span class="kwc">scalar keys</span> <span class="kwb">%f</span> <span class="opt">==</span> <span class="num">5</span><span class="opt">) {</span>
+                    <span class="kwc">push</span> &#64;<span class="opt">{</span><span class="kwb">$fp</span><span class="opt">[</span>min<span class="opt">(</span><span class="kwc">keys</span> <span class="kwb">%f</span><span class="opt">)]-&gt;[</span><span class="kwb">$pi</span><span class="opt">]}, [</span><span class="kwc">keys</span> <span class="kwb">%f</span><span class="opt">];</span>
+                <span class="opt">}</span>
+            <span class="opt">}</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+    
+    <span class="kwa">return</span> <span class="kwb">&#64;fp</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwa">sub</span> get_senh <span class="opt">{</span>
+    <span class="kwc">my</span> <span class="opt">(</span><span class="kwb">$bd</span><span class="opt">,</span> <span class="kwb">$ct</span><span class="opt">) =</span> <span class="kwb">&#64;_</span><span class="opt">;</span>
+    
+    <span class="kwc">my</span> <span class="kwb">&#64;se_nh2</span> <span class="opt">= ();</span>
+    <span class="kwa">for</span> <span class="kwc">my</span> <span class="kwb">$c</span> <span class="opt">(</span>&#64;<span class="opt">{</span><span class="kwb">$bd</span><span class="opt">}) {</span>
+        <span class="kwc">my</span> <span class="kwb">%f</span> <span class="opt">= ();</span>
+        <span class="kwa">for</span> <span class="kwc">my</span> <span class="kwb">$o</span> <span class="opt">(</span><span class="kwb">$E</span><span class="opt">,</span> <span class="kwb">$SW</span><span class="opt">,</span> <span class="kwb">$SE</span><span class="opt">) {</span>
+            <span class="kwa">if</span> <span class="opt">(</span><span class="kwc">exists</span> <span class="kwb">$ct</span><span class="opt">-&gt;{</span><span class="kwb">$c</span> <span class="opt">+</span> <span class="kwb">$o</span><span class="opt">}) {</span>
+                <span class="kwb">$f</span><span class="opt">{</span><span class="kwb">$ct</span><span class="opt">-&gt;{</span><span class="kwb">$c</span> <span class="opt">+</span> <span class="kwb">$o</span><span class="opt">}}++;</span>
+            <span class="opt">}</span>
+        <span class="opt">}</span>
+        
+        <span class="kwc">push</span> <span class="kwb">&#64;se_nh2</span><span class="opt">,</span> \<span class="kwb">%f</span><span class="opt">;</span>
+    <span class="opt">}</span>
+    
+    <span class="kwa">return</span> <span class="kwb">&#64;se_nh2</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwa">sub</span> get_puzzle <span class="opt">{</span>
+
+    <span class="kwc">my</span> <span class="kwb">&#64;bd</span><span class="opt">;</span>
+    <span class="kwa">for</span> <span class="kwc">my</span> <span class="kwb">$y</span> <span class="opt">(</span><span class="num">0</span> <span class="opt">..</span> <span class="kwb">$h</span> <span class="opt">-</span> <span class="num">1</span><span class="opt">) {</span>
+        <span class="kwa">for</span> <span class="kwc">my</span> <span class="kwb">$x</span> <span class="opt">(</span><span class="num">0</span> <span class="opt">..</span> <span class="kwb">$w</span> <span class="opt">-</span> <span class="num">1</span><span class="opt">) {</span>
+            <span class="kwc">push</span> <span class="kwb">&#64;bd</span><span class="opt">,</span> <span class="kwb">$E</span><span class="opt">*</span><span class="kwb">$x</span> <span class="opt">+</span> <span class="kwb">$S</span><span class="opt">*</span><span class="kwb">$y</span> <span class="opt">+</span> <span class="kwb">$y%2</span><span class="opt">;</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+
+    <span class="kwc">my</span> <span class="kwb">%ct</span><span class="opt">;</span>
+    <span class="kwa">for</span> <span class="kwc">my</span> <span class="kwb">$i</span> <span class="opt">(</span><span class="num">0</span> <span class="opt">..</span> <span class="kwc">scalar</span> <span class="kwb">&#64;bd</span> <span class="opt">-</span> <span class="num">1</span><span class="opt">) {</span>
+        <span class="kwb">$ct</span><span class="opt">{</span><span class="kwb">$bd</span><span class="opt">[</span><span class="kwb">$i</span><span class="opt">]} =</span> <span class="kwb">$i</span><span class="opt">;</span>
+    <span class="opt">}</span>
+
+    <span class="kwc">my</span> <span class="kwb">&#64;idos</span> <span class="opt">= ([</span><span class="kwb">$E</span><span class="opt">,</span> <span class="kwb">$E</span><span class="opt">,</span> <span class="kwb">$E</span><span class="opt">,</span> <span class="kwb">$SE</span><span class="opt">],</span>
+                <span class="opt">[</span><span class="kwb">$SE</span><span class="opt">,</span> <span class="kwb">$SW</span><span class="opt">,</span> <span class="kwb">$W</span><span class="opt">,</span> <span class="kwb">$SW</span><span class="opt">],</span>
+                <span class="opt">[</span><span class="kwb">$W</span><span class="opt">,</span> <span class="kwb">$W</span><span class="opt">,</span> <span class="kwb">$SW</span><span class="opt">,</span> <span class="kwb">$SE</span><span class="opt">],</span>
+                <span class="opt">[</span><span class="kwb">$E</span><span class="opt">,</span> <span class="kwb">$E</span><span class="opt">,</span> <span class="kwb">$SW</span><span class="opt">,</span> <span class="kwb">$SE</span><span class="opt">],</span>
+                <span class="opt">[</span><span class="kwb">$NW</span><span class="opt">,</span> <span class="kwb">$W</span><span class="opt">,</span> <span class="kwb">$NW</span><span class="opt">,</span> <span class="kwb">$SE</span><span class="opt">,</span> <span class="kwb">$SW</span><span class="opt">],</span>
+                <span class="opt">[</span><span class="kwb">$E</span><span class="opt">,</span> <span class="kwb">$E</span><span class="opt">,</span> <span class="kwb">$NE</span><span class="opt">,</span> <span class="kwb">$W</span><span class="opt">],</span>
+                <span class="opt">[</span><span class="kwb">$NW</span><span class="opt">,</span> <span class="kwb">$NE</span><span class="opt">,</span> <span class="kwb">$NE</span><span class="opt">,</span> <span class="kwb">$W</span><span class="opt">],</span>
+                <span class="opt">[</span><span class="kwb">$NE</span><span class="opt">,</span> <span class="kwb">$SE</span><span class="opt">,</span> <span class="kwb">$E</span><span class="opt">,</span> <span class="kwb">$NE</span><span class="opt">],</span>
+                <span class="opt">[</span><span class="kwb">$SE</span><span class="opt">,</span> <span class="kwb">$SE</span><span class="opt">,</span> <span class="kwb">$E</span><span class="opt">,</span> <span class="kwb">$SE</span><span class="opt">],</span>
+                <span class="opt">[</span><span class="kwb">$E</span><span class="opt">,</span> <span class="kwb">$NW</span><span class="opt">,</span> <span class="kwb">$NW</span><span class="opt">,</span> <span class="kwb">$NW</span><span class="opt">]);</span>
+
+    <span class="kwc">my</span> <span class="kwb">&#64;ps</span><span class="opt">;</span>
+    <span class="kwa">for</span> <span class="kwc">my</span> <span class="kwb">$p</span> <span class="opt">(</span><span class="kwc">map</span> <span class="opt">{</span> permute<span class="opt">(</span><span class="kwb">$_</span><span class="opt">,</span> <span class="kwb">$idos</span><span class="opt">[</span><span class="num">3</span><span class="opt">]) }</span> <span class="kwb">&#64;idos</span><span class="opt">) {</span>
+        <span class="kwc">push</span> <span class="kwb">&#64;ps</span><span class="opt">, [</span><span class="kwc">map</span> <span class="opt">{</span>convert<span class="opt">(</span><span class="kwb">$_</span><span class="opt">)}</span> &#64;<span class="opt">{</span><span class="kwb">$p</span><span class="opt">}];</span>
+    <span class="opt">}</span>
+    
+    <span class="kwa">return</span> <span class="opt">(</span>\<span class="kwb">&#64;bd</span><span class="opt">,</span> \<span class="kwb">%ct</span><span class="opt">,</span> \<span class="kwb">&#64;ps</span><span class="opt">);</span>
+<span class="opt">}</span>
+
+<span class="kwa">sub</span> print_board <span class="opt">{</span>
+    <span class="kwc">my</span> <span class="opt">(</span><span class="kwb">$bd</span><span class="opt">) =</span> <span class="kwb">&#64;_</span><span class="opt">;</span>
+
+    <span class="kwc">print</span> <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+    <span class="kwa">for</span> <span class="kwc">my</span> <span class="kwb">$y</span> <span class="opt">(</span><span class="num">0</span> <span class="opt">..</span> <span class="kwb">$h</span> <span class="opt">-</span> <span class="num">1</span><span class="opt">) {</span>
+        <span class="kwa">for</span> <span class="kwc">my</span> <span class="kwb">$x</span> <span class="opt">(</span><span class="num">0</span> <span class="opt">..</span> <span class="kwb">$w</span> <span class="opt">-</span> <span class="num">1</span><span class="opt">) {</span>
+            <span class="kwc">print substr</span><span class="opt">(</span><span class="kwb">$bd</span><span class="opt">,</span> <span class="kwb">$x</span> <span class="opt">+</span> <span class="kwb">$y</span> <span class="opt">*</span> <span class="kwb">$w</span><span class="opt">,</span> <span class="num">1</span><span class="opt">) .</span> <span class="str">&apos; &apos;</span><span class="opt">;</span>
+        <span class="opt">}</span>
+        
+        <span class="kwc">print</span> <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+        
+        <span class="kwa">if</span> <span class="opt">(</span><span class="kwb">$y</span> <span class="opt">%</span> <span class="num">2</span> <span class="opt">==</span> <span class="num">0</span><span class="opt">) {</span>
+            <span class="kwc">print</span> <span class="str">&apos; &apos;</span><span class="opt">;</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="kwa">sub</span> solve <span class="opt">{</span>
+    <span class="kwc">my</span> <span class="opt">(</span><span class="kwb">$i_min</span><span class="opt">,</span> <span class="kwb">$free</span><span class="opt">,</span> <span class="kwb">$pieces_left</span><span class="opt">) =</span> <span class="kwb">&#64;_</span><span class="opt">;</span>
+    
+    <span class="kwc">my</span> <span class="kwb">$fp_i_cands</span> <span class="opt">=</span> <span class="kwb">$fps</span><span class="opt">[</span><span class="kwb">$i_min</span><span class="opt">];</span>
+    
+    <span class="kwa">for</span> <span class="kwc">my</span> <span class="kwb">$p</span> <span class="opt">(</span>&#64;<span class="opt">{</span><span class="kwb">$pieces_left</span><span class="opt">}) {</span>
+        <span class="kwc">my</span> <span class="kwb">$fp_cands</span> <span class="opt">=</span> <span class="kwb">$fp_i_cands</span><span class="opt">-&gt;[</span><span class="kwb">$p</span><span class="opt">];</span>
+        <span class="kwa">for</span> <span class="kwc">my</span> <span class="kwb">$fpa</span> <span class="opt">(</span>&#64;<span class="opt">{</span><span class="kwb">$fp_cands</span><span class="opt">}) {</span>
+            
+            <span class="kwb">$na</span> <span class="opt">=</span> <span class="kwc">scalar</span> &#64;<span class="opt">{</span><span class="kwb">$fpa</span><span class="opt">};</span>
+            <span class="kwb">$nb</span> <span class="opt">=</span> <span class="kwc">scalar keys</span> <span class="opt">%{</span><span class="kwb">$free</span><span class="opt">};</span>
+            <span class="kwb">$nc</span> <span class="opt">=</span> <span class="kwc">scalar grep</span> <span class="opt">{</span> <span class="kwc">exists</span> <span class="kwb">$free</span><span class="opt">-&gt;{</span><span class="kwb">$_</span><span class="opt">} }</span> &#64;<span class="opt">{</span><span class="kwb">$fpa</span><span class="opt">};</span>
+
+            <span class="kwa">if</span> <span class="opt">((</span><span class="kwb">$na</span> <span class="opt">==</span> <span class="kwb">$nc</span><span class="opt">) || (</span><span class="kwb">$na</span> <span class="opt">==</span> <span class="kwb">$nc</span> <span class="opt">&amp;&amp;</span> <span class="kwb">$nb</span> <span class="opt">==</span> <span class="kwb">$nc</span><span class="opt">)) {</span>
+                <span class="kwa">for</span> <span class="kwc">my</span> <span class="kwb">$ci</span> <span class="opt">(</span>&#64;<span class="opt">{</span><span class="kwb">$fpa</span><span class="opt">}) {</span>
+                    <span class="kwb">$curr_board</span><span class="opt">[</span><span class="kwb">$ci</span><span class="opt">] =</span> <span class="kwb">$p</span><span class="opt">;</span>
+                <span class="opt">}</span>
+                
+                <span class="kwa">if</span> <span class="opt">(</span><span class="kwc">scalar</span> &#64;<span class="opt">{</span><span class="kwb">$pieces_left</span><span class="opt">} &gt;</span> <span class="num">1</span><span class="opt">) {</span>
+                    
+                    <span class="kwc">my</span> <span class="kwb">%fp</span> <span class="opt">=</span> <span class="kwc">map</span> <span class="opt">{</span> <span class="kwb">$_</span> <span class="opt">=&gt;</span> <span class="kwc">undef</span> <span class="opt">}</span> &#64;<span class="opt">{</span><span class="kwb">$fpa</span><span class="opt">};</span>
+                    <span class="kwc">my</span> <span class="kwb">%n_free</span><span class="opt">;</span>
+                    <span class="kwb">&#64;n_free</span><span class="opt">{</span> <span class="kwc">grep</span> <span class="opt">{ !</span><span class="kwc">exists</span> <span class="kwb">$fp</span><span class="opt">{</span><span class="kwb">$_</span><span class="opt">} }</span> <span class="kwc">keys</span> <span class="opt">%{</span><span class="kwb">$free</span><span class="opt">} } = ();</span>
+                    
+                    <span class="kwc">my</span> <span class="kwb">$n_i_min</span> <span class="opt">=</span> min<span class="opt">(</span><span class="kwc">keys</span> <span class="kwb">%n_free</span><span class="opt">);</span>
+                    <span class="kwa">if</span> <span class="opt">((</span><span class="kwc">scalar grep</span> <span class="opt">{</span> <span class="kwc">exists</span> <span class="kwb">$se_nh</span><span class="opt">[</span><span class="kwb">$n_i_min</span><span class="opt">]-&gt;{</span><span class="kwb">$_</span><span class="opt">} }</span> <span class="kwc">keys</span> <span class="kwb">%n_free</span><span class="opt">) &gt;</span> <span class="num">0</span><span class="opt">) {</span>
+                        <span class="kwc">my</span> <span class="kwb">&#64;n_pieces_left</span> <span class="opt">=</span> &#64;<span class="opt">{</span><span class="kwb">$pieces_left</span><span class="opt">};</span>
+                        <span class="kwa">for</span> <span class="opt">(</span><span class="kwc">my</span> <span class="kwb">$x</span> <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> <span class="kwb">$x</span> <span class="opt">&lt;</span> <span class="kwc">scalar</span> <span class="kwb">&#64;n_pieces_left</span><span class="opt">;</span> <span class="kwb">$x</span><span class="opt">++) {</span>
+                            <span class="kwa">if</span> <span class="opt">(</span><span class="kwb">$n_pieces_left</span><span class="opt">[</span><span class="kwb">$x</span><span class="opt">] ==</span> <span class="kwb">$p</span><span class="opt">) {</span>
+                                <span class="kwc">splice</span><span class="opt">(</span><span class="kwb">&#64;n_pieces_left</span><span class="opt">,</span> <span class="kwb">$x</span><span class="opt">,</span> <span class="num">1</span><span class="opt">);</span>
+                                <span class="kwa">last</span><span class="opt">;</span>
+                            <span class="opt">}</span>
+                        <span class="opt">}</span>
+                        
+                        solve<span class="opt">(</span><span class="kwb">$n_i_min</span><span class="opt">,</span> \<span class="kwb">%n_free</span><span class="opt">,</span> \<span class="kwb">&#64;n_pieces_left</span><span class="opt">);</span>
+                    <span class="opt">}</span>
+                <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span>
+                    <span class="kwc">my</span> <span class="kwb">$s</span> <span class="opt">=</span> <span class="kwc">join</span><span class="opt">(</span><span class="str">&apos;&apos;</span><span class="opt">,</span> <span class="kwb">&#64;curr_board</span><span class="opt">);</span>
+                    <span class="kwc">push</span> <span class="kwb">&#64;solutions</span><span class="opt">,</span> <span class="kwb">$s</span><span class="opt">;</span>
+                    <span class="kwc">my</span> <span class="kwb">$rs</span> <span class="opt">=</span> <span class="kwc">reverse</span> <span class="kwb">$s</span><span class="opt">;</span>
+                    <span class="kwc">push</span> <span class="kwb">&#64;solutions</span><span class="opt">,</span> <span class="kwb">$rs</span><span class="opt">;</span>
+                    
+                    <span class="kwa">if</span> <span class="opt">(</span><span class="kwc">scalar</span> <span class="kwb">&#64;solutions</span> <span class="opt">&gt;=</span> <span class="kwb">$needed</span><span class="opt">) {</span>
+                        <span class="kwa">return</span><span class="opt">;</span>
+                    <span class="opt">}</span>
+                <span class="opt">}</span>
+            <span class="opt">}</span>
+        <span class="opt">}</span>
+        
+        <span class="kwa">if</span> <span class="opt">(</span><span class="kwc">scalar</span> <span class="kwb">&#64;solutions</span> <span class="opt">&gt;=</span> <span class="kwb">$needed</span><span class="opt">) {</span>
+            <span class="kwa">return</span><span class="opt">;</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+    
+    <span class="kwa">return</span><span class="opt">;</span>
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+This is perl 5, version 26, subversion 0 (v5.26.0) built for x86_64-linux-gnu-thread-multi
+
+
+
+Thu, 16 Nov 2017 20:27:41 GMT
+
+COMMAND LINE:
+/usr/bin/perl meteor.perl 2098
+
+PROGRAM OUTPUT:
+2098 solutions found
+
+0 0 0 0 1 
+ 2 2 2 0 1 
+2 6 6 1 1 
+ 2 6 1 5 5 
+8 6 5 5 5 
+ 8 6 3 3 3 
+4 8 8 9 3 
+ 4 4 8 9 3 
+4 7 4 7 9 
+ 7 7 7 9 9 
+
+9 9 9 9 8 
+ 9 6 6 8 5 
+6 6 8 8 5 
+ 6 8 2 5 5 
+7 7 7 2 5 
+ 7 4 7 2 0 
+1 4 2 2 0 
+ 1 4 4 0 3 
+1 4 0 0 3 
+ 1 1 3 3 3 
+
+
+Smartmatch is experimental at meteor.perl line 59.
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

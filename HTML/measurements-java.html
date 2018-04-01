@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="all" />
+<meta name="description" content="Performance measurements for all the Java programs implementing ~12 simple benchmark tasks, (64-bit Ubuntu quad core)." />
+<title>Java measurements (64-bit Ubuntu quad core) | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article,footer{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}code,h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}nav p{margin:0 .5em}ul{clear:left;margin:-0.3em 0 1.5em;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,span{border-bottom:.1em solid #333;padding-bottom:.1em}
+#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.best{font-weight:bold}.message{font-size:.8em}table{color:#333;margin:1.3em auto 0;text-align:right}tbody:after{content:"-";display:block;line-height:2.6em;visibility:hidden}td{border-bottom:.15em dotted #eee;padding:.7em 0 0 1em}td a,th a{display:block}td:first-child,th:first-child{text-align:left;padding-left:0}th{font-weight:normal;padding:0 0 0 1em}
+@media only screen{th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6),th:nth-child(7),td:nth-child(7){display:none}}@media only screen and (min-width:27em){th:nth-child(3),td:nth-child(3){display:table-cell}}@media only screen and (min-width:38em){th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:table-cell}}@media only screen and (min-width:47em){th:nth-child(7),td:nth-child(7){display:table-cell}}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+
+<article>
+  <div>
+    <h2>all Java programs & measurements</h2>
+    <aside>
+      <p>&nbsp;</a>
+    </aside>
+  </div>
+  <section>
+    <table>
+      <tbody>
+      <tr>
+        <td colspan="7" class="message"><p>java 10 2018-03-20<br/>
+Java(TM) SE Runtime Environment 18.3 (build 10+46)<br/>
+Java HotSpot(TM) 64-Bit Server VM 18.3 (build 10+46, mixed mode)
+
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./binarytrees-java-6.html"><span>binary-trees&nbsp;&nbsp;#6</span></a>
+          <td>0.24
+          <td>&nbsp;7
+          <td>2,208
+          <td>529
+          <td>0.39
+          <td class="message">21%&nbsp;32%&nbsp;87%&nbsp;44%
+        <tr>
+          <td><a href="./binarytrees-java-6.html"><span>binary-trees&nbsp;&nbsp;#6</span></a>
+          <td>0.33
+          <td>&nbsp;14
+          <td>1,020
+          <td>529
+          <td>0.53
+          <td class="message">59%&nbsp;33%&nbsp;35%&nbsp;42%
+        <tr>
+          <td><a href="./binarytrees-java-6.html"><span>binary-trees&nbsp;&nbsp;#6</span></a>
+          <td>12.66
+          <td>&nbsp;21
+          <td>871,440
+          <td>529
+          <td>16.13
+          <td class="message">12%&nbsp;83%&nbsp;23%&nbsp;12%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./binarytrees-java-4.html"><span>binary-trees&nbsp;&nbsp;#4</span></a>
+          <td>0.25
+          <td>&nbsp;7
+          <td>2,224
+          <td>840
+          <td>0.42
+          <td class="message">44%&nbsp;36%&nbsp;50%&nbsp;44%
+        <tr>
+          <td><a href="./binarytrees-java-4.html"><span>binary-trees&nbsp;&nbsp;#4</span></a>
+          <td>0.34
+          <td>&nbsp;14
+          <td>2,236
+          <td>840
+          <td>0.56
+          <td class="message">69%&nbsp;30%&nbsp;40%&nbsp;37%
+        <tr>
+          <td><a href="./binarytrees-java-4.html"><span>binary-trees&nbsp;&nbsp;#4</span></a>
+          <td>12.37
+          <td>&nbsp;21
+          <td>786,092
+          <td>840
+          <td>16.91
+          <td class="message">45%&nbsp;39%&nbsp;25%&nbsp;30%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./binarytrees-java-2.html"><span>binary-trees&nbsp;&nbsp;#2</span></a>
+          <td>0.24
+          <td>&nbsp;7
+          <td>1,836
+          <td>552
+          <td>0.39
+          <td class="message">28%&nbsp;75%&nbsp;27%&nbsp;38%
+        <tr>
+          <td><a href="./binarytrees-java-2.html"><span>binary-trees&nbsp;&nbsp;#2</span></a>
+          <td>0.33
+          <td>&nbsp;14
+          <td>1,020
+          <td>552
+          <td>0.54
+          <td class="message">36%&nbsp;31%&nbsp;71%&nbsp;47%
+        <tr>
+          <td><a href="./binarytrees-java-2.html"><span>binary-trees&nbsp;&nbsp;#2</span></a>
+          <td>12.92
+          <td>&nbsp;21
+          <td>842,424
+          <td>552
+          <td>16.43
+          <td class="message">23%&nbsp;66%&nbsp;22%&nbsp;18%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./binarytrees-java-3.html"><span>binary-trees&nbsp;&nbsp;#3</span></a>
+          <td>0.25
+          <td>&nbsp;7
+          <td>2,272
+          <td>540
+          <td>0.38
+          <td class="message">25%&nbsp;54%&nbsp;56%&nbsp;31%
+        <tr>
+          <td><a href="./binarytrees-java-3.html"><span>binary-trees&nbsp;&nbsp;#3</span></a>
+          <td>0.33
+          <td>&nbsp;14
+          <td>1,020
+          <td>540
+          <td>0.52
+          <td class="message">38%&nbsp;21%&nbsp;79%&nbsp;25%
+        <tr>
+          <td><a href="./binarytrees-java-3.html"><span>binary-trees&nbsp;&nbsp;#3</span></a>
+          <td>12.50
+          <td>&nbsp;21
+          <td>826,544
+          <td>540
+          <td>16.04
+          <td class="message">38%&nbsp;8%&nbsp;15%&nbsp;68%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./binarytrees-java-7.html"><span>binary-trees&nbsp;&nbsp;#7</span></a>
+          <td>0.35
+          <td>&nbsp;7
+          <td>1,024
+          <td>835
+          <td>0.49
+          <td class="message">45%&nbsp;15%&nbsp;46%&nbsp;53%
+        <tr>
+          <td><a href="./binarytrees-java-7.html"><span>binary-trees&nbsp;&nbsp;#7</span></a>
+          <td>0.35
+          <td>&nbsp;14
+          <td>2,208
+          <td>835
+          <td>0.70
+          <td class="message">66%&nbsp;41%&nbsp;39%&nbsp;71%
+        <tr>
+          <td><a href="./binarytrees-java-7.html"><span>binary-trees&nbsp;&nbsp;#7</span></a>
+          <td>8.39
+          <td>&nbsp;21
+          <td>933,808
+          <td>835
+          <td>28.28
+          <td class="message">82%&nbsp;86%&nbsp;84%&nbsp;88%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./chameneosredux-java-4.html"><span>chameneos-redux&nbsp;&nbsp;#4</span></a>
+          <td>0.46
+          <td>&nbsp;60,000
+          <td>34,532
+          <td>1615
+          <td>1.30
+          <td class="message">67%&nbsp;82%&nbsp;80%&nbsp;59%
+        <tr>
+          <td><a href="./chameneosredux-java-4.html"><span>chameneos-redux&nbsp;&nbsp;#4</span></a>
+          <td>0.90
+          <td>&nbsp;600,000
+          <td>33,800
+          <td>1615
+          <td>2.94
+          <td class="message">85%&nbsp;93%&nbsp;67%&nbsp;84%
+        <tr>
+          <td><a href="./chameneosredux-java-4.html"><span>chameneos-redux&nbsp;&nbsp;#4</span></a>
+          <td>5.03
+          <td>&nbsp;6,000,000
+          <td>36,052
+          <td>1615
+          <td>17.28
+          <td class="message">97%&nbsp;98%&nbsp;53%&nbsp;98%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./chameneosredux-java-2.html"><span>chameneos-redux&nbsp;&nbsp;#2</span></a>
+          <td>0.41
+          <td>&nbsp;60,000
+          <td>976
+          <td>1429
+          <td>0.96
+          <td class="message">83%&nbsp;42%&nbsp;46%&nbsp;63%
+        <tr>
+          <td><a href="./chameneosredux-java-2.html"><span>chameneos-redux&nbsp;&nbsp;#2</span></a>
+          <td>1.13
+          <td>&nbsp;600,000
+          <td>57,332
+          <td>1429
+          <td>3.16
+          <td class="message">85%&nbsp;82%&nbsp;54%&nbsp;61%
+        <tr>
+          <td><a href="./chameneosredux-java-2.html"><span>chameneos-redux&nbsp;&nbsp;#2</span></a>
+          <td>7.83
+          <td>&nbsp;6,000,000
+          <td>75,412
+          <td>1429
+          <td>24.07
+          <td class="message">96%&nbsp;61%&nbsp;86%&nbsp;65%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./chameneosredux-java-3.html"><span>chameneos-redux&nbsp;&nbsp;#3</span></a>
+          <td>0.74
+          <td>&nbsp;60,000
+          <td>42,356
+          <td>1267
+          <td>2.24
+          <td class="message">78%&nbsp;81%&nbsp;78%&nbsp;68%
+        <tr>
+          <td><a href="./chameneosredux-java-3.html"><span>chameneos-redux&nbsp;&nbsp;#3</span></a>
+          <td>1.51
+          <td>&nbsp;600,000
+          <td>67,192
+          <td>1267
+          <td>4.95
+          <td class="message">68%&nbsp;87%&nbsp;85%&nbsp;89%
+        <tr>
+          <td><a href="./chameneosredux-java-3.html"><span>chameneos-redux&nbsp;&nbsp;#3</span></a>
+          <td>8.03
+          <td>&nbsp;6,000,000
+          <td>79,848
+          <td>1267
+          <td>27.16
+          <td class="message">96%&nbsp;87%&nbsp;82%&nbsp;74%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./chameneosredux-java-1.html"><span>chameneos-redux&nbsp;</span></a>
+          <td>0.42
+          <td>&nbsp;60,000
+          <td>35,600
+          <td>1770
+          <td>0.94
+          <td class="message">50%&nbsp;44%&nbsp;66%&nbsp;71%
+        <tr>
+          <td><a href="./chameneosredux-java-1.html"><span>chameneos-redux&nbsp;</span></a>
+          <td>0.84
+          <td>&nbsp;600,000
+          <td>48,036
+          <td>1770
+          <td>1.62
+          <td class="message">44%&nbsp;59%&nbsp;29%&nbsp;61%
+        <tr>
+          <td><a href="./chameneosredux-java-1.html"><span>chameneos-redux&nbsp;</span></a>
+          <td>7.98
+          <td>&nbsp;6,000,000
+          <td>58,808
+          <td>1770
+          <td>12.30
+          <td class="message">40%&nbsp;32%&nbsp;38%&nbsp;42%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fannkuchredux-java-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>0.42
+          <td>&nbsp;10
+          <td>1,008
+          <td>1282
+          <td>1.08
+          <td class="message">74%&nbsp;51%&nbsp;56%&nbsp;85%
+        <tr>
+          <td><a href="./fannkuchredux-java-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>1.68
+          <td>&nbsp;11
+          <td>31,444
+          <td>1282
+          <td>6.08
+          <td class="message">88%&nbsp;90%&nbsp;95%&nbsp;91%
+        <tr>
+          <td><a href="./fannkuchredux-java-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>18.27
+          <td>&nbsp;12
+          <td>31,820
+          <td>1282
+          <td>72.06
+          <td class="message">99%&nbsp;99%&nbsp;98%&nbsp;98%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fannkuchredux-java-3.html"><span>fannkuch-redux&nbsp;&nbsp;#3</span></a>
+          <td>0.65
+          <td>&nbsp;10
+          <td>31,596
+          <td>1257
+          <td>0.80
+          <td class="message">25%&nbsp;9%&nbsp;11%&nbsp;82%
+        <tr>
+          <td><a href="./fannkuchredux-java-3.html"><span>fannkuch-redux&nbsp;&nbsp;#3</span></a>
+          <td>5.35
+          <td>&nbsp;11
+          <td>31,448
+          <td>1257
+          <td>5.54
+          <td class="message">3%&nbsp;3%&nbsp;2%&nbsp;96%
+        <tr>
+          <td><a href="./fannkuchredux-java-3.html"><span>fannkuch-redux&nbsp;&nbsp;#3</span></a>
+          <td>70.63
+          <td>&nbsp;12
+          <td>31,804
+          <td>1257
+          <td>70.82
+          <td class="message">1%&nbsp;1%&nbsp;1%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fannkuchredux-java-2.html"><span>fannkuch-redux&nbsp;&nbsp;#2</span></a>
+          <td>0.66
+          <td>&nbsp;10
+          <td>31,716
+          <td>514
+          <td>0.80
+          <td class="message">6%&nbsp;19%&nbsp;93%&nbsp;6%
+        <tr>
+          <td><a href="./fannkuchredux-java-2.html"><span>fannkuch-redux&nbsp;&nbsp;#2</span></a>
+          <td>6.50
+          <td>&nbsp;11
+          <td>31,992
+          <td>514
+          <td>6.65
+          <td class="message">2%&nbsp;100%&nbsp;1%&nbsp;1%
+        <tr>
+          <td><a href="./fannkuchredux-java-2.html"><span>fannkuch-redux&nbsp;&nbsp;#2</span></a>
+          <td>76.53
+          <td>&nbsp;12
+          <td>32,176
+          <td>514
+          <td>76.67
+          <td class="message">25%&nbsp;0%&nbsp;0%&nbsp;75%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fasta-java-2.html"><span>fasta&nbsp;&nbsp;#2</span></a>
+          <td>0.34
+          <td>&nbsp;250,000
+          <td>2,096
+          <td>1257
+          <td>0.56
+          <td class="message">82%&nbsp;29%&nbsp;35%&nbsp;22%
+        <tr>
+          <td><a href="./fasta-java-2.html"><span>fasta&nbsp;&nbsp;#2</span></a>
+          <td>1.17
+          <td>&nbsp;2,500,000
+          <td>36,876
+          <td>1257
+          <td>1.44
+          <td class="message">95%&nbsp;7%&nbsp;6%&nbsp;20%
+        <tr>
+          <td><a href="./fasta-java-2.html"><span>fasta&nbsp;&nbsp;#2</span></a>
+          <td>7.82
+          <td>&nbsp;25,000,000
+          <td>36,844
+          <td>1257
+          <td>8.06
+          <td class="message">11%&nbsp;91%&nbsp;2%&nbsp;1%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fasta-java-4.html"><span>fasta&nbsp;&nbsp;#4</span></a>
+          <td>0.29
+          <td>&nbsp;250,000
+          <td>1,024
+          <td>1524
+          <td>0.45
+          <td class="message">7%&nbsp;24%&nbsp;34%&nbsp;93%
+        <tr>
+          <td><a href="./fasta-java-4.html"><span>fasta&nbsp;&nbsp;#4</span></a>
+          <td>0.77
+          <td>&nbsp;2,500,000
+          <td>35,652
+          <td>1524
+          <td>1.02
+          <td class="message">21%&nbsp;7%&nbsp;21%&nbsp;89%
+        <tr>
+          <td><a href="./fasta-java-4.html"><span>fasta&nbsp;&nbsp;#4</span></a>
+          <td>5.11
+          <td>&nbsp;25,000,000
+          <td>36,388
+          <td>1524
+          <td>5.35
+          <td class="message">2%&nbsp;3%&nbsp;3%&nbsp;98%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fasta-java-5.html"><span>fasta&nbsp;&nbsp;#5</span></a>
+          <td>0.29
+          <td>&nbsp;250,000
+          <td>2,056
+          <td>2473
+          <td>0.63
+          <td class="message">48%&nbsp;80%&nbsp;54%&nbsp;46%
+        <tr>
+          <td><a href="./fasta-java-5.html"><span>fasta&nbsp;&nbsp;#5</span></a>
+          <td>0.50
+          <td>&nbsp;2,500,000
+          <td>36,556
+          <td>2473
+          <td>1.20
+          <td class="message">68%&nbsp;58%&nbsp;76%&nbsp;46%
+        <tr>
+          <td><a href="./fasta-java-5.html"><span>fasta&nbsp;&nbsp;#5</span></a>
+          <td>2.27
+          <td>&nbsp;25,000,000
+          <td>43,628
+          <td>2473
+          <td>5.93
+          <td class="message">51%&nbsp;75%&nbsp;57%&nbsp;81%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./knucleotide-java-1.html"><span>k-nucleotide&nbsp;</span></a>
+          <td>0.70
+          <td>&nbsp;250,000
+          <td>49,068
+          <td>1812
+          <td>1.63
+          <td class="message">51%&nbsp;54%&nbsp;77%&nbsp;61%
+        <tr>
+          <td><a href="./knucleotide-java-1.html"><span>k-nucleotide&nbsp;</span></a>
+          <td>1.39
+          <td>&nbsp;2,500,000
+          <td>98,384
+          <td>1812
+          <td>3.95
+          <td class="message">66%&nbsp;85%&nbsp;71%&nbsp;65%
+        <tr>
+          <td><a href="./knucleotide-java-1.html"><span>k-nucleotide&nbsp;</span></a>
+          <td>8.75
+          <td>&nbsp;25,000,000
+          <td>385,056
+          <td>1812
+          <td>27.09
+          <td class="message">85%&nbsp;72%&nbsp;70%&nbsp;85%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./knucleotide-java-3.html"><span>k-nucleotide&nbsp;&nbsp;#3</span></a>
+          <td>0.84
+          <td>&nbsp;250,000
+          <td>64,668
+          <td>1635
+          <td>2.31
+          <td class="message">76%&nbsp;71%&nbsp;61%&nbsp;74%
+        <tr>
+          <td><a href="./knucleotide-java-3.html"><span>k-nucleotide&nbsp;&nbsp;#3</span></a>
+          <td>2.15
+          <td>&nbsp;2,500,000
+          <td>110,600
+          <td>1635
+          <td>6.46
+          <td class="message">70%&nbsp;77%&nbsp;87%&nbsp;73%
+        <tr>
+          <td><a href="./knucleotide-java-3.html"><span>k-nucleotide&nbsp;&nbsp;#3</span></a>
+          <td>12.36
+          <td>&nbsp;25,000,000
+          <td>381,676
+          <td>1635
+          <td>41.54
+          <td class="message">78%&nbsp;89%&nbsp;90%&nbsp;80%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./knucleotide-java-5.html"><span>k-nucleotide&nbsp;&nbsp;#5</span></a>
+          <td>1.15
+          <td>&nbsp;250,000
+          <td>196,684
+          <td>2219
+          <td>2.85
+          <td class="message">66%&nbsp;51%&nbsp;74%&nbsp;57%
+        <tr>
+          <td><a href="./knucleotide-java-5.html"><span>k-nucleotide&nbsp;&nbsp;#5</span></a>
+          <td>4.91
+          <td>&nbsp;2,500,000
+          <td>247,488
+          <td>2219
+          <td>12.37
+          <td class="message">79%&nbsp;42%&nbsp;91%&nbsp;42%
+        <tr>
+          <td><a href="./knucleotide-java-5.html"><span>k-nucleotide&nbsp;&nbsp;#5</span></a>
+          <td>35.51
+          <td>&nbsp;25,000,000
+          <td>228,788
+          <td>2219
+          <td>79.18
+          <td class="message">54%&nbsp;94%&nbsp;14%&nbsp;62%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./knucleotide-java-4.html"><span>k-nucleotide&nbsp;&nbsp;#4</span></a>
+          <td>1.26
+          <td>&nbsp;250,000
+          <td>202,148
+          <td>1882
+          <td>2.24
+          <td class="message">30%&nbsp;53%&nbsp;61%&nbsp;36%
+        <tr>
+          <td><a href="./knucleotide-java-4.html"><span>k-nucleotide&nbsp;&nbsp;#4</span></a>
+          <td>6.94
+          <td>&nbsp;2,500,000
+          <td>209,576
+          <td>1882
+          <td>8.06
+          <td class="message">10%&nbsp;27%&nbsp;66%&nbsp;14%
+        <tr>
+          <td><a href="./knucleotide-java-4.html"><span>k-nucleotide&nbsp;&nbsp;#4</span></a>
+          <td>60.93
+          <td>&nbsp;25,000,000
+          <td>197,284
+          <td>1882
+          <td>62.04
+          <td class="message">39%&nbsp;61%&nbsp;1%&nbsp;1%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./knucleotide-java-6.html"><span>k-nucleotide&nbsp;&nbsp;#6</span></a>
+          <td>0.75
+          <td>&nbsp;250,000
+          <td>46,456
+          <td>1607
+          <td>2.25
+          <td class="message">76%&nbsp;74%&nbsp;80%&nbsp;71%
+        <tr>
+          <td><a href="./knucleotide-java-6.html"><span>k-nucleotide&nbsp;&nbsp;#6</span></a>
+          <td>2.05
+          <td>&nbsp;2,500,000
+          <td>112,124
+          <td>1607
+          <td>6.60
+          <td class="message">84%&nbsp;76%&nbsp;75%&nbsp;88%
+        <tr>
+          <td><a href="./knucleotide-java-6.html"><span>k-nucleotide&nbsp;&nbsp;#6</span></a>
+          <td>12.31
+          <td>&nbsp;25,000,000
+          <td>381,104
+          <td>1607
+          <td>41.39
+          <td class="message">79%&nbsp;82%&nbsp;95%&nbsp;81%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-java-4.html"><span>mandelbrot&nbsp;&nbsp;#4</span></a>
+          <td>0.33
+          <td>&nbsp;1,000
+          <td>1,032
+          <td>660
+          <td>0.64
+          <td class="message">39%&nbsp;53%&nbsp;52%&nbsp;63%
+        <tr>
+          <td><a href="./mandelbrot-java-4.html"><span>mandelbrot&nbsp;&nbsp;#4</span></a>
+          <td>0.71
+          <td>&nbsp;4,000
+          <td>35,240
+          <td>660
+          <td>1.89
+          <td class="message">68%&nbsp;66%&nbsp;72%&nbsp;68%
+        <tr>
+          <td><a href="./mandelbrot-java-4.html"><span>mandelbrot&nbsp;&nbsp;#4</span></a>
+          <td>7.32
+          <td>&nbsp;16,000
+          <td>66,784
+          <td>660
+          <td>22.50
+          <td class="message">80%&nbsp;97%&nbsp;52%&nbsp;81%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-java-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>0.25
+          <td>&nbsp;1,000
+          <td>2,208
+          <td>796
+          <td>0.52
+          <td class="message">57%&nbsp;63%&nbsp;60%&nbsp;26%
+        <tr>
+          <td><a href="./mandelbrot-java-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>0.68
+          <td>&nbsp;4,000
+          <td>32,596
+          <td>796
+          <td>2.16
+          <td class="message">82%&nbsp;81%&nbsp;80%&nbsp;84%
+        <tr>
+          <td><a href="./mandelbrot-java-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>6.10
+          <td>&nbsp;16,000
+          <td>76,520
+          <td>796
+          <td>23.59
+          <td class="message">97%&nbsp;98%&nbsp;98%&nbsp;96%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-java-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>0.35
+          <td>&nbsp;1,000
+          <td>1,012
+          <td>665
+          <td>0.46
+          <td class="message">20%&nbsp;82%&nbsp;22%&nbsp;15%
+        <tr>
+          <td><a href="./mandelbrot-java-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>2.95
+          <td>&nbsp;4,000
+          <td>32,484
+          <td>665
+          <td>3.05
+          <td class="message">3%&nbsp;97%&nbsp;2%&nbsp;4%
+        <tr>
+          <td><a href="./mandelbrot-java-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>44.34
+          <td>&nbsp;16,000
+          <td>33,180
+          <td>665
+          <td>44.45
+          <td class="message">22%&nbsp;1%&nbsp;0%&nbsp;79%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-java-6.html"><span>mandelbrot&nbsp;&nbsp;#6</span></a>
+          <td>0.26
+          <td>&nbsp;1,000
+          <td>2,040
+          <td>802
+          <td>0.54
+          <td class="message">52%&nbsp;32%&nbsp;62%&nbsp;68%
+        <tr>
+          <td><a href="./mandelbrot-java-6.html"><span>mandelbrot&nbsp;&nbsp;#6</span></a>
+          <td>0.71
+          <td>&nbsp;4,000
+          <td>33,012
+          <td>802
+          <td>2.26
+          <td class="message">87%&nbsp;76%&nbsp;81%&nbsp;79%
+        <tr>
+          <td><a href="./mandelbrot-java-6.html"><span>mandelbrot&nbsp;&nbsp;#6</span></a>
+          <td>6.37
+          <td>&nbsp;16,000
+          <td>76,684
+          <td>802
+          <td>24.68
+          <td class="message">97%&nbsp;97%&nbsp;97%&nbsp;99%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-java-3.html"><span>mandelbrot&nbsp;&nbsp;#3</span></a>
+          <td>0.28
+          <td>&nbsp;1,000
+          <td>916
+          <td>903
+          <td>0.64
+          <td class="message">71%&nbsp;50%&nbsp;44%&nbsp;74%
+        <tr>
+          <td><a href="./mandelbrot-java-3.html"><span>mandelbrot&nbsp;&nbsp;#3</span></a>
+          <td>0.90
+          <td>&nbsp;4,000
+          <td>35,356
+          <td>903
+          <td>3.12
+          <td class="message">84%&nbsp;99%&nbsp;87%&nbsp;82%
+        <tr>
+          <td><a href="./mandelbrot-java-3.html"><span>mandelbrot&nbsp;&nbsp;#3</span></a>
+          <td>11.43
+          <td>&nbsp;16,000
+          <td>78,932
+          <td>903
+          <td>44.86
+          <td class="message">98%&nbsp;98%&nbsp;98%&nbsp;99%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./meteor-java-2.html"><span>meteor-contest&nbsp;&nbsp;#2</span></a>
+          <td>0.34
+          <td>&nbsp;2,098
+          <td>2,240
+          <td>5180
+          <td>0.64
+          <td class="message">21%&nbsp;69%&nbsp;50%&nbsp;52%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./meteor-java-1.html"><span>meteor-contest&nbsp;</span></a>
+          <td>0.80
+          <td>&nbsp;2,098
+          <td>39,452
+          <td>4408
+          <td>1.16
+          <td class="message">12%&nbsp;7%&nbsp;33%&nbsp;96%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-java-4.html"><span>n-body&nbsp;&nbsp;#4</span></a>
+          <td>0.40
+          <td>&nbsp;500,000
+          <td>2,152
+          <td>1489
+          <td>0.49
+          <td class="message">64%&nbsp;29%&nbsp;34%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-java-4.html"><span>n-body&nbsp;&nbsp;#4</span></a>
+          <td>2.42
+          <td>&nbsp;5,000,000
+          <td>32,872
+          <td>1489
+          <td>2.52
+          <td class="message">2%&nbsp;97%&nbsp;4%&nbsp;2%
+        <tr>
+          <td><a href="./nbody-java-4.html"><span>n-body&nbsp;&nbsp;#4</span></a>
+          <td>22.17
+          <td>&nbsp;50,000,000
+          <td>33,040
+          <td>1489
+          <td>22.27
+          <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;1%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-java-2.html"><span>n-body&nbsp;&nbsp;#2</span></a>
+          <td>0.40
+          <td>&nbsp;500,000
+          <td>2,060
+          <td>1424
+          <td>0.49
+          <td class="message">35%&nbsp;15%&nbsp;10%&nbsp;70%
+        <tr>
+          <td><a href="./nbody-java-2.html"><span>n-body&nbsp;&nbsp;#2</span></a>
+          <td>2.40
+          <td>&nbsp;5,000,000
+          <td>32,704
+          <td>1424
+          <td>2.50
+          <td class="message">96%&nbsp;3%&nbsp;2%&nbsp;4%
+        <tr>
+          <td><a href="./nbody-java-2.html"><span>n-body&nbsp;&nbsp;#2</span></a>
+          <td>22.38
+          <td>&nbsp;50,000,000
+          <td>33,084
+          <td>1424
+          <td>22.48
+          <td class="message">100%&nbsp;1%&nbsp;0%&nbsp;1%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-java-5.html"><span>n-body&nbsp;&nbsp;#5</span></a>
+          <td>0.42
+          <td>&nbsp;500,000
+          <td>33,080
+          <td>1429
+          <td>0.51
+          <td class="message">5%&nbsp;34%&nbsp;71%&nbsp;14%
+        <tr>
+          <td><a href="./nbody-java-5.html"><span>n-body&nbsp;&nbsp;#5</span></a>
+          <td>2.41
+          <td>&nbsp;5,000,000
+          <td>32,960
+          <td>1429
+          <td>2.50
+          <td class="message">98%&nbsp;1%&nbsp;2%&nbsp;3%
+        <tr>
+          <td><a href="./nbody-java-5.html"><span>n-body&nbsp;&nbsp;#5</span></a>
+          <td>22.51
+          <td>&nbsp;50,000,000
+          <td>32,892
+          <td>1429
+          <td>22.61
+          <td class="message">1%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-java-3.html"><span>n-body&nbsp;&nbsp;#3</span></a>
+          <td>0.40
+          <td>&nbsp;500,000
+          <td>2,040
+          <td>1430
+          <td>0.51
+          <td class="message">28%&nbsp;10%&nbsp;17%&nbsp;76%
+        <tr>
+          <td><a href="./nbody-java-3.html"><span>n-body&nbsp;&nbsp;#3</span></a>
+          <td>2.66
+          <td>&nbsp;5,000,000
+          <td>32,132
+          <td>1430
+          <td>2.76
+          <td class="message">2%&nbsp;5%&nbsp;97%&nbsp;2%
+        <tr>
+          <td><a href="./nbody-java-3.html"><span>n-body&nbsp;&nbsp;#3</span></a>
+          <td>22.78
+          <td>&nbsp;50,000,000
+          <td>33,160
+          <td>1430
+          <td>22.88
+          <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;1%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-java-1.html"><span>n-body&nbsp;</span></a>
+          <td>0.44
+          <td>&nbsp;500,000
+          <td>33,968
+          <td>1430
+          <td>0.53
+          <td class="message">62%&nbsp;36%&nbsp;24%&nbsp;5%
+        <tr>
+          <td><a href="./nbody-java-1.html"><span>n-body&nbsp;</span></a>
+          <td>2.44
+          <td>&nbsp;5,000,000
+          <td>33,628
+          <td>1430
+          <td>2.55
+          <td class="message">96%&nbsp;3%&nbsp;2%&nbsp;6%
+        <tr>
+          <td><a href="./nbody-java-1.html"><span>n-body&nbsp;</span></a>
+          <td>22.73
+          <td>&nbsp;50,000,000
+          <td>34,464
+          <td>1430
+          <td>22.84
+          <td class="message">0%&nbsp;91%&nbsp;9%&nbsp;1%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./pidigits-java-1.html"><span>pidigits&nbsp;</span></a>
+          <td>0.99
+          <td>&nbsp;2,000
+          <td>110,232
+          <td>800
+          <td>1.99
+          <td class="message">45%&nbsp;59%&nbsp;50%&nbsp;54%
+        <tr>
+          <td><a href="./pidigits-java-1.html"><span>pidigits&nbsp;</span></a>
+          <td>6.91
+          <td>&nbsp;6,000
+          <td>247,768
+          <td>800
+          <td>8.47
+          <td class="message">8%&nbsp;25%&nbsp;80%&nbsp;12%
+        <tr>
+          <td><a href="./pidigits-java-1.html"><span>pidigits&nbsp;</span></a>
+          <td>19.67
+          <td>&nbsp;10,000
+          <td>312,608
+          <td>800
+          <td>21.50
+          <td class="message">50%&nbsp;5%&nbsp;4%&nbsp;53%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./pidigits-java-2.html"><span>pidigits&nbsp;&nbsp;#2</span></a>
+          <td>0.28
+          <td>&nbsp;2,000
+          <td>1,028
+          <td>938
+          <td>0.36
+          <td class="message">43%&nbsp;11%&nbsp;19%&nbsp;66%
+        <tr>
+          <td><a href="./pidigits-java-2.html"><span>pidigits&nbsp;&nbsp;#2</span></a>
+          <td>1.19
+          <td>&nbsp;6,000
+          <td>32,632
+          <td>938
+          <td>1.41
+          <td class="message">7%&nbsp;16%&nbsp;93%&nbsp;3%
+        <tr>
+          <td><a href="./pidigits-java-2.html"><span>pidigits&nbsp;&nbsp;#2</span></a>
+          <td>3.13
+          <td>&nbsp;10,000
+          <td>36,984
+          <td>938
+          <td>3.36
+          <td class="message">4%&nbsp;4%&nbsp;99%&nbsp;3%
+      <tbody>
+        <tr>
+          <td><a href="./regexredux-java-4.html"><span>regex-redux&nbsp;&nbsp;#4</span></a>
+          <td class="message">Bad&nbsp;Output
+          <td>&nbsp;50,000
+          <td>
+          <td>
+          <td>
+          <td class="message">
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./regexredux-java-3.html"><span>regex-redux&nbsp;&nbsp;#3</span></a>
+          <td>0.66
+          <td>&nbsp;50,000
+          <td>45,016
+          <td>929
+          <td>2.03
+          <td class="message">94%&nbsp;72%&nbsp;77%&nbsp;71%
+        <tr>
+          <td><a href="./regexredux-java-3.html"><span>regex-redux&nbsp;&nbsp;#3</span></a>
+          <td>1.56
+          <td>&nbsp;500,000
+          <td>113,664
+          <td>929
+          <td>4.75
+          <td class="message">90%&nbsp;73%&nbsp;67%&nbsp;76%
+        <tr>
+          <td><a href="./regexredux-java-3.html"><span>regex-redux&nbsp;&nbsp;#3</span></a>
+          <td>10.51
+          <td>&nbsp;5,000,000
+          <td>573,972
+          <td>929
+          <td>31.30
+          <td class="message">70%&nbsp;73%&nbsp;70%&nbsp;86%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./regexredux-java-1.html"><span>regex-redux&nbsp;</span></a>
+          <td>0.66
+          <td>&nbsp;50,000
+          <td>43,404
+          <td>868
+          <td>1.75
+          <td class="message">78%&nbsp;71%&nbsp;53%&nbsp;70%
+        <tr>
+          <td><a href="./regexredux-java-1.html"><span>regex-redux&nbsp;</span></a>
+          <td>2.31
+          <td>&nbsp;500,000
+          <td>121,796
+          <td>868
+          <td>4.88
+          <td class="message">43%&nbsp;65%&nbsp;56%&nbsp;52%
+        <tr>
+          <td><a href="./regexredux-java-1.html"><span>regex-redux&nbsp;</span></a>
+          <td>16.27
+          <td>&nbsp;5,000,000
+          <td>608,804
+          <td>868
+          <td>29.20
+          <td class="message">28%&nbsp;77%&nbsp;37%&nbsp;38%
+      <tbody>
+        <tr>
+          <td><a href="./regexredux-java-5.html"><span>regex-redux&nbsp;&nbsp;#5</span></a>
+          <td class="message">Bad&nbsp;Output
+          <td>&nbsp;50,000
+          <td>
+          <td>
+          <td>
+          <td class="message">
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./regexredux-java-6.html"><span>regex-redux&nbsp;&nbsp;#6</span></a>
+          <td>0.78
+          <td>&nbsp;50,000
+          <td>42,968
+          <td>740
+          <td>2.11
+          <td class="message">66%&nbsp;82%&nbsp;81%&nbsp;64%
+        <tr>
+          <td><a href="./regexredux-java-6.html"><span>regex-redux&nbsp;&nbsp;#6</span></a>
+          <td>1.55
+          <td>&nbsp;500,000
+          <td>104,988
+          <td>740
+          <td>4.55
+          <td class="message">84%&nbsp;69%&nbsp;70%&nbsp;76%
+        <tr>
+          <td><a href="./regexredux-java-6.html"><span>regex-redux&nbsp;&nbsp;#6</span></a>
+          <td>10.84
+          <td>&nbsp;5,000,000
+          <td>603,452
+          <td>740
+          <td>30.58
+          <td class="message">69%&nbsp;64%&nbsp;87%&nbsp;64%
+      <tbody>
+        <tr>
+          <td><a href="./regexredux-java-2.html"><span>regex-redux&nbsp;&nbsp;#2</span></a>
+          <td class="message">Bad&nbsp;Output
+          <td>&nbsp;50,000
+          <td>
+          <td>
+          <td>
+          <td class="message">
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./revcomp-java-6.html"><span>reverse-complement&nbsp;&nbsp;#6</span></a>
+          <td>0.20
+          <td>&nbsp;250,000
+          <td>?
+          <td>752
+          <td>0.33
+          <td class="message">40%&nbsp;52%&nbsp;60%&nbsp;20%
+        <tr>
+          <td><a href="./revcomp-java-6.html"><span>reverse-complement&nbsp;&nbsp;#6</span></a>
+          <td>6.13
+          <td>&nbsp;100,000,000
+          <td>2,026,596
+          <td>752
+          <td>7.26
+          <td class="message">21%&nbsp;63%&nbsp;12%&nbsp;25%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./revcomp-java-8.html"><span>reverse-complement&nbsp;&nbsp;#8</span></a>
+          <td>0.34
+          <td>&nbsp;250,000
+          <td>2,096
+          <td>2183
+          <td>0.49
+          <td class="message">50%&nbsp;56%&nbsp;24%&nbsp;47%
+        <tr>
+          <td><a href="./revcomp-java-8.html"><span>reverse-complement&nbsp;&nbsp;#8</span></a>
+          <td>3.15
+          <td>&nbsp;100,000,000
+          <td>680,424
+          <td>2183
+          <td>7.07
+          <td class="message">52%&nbsp;70%&nbsp;43%&nbsp;63%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./revcomp-java-4.html"><span>reverse-complement&nbsp;&nbsp;#4</span></a>
+          <td>0.18
+          <td>&nbsp;250,000
+          <td>?
+          <td>651
+          <td>0.31
+          <td class="message">33%&nbsp;94%&nbsp;32%&nbsp;22%
+        <tr>
+          <td><a href="./revcomp-java-4.html"><span>reverse-complement&nbsp;&nbsp;#4</span></a>
+          <td>9.59
+          <td>&nbsp;100,000,000
+          <td>1,923,996
+          <td>651
+          <td>9.86
+          <td class="message">14%&nbsp;16%&nbsp;23%&nbsp;53%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./revcomp-java-3.html"><span>reverse-complement&nbsp;&nbsp;#3</span></a>
+          <td>0.37
+          <td>&nbsp;250,000
+          <td>2,196
+          <td>1722
+          <td>0.39
+          <td class="message">36%&nbsp;22%&nbsp;25%&nbsp;63%
+        <tr>
+          <td><a href="./revcomp-java-3.html"><span>reverse-complement&nbsp;&nbsp;#3</span></a>
+          <td>5.02
+          <td>&nbsp;100,000,000
+          <td>1,145,884
+          <td>1722
+          <td>11.04
+          <td class="message">85%&nbsp;42%&nbsp;53%&nbsp;43%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./revcomp-java-7.html"><span>reverse-complement&nbsp;&nbsp;#7</span></a>
+          <td>0.43
+          <td>&nbsp;250,000
+          <td>2,208
+          <td>1647
+          <td>0.62
+          <td class="message">26%&nbsp;77%&nbsp;47%&nbsp;37%
+        <tr>
+          <td><a href="./revcomp-java-7.html"><span>reverse-complement&nbsp;&nbsp;#7</span></a>
+          <td>24.15
+          <td>&nbsp;100,000,000
+          <td>?
+          <td>1647
+          <td>?
+          <td class="message">17%&nbsp;73%&nbsp;70%&nbsp;14%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./revcomp-java-5.html"><span>reverse-complement&nbsp;&nbsp;#5</span></a>
+          <td>0.19
+          <td>&nbsp;250,000
+          <td>?
+          <td>1108
+          <td>0.31
+          <td class="message">40%&nbsp;75%&nbsp;21%&nbsp;21%
+        <tr>
+          <td><a href="./revcomp-java-5.html"><span>reverse-complement&nbsp;&nbsp;#5</span></a>
+          <td>6.81
+          <td>&nbsp;100,000,000
+          <td>1,121,596
+          <td>1108
+          <td>7.15
+          <td class="message">80%&nbsp;3%&nbsp;4%&nbsp;20%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-java-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>0.35
+          <td>&nbsp;500
+          <td>2,040
+          <td>514
+          <td>0.51
+          <td class="message">26%&nbsp;74%&nbsp;35%&nbsp;12%
+        <tr>
+          <td><a href="./spectralnorm-java-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>5.16
+          <td>&nbsp;3,000
+          <td>34,064
+          <td>514
+          <td>5.34
+          <td class="message">3%&nbsp;2%&nbsp;2%&nbsp;98%
+        <tr>
+          <td><a href="./spectralnorm-java-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>16.82
+          <td>&nbsp;5,500
+          <td>34,788
+          <td>514
+          <td>17.00
+          <td class="message">2%&nbsp;100%&nbsp;1%&nbsp;1%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-java-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>0.29
+          <td>&nbsp;500
+          <td>2,196
+          <td>950
+          <td>0.63
+          <td class="message">57%&nbsp;67%&nbsp;42%&nbsp;58%
+        <tr>
+          <td><a href="./spectralnorm-java-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>1.59
+          <td>&nbsp;3,000
+          <td>35,228
+          <td>950
+          <td>5.65
+          <td class="message">86%&nbsp;93%&nbsp;88%&nbsp;90%
+        <tr>
+          <td><a href="./spectralnorm-java-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>4.38
+          <td>&nbsp;5,500
+          <td>35,388
+          <td>950
+          <td>16.80
+          <td class="message">96%&nbsp;96%&nbsp;95%&nbsp;97%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./threadring-java-3.html"><span>thread-ring&nbsp;&nbsp;#3</span></a>
+          <td>4.33
+          <td>&nbsp;500,000
+          <td>51,720
+          <td>530
+          <td>5.99
+          <td class="message">4%&nbsp;63%&nbsp;64%&nbsp;5%
+        <tr>
+          <td><a href="./threadring-java-3.html"><span>thread-ring&nbsp;&nbsp;#3</span></a>
+          <td>39.32
+          <td>&nbsp;5,000,000
+          <td>52,484
+          <td>530
+          <td>53.01
+          <td class="message">29%&nbsp;36%&nbsp;35%&nbsp;30%
+        <tr>
+          <td><a href="./threadring-java-3.html"><span>thread-ring&nbsp;&nbsp;#3</span></a>
+          <td>386.64
+          <td>&nbsp;50,000,000
+          <td>359,916
+          <td>530
+          <td>517.46
+          <td class="message">28%&nbsp;37%&nbsp;37%&nbsp;27%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./threadring-java-7.html"><span>thread-ring&nbsp;&nbsp;#7</span></a>
+          <td>4.08
+          <td>&nbsp;500,000
+          <td>38,372
+          <td>473
+          <td>5.57
+          <td class="message">3%&nbsp;65%&nbsp;66%&nbsp;3%
+        <tr>
+          <td><a href="./threadring-java-7.html"><span>thread-ring&nbsp;&nbsp;#7</span></a>
+          <td>37.64
+          <td>&nbsp;5,000,000
+          <td>39,020
+          <td>473
+          <td>50.91
+          <td class="message">48%&nbsp;17%&nbsp;17%&nbsp;47%
+        <tr>
+          <td><a href="./threadring-java-7.html"><span>thread-ring&nbsp;&nbsp;#7</span></a>
+          <td>374.24
+          <td>&nbsp;50,000,000
+          <td>38,340
+          <td>473
+          <td>505.82
+          <td class="message">22%&nbsp;42%&nbsp;42%&nbsp;22%
+    </table>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./why-measure-toy-benchmark-programs.html"><span>toy programs</span></a>
+      <li><a href="./how-programs-are-measured.html"><span>details</span></a>
+      <li><a href="./dont-jump-to-conclusions.html"><span>conclusions</span></a>
+    </ul>
+  </nav>
+  <aside>
+    <p>We want easy answers, but easy answers are often incomplete or wrong. You and I know, there's more we need to understand.
+  </aside>
+</footer>
+

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>regex-redux TypeScript&nbsp;#3 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>regex-redux TypeScript&nbsp;#3 program</h2>
+    <aside>
+      <p><a href="./regexredux-description.html#regexredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">/* The Computer Language Benchmarks Game</span>
+<span class="com">   http://benchmarksgame.alioth.debian.org/</span>
+<span class="com"></span>
+<span class="com">   by Josh Goldfoot, adapted from the node.js version</span>
+<span class="com">   compile with tsc --lib es7 regexredux.ts</span>
+<span class="com">*/</span>
+
+<span class="slc">/// &lt;reference path=&quot;./Include/node/index.d.ts&quot; /&gt;</span>
+
+<span class="kwa">var</span> fs <span class="opt">=</span> <span class="kwd">require</span><span class="opt">(</span><span class="str">&quot;fs&quot;</span><span class="opt">);</span>
+
+<span class="kwa">var</span> i <span class="opt">=</span> fs<span class="opt">.</span><span class="kwd">readFileSync</span><span class="opt">(</span><span class="str">&quot;/dev/stdin&quot;</span><span class="opt">,</span> <span class="str">&quot;ascii&quot;</span><span class="opt">);</span>
+<span class="kwa">var</span> ilen <span class="opt">=</span> i<span class="opt">.</span>length<span class="opt">;</span>
+i <span class="opt">=</span> i<span class="opt">.</span><span class="kwd">replace</span><span class="opt">(/^&gt;.*</span><span class="esc">\n</span><span class="opt">|</span><span class="esc">\n</span><span class="opt">/</span>mg<span class="opt">,</span> <span class="str">&quot;&quot;</span><span class="opt">);</span>
+<span class="kwa">var</span> clen <span class="opt">=</span> i<span class="opt">.</span>length<span class="opt">;</span>
+
+<span class="kwa">var</span> iubReplaceLen<span class="opt">:</span> Promise<span class="opt">&lt;</span><span class="kwb">number</span><span class="opt">&gt; =</span> <span class="kwa">new</span> Promise<span class="opt">&lt;</span><span class="kwb">number</span><span class="opt">&gt;(</span>resolve <span class="opt">=&gt; {</span>
+    <span class="kwa">var</span> iub<span class="opt">:</span> <span class="kwb">string</span><span class="opt">[] = [</span><span class="str">&quot;-&quot;</span><span class="opt">,</span> <span class="str">&quot;|&quot;</span><span class="opt">,</span> <span class="str">&quot;&lt;2&gt;&quot;</span><span class="opt">,</span> <span class="str">&quot;&lt;3&gt;&quot;</span><span class="opt">,</span> <span class="str">&quot;&lt;4&gt;&quot;</span><span class="opt">];</span>
+    <span class="kwa">var</span> iubR<span class="opt">:</span> <span class="kwb">RegExp</span><span class="opt">[] = [/</span>\<span class="opt">|[^|][^|]*</span>\<span class="opt">|/</span>g<span class="opt">, /&lt;[^&gt;]*&gt;/</span>g<span class="opt">, /</span>a<span class="opt">[</span>NSt<span class="opt">]|</span>BY<span class="opt">/</span>g<span class="opt">,</span> 
+        <span class="opt">/</span>aND<span class="opt">|</span>caN<span class="opt">|</span>Ha<span class="opt">[</span>DS<span class="opt">]|</span>WaS<span class="opt">/</span>g<span class="opt">, /</span>tHa<span class="opt">[</span>Nt<span class="opt">]/</span>g<span class="opt">];</span>
+    <span class="kwa">var</span> seq <span class="opt">=</span> i <span class="opt">+</span> <span class="str">&quot;&quot;</span><span class="opt">;</span>
+    <span class="kwa">while</span> <span class="opt">(</span>iub<span class="opt">.</span>length<span class="opt">)</span>
+        seq <span class="opt">=</span> seq<span class="opt">.</span><span class="kwd">replace</span><span class="opt">(</span>iubR<span class="opt">.</span><span class="kwd">pop</span><span class="opt">(),</span> iub<span class="opt">.</span><span class="kwd">pop</span><span class="opt">())</span>
+    <span class="kwd">resolve</span><span class="opt">(</span>seq<span class="opt">.</span>length<span class="opt">);</span>
+<span class="opt">});</span>
+    
+<span class="kwa">var</span> q<span class="opt">:</span> <span class="kwb">RegExp</span><span class="opt">[] = [/</span>agggtaaa<span class="opt">|</span>tttaccct<span class="opt">/</span>ig<span class="opt">, /[</span>cgt<span class="opt">]</span>gggtaaa<span class="opt">|</span>tttaccc<span class="opt">[</span>acg<span class="opt">]/</span>ig<span class="opt">,</span>
+    <span class="opt">/</span>a<span class="opt">[</span>act<span class="opt">]</span>ggtaaa<span class="opt">|</span>tttacc<span class="opt">[</span>agt<span class="opt">]</span>t<span class="opt">/</span>ig<span class="opt">, /</span>ag<span class="opt">[</span>act<span class="opt">]</span>gtaaa<span class="opt">|</span>tttac<span class="opt">[</span>agt<span class="opt">]</span>ct<span class="opt">/</span>ig<span class="opt">,</span>
+    <span class="opt">/</span>agg<span class="opt">[</span>act<span class="opt">]</span>taaa<span class="opt">|</span>ttta<span class="opt">[</span>agt<span class="opt">]</span>cct<span class="opt">/</span>ig<span class="opt">, /</span>aggg<span class="opt">[</span>acg<span class="opt">]</span>aaa<span class="opt">|</span>ttt<span class="opt">[</span>cgt<span class="opt">]</span>ccct<span class="opt">/</span>ig<span class="opt">,</span>
+    <span class="opt">/</span>agggt<span class="opt">[</span>cgt<span class="opt">]</span>aa<span class="opt">|</span>tt<span class="opt">[</span>acg<span class="opt">]</span>accct<span class="opt">/</span>ig<span class="opt">, /</span>agggta<span class="opt">[</span>cgt<span class="opt">]</span>a<span class="opt">|</span>t<span class="opt">[</span>acg<span class="opt">]</span>taccct<span class="opt">/</span>ig<span class="opt">,</span>
+    <span class="opt">/</span>agggtaa<span class="opt">[</span>cgt<span class="opt">]|[</span>acg<span class="opt">]</span>ttaccct<span class="opt">/</span>ig<span class="opt">];</span>
+
+<span class="kwa">var</span> promises<span class="opt">:</span> Promise<span class="opt">&lt;</span><span class="kwb">string</span><span class="opt">&gt;[] =</span> q<span class="opt">.</span><span class="kwd">map</span><span class="opt">(</span>r <span class="opt">=&gt;</span> <span class="kwa">new</span> Promise<span class="opt">&lt;</span><span class="kwb">string</span><span class="opt">&gt;(</span>resolve <span class="opt">=&gt; {</span>
+    <span class="kwa">var</span> m<span class="opt">:</span> RegExpMatchArray <span class="opt">=</span> i<span class="opt">.</span><span class="kwd">match</span><span class="opt">(</span>r<span class="opt">);</span>
+    <span class="kwd">resolve</span><span class="opt">(</span>r<span class="opt">.</span>source <span class="opt">+</span> <span class="str">&quot; &quot;</span> <span class="opt">+ (</span>m <span class="opt">?</span> m<span class="opt">.</span>length <span class="opt">:</span> <span class="num">0</span><span class="opt">));</span>
+<span class="opt">}));</span>
+
+<span class="kwa">async function</span> <span class="kwd">displayOutput</span><span class="opt">(</span>promises<span class="opt">:</span> Promise<span class="opt">&lt;</span><span class="kwb">string</span><span class="opt">&gt;[],</span> ilen<span class="opt">:</span> <span class="kwb">number</span><span class="opt">,</span>
+        clen<span class="opt">:</span> <span class="kwb">number</span><span class="opt">,</span> iubReplaceLen<span class="opt">:</span> Promise<span class="opt">&lt;</span><span class="kwb">number</span><span class="opt">&gt;):</span> Promise<span class="opt">&lt;</span><span class="kwb">void</span><span class="opt">&gt; {</span>
+    <span class="kwa">for</span> <span class="opt">(</span><span class="kwa">var</span> count <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> count <span class="opt">&lt;</span> <span class="num">9</span><span class="opt">;</span> count<span class="opt">++)</span>
+        console<span class="opt">.</span><span class="kwd">log</span><span class="opt">(</span><span class="kwa">await</span> promises<span class="opt">[</span>count<span class="opt">]);</span>
+
+    console<span class="opt">.</span><span class="kwd">log</span><span class="opt">();</span>
+    console<span class="opt">.</span><span class="kwd">log</span><span class="opt">(</span>ilen<span class="opt">);</span>
+    console<span class="opt">.</span><span class="kwd">log</span><span class="opt">(</span>clen<span class="opt">);</span>
+    console<span class="opt">.</span><span class="kwd">log</span><span class="opt">(</span><span class="kwa">await</span> iubReplaceLen<span class="opt">);</span>
+<span class="opt">}</span>
+
+<span class="kwd">displayOutput</span><span class="opt">(</span>promises<span class="opt">,</span> ilen<span class="opt">,</span> clen<span class="opt">,</span> iubReplaceLen<span class="opt">);</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+Version 2.6.2
+node.js v9.4.0
+
+
+Wed, 10 Jan 2018 21:54:28 GMT
+
+MAKE:
+mv regexredux.typescript-3.typescript regexredux.typescript-3.ts
+/opt/src/node-v9.4.0-linux-x64/bin/tsc --alwaysStrict -t ESNEXT --lib es7 regexredux.typescript-3.ts
+
+1.32s to complete and log all make actions
+
+COMMAND LINE:
+/opt/src/node-v9.4.0-linux-x64/bin/node --use_strict regexredux.typescript-3.js 0 &lt; regexredux-input5000000.txt
+
+PROGRAM OUTPUT:
+agggtaaa|tttaccct 356
+[cgt]gggtaaa|tttaccc[acg] 1250
+a[act]ggtaaa|tttacc[agt]t 4252
+ag[act]gtaaa|tttac[agt]ct 2894
+agg[act]taaa|ttta[agt]cct 5435
+aggg[acg]aaa|ttt[cgt]ccct 1537
+agggt[cgt]aa|tt[acg]accct 1431
+agggta[cgt]a|t[acg]taccct 1608
+agggtaa[cgt]|[acg]ttaccct 2178
+
+50833411
+50000000
+27388361
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

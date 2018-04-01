@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>mandelbrot Ruby&nbsp;#5 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>mandelbrot Ruby&nbsp;#5 program</h2>
+    <aside>
+      <p><a href="./mandelbrot-description.html#mandelbrot">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc"># The Computer Language Benchmarks Game</span>
+<span class="slc"># http://benchmarksgame.alioth.debian.org</span>
+<span class="slc">#</span>
+<span class="slc">#  contributed by Karl von Laudermann</span>
+<span class="slc">#  modified by Jeremy Echols</span>
+<span class="slc">#  modified by Detlef Reichl</span>
+<span class="slc">#  modified by Joseph LaFata</span>
+<span class="slc">#  modified by Peter Zotov</span>
+<span class="slc">#  parallelised by Scott Leggett</span>
+
+<span class="kwa">module</span> MiniParallel
+    <span class="kwa">class</span> Worker
+        <span class="kwa">def</span> <span class="kwd">initialize</span><span class="opt">(</span>read<span class="opt">,</span> write<span class="opt">)</span>
+            <span class="kwb">&#64;read</span><span class="opt">,</span> <span class="kwb">&#64;write</span> <span class="opt">=</span> read<span class="opt">,</span> write
+        <span class="kwa">end</span>
+
+        <span class="kwa">def</span> close_pipes
+            <span class="kwb">&#64;read</span><span class="opt">.</span>close
+            <span class="kwb">&#64;write</span><span class="opt">.</span>close
+        <span class="kwa">end</span>
+
+        <span class="kwa">def</span> <span class="kwd">work</span><span class="opt">(</span>index<span class="opt">)</span>
+            Marshal<span class="opt">.</span><span class="kwd">dump</span><span class="opt">(</span>index<span class="opt">,</span> <span class="kwb">&#64;write</span><span class="opt">)</span>
+            Marshal<span class="opt">.</span><span class="kwd">load</span><span class="opt">(</span><span class="kwb">&#64;read</span><span class="opt">)</span>
+        <span class="kwa">end</span>
+    <span class="kwa">end</span>
+
+    <span class="kwa">def self</span><span class="opt">.</span><span class="kwd">map</span><span class="opt">(</span>array<span class="opt">, &amp;</span>block<span class="opt">)</span>
+        <span class="kwd">work_in_processes</span><span class="opt">(</span>
+            array<span class="opt">,</span>
+            <span class="opt">[</span>array<span class="opt">.</span>size<span class="opt">,</span> core_count<span class="opt">].</span>min<span class="opt">,</span>
+            <span class="opt">&amp;</span>block
+        <span class="opt">)</span>
+    <span class="kwa">end</span>
+
+    <span class="kwa">def self</span><span class="opt">.</span>core_count
+        &#64;<span class="kwb">&#64;core_count</span> <span class="opt">||=</span> IO<span class="opt">.</span><span class="kwd">read</span><span class="opt">(</span><span class="str">&quot;/proc/cpuinfo&quot;</span><span class="opt">).</span><span class="kwd">scan</span><span class="opt">(</span><span class="kwc">/^processor/</span><span class="opt">).</span>size
+    <span class="kwa">end</span>
+
+    <span class="kwa">private</span>
+
+    <span class="kwa">def self</span><span class="opt">.</span><span class="kwd">work_in_processes</span><span class="opt">(</span>array<span class="opt">,</span> count<span class="opt">, &amp;</span>block<span class="opt">)</span>
+        index <span class="opt">= -</span><span class="num">1</span>
+        results<span class="opt">,</span> threads <span class="opt">= [], []</span>
+
+        workers <span class="opt">=</span> <span class="kwd">create_workers</span><span class="opt">(</span>array<span class="opt">,</span> count<span class="opt">, &amp;</span>block<span class="opt">)</span>
+
+        workers<span class="opt">.</span>each <span class="kwa">do</span> <span class="opt">|</span>worker<span class="opt">|</span>
+            threads <span class="opt">&lt;&lt;</span> Thread<span class="opt">.</span>new <span class="kwa">do</span>
+              <span class="kwa">loop do</span>
+                Thread<span class="opt">.</span>exclusive{ index += 1 }
+                <span class="kwa">break if</span> index <span class="opt">&gt;=</span> array<span class="opt">.</span>size
+                results<span class="opt">[</span>index<span class="opt">] =</span> worker<span class="opt">.</span><span class="kwd">work</span><span class="opt">(</span>index<span class="opt">)</span>
+              <span class="kwa">end</span>
+              worker<span class="opt">.</span>close_pipes
+            <span class="kwa">end</span>
+        <span class="kwa">end</span>
+
+        threads<span class="opt">.</span><span class="kwd">each</span><span class="opt">(&amp;</span><span class="kwc">:join</span><span class="opt">)</span>
+        Process<span class="opt">.</span>waitall
+
+        results
+    <span class="kwa">end</span>
+
+    <span class="kwa">def self</span><span class="opt">.</span><span class="kwd">create_workers</span><span class="opt">(</span>array<span class="opt">,</span> count<span class="opt">, &amp;</span>block<span class="opt">)</span>
+        workers <span class="opt">= []</span>
+        count<span class="opt">.</span>times <span class="kwa">do</span>
+            workers <span class="opt">&lt;&lt;</span> <span class="kwd">create_worker</span><span class="opt">(</span>array<span class="opt">,</span> workers<span class="opt">, &amp;</span>block<span class="opt">)</span>
+        <span class="kwa">end</span>
+        workers
+    <span class="kwa">end</span>
+
+    <span class="kwa">def self</span><span class="opt">.</span><span class="kwd">create_worker</span><span class="opt">(</span>array<span class="opt">,</span> started_workers<span class="opt">, &amp;</span>block<span class="opt">)</span>
+        child_read<span class="opt">,</span> parent_write <span class="opt">=</span> IO<span class="opt">.</span>pipe
+        parent_read<span class="opt">,</span> child_write <span class="opt">=</span> IO<span class="opt">.</span>pipe
+
+        Process<span class="opt">.</span>fork <span class="kwa">do</span>
+            started_workers<span class="opt">.</span><span class="kwd">each</span><span class="opt">(&amp;</span><span class="kwc">:close_pipes</span><span class="opt">)</span>
+
+            parent_write<span class="opt">.</span>close
+            parent_read<span class="opt">.</span>close
+
+            <span class="kwd">process_incoming_jobs</span><span class="opt">(</span>child_read<span class="opt">,</span> child_write<span class="opt">,</span> array<span class="opt">, &amp;</span>block<span class="opt">)</span>
+
+            child_read<span class="opt">.</span>close
+            child_write<span class="opt">.</span>close
+        <span class="kwa">end</span>
+
+        child_read<span class="opt">.</span>close
+        child_write<span class="opt">.</span>close
+
+        Worker<span class="opt">.</span><span class="kwd">new</span><span class="opt">(</span>parent_read<span class="opt">,</span> parent_write<span class="opt">)</span>
+    <span class="kwa">end</span>
+
+    <span class="kwa">def self</span><span class="opt">.</span><span class="kwd">process_incoming_jobs</span><span class="opt">(</span>read<span class="opt">,</span> write<span class="opt">,</span> array<span class="opt">, &amp;</span>block<span class="opt">)</span>
+        <span class="kwa">until</span> read<span class="opt">.</span>eof<span class="opt">?</span>
+            index <span class="opt">=</span> Marshal<span class="opt">.</span><span class="kwd">load</span><span class="opt">(</span>read<span class="opt">)</span>
+            Marshal<span class="opt">.</span><span class="kwd">dump</span><span class="opt">(</span>block<span class="opt">.</span><span class="kwd">call</span><span class="opt">(</span>array<span class="opt">[</span>index<span class="opt">]),</span> write<span class="opt">)</span>
+        <span class="kwa">end</span>
+    <span class="kwa">end</span>
+<span class="kwa">end</span>
+
+Size <span class="opt">=</span> <span class="kwc">ARGV</span><span class="opt">.</span>shift<span class="opt">.</span>to_i
+
+puts <span class="str">&quot;P4</span><span class="esc">\n</span><span class="str"></span><span class="ipl">#{Size}</span> <span class="str"></span><span class="ipl">#{Size}</span><span class="str">&quot;</span>
+
+<span class="kwa">def</span> row y
+    byte_acc <span class="opt">=</span> <span class="num">0</span>
+    bit_num <span class="opt">=</span> <span class="num">0</span>
+    res <span class="opt">= []</span>
+    ci <span class="opt">= (</span><span class="num">2.0</span><span class="opt">*</span>y<span class="opt">/</span>Size<span class="opt">)-</span><span class="num">1.0</span>
+    x <span class="opt">=</span> <span class="num">0</span>
+    <span class="kwa">while</span> x <span class="opt">&lt;</span> Size
+        zrzr <span class="opt">=</span> zr <span class="opt">=</span> <span class="num">0.0</span>
+        zizi <span class="opt">=</span> zi <span class="opt">=</span> <span class="num">0.0</span>
+        cr <span class="opt">= (</span><span class="num">2.0</span><span class="opt">*</span>x<span class="opt">/</span>Size<span class="opt">)-</span><span class="num">1.5</span>
+        escape <span class="opt">=</span> <span class="num">0b1</span>
+
+        z <span class="opt">=</span> <span class="num">0</span>
+        <span class="kwa">while</span> z <span class="opt">&lt;</span> <span class="num">50</span>
+            tr <span class="opt">=</span> zrzr <span class="opt">-</span> zizi <span class="opt">+</span> cr
+            ti <span class="opt">=</span> <span class="num">2.0</span><span class="opt">*</span>zr<span class="opt">*</span>zi <span class="opt">+</span> ci
+            zr <span class="opt">=</span> tr
+            zi <span class="opt">=</span> ti
+            <span class="slc"># preserve recalculation</span>
+            zrzr <span class="opt">=</span> zr<span class="opt">*</span>zr
+            zizi <span class="opt">=</span> zi<span class="opt">*</span>zi
+            <span class="kwa">if</span> zrzr<span class="opt">+</span>zizi <span class="opt">&gt;</span> <span class="num">4.0</span>
+                escape <span class="opt">=</span> <span class="num">0b0</span>
+                <span class="kwa">break</span>
+            <span class="kwa">end</span>
+            z <span class="opt">+=</span> <span class="num">1</span>
+        <span class="kwa">end</span>
+
+        byte_acc <span class="opt">= (</span>byte_acc <span class="opt">&lt;&lt;</span> <span class="num">1</span><span class="opt">) |</span> escape
+        bit_num <span class="opt">+=</span> <span class="num">1</span>
+
+        <span class="slc"># Code is very similar for these cases, but using separate blocks</span>
+        <span class="slc"># ensures we skip the shifting when it&apos;s unnecessary, which is most</span>
+        <span class="slc"># cases.</span>
+        <span class="kwa">if</span> <span class="opt">(</span>bit_num <span class="opt">==</span> <span class="num">8</span><span class="opt">)</span>
+            res <span class="opt">&lt;&lt;</span> byte_acc<span class="opt">.</span>chr
+            byte_acc <span class="opt">=</span> <span class="num">0</span>
+            bit_num <span class="opt">=</span> <span class="num">0</span>
+        <span class="kwa">elsif</span> <span class="opt">(</span>x <span class="opt">==</span> Size <span class="opt">-</span> <span class="num">1</span><span class="opt">)</span>
+            byte_acc <span class="opt">&lt;&lt;= (</span><span class="num">8</span> <span class="opt">-</span> bit_num<span class="opt">)</span>
+            res <span class="opt">&lt;&lt;</span> byte_acc<span class="opt">.</span>chr
+            byte_acc <span class="opt">=</span> <span class="num">0</span>
+            bit_num <span class="opt">=</span> <span class="num">0</span>
+        <span class="kwa">end</span>
+        x <span class="opt">+=</span> <span class="num">1</span>
+    <span class="kwa">end</span>
+    res<span class="opt">.</span>join
+<span class="kwa">end</span>
+
+<span class="kwa">if</span> MiniParallel<span class="opt">.</span>core_count <span class="opt">&gt;</span> <span class="num">1</span>
+    <span class="kwa">if</span> <span class="kwc">RUBY_PLATFORM</span> <span class="opt">==</span> <span class="str">&apos;java&apos;</span>
+        threads <span class="opt">= []</span>
+        out <span class="opt">= []</span>
+        <span class="opt">(</span><span class="num">0</span><span class="opt">...</span>Size<span class="opt">).</span>each <span class="kwa">do</span> <span class="opt">|</span>w<span class="opt">|</span>
+            threads <span class="opt">&lt;&lt;</span> Thread<span class="opt">.</span>new <span class="kwa">do</span>
+                out<span class="opt">[</span>w<span class="opt">] =</span> row w
+            <span class="kwa">end</span>
+        <span class="kwa">end</span>
+        threads<span class="opt">.</span>all<span class="opt">?(&amp;</span><span class="kwc">:join</span><span class="opt">)</span>
+        print out<span class="opt">.</span>join
+    <span class="kwa">else</span>
+        print MiniParallel<span class="opt">.</span><span class="kwd">map</span><span class="opt">((</span><span class="num">0</span><span class="opt">...</span>Size<span class="opt">).</span>to_a<span class="opt">)</span>{|y|row y}<span class="opt">.</span>join
+    <span class="kwa">end</span>
+<span class="kwa">else</span>
+    <span class="opt">(</span><span class="num">0</span><span class="opt">...</span>Size<span class="opt">).</span>each{|i|print row i}
+<span class="kwa">end</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+ruby 2.5.0p0 (2017-12-25 revision 61468) [x86_64-linux]
+
+
+Tue, 02 Jan 2018 03:14:50 GMT
+
+COMMAND LINE:
+/opt/src/ruby-2.5.0/bin/ruby -W0 mandelbrot.yarv-5.yarv 16000
+
+UNEXPECTED OUTPUT 
+
+_out 16000_out differ: byte 657426, line 5
+
+(BINARY) PROGRAM OUTPUT NOT SHOWN
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

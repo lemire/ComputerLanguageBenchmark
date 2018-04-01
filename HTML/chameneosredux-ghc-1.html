@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>chameneos-redux Haskell GHC program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>chameneos-redux Haskell GHC program</h2>
+    <aside>
+      <p><a href="./chameneosredux-description.html#chameneosredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">{- The Computer Language Benchmarks Game</span>
+<span class="com">   http://benchmarksgame.alioth.debian.org/</span>
+<span class="com">   Written by Tom Pledger, 13 Nov 2006. modified by Don Stewart</span>
+<span class="com">   Updated for chameneos-redux by Spencer Janssen, 27 Nov 2007</span>
+<span class="com">   Modified by Péter Diviánszky, 19 May 2010</span>
+<span class="com">   Modified by Louis Wasserman, 14 June 2010</span>
+<span class="com">   Modified by Iustin Pop, 30 September 2013:</span>
+<span class="com">     - moved releasing the mpv mvar to before updating the current and</span>
+<span class="com">       waiting chameleons; this is faster in single-core but slower in</span>
+<span class="com">       multi-core, unless -qa -qm are used</span>
+<span class="com">     - added recommendation to use -qa -qm, which makes the program an</span>
+<span class="com">       order of magnitude faster using GHC 7.6.3</span>
+<span class="com"></span>
+<span class="com">   Should be compiled with --make -threaded -O2 and run with +RTS</span>
+<span class="com">     -N&lt;number of cores&gt; -qa -qm.</span>
+<span class="com">   -}</span>
+
+<span class="kwd">import</span> Control<span class="opt">.</span>Concurrent
+<span class="kwd">import</span> Control<span class="opt">.</span>Monad
+<span class="kwd">import</span> Data<span class="opt">.</span><span class="kwb">Char</span>
+<span class="kwd">import</span> Data<span class="opt">.</span>IORef
+<span class="kwd">import</span> System<span class="opt">.</span>Environment
+<span class="kwd">import</span> System<span class="opt">.</span><span class="kwb">IO</span>
+<span class="kwd">import</span> GHC<span class="opt">.</span>Conc
+<span class="kwd">import</span> Foreign <span class="kwd">hiding</span> <span class="opt">(</span>complement<span class="opt">)</span>
+
+<span class="kwd">newtype</span> Color <span class="opt">=</span> C <span class="kwb">Int</span> <span class="kwd">deriving</span> <span class="opt">(</span>Storable<span class="opt">,</span>Enum<span class="opt">)</span>
+
+<span class="opt">#</span>define Y <span class="opt">(</span>C <span class="num">2</span><span class="opt">)</span>
+<span class="opt">#</span>define R <span class="opt">(</span>C <span class="num">1</span><span class="opt">)</span>
+<span class="opt">#</span>define B <span class="opt">(</span>C <span class="num">0</span><span class="opt">)</span>
+
+<span class="kwd">instance</span> <span class="kwb">Show</span> Color <span class="kwd">where</span>
+  <span class="kwc">show</span> Y <span class="opt">=</span> <span class="str">&quot;yellow&quot;</span>
+  <span class="kwc">show</span> R <span class="opt">=</span> <span class="str">&quot;red&quot;</span>
+  <span class="kwc">show</span> B <span class="opt">=</span> <span class="str">&quot;blue&quot;</span>
+
+complement <span class="opt">::</span> Color <span class="opt">-&gt;</span> Color <span class="opt">-&gt;</span> Color
+complement <span class="opt">!</span>a <span class="opt">!</span>b <span class="opt">=</span> <span class="kwd">case</span> a <span class="kwd">of</span>
+    B <span class="opt">-&gt;</span> <span class="kwd">case</span> b <span class="kwd">of</span> R <span class="opt">-&gt;</span> Y<span class="opt">;</span> B <span class="opt">-&gt;</span> B<span class="opt">;</span> _ <span class="opt">-&gt;</span> R
+    R <span class="opt">-&gt;</span> <span class="kwd">case</span> b <span class="kwd">of</span> B <span class="opt">-&gt;</span> Y<span class="opt">;</span> R <span class="opt">-&gt;</span> R<span class="opt">;</span> _ <span class="opt">-&gt;</span> B
+    Y <span class="opt">-&gt;</span> <span class="kwd">case</span> b <span class="kwd">of</span> B <span class="opt">-&gt;</span> R<span class="opt">;</span> Y <span class="opt">-&gt;</span> Y<span class="opt">;</span> _ <span class="opt">-&gt;</span> B
+
+<span class="kwd">type</span> Chameneous <span class="opt">=</span> Ptr Color
+<span class="kwd">data</span> MP <span class="opt">=</span> Nobody <span class="opt">!</span><span class="kwb">Int</span> | Somebody <span class="opt">!</span><span class="kwb">Int</span> <span class="opt">!</span>Chameneous <span class="opt">!(</span>MVar Chameneous<span class="opt">)</span>
+
+arrive <span class="opt">::</span> MVar MP <span class="opt">-&gt;</span> MVar <span class="opt">(</span><span class="kwb">Int</span><span class="opt">,</span> <span class="kwb">Int</span><span class="opt">) -&gt;</span> Chameneous <span class="opt">-&gt;</span> <span class="kwb">IO</span> <span class="opt">()</span>
+arrive <span class="opt">!</span>mpv <span class="opt">!</span>finish <span class="opt">!</span>ch <span class="opt">=</span> <span class="kwd">do</span>
+    waker <span class="opt">&lt;-</span> newEmptyMVar
+    <span class="kwd">let</span> inc x <span class="opt">= (</span><span class="kwc">fromEnum</span> <span class="opt">(</span>ch <span class="opt">==</span> x<span class="opt">) +)</span>
+        go <span class="opt">!</span>t <span class="opt">!</span>b <span class="opt">=</span> <span class="kwd">do</span>
+            w <span class="opt">&lt;-</span> takeMVar mpv
+            <span class="kwd">case</span> w <span class="kwd">of</span>
+                Nobody <span class="num">0</span> <span class="opt">-&gt;</span> <span class="kwd">do</span>
+                    putMVar mpv w
+                    putMVar finish <span class="opt">(</span>t<span class="opt">,</span> b<span class="opt">)</span>
+                Nobody q <span class="opt">-&gt;</span> <span class="kwd">do</span>
+                    putMVar mpv <span class="opt">$</span> Somebody q ch waker
+                    ch<span class="opt">&apos; &lt;-</span> takeMVar waker
+                    go <span class="opt">(</span>t<span class="opt">+</span><span class="num">1</span><span class="opt">) $</span> inc ch<span class="opt">&apos;</span> b
+
+                Somebody q ch<span class="opt">&apos;</span> waker<span class="opt">&apos; -&gt;</span> <span class="kwd">do</span>
+                    <span class="kwd">let</span> <span class="opt">!</span>q<span class="opt">&apos; =</span> q<span class="opt">-</span><span class="num">1</span>
+                    putMVar mpv <span class="opt">$</span> Nobody q<span class="opt">&apos;</span>
+                    c  <span class="opt">&lt;-</span> peek ch
+                    c<span class="opt">&apos; &lt;-</span> peek ch<span class="opt">&apos;</span>
+                    <span class="kwd">let</span> <span class="opt">!</span>c<span class="opt">&apos;&apos; =</span> complement c c<span class="opt">&apos;</span>
+                    poke ch  c<span class="opt">&apos;&apos;</span>
+                    poke ch<span class="opt">&apos;</span> c<span class="opt">&apos;&apos;</span>
+                    putMVar waker<span class="opt">&apos;</span> ch
+                    go <span class="opt">(</span>t<span class="opt">+</span><span class="num">1</span><span class="opt">) $</span> inc ch<span class="opt">&apos;</span> b
+    go <span class="num">0 0</span>
+
+showN <span class="opt">=</span> <span class="kwc">unwords</span> <span class="opt">.</span> <span class="kwc">map</span> <span class="opt">((</span>digits <span class="opt">!!) .</span> <span class="kwc">digitToInt</span><span class="opt">) .</span> <span class="kwc">show</span>
+
+digits <span class="opt">=</span> <span class="kwc">words</span> <span class="str">&quot;zero one two three four five six seven eight nine&quot;</span>
+
+run <span class="opt">::</span> <span class="kwb">Int</span> <span class="opt">-&gt;</span> <span class="kwb">Int</span> <span class="opt">-&gt; [</span>Color<span class="opt">] -&gt;</span> <span class="kwb">IO</span> <span class="opt">(</span><span class="kwb">IO</span> <span class="opt">())</span>
+run n cpu cs <span class="opt">=</span> <span class="kwd">do</span>
+    fs    <span class="opt">&lt;-</span> replicateM <span class="opt">(</span><span class="kwa">length</span> cs<span class="opt">)</span> newEmptyMVar
+    mpv   <span class="opt">&lt;-</span> newMVar <span class="opt">(</span>Nobody n<span class="opt">)</span>
+    withArrayLen cs <span class="opt">$ \</span> n cols <span class="opt">-&gt;</span> <span class="kwd">do</span>
+        <span class="kwc">zipWithM_</span> <span class="opt">((</span>forkOn cpu <span class="opt">.) .</span> arrive mpv<span class="opt">)</span> fs <span class="opt">(</span><span class="kwc">take</span> n <span class="opt">(</span><span class="kwc">iterate</span> <span class="opt">(</span>`advancePtr` <span class="num">1</span><span class="opt">)</span> cols<span class="opt">))</span>
+
+        <span class="kwc">return</span> <span class="opt">$</span> <span class="kwd">do</span>
+          <span class="kwc">putStrLn</span> <span class="opt">.</span> <span class="kwc">map toLower</span> <span class="opt">.</span> <span class="kwc">unwords</span> <span class="opt">. ([]:) .</span> <span class="kwc">map show</span> <span class="opt">$</span> cs
+          ns    <span class="opt">&lt;-</span> <span class="kwc">mapM</span> takeMVar fs
+          <span class="kwc">putStr</span> <span class="opt">.</span> <span class="kwc">map toLower</span> <span class="opt">.</span> <span class="kwc">unlines</span> <span class="opt">$ [</span><span class="kwc">unwords</span> <span class="opt">[</span><span class="kwc">show</span> n<span class="opt">,</span> showN b<span class="opt">]</span> | <span class="opt">(</span>n<span class="opt">,</span> b<span class="opt">) &lt;-</span> ns<span class="opt">]</span>
+          <span class="kwc">putStrLn</span> <span class="opt">. (</span><span class="str">&quot; &quot;</span><span class="opt">++) .</span> showN <span class="opt">.</span> <span class="kwa">sum</span> <span class="opt">.</span> <span class="kwc">map fst</span> <span class="opt">$</span> ns
+          <span class="kwc">putStrLn</span> <span class="str">&quot;&quot;</span>
+
+main <span class="opt">=</span> <span class="kwd">do</span>
+    <span class="kwc">putStrLn</span> <span class="opt">.</span> <span class="kwc">map toLower</span> <span class="opt">.</span> <span class="kwc">unlines</span> <span class="opt">$</span>
+        <span class="opt">[</span><span class="kwc">unwords</span> <span class="opt">[</span><span class="kwc">show</span> a<span class="opt">,</span> <span class="str">&quot;+&quot;</span><span class="opt">,</span> <span class="kwc">show</span> b<span class="opt">,</span> <span class="str">&quot;-&gt;&quot;</span><span class="opt">,</span> <span class="kwc">show</span> <span class="opt">$</span> complement a b<span class="opt">]</span>
+            | a <span class="opt">&lt;- [</span>B<span class="opt">..</span>Y<span class="opt">],</span> b <span class="opt">&lt;- [</span>B<span class="opt">..</span>Y<span class="opt">]]</span>
+
+    n <span class="opt">&lt;-</span> <span class="kwc">readIO</span> <span class="opt">.</span> <span class="kwc">head</span> <span class="opt">=&lt;&lt;</span> <span class="kwc">getArgs</span>
+    actions <span class="opt">&lt;-</span> <span class="kwc">zipWithM</span> <span class="opt">(</span>run n<span class="opt">) [</span><span class="num">0</span><span class="opt">..] [[</span>B<span class="opt">..</span>Y<span class="opt">],[</span>B<span class="opt">,</span>R<span class="opt">,</span>Y<span class="opt">,</span>R<span class="opt">,</span>Y<span class="opt">,</span>B<span class="opt">,</span>R<span class="opt">,</span>Y<span class="opt">,</span>R<span class="opt">,</span>B<span class="opt">]]</span>
+    <span class="kwc">sequence_</span> actions
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+The Glorious Glasgow Haskell Compilation System, version 8.4.1
+
+
+Fri, 23 Mar 2018 19:11:33 GMT
+
+MAKE:
+mv chameneosredux.ghc chameneosredux.hs
+/opt/src/ghc-8.4.1/bin/ghc --make -fllvm -O2 -XBangPatterns -threaded -rtsopts -XCPP -XGeneralizedNewtypeDeriving chameneosredux.hs -o chameneosredux.ghc_run
+[1 of 1] Compiling Main             ( chameneosredux.hs, chameneosredux.o )
+Linking chameneosredux.ghc_run ...
+rm chameneosredux.hs
+
+2.59s to complete and log all make actions
+
+COMMAND LINE:
+./chameneosredux.ghc_run +RTS -qa -qm -N4 -RTS 6000000
+
+PROGRAM OUTPUT:
+blue + blue -&gt; blue
+blue + red -&gt; yellow
+blue + yellow -&gt; red
+red + blue -&gt; yellow
+red + red -&gt; red
+red + yellow -&gt; blue
+yellow + blue -&gt; red
+yellow + red -&gt; blue
+yellow + yellow -&gt; yellow
+
+ blue red yellow
+4124721 zero
+3975680 zero
+3899599 zero
+ one two zero zero zero zero zero zero
+
+ blue red yellow red yellow blue red yellow red blue
+1200001 zero
+1200001 zero
+1200000 zero
+1200000 zero
+1200001 zero
+1199999 zero
+1200000 zero
+1199999 zero
+1200001 zero
+1199998 zero
+ one two zero zero zero zero zero zero
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

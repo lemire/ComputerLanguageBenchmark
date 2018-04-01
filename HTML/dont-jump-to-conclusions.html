@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="index,follow,archive">
+<meta name="description" content="Please don't jump from measurements of a few tiny programs to definite conclusions about programming languages in general.">
+<title>conclusions | The Computer Language Benchmarks Game</title>
+<link rel="shortcut icon" href="./favicon.ico">
+<style><!-- 
+a{color:black;text-decoration:none}article,footer,header{margin:auto;max-width:31em;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3{font-family:Ubuntu Mono,Consolas,Menlo,monospace}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}p{color:#333;line-height:1.4;margin:.3em 0 0}p a{border-bottom:.1em solid #333;padding-bottom:.1em}#core{background-color:black}blockquote{margin-top:.3em}blockquote p{display:inline}blockquote:before,q:before{content:open-quote}blockquote:after,q:after{content:close-quote}body{quotes:'\201C' '\201D' '\2018' '\2019' '\2039' '\203A'}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<header id="top">
+  <h1 id="core"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <h2><q>a good starting point</q></h2>
+  <section>
+    <h3></h3>
+    <blockquote cite="http://algs4.cs.princeton.edu/faq/"><p>How does Java compare in terms of speed to C or C++ or C# or Python? The answer depends greatly on the type of application you're running. No benchmark is perfect, but Computer Language Benchmarks Game is <a href="http://algs4.cs.princeton.edu/faq/">a good starting point</a>.</blockquote>
+  </section>
+  <section>
+    <h3 id="apples-and-oranges">Apples and Oranges</h3>
+    <p>Programming languages are compared against each other as though their designers intended them to be used for the exact same purpose - that just isn't so.
+    <p><a href="http://www.inf.puc-rio.br/~roberto/book/">Programming in Lua</a>
+    <blockquote cite="http://www.inf.puc-rio.br/~roberto/book/"><p>Lua is a tiny and simple language, partly because it does not try to do what C is already good for, such as sheer performance, low-level operations, or interface with third-party  software. Lua relies on C for those tasks.</blockquote>
+    <p><a href="http://www.erlang.org/faq/introduction.html#idp32150096">What sort of problems is Erlang not particularly suitable for?</a>
+    <blockquote cite="http://www.erlang.org/faq/introduction.html#idp32166576"><p>Most (all?) large systems developed using Erlang make heavy use of C for low-level code, leaving Erlang to manage the parts which tend to be complex in other languages, like controlling systems spread across several machines and implementing complex protocol logic.</blockquote>
+    <p>[pdf] <a href="http://www.leafpetersen.com/leaf/publications/ifl2013/haskell-gap.pdf">Measuring the Haskell Gap</a>
+    <blockquote cite="http://www.leafpetersen.com/leaf/publications/ifl2013/haskell-gap.pdf"><p>One can, with sufficient effort, essentially write C code in Haskell using various unsafe primitives. We would argue that this is not true to the spirit and goals of Haskell, and we have attempted in this paper to remain within the space of <q>reasonably idiomatic</q> Haskell. However, we have made abundant use of strictness annotations, explicit strictness, and unboxed vectors. We have, more controversially perhaps, used unsafe array subscripting in places. Are our choices reasonable?</blockquote>
+    <p>The difficulty is that programming languages (and programming language implementations) are <strong>more different than apples and oranges</strong>, but the question is still asked - <q>Will my program be faster if I write it in language X?</q> - and there's still a wish for a simpler answer than - It depends how you write it!
+  </section>
+  <section>
+    <h3 id="ultimate-benchmark">Your application is the ultimate benchmark</h3>
+    <blockquote cite="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.90.7173&rep=rep1&type=pdf"><p>In order to find the optimal cost/benefit ratio, Wirth used a highly intuitive metric, the origin of which is unknown to me but that may very well be Wirth's own invention. He used the compiler's self-compilation speed as a measure of the compiler's quality. Considering that Wirth's  compilers were written in the languages they compiled, and that compilers are substantial and non-trivial pieces of software in their own right, this introduced [pdf] <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.90.7173&rep=rep1&type=pdf">a highly practical benchmark</a> that directly contested a compiler's complexity against its performance. Under the self compilation speed benchmark, only those optimizations were allowed to be incorporated into a compiler that accelerated it by so much that the intrinsic cost of the new code addition was fully compensated.</blockquote>
+  </section>
+  <section>
+    <h3 id="not-prophesy">Measurement is not prophesy</h3>
+    <blockquote cite="http://www.larcenists.org/Twobit/bmcrock.temp.html"><p>The performance of a benchmark, even if it is derived from a real program, <a href="http://www.larcenists.org/Twobit/bmcrock.temp.html">may not help to predict the performance</a> of similar programs that have different hot spots.</blockquote>
+    <blockquote cite="http://research.google.com/archive/sawzall-sciprog.pdf"><p>It may seem paradoxical to use an interpreted language in a high-throughput environment, but we have found that the [pdf] <a href="http://research.google.com/archive/sawzall-sciprog.pdf">CPU time is rarely the limiting factor</a>; the expressibility of the language means that most programs are small and spend most of their time in I/O and native run-time code.</blockquote>
+    <blockquote cite="http://research.microsoft.com/en-us/projects/jsmeter/"><p>We measure three specific areas of JavaScript runtime behavior: 1) functions and code; 2) heap-allocated objects and data; 3) events and handlers. We find that the benchmarks are <a href="http://research.microsoft.com/en-us/projects/jsmeter/">not representative</a> of many real websites and that conclusions reached from measuring the benchmarks may be misleading.</blockquote>
+  </section>
+  <aside>
+    <p>Having a collection of programs that implement the same tasks in different programming languages is at least convenient. Presumably convenience is why Martin Odersky referred to the benchmarks game to support his point that <a href="http://cacm.acm.org/magazines/2014/4/173220-unifying-functional-and-object-oriented-programming-with-scala/fulltext/">Scala <q>runs at comparable speed</q> to Java</a>.
+  </aside>
+</article>
+<footer>
+</footer>

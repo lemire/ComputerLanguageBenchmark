@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="all" />
+<meta name="description" content="Chapel programs vs Go programs (performance on 64-bit Ubuntu quad core)." />
+<title>Chapel&nbsp;vs&nbsp;Go (64-bit Ubuntu quad core) | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article,footer{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,nav li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{display:inline-block}nav li{list-style-type:none}nav li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}nav ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,span{border-bottom:.1em solid #333;padding-bottom:.1em}
+#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.best{font-weight:bold}.message{font-size:.8em}table{color:#333;margin:1.3em auto 0;text-align:right}tbody:after{content:"-";display:block;line-height:2.6em;visibility:hidden}tbody:last-child{text-align:left}td{border-bottom:.15em dotted #eee;padding:.7em 0 0 1em}td a,th a{display:block}td:first-child,th:first-child{text-align:left;padding-left:0}td:nth-child(6),th:nth-child(6){display:table-cell}th{font-weight:normal;padding:.7em 0 0 1em}
+@media only screen{th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:none}}@media only screen and (min-width:28em){th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5){display:table-cell}}@media only screen and (min-width:41em){th:nth-child(6),td:nth-child(6){display:table-cell}}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>Chapel programs versus Go</h2>
+    <aside>
+      <p><a href="./measurements-chapel.html">all other Chapel programs & measurements</a>
+    </aside>
+  </div>
+  <section>
+    <div>
+      <h3>by benchmark task performance</h3>
+    </div>
+    <table>
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./regexredux.html"><span>regex-redux</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./regexredux-chapel-1.html"><span>Chapel</span></a>
+        <td class="best">8.16
+        <td>792,460
+        <td>477
+        <td>16.36
+        <td class="message">100%&nbsp;17%&nbsp;16%&nbsp;70%
+      <tr>
+        <td><a href="./regexredux-go-2.html"><span>Go</span></a>
+        <td>28.21
+        <td>323,820
+        <td>802
+        <td>59.87
+        <td class="message">69%&nbsp;46%&nbsp;50%&nbsp;48%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./binarytrees.html"><span>binary-trees</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./binarytrees-chapel-1.html"><span>Chapel</span></a>
+        <td class="best">14.15
+        <td>298,452
+        <td>484
+        <td>43.74
+        <td class="message">100%&nbsp;77%&nbsp;76%&nbsp;58%
+      <tr>
+        <td><a href="./binarytrees-go-4.html"><span>Go</span></a>
+        <td>28.80
+        <td>434,632
+        <td>654
+        <td>109.58
+        <td class="message">94%&nbsp;95%&nbsp;95%&nbsp;97%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./fannkuchredux.html"><span>fannkuch-redux</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./fannkuchredux-chapel-1.html"><span>Chapel</span></a>
+        <td class="best">11.22
+        <td>4,000
+        <td>728
+        <td>44.58
+        <td class="message">100%&nbsp;99%&nbsp;100%&nbsp;100%
+      <tr>
+        <td><a href="./fannkuchredux-go-1.html"><span>Go</span></a>
+        <td>14.72
+        <td>1,540
+        <td>900
+        <td>58.65
+        <td class="message">100%&nbsp;100%&nbsp;99%&nbsp;100%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./pidigits.html"><span>pidigits</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./pidigits-chapel-2.html"><span>Chapel</span></a>
+        <td class="best">1.61
+        <td>6,400
+        <td>423
+        <td>1.62
+        <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;1%
+      <tr>
+        <td><a href="./pidigits-go-3.html"><span>Go</span></a>
+        <td>2.02
+        <td>9,256
+        <td>603
+        <td>2.02
+        <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;0%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./fasta.html"><span>fasta</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./fasta-chapel-2.html"><span>Chapel</span></a>
+        <td class="best">1.69
+        <td>5,728
+        <td>1392
+        <td>5.83
+        <td class="message">100%&nbsp;82%&nbsp;82%&nbsp;83%
+      <tr>
+        <td><a href="./fasta-go-3.html"><span>Go</span></a>
+        <td>2.08
+        <td>3,640
+        <td>1358
+        <td>5.69
+        <td class="message">84%&nbsp;66%&nbsp;70%&nbsp;56%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./nbody.html"><span>n-body</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./nbody-chapel-1.html"><span>Chapel</span></a>
+        <td class="best">20.60
+        <td>4,872
+        <td>962
+        <td>20.60
+        <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;0%
+      <tr>
+        <td><a href="./nbody-go-1.html"><span>Go</span></a>
+        <td>21.37
+        <td>1,536
+        <td>1310
+        <td>21.38
+        <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;0%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./mandelbrot.html"><span>mandelbrot</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./mandelbrot-chapel-2.html"><span>Chapel</span></a>
+        <td class="best">5.47
+        <td>35,756
+        <td>620
+        <td>21.66
+        <td class="message">100%&nbsp;99%&nbsp;99%&nbsp;99%
+      <tr>
+        <td><a href="./mandelbrot-go-4.html"><span>Go</span></a>
+        <td>5.48
+        <td>30,912
+        <td>905
+        <td>21.79
+        <td class="message">99%&nbsp;99%&nbsp;99%&nbsp;100%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./spectralnorm.html"><span>spectral-norm</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./spectralnorm-chapel-1.html"><span>Chapel</span></a>
+        <td>3.99
+        <td>5,148
+        <td>310
+        <td>15.81
+        <td class="message">100%&nbsp;99%&nbsp;100%&nbsp;99%
+      <tr>
+        <td><a href="./spectralnorm-go-4.html"><span>Go</span></a>
+        <td>3.94
+        <td>2,344
+        <td>548
+        <td>15.71
+        <td class="message">100%&nbsp;100%&nbsp;100%&nbsp;100%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./knucleotide.html"><span>k-nucleotide</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./knucleotide-chapel-1.html"><span>Chapel</span></a>
+        <td>18.31
+        <td>293,140
+        <td>1063
+        <td>66.47
+        <td class="message">100%&nbsp;88%&nbsp;88%&nbsp;88%
+      <tr>
+        <td><a href="./knucleotide-go-3.html"><span>Go</span></a>
+        <td>12.77
+        <td>148,052
+        <td>1722
+        <td>47.35
+        <td class="message">87%&nbsp;97%&nbsp;94%&nbsp;95%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./revcomp.html"><span>reverse-complement</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./revcomp-chapel-1.html"><span>Chapel</span></a>
+        <td>6.70
+        <td>1,002,992
+        <td>643
+        <td>9.01
+        <td class="message">99%&nbsp;17%&nbsp;7%&nbsp;15%
+      <tr>
+        <td><a href="./revcomp-go-2.html"><span>Go</span></a>
+        <td>4.00
+        <td>824,356
+        <td>611
+        <td>4.16
+        <td class="message">1%&nbsp;35%&nbsp;68%&nbsp;2%
+      <tbody>
+      <tr>
+        <td>Chapel
+        <td colspan="5" class="message"><p>chpl Version 1.16.0<br/>
+Copyright (c) 2004-2017, Cray Inc.
+
+      <tr>
+        <td>Go
+        <td colspan="5" class="message"><p>go version go1.10 linux/amd64
+
+    </table>
+    <nav>
+      <ul>
+        <li><a href="./chapel-gcc.html"><span>vs C</span></a>
+        <li><a href="./chapel-gpp.html"><span>vs C++</span></a>
+          <li class="best">vs Go
+        <li><a href="./chapel-java.html"><span>vs Java</span></a>
+        <li><a href="./chapel-python3.html"><span>vs Python</span></a>
+      </ul>
+    </nav>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./why-measure-toy-benchmark-programs.html"><span>toy programs</span></a>
+      <li><a href="./how-programs-are-measured.html"><span>details</span></a>
+      <li><a href="./dont-jump-to-conclusions.html"><span>conclusions</span></a>
+    </ul>
+  </nav>
+  <aside>
+    <p>We want easy answers, but easy answers are often incomplete or wrong. You and I know, <a href="./index.html"><span>there's more we need to understand</span></a>.
+  </aside>
+</footer>
+
+

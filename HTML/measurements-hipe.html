@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="all" />
+<meta name="description" content="Performance measurements for all the Erlang HiPE programs implementing ~12 simple benchmark tasks, (64-bit Ubuntu quad core)." />
+<title>Erlang HiPE measurements (64-bit Ubuntu quad core) | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article,footer{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}code,h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}nav p{margin:0 .5em}ul{clear:left;margin:-0.3em 0 1.5em;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,span{border-bottom:.1em solid #333;padding-bottom:.1em}
+#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.best{font-weight:bold}.message{font-size:.8em}table{color:#333;margin:1.3em auto 0;text-align:right}tbody:after{content:"-";display:block;line-height:2.6em;visibility:hidden}td{border-bottom:.15em dotted #eee;padding:.7em 0 0 1em}td a,th a{display:block}td:first-child,th:first-child{text-align:left;padding-left:0}th{font-weight:normal;padding:0 0 0 1em}
+@media only screen{th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6),th:nth-child(7),td:nth-child(7){display:none}}@media only screen and (min-width:27em){th:nth-child(3),td:nth-child(3){display:table-cell}}@media only screen and (min-width:38em){th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:table-cell}}@media only screen and (min-width:47em){th:nth-child(7),td:nth-child(7){display:table-cell}}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+
+<article>
+  <div>
+    <h2>all Erlang HiPE programs & measurements</h2>
+    <aside>
+      <p>&nbsp;</a>
+    </aside>
+  </div>
+  <section>
+    <table>
+      <tbody>
+      <tr>
+        <td colspan="7" class="message"><p>Erlang/OTP 20 [erts-9.1] [source] [64-bit] [smp:4:4] [ds:4:4:10] [async-threads:10] [hipe] [kernel-poll:false]
+
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./binarytrees-hipe-2.html"><span>binary-trees&nbsp;&nbsp;#2</span></a>
+          <td>0.14
+          <td>&nbsp;7
+          <td>?
+          <td>478
+          <td>0.18
+          <td class="message">23%&nbsp;67%&nbsp;8%&nbsp;38%
+        <tr>
+          <td><a href="./binarytrees-hipe-2.html"><span>binary-trees&nbsp;&nbsp;#2</span></a>
+          <td>0.17
+          <td>&nbsp;14
+          <td>?
+          <td>478
+          <td>0.29
+          <td class="message">33%&nbsp;76%&nbsp;24%&nbsp;47%
+        <tr>
+          <td><a href="./binarytrees-hipe-2.html"><span>binary-trees&nbsp;&nbsp;#2</span></a>
+          <td>7.63
+          <td>&nbsp;21
+          <td>399,604
+          <td>478
+          <td>23.32
+          <td class="message">71%&nbsp;77%&nbsp;85%&nbsp;73%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./binarytrees-hipe-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>0.14
+          <td>&nbsp;7
+          <td>?
+          <td>420
+          <td>0.18
+          <td class="message">50%&nbsp;60%&nbsp;0%&nbsp;29%
+        <tr>
+          <td><a href="./binarytrees-hipe-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>0.22
+          <td>&nbsp;14
+          <td>952
+          <td>420
+          <td>0.26
+          <td class="message">27%&nbsp;23%&nbsp;57%&nbsp;41%
+        <tr>
+          <td><a href="./binarytrees-hipe-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>21.46
+          <td>&nbsp;21
+          <td>554,100
+          <td>420
+          <td>21.63
+          <td class="message">45%&nbsp;11%&nbsp;45%&nbsp;2%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./chameneosredux-hipe-1.html"><span>chameneos-redux&nbsp;</span></a>
+          <td>0.78
+          <td>&nbsp;60,000
+          <td>20,976
+          <td>734
+          <td>1.64
+          <td class="message">70%&nbsp;48%&nbsp;18%&nbsp;83%
+        <tr>
+          <td><a href="./chameneosredux-hipe-1.html"><span>chameneos-redux&nbsp;</span></a>
+          <td>6.34
+          <td>&nbsp;600,000
+          <td>22,036
+          <td>734
+          <td>14.45
+          <td class="message">56%&nbsp;59%&nbsp;60%&nbsp;57%
+        <tr>
+          <td><a href="./chameneosredux-hipe-1.html"><span>chameneos-redux&nbsp;</span></a>
+          <td>62.30
+          <td>&nbsp;6,000,000
+          <td>23,332
+          <td>734
+          <td>143.41
+          <td class="message">62%&nbsp;62%&nbsp;55%&nbsp;54%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fannkuchredux-hipe-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>0.72
+          <td>&nbsp;10
+          <td>21,084
+          <td>1038
+          <td>2.45
+          <td class="message">78%&nbsp;94%&nbsp;86%&nbsp;87%
+        <tr>
+          <td><a href="./fannkuchredux-hipe-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>7.36
+          <td>&nbsp;11
+          <td>21,268
+          <td>1038
+          <td>28.73
+          <td class="message">97%&nbsp;99%&nbsp;98%&nbsp;99%
+        <tr>
+          <td><a href="./fannkuchredux-hipe-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>103.25
+          <td>&nbsp;12
+          <td>20,880
+          <td>1038
+          <td>398.40
+          <td class="message">97%&nbsp;94%&nbsp;100%&nbsp;99%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fasta-hipe-2.html"><span>fasta&nbsp;&nbsp;#2</span></a>
+          <td>0.41
+          <td>&nbsp;250,000
+          <td>1,612
+          <td>1164
+          <td>0.49
+          <td class="message">15%&nbsp;17%&nbsp;10%&nbsp;85%
+        <tr>
+          <td><a href="./fasta-hipe-2.html"><span>fasta&nbsp;&nbsp;#2</span></a>
+          <td>2.94
+          <td>&nbsp;2,500,000
+          <td>20,936
+          <td>1164
+          <td>3.29
+          <td class="message">98%&nbsp;3%&nbsp;5%&nbsp;7%
+        <tr>
+          <td><a href="./fasta-hipe-2.html"><span>fasta&nbsp;&nbsp;#2</span></a>
+          <td>27.90
+          <td>&nbsp;25,000,000
+          <td>21,756
+          <td>1164
+          <td>29.15
+          <td class="message">2%&nbsp;1%&nbsp;47%&nbsp;54%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fasta-hipe-1.html"><span>fasta&nbsp;</span></a>
+          <td>1.04
+          <td>&nbsp;250,000
+          <td>21,016
+          <td>1039
+          <td>1.51
+          <td class="message">11%&nbsp;33%&nbsp;5%&nbsp;96%
+        <tr>
+          <td><a href="./fasta-hipe-1.html"><span>fasta&nbsp;</span></a>
+          <td>11.45
+          <td>&nbsp;2,500,000
+          <td>21,088
+          <td>1039
+          <td>15.52
+          <td class="message">19%&nbsp;82%&nbsp;18%&nbsp;16%
+        <tr>
+          <td><a href="./fasta-hipe-1.html"><span>fasta&nbsp;</span></a>
+          <td>105.45
+          <td>&nbsp;25,000,000
+          <td>20,868
+          <td>1039
+          <td>151.65
+          <td class="message">33%&nbsp;39%&nbsp;49%&nbsp;24%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./knucleotide-hipe-1.html"><span>k-nucleotide&nbsp;</span></a>
+          <td>1.49
+          <td>&nbsp;250,000
+          <td>145,220
+          <td>936
+          <td>3.46
+          <td class="message">60%&nbsp;51%&nbsp;73%&nbsp;52%
+        <tr>
+          <td><a href="./knucleotide-hipe-1.html"><span>k-nucleotide&nbsp;</span></a>
+          <td>13.61
+          <td>&nbsp;2,500,000
+          <td>1,174,600
+          <td>936
+          <td>33.07
+          <td class="message">65%&nbsp;48%&nbsp;69%&nbsp;66%
+        <tr>
+          <td><a href="./knucleotide-hipe-1.html"><span>k-nucleotide&nbsp;</span></a>
+          <td>143.45
+          <td>&nbsp;25,000,000
+          <td>3,270,888
+          <td>936
+          <td>331.81
+          <td class="message">73%&nbsp;59%&nbsp;62%&nbsp;56%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./knucleotide-hipe-3.html"><span>k-nucleotide&nbsp;&nbsp;#3</span></a>
+          <td>1.47
+          <td>&nbsp;250,000
+          <td>64,976
+          <td>937
+          <td>3.40
+          <td class="message">51%&nbsp;57%&nbsp;54%&nbsp;85%
+        <tr>
+          <td><a href="./knucleotide-hipe-3.html"><span>k-nucleotide&nbsp;&nbsp;#3</span></a>
+          <td>11.60
+          <td>&nbsp;2,500,000
+          <td>169,712
+          <td>937
+          <td>31.15
+          <td class="message">66%&nbsp;66%&nbsp;74%&nbsp;67%
+        <tr>
+          <td><a href="./knucleotide-hipe-3.html"><span>k-nucleotide&nbsp;&nbsp;#3</span></a>
+          <td>113.83
+          <td>&nbsp;25,000,000
+          <td>798,548
+          <td>937
+          <td>323.77
+          <td class="message">83%&nbsp;67%&nbsp;69%&nbsp;70%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-hipe-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>0.72
+          <td>&nbsp;1,000
+          <td>29,624
+          <td>534
+          <td>2.41
+          <td class="message">85%&nbsp;82%&nbsp;81%&nbsp;89%
+        <tr>
+          <td><a href="./mandelbrot-hipe-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>8.43
+          <td>&nbsp;4,000
+          <td>137,796
+          <td>534
+          <td>32.35
+          <td class="message">95%&nbsp;95%&nbsp;97%&nbsp;97%
+        <tr>
+          <td><a href="./mandelbrot-hipe-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td>124.90
+          <td>&nbsp;16,000
+          <td>1,635,360
+          <td>534
+          <td>484.08
+          <td class="message">97%&nbsp;97%&nbsp;97%&nbsp;97%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-hipe-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>0.66
+          <td>&nbsp;1,000
+          <td>22,256
+          <td>613
+          <td>2.29
+          <td class="message">86%&nbsp;83%&nbsp;88%&nbsp;93%
+        <tr>
+          <td><a href="./mandelbrot-hipe-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>8.04
+          <td>&nbsp;4,000
+          <td>50,636
+          <td>613
+          <td>31.72
+          <td class="message">99%&nbsp;99%&nbsp;99%&nbsp;99%
+        <tr>
+          <td><a href="./mandelbrot-hipe-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>119.91
+          <td>&nbsp;16,000
+          <td>749,356
+          <td>613
+          <td>475.39
+          <td class="message">99%&nbsp;99%&nbsp;99%&nbsp;99%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-hipe-3.html"><span>n-body&nbsp;&nbsp;#3</span></a>
+          <td>1.93
+          <td>&nbsp;500,000
+          <td>20,888
+          <td>1399
+          <td>1.97
+          <td class="message">2%&nbsp;99%&nbsp;2%&nbsp;2%
+        <tr>
+          <td><a href="./nbody-hipe-3.html"><span>n-body&nbsp;&nbsp;#3</span></a>
+          <td>18.95
+          <td>&nbsp;5,000,000
+          <td>20,760
+          <td>1399
+          <td>18.98
+          <td class="message">0%&nbsp;1%&nbsp;99%&nbsp;1%
+        <tr>
+          <td><a href="./nbody-hipe-3.html"><span>n-body&nbsp;&nbsp;#3</span></a>
+          <td>187.50
+          <td>&nbsp;50,000,000
+          <td>21,696
+          <td>1399
+          <td>187.50
+          <td class="message">45%&nbsp;56%&nbsp;0%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./pidigits-hipe-1.html"><span>pidigits&nbsp;</span></a>
+          <td>0.69
+          <td>&nbsp;2,000
+          <td>22,516
+          <td>559
+          <td>0.75
+          <td class="message">9%&nbsp;93%&nbsp;7%&nbsp;3%
+        <tr>
+          <td><a href="./pidigits-hipe-1.html"><span>pidigits&nbsp;</span></a>
+          <td>5.48
+          <td>&nbsp;6,000
+          <td>28,088
+          <td>559
+          <td>5.60
+          <td class="message">49%&nbsp;52%&nbsp;1%&nbsp;2%
+        <tr>
+          <td><a href="./pidigits-hipe-1.html"><span>pidigits&nbsp;</span></a>
+          <td>16.03
+          <td>&nbsp;10,000
+          <td>35,912
+          <td>559
+          <td>16.35
+          <td class="message">1%&nbsp;1%&nbsp;99%&nbsp;2%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./pidigits-hipe-2.html"><span>pidigits&nbsp;&nbsp;#2</span></a>
+          <td>0.60
+          <td>&nbsp;2,000
+          <td>21,520
+          <td>512
+          <td>0.86
+          <td class="message">83%&nbsp;30%&nbsp;13%&nbsp;22%
+        <tr>
+          <td><a href="./pidigits-hipe-2.html"><span>pidigits&nbsp;&nbsp;#2</span></a>
+          <td>5.00
+          <td>&nbsp;6,000
+          <td>28,608
+          <td>512
+          <td>6.45
+          <td class="message">17%&nbsp;13%&nbsp;3%&nbsp;97%
+        <tr>
+          <td><a href="./pidigits-hipe-2.html"><span>pidigits&nbsp;&nbsp;#2</span></a>
+          <td>14.65
+          <td>&nbsp;10,000
+          <td>46,412
+          <td>512
+          <td>17.61
+          <td class="message">12%&nbsp;27%&nbsp;5%&nbsp;77%
+      <tbody>
+        <tr>
+          <td><a href="./regexredux-hipe-6.html"><span>regex-redux&nbsp;&nbsp;#6</span></a>
+          <td class="message">Bad&nbsp;Output
+          <td>&nbsp;50,000
+          <td>
+          <td>
+          <td>
+          <td class="message">
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./revcomp-hipe-4.html"><span>reverse-complement&nbsp;&nbsp;#4</span></a>
+          <td>0.80
+          <td>&nbsp;250,000
+          <td>23,432
+          <td>1171
+          <td>0.74
+          <td class="message">19%&nbsp;36%&nbsp;52%&nbsp;23%
+        <tr>
+          <td><a href="./revcomp-hipe-4.html"><span>reverse-complement&nbsp;&nbsp;#4</span></a>
+          <td>183.55
+          <td>&nbsp;100,000,000
+          <td>1,996,644
+          <td>1171
+          <td>241.54
+          <td class="message">54%&nbsp;25%&nbsp;21%&nbsp;37%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./revcomp-hipe-3.html"><span>reverse-complement&nbsp;&nbsp;#3</span></a>
+          <td>0.96
+          <td>&nbsp;250,000
+          <td>32,512
+          <td>630
+          <td>0.78
+          <td class="message">51%&nbsp;18%&nbsp;14%&nbsp;33%
+        <tr>
+          <td><a href="./revcomp-hipe-3.html"><span>reverse-complement&nbsp;&nbsp;#3</span></a>
+          <td>310.04
+          <td>&nbsp;100,000,000
+          <td>3,395,544
+          <td>630
+          <td>291.27
+          <td class="message">53%&nbsp;19%&nbsp;18%&nbsp;36%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./revcomp-hipe-1.html"><span>reverse-complement&nbsp;</span></a>
+          <td>0.48
+          <td>&nbsp;250,000
+          <td>19,380
+          <td>1302
+          <td>0.45
+          <td class="message">40%&nbsp;41%&nbsp;40%&nbsp;30%
+        <tr>
+          <td><a href="./revcomp-hipe-1.html"><span>reverse-complement&nbsp;</span></a>
+          <td>45.53
+          <td>&nbsp;100,000,000
+          <td>2,070,992
+          <td>1302
+          <td>110.61
+          <td class="message">56%&nbsp;57%&nbsp;57%&nbsp;74%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-hipe-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>0.98
+          <td>&nbsp;500
+          <td>21,156
+          <td>507
+          <td>1.04
+          <td class="message">8%&nbsp;2%&nbsp;93%&nbsp;4%
+        <tr>
+          <td><a href="./spectralnorm-hipe-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>38.61
+          <td>&nbsp;3,000
+          <td>23,904
+          <td>507
+          <td>38.65
+          <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./spectralnorm-hipe-1.html"><span>spectral-norm&nbsp;</span></a>
+          <td>103.90
+          <td>&nbsp;5,500
+          <td>27,684
+          <td>507
+          <td>103.92
+          <td class="message">0%&nbsp;1%&nbsp;0%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-hipe-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>0.37
+          <td>&nbsp;500
+          <td>1,552
+          <td>747
+          <td>0.76
+          <td class="message">69%&nbsp;46%&nbsp;46%&nbsp;55%
+        <tr>
+          <td><a href="./spectralnorm-hipe-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>4.93
+          <td>&nbsp;3,000
+          <td>27,304
+          <td>747
+          <td>18.68
+          <td class="message">96%&nbsp;95%&nbsp;95%&nbsp;96%
+        <tr>
+          <td><a href="./spectralnorm-hipe-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>15.75
+          <td>&nbsp;5,500
+          <td>30,428
+          <td>747
+          <td>61.95
+          <td class="message">99%&nbsp;99%&nbsp;99%&nbsp;98%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./threadring-hipe-1.html"><span>thread-ring&nbsp;</span></a>
+          <td>0.62
+          <td>&nbsp;500,000
+          <td>21,516
+          <td>273
+          <td>0.70
+          <td class="message">85%&nbsp;11%&nbsp;5%&nbsp;16%
+        <tr>
+          <td><a href="./threadring-hipe-1.html"><span>thread-ring&nbsp;</span></a>
+          <td>4.85
+          <td>&nbsp;5,000,000
+          <td>21,612
+          <td>273
+          <td>4.94
+          <td class="message">99%&nbsp;5%&nbsp;1%&nbsp;1%
+        <tr>
+          <td><a href="./threadring-hipe-1.html"><span>thread-ring&nbsp;</span></a>
+          <td>44.73
+          <td>&nbsp;50,000,000
+          <td>21,904
+          <td>273
+          <td>44.84
+          <td class="message">0%&nbsp;0%&nbsp;1%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./threadring-hipe-2.html"><span>thread-ring&nbsp;&nbsp;#2</span></a>
+          <td>0.59
+          <td>&nbsp;500,000
+          <td>21,812
+          <td>273
+          <td>0.67
+          <td class="message">9%&nbsp;7%&nbsp;97%&nbsp;7%
+        <tr>
+          <td><a href="./threadring-hipe-2.html"><span>thread-ring&nbsp;&nbsp;#2</span></a>
+          <td>4.66
+          <td>&nbsp;5,000,000
+          <td>21,996
+          <td>273
+          <td>4.75
+          <td class="message">2%&nbsp;99%&nbsp;1%&nbsp;2%
+        <tr>
+          <td><a href="./threadring-hipe-2.html"><span>thread-ring&nbsp;&nbsp;#2</span></a>
+          <td>44.76
+          <td>&nbsp;50,000,000
+          <td>21,992
+          <td>273
+          <td>44.84
+          <td class="message">11%&nbsp;89%&nbsp;1%&nbsp;1%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./threadring-hipe-3.html"><span>thread-ring&nbsp;&nbsp;#3</span></a>
+          <td>0.58
+          <td>&nbsp;500,000
+          <td>21,936
+          <td>465
+          <td>0.67
+          <td class="message">12%&nbsp;8%&nbsp;7%&nbsp;91%
+        <tr>
+          <td><a href="./threadring-hipe-3.html"><span>thread-ring&nbsp;&nbsp;#3</span></a>
+          <td>4.58
+          <td>&nbsp;5,000,000
+          <td>21,896
+          <td>465
+          <td>4.68
+          <td class="message">1%&nbsp;98%&nbsp;3%&nbsp;3%
+        <tr>
+          <td><a href="./threadring-hipe-3.html"><span>thread-ring&nbsp;&nbsp;#3</span></a>
+          <td>43.95
+          <td>&nbsp;50,000,000
+          <td>22,192
+          <td>465
+          <td>44.01
+          <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;1%
+    </table>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./why-measure-toy-benchmark-programs.html"><span>toy programs</span></a>
+      <li><a href="./how-programs-are-measured.html"><span>details</span></a>
+      <li><a href="./dont-jump-to-conclusions.html"><span>conclusions</span></a>
+    </ul>
+  </nav>
+  <aside>
+    <p>We want easy answers, but easy answers are often incomplete or wrong. You and I know, there's more we need to understand.
+  </aside>
+</footer>
+

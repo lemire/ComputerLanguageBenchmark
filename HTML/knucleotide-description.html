@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="all">
+<meta name="description" content="What the k-nucleotide benchmarks game programs should do (64-bit Ubuntu quad core)." />
+<title>k-nucleotide description (64-bit Ubuntu quad core) | Computer Language Benchmarks Game </title>
+<style><!-- 
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,header{margin:auto;max-width:31em;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,nav li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}nav li{list-style-type:none;vertical-align:top}nav li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}nav p{margin:0 .5em}nav ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}@media only screen and (min-width:33em){nav li{display:inline-block}nav p{text-align:left;width:17em}}@media only screen and (min-width:60em){article,div,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<div>
+  <nav>
+    <ul>
+      <li><a href="./nbody-description.html#nbody"><span>n-body</span></a><p>Double-precision N-body simulation
+      <li><a href="./fannkuchredux-description.html#fannkuchredux"><span>fannkuch-redux</span></a><p>Indexed-access to tiny integer-sequence
+      <li><a href="./spectralnorm-description.html#spectralnorm"><span>spectral-norm</span></a><p>Eigenvalue using the power method
+      <li><a href="./mandelbrot-description.html#mandelbrot"><span>mandelbrot</span></a><p>Generate Mandelbrot set portable bitmap file
+      <li><a href="./pidigits-description.html#pidigits"><span>pidigits</span></a><p>Streaming arbitrary-precision arithmetic
+      <li><a href="./regexredux-description.html#regexredux"><span>regex-redux</span></a><p>Match DNA 8-mers and substitute magic patterns
+      <li><a href="./fasta-description.html#fasta"><span>fasta</span></a><p>Generate and write random DNA sequences
+    </ul>
+  </nav>
+</div>
+<article>
+  <h2 id="knucleotide">k-nucleotide description</h2>
+  <aside>
+    <p><a href="./knucleotide.html">program measurements</a>
+  </aside>
+  <section>
+    <h3>Variance</h3>
+    <p>Some language implementations have hash tables built-in; some provide a hash table as part of a collections library; some use a third-party hash table library. (For example, use either <a href="http://attractivechaos.github.io/klib/">khash</a> or <a href="http://concurrencykit.org/doc/ck_ht_init.html">CK_HT</a> for C language k-nucleotide programs.) The hash table algorithm implemented is likely to be different in different libraries.
+    <p>Please don't implement your own custom "hash table" - it will not be accepted. 
+  </section>
+  <section>
+    <h3>The work</h3>
+    <p>The work is to use the built-in or library hash table implementation to accumulate count values - lookup the count for a key and update the count in the hash table. Don't optimize away the work. 
+    <p>Mapping the DNA letters to the bytes 0, 1, 2, 3, and using a hash function that concatenates those two-byte codes is an acceptable (but not a required) optimization.
+  </section>
+  <section>
+    <h3>How to implement</h3>
+    <p>We ask that contributed programs not only give the correct result, but also <b>use the same algorithm</b> to calculate that result.
+    <p>Each program should:
+      <ul>
+        <li><p>read line-by-line a redirected <a href="http://en.wikipedia.org/wiki/Fasta_format">FASTA format</a> file from stdin
+        <li><p>extract DNA sequence THREE
+        <li><p><b>define a procedure/function</b> to update a hashtable of k-nucleotide keys and count values, for a particular reading-frame &#8212; even though we'll combine k-nucleotide counts for all reading-frames (grow the <b>hashtable</b> from a small default size)
+        <li><p>use that procedure/function and hashtable to
+           <ul>
+           <li><p>count <b>all</b> the 1-nucleotide and 2-nucleotide sequences, and write the code and percentage frequency, sorted by descending frequency and then ascending k-nucleotide key
+           <li><p>count <b>all</b> the 3- 4- 6- 12- and 18-nucleotide sequences, and write the count and code for the specific sequences GGT GGTA GGTATT GGTATTTTAATT GGTATTTTAATTTATAGT
+            </ul>
+         </li>
+      </ul>
+    <p><b>diff</b> program output for this 10KB <a href="./knucleotide-input.txt">input file</a> (generated with the <a href="./fasta.html">fasta program</a> N = 1000) with this <a href="./knucleotide-output.txt">output file</a> to check your program output has the correct format, before you <a href="./play.html">contribute your program</a>.
+    <p>Generate a larger input file (using one of the <a href="./fasta.html">fasta programs</a> with command line arguments: 25000000 > input25000000.txt) to check program performance.
+  </section>
+
+
+
+</article>
+<div>
+  <nav>
+    <ul>
+      <li><a href="./revcomp-description.html#revcomp"><span>reverse-complement</span></a><p>Read DNA sequences - write their reverse-complement
+      <li><a href="./binarytrees-description.html#binarytrees"><span>binary-trees</span></a><p>Allocate and deallocate many many binary trees
+      <li><a href="./chameneosredux-description.html#chameneosredux"><span>chameneos-redux</span></a><p>Symmetrical thread rendezvous requests
+      <li><a href="./meteor-description.html#meteor"><span>meteor-contest</span></a><p>Search for solutions to shape packing puzzle
+      <li><a href="./threadring-description.html#threadring"><span>thread-ring</span></a><p>Switch from thread to thread passing one token
+      <li><a href="./-description.html#"><span></span></a><p>
+    </ul>
+  </nav>
+</div>

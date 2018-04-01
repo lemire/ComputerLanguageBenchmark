@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>fannkuch-redux Rust&nbsp;#2 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>fannkuch-redux Rust&nbsp;#2 program</h2>
+    <aside>
+      <p><a href="./fannkuchredux-description.html#fannkuchredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">// The Computer Language Benchmarks Game</span>
+<span class="slc">// http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">//</span>
+<span class="slc">// contributed by the Rust Project Developers</span>
+<span class="slc">// contributed by TeXitoi</span>
+
+<span class="kwa">use</span> std<span class="opt">::{</span>cmp<span class="opt">,</span> mem<span class="opt">};</span>
+<span class="kwa">use</span> std<span class="opt">::</span>thread<span class="opt">;</span>
+
+<span class="kwa">fn</span> <span class="kwd">rotate</span><span class="opt">(</span>x<span class="opt">: &amp;</span><span class="kwa">mut</span> <span class="opt">[</span><span class="kwb">i32</span><span class="opt">]) {</span>
+    <span class="kwa">let mut</span> prev <span class="opt">=</span> x<span class="opt">[</span><span class="num">0</span><span class="opt">];</span>
+    <span class="kwa">for</span> place <span class="kwa">in</span> x<span class="num">.i</span>ter<span class="num">_</span>m<span class="num">u</span>t<span class="opt">().</span><span class="kwd">rev</span><span class="opt">() {</span>
+        prev <span class="opt">=</span> mem<span class="opt">::</span><span class="kwd">replace</span><span class="opt">(</span>place<span class="opt">,</span> prev<span class="opt">)</span>
+    <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="kwa">fn</span> <span class="kwd">next_permutation</span><span class="opt">(</span>perm<span class="opt">: &amp;</span><span class="kwa">mut</span> <span class="opt">[</span><span class="kwb">i32</span><span class="opt">],</span> count<span class="opt">: &amp;</span><span class="kwa">mut</span> <span class="opt">[</span><span class="kwb">i32</span><span class="opt">]) {</span>
+    <span class="kwa">for</span> i <span class="kwa">in</span> <span class="num">1</span><span class="opt">..</span>perm<span class="opt">.</span><span class="kwd">len</span><span class="opt">() {</span>
+        <span class="kwd">rotate</span><span class="opt">(&amp;</span><span class="kwa">mut</span> perm<span class="opt">[..</span> i <span class="opt">+</span> <span class="num">1</span><span class="opt">]);</span>
+        <span class="kwa">let</span> count_i <span class="opt">= &amp;</span><span class="kwa">mut</span> count<span class="opt">[</span>i<span class="opt">];</span>
+        <span class="kwa">if</span> <span class="opt">*</span>count_i <span class="opt">&gt;=</span> i <span class="kwa">as</span> <span class="kwb">i32</span> <span class="opt">{</span>
+            <span class="opt">*</span>count_i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+        <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span>
+            <span class="opt">*</span>count_i <span class="opt">+=</span> <span class="num">1</span><span class="opt">;</span>
+            <span class="kwa">break</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="ppc">#[derive(Clone, Copy)]</span>
+<span class="kwa">struct</span> P <span class="opt">{</span>
+    p<span class="opt">: [</span><span class="kwb">i32</span><span class="opt">;</span> <span class="num">16</span><span class="opt">],</span>
+<span class="opt">}</span>
+
+<span class="ppc">#[derive(Clone, Copy)]</span>
+<span class="kwa">struct</span> Perm <span class="opt">{</span>
+    cnt<span class="opt">: [</span><span class="kwb">i32</span><span class="opt">;</span> <span class="num">16</span><span class="opt">],</span>
+    fact<span class="opt">: [</span><span class="kwb">u32</span><span class="opt">;</span> <span class="num">16</span><span class="opt">],</span>
+    n<span class="opt">:</span> <span class="kwb">u32</span><span class="opt">,</span>
+    permcount<span class="opt">:</span> <span class="kwb">u32</span><span class="opt">,</span>
+    perm<span class="opt">:</span> P<span class="opt">,</span>
+<span class="opt">}</span>
+
+<span class="kwa">impl</span> Perm <span class="opt">{</span>
+    <span class="kwa">fn</span> <span class="kwd">new</span><span class="opt">(</span>n<span class="opt">:</span> <span class="kwb">u32</span><span class="opt">) -&gt;</span> Perm <span class="opt">{</span>
+        <span class="kwa">let mut</span> fact <span class="opt">= [</span><span class="num">1</span><span class="opt">;</span> <span class="num">16</span><span class="opt">];</span>
+        <span class="kwa">for</span> i <span class="kwa">in</span> <span class="num">1</span> <span class="opt">..</span> n <span class="kwa">as</span> <span class="kwb">usize</span> <span class="opt">+</span> <span class="num">1</span> <span class="opt">{</span>
+            fact<span class="opt">[</span>i<span class="opt">] =</span> fact<span class="opt">[</span>i <span class="opt">-</span> <span class="num">1</span><span class="opt">] *</span> i <span class="kwa">as</span> <span class="kwb">u32</span><span class="opt">;</span>
+        <span class="opt">}</span>
+        Perm <span class="opt">{</span>
+            cnt<span class="opt">: [</span><span class="num">0</span><span class="opt">;</span> <span class="num">16</span><span class="opt">],</span>
+            fact<span class="opt">:</span> fact<span class="opt">,</span>
+            n<span class="opt">:</span> n<span class="opt">,</span>
+            permcount<span class="opt">:</span> <span class="num">0</span><span class="opt">,</span>
+            perm<span class="opt">:</span> P <span class="opt">{</span> p<span class="opt">: [</span><span class="num">0</span><span class="opt">;</span> <span class="num">16</span> <span class="opt">] }</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+
+    <span class="kwa">fn</span> <span class="kwd">get</span><span class="opt">(&amp;</span><span class="kwa">mut self</span><span class="opt">,</span> <span class="kwa">mut</span> idx<span class="opt">:</span> <span class="kwb">i32</span><span class="opt">) -&gt;</span> P <span class="opt">{</span>
+        <span class="kwa">let mut</span> pp <span class="opt">= [</span><span class="num">0u8</span><span class="opt">;</span> <span class="num">16</span><span class="opt">];</span>
+        <span class="kwa">self</span><span class="opt">.</span>permcount <span class="opt">=</span> idx <span class="kwa">as</span> <span class="kwb">u32</span><span class="opt">;</span>
+        <span class="kwa">for</span> <span class="opt">(</span>i<span class="opt">,</span> place<span class="opt">)</span> <span class="kwa">in self</span><span class="opt">.</span>perm<span class="opt">.</span>p<span class="num">.i</span>ter<span class="num">_</span>m<span class="num">u</span>t<span class="opt">().</span><span class="kwd">enumerate</span><span class="opt">() {</span>
+            <span class="opt">*</span>place <span class="opt">=</span> i <span class="kwa">as</span> <span class="kwb">i32</span> <span class="opt">+</span> <span class="num">1</span><span class="opt">;</span>
+        <span class="opt">}</span>
+
+        <span class="kwa">for</span> i <span class="kwa">in</span> <span class="opt">(</span><span class="num">1</span> <span class="opt">..</span> <span class="kwa">self</span><span class="opt">.</span>n <span class="kwa">as</span> <span class="kwb">usize</span><span class="opt">).</span><span class="kwd">rev</span><span class="opt">() {</span>
+            <span class="kwa">let</span> d <span class="opt">=</span> idx <span class="opt">/</span> <span class="kwa">self</span><span class="num">.f</span>act<span class="opt">[</span>i<span class="opt">]</span> <span class="kwa">as</span> <span class="kwb">i32</span><span class="opt">;</span>
+            <span class="kwa">self</span><span class="opt">.</span>cnt<span class="opt">[</span>i<span class="opt">] =</span> d<span class="opt">;</span>
+            idx <span class="opt">%=</span> <span class="kwa">self</span><span class="num">.f</span>act<span class="opt">[</span>i<span class="opt">]</span> <span class="kwa">as</span> <span class="kwb">i32</span><span class="opt">;</span>
+            <span class="kwa">for</span> <span class="opt">(</span>place<span class="opt">,</span> val<span class="opt">)</span> <span class="kwa">in</span> pp<span class="num">.i</span>ter<span class="num">_</span>m<span class="num">u</span>t<span class="opt">().</span><span class="kwd">zip</span><span class="opt">(</span><span class="kwa">self</span><span class="opt">.</span>perm<span class="opt">.</span>p<span class="opt">[..(</span>i<span class="opt">+</span><span class="num">1</span><span class="opt">)]</span><span class="num">.i</span>ter<span class="opt">()) {</span>
+                <span class="opt">*</span>place <span class="opt">= (*</span>val<span class="opt">)</span> <span class="kwa">as</span> <span class="kwb">u8</span>
+            <span class="opt">}</span>
+
+            <span class="kwa">let</span> d <span class="opt">=</span> d <span class="kwa">as</span> <span class="kwb">usize</span><span class="opt">;</span>
+            <span class="kwa">for</span> j <span class="kwa">in</span> <span class="num">0</span> <span class="opt">..</span> i <span class="opt">+</span> <span class="num">1</span> <span class="opt">{</span>
+                <span class="kwa">self</span><span class="opt">.</span>perm<span class="opt">.</span>p<span class="opt">[</span>j<span class="opt">] =</span> <span class="kwa">if</span> j <span class="opt">+</span> d <span class="opt">&lt;=</span> i <span class="opt">{</span>pp<span class="opt">[</span>j <span class="opt">+</span> d<span class="opt">]}</span> <span class="kwa">else</span> <span class="opt">{</span>pp<span class="opt">[</span>j<span class="opt">+</span>d<span class="opt">-</span>i<span class="opt">-</span><span class="num">1</span><span class="opt">]}</span> <span class="kwa">as</span> <span class="kwb">i32</span><span class="opt">;</span>
+            <span class="opt">}</span>
+        <span class="opt">}</span>
+
+        <span class="kwa">self</span><span class="opt">.</span>perm
+    <span class="opt">}</span>
+
+    <span class="kwa">fn</span> <span class="kwd">count</span><span class="opt">(&amp;</span><span class="kwa">self</span><span class="opt">) -&gt;</span> <span class="kwb">u32</span> <span class="opt">{</span> <span class="kwa">self</span><span class="opt">.</span>permcount <span class="opt">}</span>
+    <span class="kwa">fn</span> <span class="kwd">max</span><span class="opt">(&amp;</span><span class="kwa">self</span><span class="opt">) -&gt;</span> <span class="kwb">u32</span> <span class="opt">{</span> <span class="kwa">self</span><span class="num">.f</span>act<span class="opt">[</span><span class="kwa">self</span><span class="opt">.</span>n <span class="kwa">as</span> <span class="kwb">usize</span><span class="opt">] }</span>
+
+    <span class="kwa">fn</span> <span class="kwd">next</span><span class="opt">(&amp;</span><span class="kwa">mut self</span><span class="opt">) -&gt;</span> P <span class="opt">{</span>
+        <span class="kwd">next_permutation</span><span class="opt">(&amp;</span><span class="kwa">mut self</span><span class="opt">.</span>perm<span class="opt">.</span>p<span class="opt">, &amp;</span><span class="kwa">mut self</span><span class="opt">.</span>cnt<span class="opt">);</span>
+        <span class="kwa">self</span><span class="opt">.</span>permcount <span class="opt">+=</span> <span class="num">1</span><span class="opt">;</span>
+
+        <span class="kwa">self</span><span class="opt">.</span>perm
+    <span class="opt">}</span>
+<span class="opt">}</span>
+
+
+<span class="kwa">fn</span> <span class="kwd">reverse</span><span class="opt">(</span>tperm<span class="opt">: &amp;</span><span class="kwa">mut</span> <span class="opt">[</span><span class="kwb">i32</span><span class="opt">],</span> k<span class="opt">:</span> <span class="kwb">usize</span><span class="opt">) {</span>
+    tperm<span class="opt">[..</span>k<span class="opt">].</span><span class="kwd">reverse</span><span class="opt">()</span>
+<span class="opt">}</span>
+
+<span class="kwa">fn</span> <span class="kwd">work</span><span class="opt">(</span><span class="kwa">mut</span> perm<span class="opt">:</span> Perm<span class="opt">,</span> n<span class="opt">:</span> <span class="kwb">usize</span><span class="opt">,</span> max<span class="opt">:</span> <span class="kwb">usize</span><span class="opt">) -&gt; (</span><span class="kwb">i32</span><span class="opt">,</span> <span class="kwb">i32</span><span class="opt">) {</span>
+    <span class="kwa">let mut</span> checksum <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+    <span class="kwa">let mut</span> maxflips <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+
+    <span class="kwa">let mut</span> p <span class="opt">=</span> perm<span class="opt">.</span><span class="kwd">get</span><span class="opt">(</span>n <span class="kwa">as</span> <span class="kwb">i32</span><span class="opt">);</span>
+
+    <span class="kwa">while</span> perm<span class="opt">.</span><span class="kwd">count</span><span class="opt">() &lt;</span> max <span class="kwa">as</span> <span class="kwb">u32</span> <span class="opt">{</span>
+        <span class="kwa">let mut</span> flips <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+
+        <span class="kwa">while</span> p<span class="opt">.</span>p<span class="opt">[</span><span class="num">0</span><span class="opt">] !=</span> <span class="num">1</span> <span class="opt">{</span>
+            <span class="kwa">let</span> k <span class="opt">=</span> p<span class="opt">.</span>p<span class="opt">[</span><span class="num">0</span><span class="opt">]</span> <span class="kwa">as</span> <span class="kwb">usize</span><span class="opt">;</span>
+            <span class="kwd">reverse</span><span class="opt">(&amp;</span><span class="kwa">mut</span> p<span class="opt">.</span>p<span class="opt">,</span> k<span class="opt">);</span>
+            flips <span class="opt">+=</span> <span class="num">1</span><span class="opt">;</span>
+        <span class="opt">}</span>
+
+        checksum <span class="opt">+=</span> <span class="kwa">if</span> perm<span class="opt">.</span><span class="kwd">count</span><span class="opt">() %</span> <span class="num">2</span> <span class="opt">==</span> <span class="num">0</span> <span class="opt">{</span>flips<span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{-</span>flips<span class="opt">};</span>
+        maxflips <span class="opt">=</span> cmp<span class="opt">::</span><span class="kwd">max</span><span class="opt">(</span>maxflips<span class="opt">,</span> flips<span class="opt">);</span>
+
+        p <span class="opt">=</span> perm<span class="opt">.</span><span class="kwd">next</span><span class="opt">();</span>
+    <span class="opt">}</span>
+
+    <span class="opt">(</span>checksum<span class="opt">,</span> maxflips<span class="opt">)</span>
+<span class="opt">}</span>
+
+<span class="kwa">fn</span> <span class="kwd">fannkuch</span><span class="opt">(</span>n<span class="opt">:</span> <span class="kwb">i32</span><span class="opt">) -&gt; (</span><span class="kwb">i32</span><span class="opt">,</span> <span class="kwb">i32</span><span class="opt">) {</span>
+    <span class="kwa">let</span> perm <span class="opt">=</span> Perm<span class="opt">::</span><span class="kwd">new</span><span class="opt">(</span>n <span class="kwa">as</span> <span class="kwb">u32</span><span class="opt">);</span>
+
+    <span class="kwa">let</span> n <span class="opt">=</span> <span class="num">4</span><span class="opt">;</span>
+    <span class="kwa">let mut</span> futures <span class="opt">=</span> vec<span class="opt">![];</span>
+    <span class="kwa">let</span> k <span class="opt">=</span> perm<span class="opt">.</span><span class="kwd">max</span><span class="opt">() /</span> n<span class="opt">;</span>
+
+    <span class="kwa">for</span> j <span class="kwa">in</span> <span class="opt">(</span><span class="num">0</span><span class="opt">..).</span><span class="kwd">map</span><span class="opt">(|</span>x<span class="opt">|</span> x <span class="opt">*</span> k<span class="opt">).</span><span class="kwd">take_while</span><span class="opt">(|&amp;</span>j<span class="opt">|</span> j <span class="opt">&lt;</span> k <span class="opt">*</span> n<span class="opt">) {</span>
+        <span class="kwa">let</span> max <span class="opt">=</span> cmp<span class="opt">::</span><span class="kwd">min</span><span class="opt">(</span>j<span class="opt">+</span>k<span class="opt">,</span> perm<span class="opt">.</span><span class="kwd">max</span><span class="opt">());</span>
+
+        futures<span class="opt">.</span><span class="kwd">push</span><span class="opt">(</span>thread<span class="opt">::</span><span class="kwd">spawn</span><span class="opt">(</span><span class="kwa">move</span><span class="opt">|| {</span>
+            <span class="kwd">work</span><span class="opt">(</span>perm<span class="opt">,</span> j <span class="kwa">as</span> <span class="kwb">usize</span><span class="opt">,</span> max <span class="kwa">as</span> <span class="kwb">usize</span><span class="opt">)</span>
+        <span class="opt">}))</span>
+    <span class="opt">}</span>
+
+    <span class="kwa">let mut</span> checksum <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+    <span class="kwa">let mut</span> maxflips <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+    <span class="kwa">for</span> fut <span class="kwa">in</span> futures<span class="num">.i</span>nto<span class="num">_i</span>ter<span class="opt">() {</span>
+        <span class="kwa">let</span> <span class="opt">(</span>cs<span class="opt">,</span> mf<span class="opt">) =</span> fut<span class="opt">.</span><span class="kwd">join</span><span class="opt">()</span><span class="num">.u</span>nwrap<span class="opt">();</span>
+        checksum <span class="opt">+=</span> cs<span class="opt">;</span>
+        maxflips <span class="opt">=</span> cmp<span class="opt">::</span><span class="kwd">max</span><span class="opt">(</span>maxflips<span class="opt">,</span> mf<span class="opt">);</span>
+    <span class="opt">}</span>
+    <span class="opt">(</span>checksum<span class="opt">,</span> maxflips<span class="opt">)</span>
+<span class="opt">}</span>
+
+<span class="kwa">fn</span> <span class="kwd">main</span><span class="opt">() {</span>
+    <span class="kwa">let</span> n <span class="opt">=</span> std<span class="opt">::</span>env<span class="opt">::</span><span class="kwd">args_os</span><span class="opt">().</span><span class="kwd">nth</span><span class="opt">(</span><span class="num">1</span><span class="opt">)</span>
+        <span class="opt">.</span><span class="kwd">and_then</span><span class="opt">(|</span>s<span class="opt">|</span> s<span class="num">.i</span>nto<span class="num">_</span>str<span class="num">i</span>ng<span class="opt">().</span><span class="kwd">ok</span><span class="opt">())</span>
+        <span class="opt">.</span><span class="kwd">and_then</span><span class="opt">(|</span>n<span class="opt">|</span> n<span class="opt">.</span><span class="kwd">parse</span><span class="opt">().</span><span class="kwd">ok</span><span class="opt">())</span>
+        <span class="num">.u</span>nwrap<span class="num">_</span>or<span class="opt">(</span><span class="num">7</span><span class="opt">);</span>
+
+    <span class="kwa">let</span> <span class="opt">(</span>checksum<span class="opt">,</span> maxflips<span class="opt">) =</span> <span class="kwd">fannkuch</span><span class="opt">(</span>n<span class="opt">);</span>
+    println<span class="opt">!(</span><span class="str">&quot;{}</span><span class="esc">\</span><span class="str">nPfannkuchen({}) = {}&quot;</span><span class="opt">,</span> checksum<span class="opt">,</span> n<span class="opt">,</span> maxflips<span class="opt">);</span>
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+rustc 1.25.0 (84203cac6 2018-03-25)
+
+
+Thu, 29 Mar 2018 16:45:23 GMT
+
+MAKE:
+/opt/src/rust-1.25.0/bin/rustc -C opt-level=3 -C target-cpu=core2 -C lto -C codegen-units=1 -L /opt/src/rust-libs fannkuchredux.rs -o fannkuchredux.rust-2.rust_run
+
+5.46s to complete and log all make actions
+
+COMMAND LINE:
+./fannkuchredux.rust-2.rust_run 12
+
+PROGRAM OUTPUT:
+3968050
+Pfannkuchen(12) = 65
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

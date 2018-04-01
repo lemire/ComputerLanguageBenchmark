@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>fannkuch-redux Lisp SBCL&nbsp;#5 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>fannkuch-redux Lisp SBCL&nbsp;#5 program</h2>
+    <aside>
+      <p><a href="./fannkuchredux-description.html#fannkuchredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">;; The Computer Language Benchmarks Game</span>
+<span class="slc">;; http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">;; </span>
+<span class="slc">;; Contributed by Karel Belohlavek</span>
+<span class="slc">;; </span>
+<span class="slc">;; Single core implementation.</span>
+<span class="slc">;; Inspired by the Erlang one by Alkis Gotovos and Maria Christakis.</span>
+
+<span class="opt">(</span><span class="kwa">eval-when</span> <span class="opt">(:</span>execute<span class="opt">) (</span><span class="kwa">proclaim</span> <span class="opt">&apos;(</span><span class="kwa">optimize</span> <span class="opt">(</span><span class="kwa">speed</span><span class="opt">))))</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">fannkuch</span> <span class="opt">(</span><span class="kwa">n</span><span class="opt">)</span>
+   <span class="opt">(</span><span class="kwa">labels</span>
+    <span class="opt">((</span><span class="kwa">mkperm</span> <span class="opt">(</span><span class="kwa">n</span><span class="opt">)</span>
+     <span class="opt">(</span><span class="kwa">let</span><span class="opt">*</span>
+      <span class="opt">((</span><span class="kwa">params</span> <span class="opt">(</span><span class="kwa">loop</span> for i from <span class="num">1</span> to n collect <span class="opt">(</span><span class="kwa">gensym</span><span class="opt">)))</span>
+       <span class="opt">(</span><span class="kwa">flip-branches</span>
+         <span class="opt">(</span><span class="kwa">loop</span>
+          for j from <span class="num">2</span> to n
+          collect
+            <span class="opt">`((,</span>j<span class="opt">)</span>
+              <span class="opt">,(</span><span class="kwa">append</span> <span class="opt">&apos;(</span><span class="kwa">flip</span> <span class="opt">(</span><span class="kwa">the</span> fixnum <span class="opt">(</span><span class="kwa">1</span><span class="opt">+</span> acc<span class="opt">)))</span>
+                       <span class="opt">(</span><span class="kwa">reverse</span> <span class="opt">(</span><span class="kwa">subseq</span> params <span class="num">0</span> j<span class="opt">))</span>
+                       <span class="opt">(</span><span class="kwa">subseq</span> params j<span class="opt">)))))</span>
+       <span class="opt">(</span><span class="kwa">nextperm-branches</span>
+         <span class="opt">(</span><span class="kwa">loop</span>
+          for j from <span class="num">0</span> below n
+          for rparams <span class="opt">= (</span><span class="kwa">append</span> <span class="opt">(</span><span class="kwa">subseq</span> params <span class="num">1</span> <span class="opt">(</span><span class="kwa">1</span><span class="opt">+</span> j<span class="opt">))</span>
+                                <span class="opt">(</span><span class="kwa">list</span> <span class="opt">(</span><span class="kwa">car</span> params<span class="opt">))</span>
+                                <span class="opt">(</span><span class="kwa">subseq</span> params <span class="opt">(</span><span class="kwa">1</span><span class="opt">+</span> j<span class="opt">)))</span>
+          collect
+            <span class="opt">`((,</span>j<span class="opt">)</span>
+              <span class="opt">(</span><span class="kwa">if</span> <span class="opt">(&lt; (</span><span class="kwa">aref</span> c i<span class="opt">)</span> i<span class="opt">)</span> 
+               <span class="opt">(</span><span class="kwa">progn</span>
+                <span class="opt">(</span><span class="kwa">incf</span> <span class="opt">(</span><span class="kwa">aref</span> c i<span class="opt">))</span>
+                <span class="opt">(</span><span class="kwa">let</span> <span class="opt">((</span><span class="kwa">nflips</span> <span class="opt">(</span><span class="kwa">the</span> fixnum <span class="opt">(</span><span class="kwa">flip</span> <span class="num">0</span> <span class="opt">,&#64;</span>rparams<span class="opt">))))</span>
+                  <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> fixnum nflips<span class="opt">))</span>
+		  <span class="opt">(</span><span class="kwa">cond</span> <span class="opt">(</span><span class="kwa">even</span> <span class="opt">(</span><span class="kwa">incf</span> csum nflips<span class="opt">)</span>
+		              <span class="opt">(</span><span class="kwa">setf</span> even nil<span class="opt">))</span>
+		        <span class="opt">(</span><span class="kwa">t</span> <span class="opt">(</span><span class="kwa">decf</span> csum nflips<span class="opt">)</span>
+			   <span class="opt">(</span><span class="kwa">setf</span> even t<span class="opt">)))</span>
+                  <span class="opt">(</span><span class="kwa">when</span> <span class="opt">(&gt;</span> nflips max-flips<span class="opt">)</span>
+                   <span class="opt">(</span><span class="kwa">setf</span> max-flips nflips<span class="opt">)))</span>
+                <span class="opt">(</span><span class="kwa">perm</span> <span class="num">1</span> <span class="opt">,&#64;</span>rparams<span class="opt">))</span>
+               <span class="opt">(</span><span class="kwa">progn</span>
+                <span class="opt">(</span><span class="kwa">setf</span> <span class="opt">(</span><span class="kwa">aref</span> c i<span class="opt">)</span> <span class="num">0</span><span class="opt">)</span>
+                <span class="opt">(</span><span class="kwa">perm</span> <span class="opt">(+</span> i <span class="num">1</span><span class="opt">) ,&#64;</span>rparams<span class="opt">)))))))</span>
+      <span class="opt">`(</span><span class="kwa">lambda</span> <span class="opt">()</span>
+	<span class="opt">(</span><span class="kwa">let</span> <span class="opt">((</span><span class="kwa">csum</span> <span class="num">0</span><span class="opt">)</span>
+	      <span class="opt">(</span><span class="kwa">max-flips</span> <span class="num">0</span><span class="opt">)</span>
+	      <span class="opt">(</span><span class="kwa">even</span> nil<span class="opt">)</span>
+	      <span class="opt">(</span><span class="kwa">c</span> <span class="opt">(</span><span class="kwa">make-array</span> <span class="opt">,</span>n <span class="opt">:</span>initial-element <span class="num">0</span> <span class="opt">:</span>element-type <span class="opt">&apos;</span>fixnum<span class="opt">)))</span>
+	  <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> fixnum csum max-flips<span class="opt">)</span>
+	           <span class="opt">(</span><span class="kwa">type</span> boolean even<span class="opt">)</span>
+	           <span class="opt">(</span><span class="kwa">type</span> <span class="opt">(</span><span class="kwa">simple-array</span> fixnum <span class="opt">(,</span>n<span class="opt">))</span> c<span class="opt">))</span>
+	  <span class="opt">(</span><span class="kwa">labels</span>
+	   <span class="opt">((</span><span class="kwa">flip</span> <span class="opt">(</span><span class="kwa">acc</span> <span class="opt">,&#64;</span>params<span class="opt">)</span>
+             <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> fixnum acc <span class="opt">,&#64;</span>params<span class="opt">))</span>
+             <span class="opt">(</span><span class="kwa">ecase</span> <span class="opt">,(</span><span class="kwa">car</span> params<span class="opt">) ((</span><span class="kwa">1</span><span class="opt">)</span> acc<span class="opt">) ,&#64;</span>flip-branches<span class="opt">))</span>
+            <span class="opt">(</span><span class="kwa">perm</span> <span class="opt">(</span><span class="kwa">i</span> <span class="opt">,&#64;</span>params<span class="opt">)</span>
+	     <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> fixnum i <span class="opt">,&#64;</span>params<span class="opt">))</span>
+	     <span class="opt">(</span><span class="kwa">ecase</span> i
+	       <span class="opt">(,</span>n <span class="opt">(</span><span class="kwa">format</span> t <span class="str">&quot;~s~%Pfannkuchen(~s) = ~s~%&quot;</span> csum <span class="opt">,</span>n max-flips<span class="opt">))</span>
+	       <span class="opt">,&#64;</span>nextperm-branches<span class="opt">)))</span>
+	   <span class="opt">(</span><span class="kwa">apply</span> <span class="opt">#&apos;</span>perm
+	    <span class="num">1</span>
+	    <span class="opt">(</span><span class="kwa">loop</span> for j of-type fixnum from <span class="num">1</span> to <span class="opt">,</span>n collect j<span class="opt">))))))))</span>
+    <span class="opt">(</span><span class="kwa">funcall</span> <span class="opt">(</span><span class="kwa">compile</span> nil <span class="opt">(</span><span class="kwa">mkperm</span> n<span class="opt">)))))</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">main</span> <span class="opt">()</span>  
+  <span class="opt">(</span><span class="kwa">let</span><span class="opt">* ((</span><span class="kwa">args</span> <span class="opt">(</span><span class="kwa">cdr</span> sb-ext<span class="opt">:*</span>posix-argv<span class="opt">*))</span>
+         <span class="opt">(</span><span class="kwa">n</span> <span class="opt">(</span><span class="kwa">parse-integer</span> <span class="opt">(</span><span class="kwa">car</span> args<span class="opt">))))</span>
+    <span class="opt">(</span><span class="kwa">fannkuch</span> n<span class="opt">)))</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+SBCL 1.4.0
+
+
+Thu, 26 Oct 2017 16:44:43 GMT
+
+MAKE:
+cp: 'fannkuchredux.sbcl-5.sbcl' and './fannkuchredux.sbcl-5.sbcl' are the same file
+SBCL built with: /opt/src/sbcl-1.4.0/bin/sbcl --userinit /dev/null --batch --eval '(load &quot;fannkuchredux.sbcl-5.sbcl_compile&quot;)'
+### START fannkuchredux.sbcl-5.sbcl_compile
+(handler-bind ((sb-ext:defconstant-uneql      (lambda (c) (abort c))))      (load (compile-file &quot;fannkuchredux.sbcl-5.sbcl&quot; ))) (save-lisp-and-die &quot;sbcl.core&quot; :purify t)
+### END fannkuchredux.sbcl-5.sbcl_compile
+
+; compiling file &quot;/home/dunham/benchmarksgame/bench/fannkuchredux/fannkuchredux.sbcl-5.sbcl&quot; (written 03 APR 2014 12:02:39 PM):
+; compiling (DEFUN FANNKUCH ...)
+; compiling (DEFUN MAIN ...)
+
+; /home/dunham/benchmarksgame_quadcore/fannkuchredux/tmp/fannkuchredux.sbcl-5.fasl written
+; compilation finished in 0:00:00.018
+### START fannkuchredux.sbcl-5.sbcl_run
+(main) (quit)
+### END fannkuchredux.sbcl-5.sbcl_run
+
+
+3.50s to complete and log all make actions
+
+COMMAND LINE:
+/opt/src/sbcl-1.4.0/bin/sbcl  --noinform --core sbcl.core --userinit /dev/null --load fannkuchredux.sbcl-5.sbcl_run 12
+
+PROGRAM OUTPUT:
+3968050
+Pfannkuchen(12) = 65
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

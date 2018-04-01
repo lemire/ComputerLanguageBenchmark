@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>regex-redux Lisp SBCL&nbsp;#3 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>regex-redux Lisp SBCL&nbsp;#3 program</h2>
+    <aside>
+      <p><a href="./regexredux-description.html#regexredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">;;; The Computer Language Benchmarks Game</span>
+<span class="slc">;;; http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">;;;</span>
+<span class="slc">;;; regex-dna program contributed by: Witali Kusnezow 2009-03-02</span>
+<span class="slc">;;; converted from regex-dna program</span>
+
+<span class="opt">(</span><span class="kwa">eval-when</span> <span class="opt">(:</span>compile-toplevel <span class="opt">:</span>load-toplevel <span class="opt">:</span>execute<span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">require</span> <span class="opt">:</span>asdf<span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">require</span> <span class="opt">:</span>cl-ppcre<span class="opt">)</span>
+
+<span class="opt">#+</span>sb-thread
+<span class="opt">(</span><span class="kwa">progn</span>
+  <span class="opt">(</span><span class="kwa">define-alien-routine</span> sysconf long <span class="opt">(</span><span class="kwa">name</span> int<span class="opt">))</span>
+  <span class="opt">(</span><span class="kwa">use-package</span> <span class="opt">:</span>sb-thread<span class="opt">)))</span>
+
+<span class="opt">(</span><span class="kwa">eval-when</span> <span class="opt">(:</span>compile-toplevel<span class="opt">)</span>
+<span class="opt">(</span><span class="kwa">setf</span> cl-ppcre<span class="opt">:*</span>regex-char-code-limit<span class="opt">*</span> <span class="num">128</span><span class="opt">))</span>
+
+<span class="opt">(</span><span class="kwa">defconstant</span>  <span class="opt">+</span>regex-list<span class="opt">+</span>
+  <span class="opt">&apos;(</span><span class="str">&quot;agggtaaa|tttaccct&quot;</span>
+    <span class="str">&quot;[cgt]gggtaaa|tttaccc[acg]&quot;</span>
+    <span class="str">&quot;a[act]ggtaaa|tttacc[agt]t&quot;</span>
+    <span class="str">&quot;ag[act]gtaaa|tttac[agt]ct&quot;</span>
+    <span class="str">&quot;agg[act]taaa|ttta[agt]cct&quot;</span>
+    <span class="str">&quot;aggg[acg]aaa|ttt[cgt]ccct&quot;</span>
+    <span class="str">&quot;agggt[cgt]aa|tt[acg]accct&quot;</span>
+    <span class="str">&quot;agggta[cgt]a|t[acg]taccct&quot;</span>
+    <span class="str">&quot;agggtaa[cgt]|[acg]ttaccct&quot;</span><span class="opt">))</span>
+
+<span class="opt">(</span><span class="kwa">defconstant</span>  <span class="opt">+</span>alternatives<span class="opt">+</span>
+  <span class="opt">&apos;((</span><span class="str">&quot;tHa[Nt]&quot;</span> <span class="str">&quot;&lt;4&gt;&quot;</span><span class="opt">)  (</span><span class="str">&quot;aND|caN|Ha[DS]|WaS&quot;</span> <span class="str">&quot;&lt;3&gt;&quot;</span><span class="opt">)</span>
+    <span class="opt">(</span><span class="str">&quot;a[NSt]|BY&quot;</span> <span class="str">&quot;&lt;2&gt;&quot;</span><span class="opt">)  (</span><span class="str">&quot;&lt;[^&gt;]*&gt;&quot;</span> <span class="str">&quot;|&quot;</span><span class="opt">)</span>
+    <span class="opt">(</span><span class="str">&quot;</span><span class="esc">\\</span><span class="str">|[^|][^|]*</span><span class="esc">\\</span><span class="str">|&quot;</span> <span class="str">&quot;-&quot;</span><span class="opt">)))</span>
+
+<span class="opt">#+</span>sb-thread
+<span class="opt">(</span><span class="kwa">progn</span>
+  <span class="opt">(</span><span class="kwa">defconstant</span>  <span class="opt">+</span>cpu-count<span class="opt">+ (</span><span class="kwa">sysconf</span> <span class="num">84</span><span class="opt">))</span>
+  <span class="opt">(</span><span class="kwa">defvar</span> <span class="opt">*</span>mutex<span class="opt">* (</span><span class="kwa">make-mutex</span><span class="opt">))</span>
+  <span class="opt">(</span><span class="kwa">defvar</span> <span class="opt">*</span>aux-mutex<span class="opt">* (</span><span class="kwa">make-mutex</span><span class="opt">))</span>
+
+  <span class="opt">(</span><span class="kwa">defmacro</span> bg  <span class="opt">(&amp;</span>body body<span class="opt">) `(</span><span class="kwa">make-thread</span> <span class="opt">(</span><span class="kwa">lambda</span> <span class="opt">() ,&#64;</span>body<span class="opt">)))</span>
+  <span class="opt">(</span><span class="kwa">defmacro</span> join-all <span class="opt">(&amp;</span>body body<span class="opt">)</span>
+	<span class="opt">`(</span><span class="kwa">mapcar</span>
+	  <span class="opt">#&apos;</span>join-thread
+	  <span class="opt">(</span><span class="kwa">loop</span> for item in <span class="opt">(</span><span class="kwa">list</span> <span class="opt">,&#64;</span>body<span class="opt">)</span>
+		 append <span class="opt">(</span><span class="kwa">if</span> <span class="opt">(</span><span class="kwa">consp</span> item<span class="opt">)</span> item <span class="opt">(</span><span class="kwa">list</span> item<span class="opt">))))))</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">read-all</span>
+    <span class="opt">(</span><span class="kwa">stream</span> <span class="opt">&amp;</span>aux <span class="opt">(</span><span class="kwa">buf-size</span> <span class="opt">(*</span> <span class="num">1024 1024</span><span class="opt">))</span>
+     <span class="opt">(</span><span class="kwa">size</span> <span class="num">0</span><span class="opt">)</span>
+     <span class="opt">(</span><span class="kwa">buf-list</span>
+      <span class="opt">(</span><span class="kwa">loop</span>
+         for buf <span class="opt">= (</span><span class="kwa">make-string</span> buf-size <span class="opt">:</span>element-type <span class="opt">&apos;</span>base-char<span class="opt">)</span>
+         for len <span class="opt">= (</span><span class="kwa">read-sequence</span> buf stream<span class="opt">)</span>
+         do <span class="opt">(</span><span class="kwa">incf</span> size len<span class="opt">)</span>
+         collect <span class="opt">(</span><span class="kwa">if</span> <span class="opt">(&lt;</span> len buf-size<span class="opt">) (</span><span class="kwa">subseq</span> buf <span class="num">0</span> len<span class="opt">)</span> buf<span class="opt">)</span>
+         while <span class="opt">(=</span> len buf-size<span class="opt">))))</span>
+  <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> fixnum size<span class="opt">))</span>
+  <span class="opt">(</span><span class="kwa">loop</span> with res-string <span class="opt">= (</span><span class="kwa">make-string</span> size <span class="opt">:</span>element-type <span class="opt">&apos;</span>base-char<span class="opt">)</span>
+     with i of-type fixnum <span class="opt">=</span> <span class="num">0</span>
+     for str in buf-list
+     do <span class="opt">(</span><span class="kwa">setf</span> <span class="opt">(</span><span class="kwa">subseq</span> res-string i<span class="opt">) (</span><span class="kwa">the</span> simple-base-string str<span class="opt">))</span>
+     <span class="opt">(</span><span class="kwa">incf</span> i <span class="opt">(</span><span class="kwa">length</span> <span class="opt">(</span><span class="kwa">the</span> simple-base-string str<span class="opt">)))</span>
+     finally <span class="opt">(</span><span class="kwa">return</span> res-string<span class="opt">)))</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">length-to-replace</span> <span class="opt">(</span><span class="kwa">match</span><span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">loop</span> for x in match
+     sum <span class="opt">(</span><span class="kwa">-</span> <span class="opt">(</span><span class="kwa">the</span> fixnum <span class="opt">(</span><span class="kwa">cdr</span> x<span class="opt">))</span>
+            <span class="opt">(</span><span class="kwa">the</span> fixnum <span class="opt">(</span><span class="kwa">car</span> x<span class="opt">)))</span> of-type fixnum<span class="opt">))</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">replace-aux</span>
+    <span class="opt">(</span><span class="kwa">match</span> replacement target-string result-string
+     <span class="opt">&amp;</span>key <span class="opt">(</span><span class="kwa">match-begin</span> <span class="num">0</span><span class="opt">) (</span><span class="kwa">match-end</span> -<span class="num">1</span><span class="opt">)</span>
+     <span class="opt">(</span><span class="kwa">match-length</span> <span class="opt">(</span><span class="kwa">length</span> match<span class="opt">))</span>
+     <span class="opt">&amp;</span>aux
+     <span class="opt">(</span><span class="kwa">len</span> <span class="opt">(</span><span class="kwa">length</span> replacement<span class="opt">))</span>
+     <span class="opt">(</span><span class="kwa">first-match</span> <span class="opt">(</span><span class="kwa">if</span> <span class="opt">(</span><span class="kwa">zerop</span> match-begin<span class="opt">) &apos;(</span><span class="kwa">0</span> . <span class="num">0</span><span class="opt">) (</span><span class="kwa">nth</span> <span class="opt">(</span><span class="kwa">1-</span> match-begin<span class="opt">)</span> match<span class="opt">)))</span>
+     <span class="opt">(</span><span class="kwa">target-start</span> <span class="opt">(</span><span class="kwa">cdr</span> first-match<span class="opt">))</span>
+     <span class="opt">(</span><span class="kwa">result-start</span> <span class="opt">(+ (</span><span class="kwa">the</span> fixnum <span class="opt">(*</span> len match-begin<span class="opt">))</span>
+                    <span class="opt">(</span><span class="kwa">-</span> target-start
+                       <span class="opt">(</span><span class="kwa">the</span> fixnum <span class="opt">(</span><span class="kwa">length-to-replace</span> <span class="opt">(</span><span class="kwa">subseq</span> match <span class="num">0</span> match-begin<span class="opt">)))))))</span>
+  <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> fixnum match-begin match-end match-length target-start result-start len<span class="opt">)</span>
+           <span class="opt">(</span><span class="kwa">type</span> list match<span class="opt">)</span>
+           <span class="opt">(</span><span class="kwa">type</span> simple-base-string result-string target-string<span class="opt">)</span>
+           <span class="opt">(</span><span class="kwa">type</span> vector replacement<span class="opt">))</span>
+  <span class="opt">(</span><span class="kwa">loop</span> with <span class="opt">(</span><span class="kwa">i</span> j<span class="opt">)</span> of-type fixnum <span class="opt">= (</span><span class="kwa">list</span> result-start target-start<span class="opt">)</span>
+     with mmatch <span class="opt">= (</span><span class="kwa">if</span> <span class="opt">(&gt;</span> match-begin match-end<span class="opt">)</span>
+                       match <span class="opt">(</span><span class="kwa">subseq</span> match match-begin match-end<span class="opt">))</span>
+     for pair in mmatch
+     do <span class="opt">(</span><span class="kwa">setf</span> <span class="opt">(</span><span class="kwa">subseq</span> result-string i<span class="opt">) (</span><span class="kwa">subseq</span> target-string j <span class="opt">(</span><span class="kwa">car</span> pair<span class="opt">))</span>
+              i <span class="opt">(+</span> i <span class="opt">(</span><span class="kwa">-</span> <span class="opt">(</span><span class="kwa">the</span> fixnum <span class="opt">(</span><span class="kwa">car</span> pair<span class="opt">))</span> j<span class="opt">))</span>
+              <span class="opt">(</span><span class="kwa">subseq</span> result-string i<span class="opt">)</span> replacement
+              j <span class="opt">(</span><span class="kwa">cdr</span> pair<span class="opt">)</span>
+              i <span class="opt">(+</span> i len<span class="opt">))</span>
+     finally <span class="opt">(</span><span class="kwa">if</span> <span class="opt">(</span><span class="kwa">or</span> <span class="opt">(</span><span class="kwa">minusp</span> match-end<span class="opt">) (&lt;=</span> match-length match-end<span class="opt">))</span>
+                 <span class="opt">(</span><span class="kwa">setf</span> <span class="opt">(</span><span class="kwa">subseq</span> result-string i <span class="opt">) (</span><span class="kwa">subseq</span> target-string j<span class="opt">))))</span>
+  nil<span class="opt">)</span>
+
+<span class="opt">#+</span>sb-thread
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">parts</span>
+    <span class="opt">(</span><span class="kwa">parts-num</span> len
+     <span class="opt">&amp;</span>aux
+     <span class="opt">(</span><span class="kwa">ranges</span> <span class="opt">(</span><span class="kwa">loop</span> with <span class="opt">(</span><span class="kwa">step</span> rest<span class="opt">)</span> of-type fixnum <span class="opt">=  (</span><span class="kwa">multiple-value-list</span> <span class="opt">(</span><span class="kwa">floor</span> len parts-num<span class="opt">))</span>
+                with i of-type fixnum <span class="opt">=</span> <span class="num">0</span> while <span class="opt">(&lt;</span> i len<span class="opt">)</span>
+                collect i into res of-type fixnum
+                do <span class="opt">(</span><span class="kwa">incf</span> i step<span class="opt">)(</span><span class="kwa">if</span> <span class="opt">(</span><span class="kwa">plusp</span> rest<span class="opt">) (</span><span class="kwa">progn</span> <span class="opt">(</span><span class="kwa">incf</span> i<span class="opt">) (</span><span class="kwa">decf</span> rest<span class="opt">)) )</span>
+                finally <span class="opt">(</span><span class="kwa">return</span> <span class="opt">(</span><span class="kwa">append</span> res <span class="opt">(</span><span class="kwa">list</span> len<span class="opt">))))</span>
+             <span class="opt">))</span>
+  <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> fixnum len parts-num<span class="opt">)</span>
+           <span class="opt">(</span><span class="kwa">type</span> list ranges<span class="opt">))</span>
+  <span class="opt">(</span><span class="kwa">mapcar</span> <span class="opt">#&apos;</span>cons ranges <span class="opt">(</span><span class="kwa">subseq</span> ranges <span class="num">1</span><span class="opt">)))</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">replace-all</span>
+    <span class="opt">(</span><span class="kwa">regexp</span> replacement target-string
+     <span class="opt">&amp;</span>aux <span class="opt">(</span><span class="kwa">rmatch</span> <span class="opt">&apos;()) (</span><span class="kwa">match</span> <span class="opt">&apos;())</span>
+     <span class="opt">(</span><span class="kwa">result-string</span> <span class="opt">(</span><span class="kwa">make-string</span> <span class="num">0</span> <span class="opt">:</span>element-type <span class="opt">&apos;</span>base-char<span class="opt">)))</span>
+  <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> simple-base-string result-string target-string<span class="opt">)</span>
+           <span class="opt">(</span><span class="kwa">type</span> vector replacement<span class="opt">))</span>
+  <span class="opt">(</span><span class="kwa">cl-ppcre</span><span class="opt">:</span>do-scans
+      <span class="opt">(</span><span class="kwa">match-start</span> match-end reg-starts reg-ends regexp target-string nil<span class="opt">)</span>
+    <span class="opt">(</span><span class="kwa">push</span> <span class="opt">(</span><span class="kwa">cons</span> match-start match-end<span class="opt">)</span> rmatch<span class="opt">))</span>
+  <span class="opt">(</span><span class="kwa">if</span> rmatch
+      <span class="opt">(</span><span class="kwa">progn</span>
+        <span class="opt">(</span><span class="kwa">setf</span> match <span class="opt">(</span><span class="kwa">reverse</span> rmatch<span class="opt">)</span>
+              result-string <span class="opt">(</span><span class="kwa">make-string</span>
+                             <span class="opt">(+ (</span><span class="kwa">-</span> <span class="opt">(</span><span class="kwa">length</span> target-string<span class="opt">)</span>
+                                   <span class="opt">(</span><span class="kwa">length-to-replace</span> match<span class="opt">))</span>
+                                <span class="opt">(</span><span class="kwa">the</span> fixnum <span class="opt">(* (</span><span class="kwa">length</span> replacement<span class="opt">)</span>
+                                               <span class="opt">(</span><span class="kwa">length</span> match<span class="opt">)))) :</span>element-type <span class="opt">&apos;</span>base-char<span class="opt">))</span>
+        <span class="opt">#</span>-sb-thread
+        <span class="opt">(</span><span class="kwa">replace-aux</span> match replacement target-string result-string<span class="opt">)</span>
+        <span class="opt">#+</span>sb-thread
+        <span class="opt">(</span><span class="kwa">mapcar</span> <span class="opt">#&apos;</span>join-thread
+                <span class="opt">(</span><span class="kwa">loop</span> with len of-type fixnum <span class="opt">= (</span><span class="kwa">length</span> match<span class="opt">)</span>
+				   with parts-list  <span class="opt">= (</span><span class="kwa">parts</span> <span class="opt">+</span>cpu-count<span class="opt">+</span> len<span class="opt">)</span>
+                   with current of-type fixnum <span class="opt">=</span> <span class="num">0</span>
+                   repeat <span class="opt">+</span>cpu-count<span class="opt">+</span>
+                   collect
+					 <span class="opt">(</span><span class="kwa">bg</span> <span class="opt">(</span><span class="kwa">let</span> <span class="opt">(</span><span class="kwa">range</span><span class="opt">)</span>
+                           <span class="opt">(</span><span class="kwa">with-mutex</span> <span class="opt">(*</span>mutex<span class="opt">*)</span>
+                             <span class="opt">(</span><span class="kwa">setf</span> range <span class="opt">(</span><span class="kwa">nth</span> current parts-list<span class="opt">))</span>
+                             <span class="opt">(</span><span class="kwa">incf</span> current<span class="opt">))</span>
+                           <span class="opt">(</span><span class="kwa">replace-aux</span> match replacement target-string result-string
+                                        <span class="opt">:</span>match-begin <span class="opt">(</span><span class="kwa">car</span> range<span class="opt">) :</span>match-end <span class="opt">(</span><span class="kwa">cdr</span> range<span class="opt">)</span>
+                                        <span class="opt">:</span>match-length len<span class="opt">)))))</span>
+        result-string<span class="opt">)</span>
+      target-string<span class="opt">))</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">main</span> <span class="opt">(&amp;</span>optional <span class="opt">(</span><span class="kwa">stream</span> <span class="opt">*</span>standard-input<span class="opt">*)</span>
+             <span class="opt">&amp;</span>aux <span class="opt">(</span><span class="kwa">sequence</span> <span class="opt">(</span><span class="kwa">read-all</span> stream<span class="opt">))</span>
+             <span class="opt">(</span><span class="kwa">size</span> <span class="opt">(</span><span class="kwa">length</span> sequence<span class="opt">)))</span>
+  <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> simple-base-string sequence<span class="opt">))</span>
+  <span class="opt">(</span><span class="kwa">setf</span> sequence <span class="opt">(</span><span class="kwa">replace-all</span> <span class="str">&quot;&gt;[^</span><span class="esc">\\</span><span class="str">n]*</span><span class="esc">\\</span><span class="str">n|</span><span class="esc">\\</span><span class="str">n&quot;</span> <span class="str">&quot;&quot;</span> sequence<span class="opt">))</span>
+
+  <span class="opt">#</span>-sb-thread
+  <span class="opt">(</span><span class="kwa">progn</span>
+    <span class="opt">(</span><span class="kwa">loop</span> for regex in <span class="opt">+</span>regex-list<span class="opt">+</span> do
+         <span class="opt">(</span><span class="kwa">format</span> t <span class="str">&quot;~a ~a~%&quot;</span> regex
+                 <span class="opt">(/ (</span><span class="kwa">length</span>
+                     <span class="opt">(</span><span class="kwa">the</span> list
+                       <span class="opt">(</span><span class="kwa">cl-ppcre</span><span class="opt">:</span>all-matches regex sequence<span class="opt">)))</span> <span class="num">2</span><span class="opt">)))</span>
+    <span class="opt">(</span><span class="kwa">format</span> t <span class="str">&quot;~%~a~%~a~%&quot;</span> size <span class="opt">(</span><span class="kwa">length</span> sequence<span class="opt">))</span>
+    <span class="opt">(</span><span class="kwa">loop</span> for pair in <span class="opt">+</span>alternatives<span class="opt">+</span> do
+         <span class="opt">(</span><span class="kwa">setf</span> sequence <span class="opt">(</span><span class="kwa">replace-all</span>  <span class="opt">(</span><span class="kwa">car</span> pair<span class="opt">) (</span><span class="kwa">cadr</span> pair<span class="opt">)</span> sequence <span class="opt">)))</span>
+    <span class="opt">(</span><span class="kwa">format</span> t <span class="str">&quot;~a~%&quot;</span> <span class="opt">(</span><span class="kwa">length</span> sequence<span class="opt">)))</span>
+  <span class="opt">#+</span>sb-thread
+  <span class="opt">(</span><span class="kwa">let</span><span class="opt">* ((</span><span class="kwa">len</span> <span class="opt">(</span><span class="kwa">length</span> <span class="opt">+</span>regex-list<span class="opt">+))</span>
+         <span class="opt">(</span><span class="kwa">result</span> <span class="opt">(</span><span class="kwa">make-list</span> <span class="opt">(</span><span class="kwa">1</span><span class="opt">+</span> len<span class="opt">))))</span>
+    <span class="opt">(</span><span class="kwa">join-all</span>
+	 <span class="opt">(</span><span class="kwa">loop</span> with idx of-type fixnum <span class="opt">=</span> <span class="num">0</span>
+		repeat len
+		collect
+          <span class="opt">(</span><span class="kwa">bg</span> <span class="opt">(</span><span class="kwa">let</span> <span class="opt">(</span><span class="kwa">reg</span> cur<span class="opt">)</span>
+                <span class="opt">(</span><span class="kwa">with-mutex</span> <span class="opt">(*</span>aux-mutex<span class="opt">*)</span>
+                  <span class="opt">(</span><span class="kwa">setf</span> cur idx reg <span class="opt">(</span><span class="kwa">nth</span> cur <span class="opt">+</span>regex-list<span class="opt">+))</span>
+                  <span class="opt">(</span><span class="kwa">incf</span> idx<span class="opt">))</span>
+              <span class="opt">(</span><span class="kwa">setf</span> <span class="opt">(</span><span class="kwa">nth</span> cur result<span class="opt">)</span>
+                    <span class="opt">(</span><span class="kwa">format</span> nil <span class="str">&quot;~a ~a&quot;</span> reg
+                            <span class="opt">(/ (</span><span class="kwa">length</span>
+                                <span class="opt">(</span><span class="kwa">the</span> list
+                                  <span class="opt">(</span><span class="kwa">cl-ppcre</span><span class="opt">:</span>all-matches reg sequence<span class="opt">)))</span> <span class="num">2</span><span class="opt">))))))</span>
+	 <span class="opt">(</span><span class="kwa">bg</span> <span class="opt">(</span><span class="kwa">loop</span> with seq <span class="opt">= (</span><span class="kwa">copy-seq</span> sequence<span class="opt">)</span>
+            for pair in <span class="opt">+</span>alternatives<span class="opt">+</span> do
+              <span class="opt">(</span><span class="kwa">setf</span> seq <span class="opt">(</span><span class="kwa">replace-all</span>  <span class="opt">(</span><span class="kwa">car</span> pair<span class="opt">) (</span><span class="kwa">cadr</span> pair<span class="opt">)</span> seq <span class="opt">))</span>
+            finally <span class="opt">(</span><span class="kwa">setf</span> <span class="opt">(</span><span class="kwa">nth</span> len result<span class="opt">)</span>
+                          <span class="opt">(</span><span class="kwa">format</span> nil <span class="str">&quot;~%~a~%~a~%~a&quot;</span> size <span class="opt">(</span><span class="kwa">length</span> sequence<span class="opt">) (</span><span class="kwa">length</span> seq<span class="opt">))))))</span>
+    <span class="opt">(</span><span class="kwa">format</span> t <span class="str">&quot;~{~a~%~}&quot;</span> result<span class="opt">))</span>
+  <span class="opt">)</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+SBCL 1.4.0
+
+
+Thu, 26 Oct 2017 17:44:28 GMT
+
+MAKE:
+cp: 'regexredux.sbcl-3.sbcl' and './regexredux.sbcl-3.sbcl' are the same file
+SBCL built with: /opt/src/sbcl-1.4.0/bin/sbcl --userinit /dev/null --batch --eval '(load &quot;regexredux.sbcl-3.sbcl_compile&quot;)'
+### START regexredux.sbcl-3.sbcl_compile
+(handler-bind ((sb-ext:defconstant-uneql      (lambda (c) (abort c))))      (load (compile-file &quot;regexredux.sbcl-3.sbcl&quot; ))) (save-lisp-and-die &quot;sbcl.core&quot; :purify t)
+### END regexredux.sbcl-3.sbcl_compile
+
+; compiling file &quot;/home/dunham/benchmarksgame/bench/regexredux/regexredux.sbcl-3.sbcl&quot; (written 20 MAR 2017 12:39:50 PM):
+; compiling (REQUIRE :ASDF)
+; compiling (REQUIRE :CL-PPCRE)While evaluating the form starting at line 1, column 0
+  of #P&quot;/home/dunham/benchmarksgame_quadcore/regexredux/tmp/regexredux.sbcl-3.sbcl_compile&quot;:
+
+debugger invoked on a SB-INT:EXTENSION-FAILURE in thread
+#&lt;THREAD &quot;main thread&quot; RUNNING {100194ED83}&gt;:
+  Don't know how to REQUIRE CL-PPCRE.
+See also:
+  The SBCL Manual, Variable *MODULE-PROVIDER-FUNCTIONS*
+  The SBCL Manual, Function REQUIRE
+; 
+; compilation unit aborted
+;   caught 1 fatal ERROR condition
+
+; compilation aborted after 0:16:41.869
+* ### START regexredux.sbcl-3.sbcl_run
+(main) (quit)
+### END regexredux.sbcl-3.sbcl_run
+
+
+1013.29s to complete and log all make actions
+
+COMMAND LINE:
+/opt/src/sbcl-1.4.0/bin/sbcl  --noinform --core sbcl.core --userinit /dev/null --load regexredux.sbcl-3.sbcl_run 0 &lt; regexredux-input50000.txt
+
+PROGRAM FAILED 
+
+
+PROGRAM OUTPUT:
+
+could not open file &quot;sbcl.core&quot;
+open: No such file or directory
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

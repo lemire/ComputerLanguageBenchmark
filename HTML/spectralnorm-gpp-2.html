@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>spectral-norm C++ g++&nbsp;#2 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>spectral-norm C++ g++&nbsp;#2 program</h2>
+    <aside>
+      <p><a href="./spectralnorm-description.html#spectralnorm">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">// The Computer Language Benchmarks Game</span>
+<span class="slc">// http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">//</span>
+<span class="slc">// contributed by The Suffocated</span>
+
+<span class="ppc">#include</span> <span class="pps">&quot;Eigen/Core&quot;</span><span class="ppc"></span>
+<span class="ppc">#include &lt;cstdio&gt;</span>
+<span class="ppc">#include &lt;cmath&gt;</span>
+
+<span class="kwb">double</span> <span class="kwd">a</span><span class="opt">(</span><span class="kwb">int</span> i<span class="opt">,</span> <span class="kwb">int</span> j<span class="opt">) {</span>
+  <span class="kwa">return</span> <span class="num">1.0</span> <span class="opt">/ ((</span>i<span class="opt">+</span>j<span class="opt">)*(</span>i<span class="opt">+</span>j<span class="opt">+</span><span class="num">1</span><span class="opt">)/</span><span class="num">2</span> <span class="opt">+</span> i<span class="opt">+</span><span class="num">1</span><span class="opt">);</span>
+<span class="opt">}</span>
+
+<span class="kwb">void</span> <span class="kwd">multiplyAv</span><span class="opt">(</span><span class="kwb">const</span> <span class="kwc">Eigen</span><span class="opt">::</span>MatrixXd <span class="opt">&amp;</span> A<span class="opt">,</span> <span class="kwb">const</span> <span class="kwc">Eigen</span><span class="opt">::</span>VectorXd <span class="opt">&amp;</span> input<span class="opt">,</span>
+                <span class="kwc">Eigen</span><span class="opt">::</span>VectorXd <span class="opt">&amp;</span> output<span class="opt">) {</span>
+  output <span class="opt">=</span> A <span class="opt">*</span> input<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwb">void</span> <span class="kwd">multiplyAtv</span><span class="opt">(</span><span class="kwb">const</span> <span class="kwc">Eigen</span><span class="opt">::</span>MatrixXd <span class="opt">&amp;</span> A<span class="opt">,</span> <span class="kwb">const</span> <span class="kwc">Eigen</span><span class="opt">::</span>VectorXd <span class="opt">&amp;</span> input<span class="opt">,</span>
+                 <span class="kwc">Eigen</span><span class="opt">::</span>VectorXd <span class="opt">&amp;</span> output<span class="opt">) {</span>
+  output <span class="opt">=</span> A<span class="opt">.</span><span class="kwd">transpose</span><span class="opt">() *</span> input<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwb">void</span> <span class="kwd">multiplyAtAv</span><span class="opt">(</span><span class="kwb">const</span> <span class="kwc">Eigen</span><span class="opt">::</span>MatrixXd <span class="opt">&amp;</span> A<span class="opt">,</span> <span class="kwb">const</span> <span class="kwc">Eigen</span><span class="opt">::</span>VectorXd <span class="opt">&amp;</span> input<span class="opt">,</span>
+                  <span class="kwc">Eigen</span><span class="opt">::</span>VectorXd <span class="opt">&amp;</span> output<span class="opt">,</span> <span class="kwc">Eigen</span><span class="opt">::</span>VectorXd <span class="opt">&amp;</span> buffer<span class="opt">) {</span>
+  <span class="kwd">multiplyAv</span><span class="opt">(</span>A<span class="opt">,</span> input<span class="opt">,</span> buffer<span class="opt">);</span>
+  <span class="kwd">multiplyAtv</span><span class="opt">(</span>A<span class="opt">,</span> buffer<span class="opt">,</span> output<span class="opt">);</span>
+<span class="opt">}</span>
+
+<span class="kwb">double</span> <span class="kwd">approximate</span><span class="opt">(</span><span class="kwb">int</span> n<span class="opt">) {</span>
+  <span class="com">/* EQUIVALENT MATLAB IMPLEMENTATION:</span>
+<span class="com">  A = zeros(n,n);</span>
+<span class="com">  for i=1:n</span>
+<span class="com">    for j=1:n</span>
+<span class="com">      A(i,j) = 1/((i+j)*(i+j+1)/2 + i+1);</span>
+<span class="com">    end</span>
+<span class="com">  end</span>
+<span class="com">  u = ones(n,1);</span>
+<span class="com">  v = zeros(n,1);</span>
+<span class="com">  for i=1:10</span>
+<span class="com">    v = A&apos;*(A*u);</span>
+<span class="com">    u = A&apos;*(A*v);</span>
+<span class="com">  end</span>
+<span class="com">  sqrt((u&apos;*v)/(v&apos;*v))</span>
+<span class="com">  */</span>
+  <span class="kwc">Eigen</span><span class="opt">::</span>MatrixXd <span class="kwd">A</span><span class="opt">(</span>n<span class="opt">,</span>n<span class="opt">);</span>
+  <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i<span class="opt">=</span><span class="num">0</span><span class="opt">;</span> i<span class="opt">&lt;</span>n<span class="opt">; ++</span>i<span class="opt">)</span>
+    <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> j<span class="opt">=</span><span class="num">0</span><span class="opt">;</span> j<span class="opt">&lt;</span>n<span class="opt">; ++</span>j<span class="opt">)</span>
+      <span class="kwd">A</span><span class="opt">(</span>i<span class="opt">,</span>j<span class="opt">) =</span> <span class="kwd">a</span><span class="opt">(</span>i<span class="opt">,</span>j<span class="opt">);</span>
+
+  <span class="kwc">Eigen</span><span class="opt">::</span>VectorXd u<span class="opt">=</span><span class="kwc">Eigen</span><span class="opt">::</span><span class="kwc">VectorXd</span><span class="opt">::</span><span class="kwd">Ones</span><span class="opt">(</span>n<span class="opt">),</span> v<span class="opt">=</span><span class="kwc">Eigen</span><span class="opt">::</span><span class="kwc">VectorXd</span><span class="opt">::</span><span class="kwd">Zero</span><span class="opt">(</span>n<span class="opt">),</span> <span class="kwd">w</span><span class="opt">(</span>n<span class="opt">);</span>
+
+  <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i<span class="opt">=</span><span class="num">0</span><span class="opt">;</span> i<span class="opt">&lt;</span><span class="num">10</span><span class="opt">; ++</span>i<span class="opt">) {</span>
+    <span class="kwd">multiplyAtAv</span><span class="opt">(</span>A<span class="opt">,</span> u<span class="opt">,</span> v<span class="opt">,</span> w<span class="opt">);</span>
+    <span class="kwd">multiplyAtAv</span><span class="opt">(</span>A<span class="opt">,</span> v<span class="opt">,</span> u<span class="opt">,</span> w<span class="opt">);</span>
+  <span class="opt">}</span>
+  <span class="kwa">return</span> <span class="kwc">std</span><span class="opt">::</span><span class="kwd">sqrt</span><span class="opt">(</span>u<span class="opt">.</span><span class="kwd">dot</span><span class="opt">(</span>v<span class="opt">)/</span>v<span class="opt">.</span><span class="kwd">dot</span><span class="opt">(</span>v<span class="opt">));</span>
+<span class="opt">}</span>
+
+<span class="kwb">int</span> <span class="kwd">main</span><span class="opt">(</span><span class="kwb">int</span> argc<span class="opt">,</span> <span class="kwb">char</span> <span class="opt">*</span>argv<span class="opt">[]) {</span>
+    <span class="kwb">int</span> n <span class="opt">= ((</span>argc <span class="opt">&gt;=</span> <span class="num">2</span><span class="opt">) ?</span> <span class="kwd">atoi</span><span class="opt">(</span>argv<span class="opt">[</span><span class="num">1</span><span class="opt">]) :</span> <span class="num">100</span><span class="opt">);</span>
+    <span class="kwd">printf</span><span class="opt">(</span><span class="str">&quot;%.9f</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span> <span class="kwd">approximate</span><span class="opt">(</span>n<span class="opt">));</span>
+    <span class="kwa">return</span> <span class="num">0</span><span class="opt">;</span>
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+g++ (Ubuntu 7.2.0-8ubuntu3) 7.2.0
+
+
+Sun, 18 Mar 2018 00:01:43 GMT
+
+MAKE:
+/usr/bin/g++ -c -pipe -O3 -fomit-frame-pointer -march=native -mfpmath=sse -msse3 -I/usr/include/eigen3 spectralnorm.gpp-2.c++ -o spectralnorm.gpp-2.c++.o &amp;&amp;  \
+        /usr/bin/g++ spectralnorm.gpp-2.c++.o -o spectralnorm.gpp-2.gpp_run  
+rm spectralnorm.gpp-2.c++
+
+2.61s to complete and log all make actions
+
+COMMAND LINE:
+./spectralnorm.gpp-2.gpp_run 5500
+
+PROGRAM OUTPUT:
+1.274224153
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

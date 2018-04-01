@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>fannkuch-redux C++ g++&nbsp;#2 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>fannkuch-redux C++ g++&nbsp;#2 program</h2>
+    <aside>
+      <p><a href="./fannkuchredux-description.html#fannkuchredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">/* The Computer Language Benchmarks Game</span>
+<span class="com">   http://benchmarksgame.alioth.debian.org/</span>
+<span class="com"></span>
+<span class="com">contributed by Miroslav Rubanets</span>
+<span class="com">based on Java 6 source code by Oleg Mazurov.</span>
+<span class="com"></span>
+<span class="com">Building checked in Ubuntu 10.4 with g++ 4.4 (both x86 and amd64).</span>
+<span class="com">   one needs to install libboost-thread-dev package to get this working </span>
+<span class="com">   g++ -c -O3 -pipe -pthread -fomit-frame-pointer -march=native f.cpp</span>
+<span class="com">   g++ -lpthread -lboost_thread f.o</span>
+<span class="com">*/</span>
+<span class="slc">//std stuff</span>
+<span class="ppc">#include &lt;cassert&gt;</span>
+<span class="ppc">#include &lt;algorithm&gt;</span>
+<span class="ppc">#include &lt;cstdio&gt;</span>
+<span class="kwa">using</span> <span class="kwc">std</span><span class="opt">::</span>copy<span class="opt">;</span><span class="kwa">using</span> <span class="kwc">std</span><span class="opt">::</span>max<span class="opt">;</span><span class="kwa">using</span> <span class="kwc">std</span><span class="opt">::</span>min<span class="opt">;</span> <span class="kwa">using</span> <span class="kwc">std</span><span class="opt">::</span>atoi<span class="opt">;</span>
+<span class="kwa">using</span> <span class="kwc">std</span><span class="opt">::</span>printf<span class="opt">;</span><span class="kwa">using</span> <span class="kwc">std</span><span class="opt">::</span>swap<span class="opt">;</span>
+<span class="slc">//threads stuff</span>
+<span class="ppc">#include &lt;boost/thread.hpp&gt;</span>
+<span class="kwa">using</span> <span class="kwc">boost</span><span class="opt">::</span>thread<span class="opt">;</span><span class="kwa">using</span> <span class="kwc">boost</span><span class="opt">::</span>thread_group<span class="opt">;</span><span class="kwa">using</span> <span class="kwc">boost</span><span class="opt">::</span>ref<span class="opt">;</span>
+
+<span class="kwb">struct</span> P<span class="opt">{</span><span class="slc">//permutation</span>
+    <span class="kwb">char</span> data<span class="opt">[</span><span class="num">16</span><span class="opt">];</span>
+    <span class="kwb">char</span><span class="opt">&amp;</span> <span class="kwc">operator</span><span class="opt">[](</span><span class="kwb">int</span> i<span class="opt">){</span> <span class="kwa">return</span> data<span class="opt">[</span>i<span class="opt">]; }</span>
+    <span class="kwb">const char</span><span class="opt">&amp;</span> <span class="kwc">operator</span><span class="opt">[](</span><span class="kwb">int</span> i<span class="opt">)</span><span class="kwb">const</span><span class="opt">{</span> <span class="kwa">return</span> data<span class="opt">[</span>i<span class="opt">]; }</span>
+    <span class="kwb">void</span> <span class="kwd">assign</span><span class="opt">(</span> <span class="kwb">const char</span><span class="opt">*</span> p<span class="opt">,</span> <span class="kwb">int</span> len<span class="opt">){</span> <span class="kwd">copy</span><span class="opt">(</span>p<span class="opt">,</span> p<span class="opt">+</span>len<span class="opt">, &amp;</span>data<span class="opt">[</span><span class="num">0</span><span class="opt">] ); }</span>
+    <span class="kwb">void</span> <span class="kwd">rotate</span><span class="opt">(</span><span class="kwb">int</span> i<span class="opt">){</span>
+        <span class="kwb">int</span> first <span class="opt">=</span> data<span class="opt">[</span><span class="num">0</span><span class="opt">];</span>
+        <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> j<span class="opt">=</span><span class="num">0</span><span class="opt">;</span> j<span class="opt">&lt;</span>i<span class="opt">; ++</span>j<span class="opt">)</span>
+            data<span class="opt">[</span>j<span class="opt">] =</span> data<span class="opt">[</span>j<span class="opt">+</span><span class="num">1</span><span class="opt">];</span>
+        data<span class="opt">[</span>i<span class="opt">] =</span> first<span class="opt">;</span>
+    <span class="opt">}</span>
+    <span class="kwb">void</span> <span class="kwd">reverse</span><span class="opt">(</span><span class="kwb">int</span> n<span class="opt">){</span>
+        <span class="slc">// following lines are very carefully written to meet both test </span>
+        <span class="slc">// conditions and reasonable timings. </span>
+        <span class="kwb">char</span> <span class="opt">*</span> lo <span class="opt">= &amp;</span>data<span class="opt">[</span><span class="num">0</span><span class="opt">], *</span> hi <span class="opt">= &amp;</span>data<span class="opt">[</span>n<span class="opt">];</span>
+        <span class="kwa">for</span> <span class="opt">(;</span> lo <span class="opt">&lt;</span> hi<span class="opt">; ++</span>lo<span class="opt">, --</span>hi<span class="opt">)</span> 
+            <span class="kwd">swap</span><span class="opt">( *</span>lo<span class="opt">, *</span>hi <span class="opt">);</span>
+    <span class="opt">}</span>
+<span class="opt">};</span>
+<span class="kwc">class</span> G<span class="opt">{</span><span class="slc">// permutation generator</span>
+    P p<span class="opt">;</span>
+    <span class="kwb">int</span> count<span class="opt">[</span><span class="num">16</span><span class="opt">];</span>
+    <span class="kwb">union</span><span class="opt">{</span><span class="slc">//for alignment</span>
+        <span class="kwb">struct</span><span class="opt">{</span>
+            <span class="kwb">const int</span> <span class="opt">*</span> fact<span class="opt">;</span>
+            <span class="kwb">int</span> len<span class="opt">;</span>
+        <span class="opt">};</span>
+        <span class="kwb">int</span> padding<span class="opt">[</span><span class="num">4</span><span class="opt">];</span>
+    <span class="opt">};</span>
+<span class="kwc">public</span><span class="opt">:</span>
+    <span class="kwd">G</span><span class="opt">():</span><span class="kwd">fact</span><span class="opt">(),</span> <span class="kwd">len</span><span class="opt">(){}</span>
+    <span class="kwb">void</span> <span class="kwd">init</span><span class="opt">(</span><span class="kwb">const int</span><span class="opt">*</span>p<span class="opt">,</span> <span class="kwb">int</span> n<span class="opt">){</span>
+        fact <span class="opt">=</span> p<span class="opt">;</span>
+        len <span class="opt">=</span> n<span class="opt">;</span>
+        <span class="kwc">std</span><span class="opt">::</span><span class="kwd">fill</span><span class="opt">(&amp;</span>count<span class="opt">[</span><span class="num">0</span><span class="opt">], &amp;</span>count<span class="opt">[</span><span class="num">16</span><span class="opt">],</span> <span class="num">0</span><span class="opt">);</span>
+    <span class="opt">}</span>
+    <span class="kwb">bool</span> <span class="kwd">constructed</span><span class="opt">()</span><span class="kwb">const</span><span class="opt">{</span> <span class="kwa">return</span> fact <span class="opt">!=</span> <span class="num">0</span><span class="opt">;}</span>
+    <span class="kwb">void</span> <span class="kwd">first_permutation</span><span class="opt">(</span><span class="kwb">int</span> idx<span class="opt">){</span>
+        <span class="kwb">char</span> p<span class="opt">[</span><span class="num">16</span><span class="opt">]={};</span>
+        <span class="kwb">char</span> pp<span class="opt">[</span><span class="num">16</span><span class="opt">]={};</span>
+        <span class="kwa">for</span> <span class="opt">(</span> <span class="kwb">int</span> i<span class="opt">=</span><span class="num">0</span><span class="opt">;</span> i<span class="opt">&lt;</span>len<span class="opt">; ++</span>i <span class="opt">)</span> 
+           p<span class="opt">[</span>i<span class="opt">] =</span> i<span class="opt">;</span>
+        <span class="kwa">for</span> <span class="opt">(</span> <span class="kwb">int</span> i<span class="opt">=</span>len<span class="opt">-</span><span class="num">1</span><span class="opt">;</span> i<span class="opt">&gt;</span><span class="num">0</span><span class="opt">; --</span>i <span class="opt">) {</span>
+            <span class="kwb">int</span> d <span class="opt">=</span> idx <span class="opt">/</span> fact<span class="opt">[</span>i<span class="opt">];</span>
+            count<span class="opt">[</span>i<span class="opt">] =</span> d<span class="opt">;</span>
+            idx <span class="opt">=</span> idx <span class="opt">%</span> fact<span class="opt">[</span>i<span class="opt">];</span>
+            <span class="kwd">copy</span><span class="opt">( &amp;</span>p<span class="opt">[</span><span class="num">0</span><span class="opt">], &amp;</span>p<span class="opt">[</span>i<span class="opt">+</span><span class="num">1</span><span class="opt">], &amp;</span>pp<span class="opt">[</span><span class="num">0</span><span class="opt">] );</span>
+            <span class="kwa">for</span> <span class="opt">(</span> <span class="kwb">int</span> j<span class="opt">=</span><span class="num">0</span><span class="opt">;</span> j<span class="opt">&lt;=</span>i<span class="opt">; ++</span>j <span class="opt">){</span>
+                p<span class="opt">[</span>j<span class="opt">] =</span> j<span class="opt">+</span>d <span class="opt">&lt;=</span> i <span class="opt">?</span> pp<span class="opt">[</span>j<span class="opt">+</span>d<span class="opt">] :</span> pp<span class="opt">[</span>j<span class="opt">+</span>d<span class="opt">-</span>i<span class="opt">-</span><span class="num">1</span><span class="opt">];</span>
+            <span class="opt">}</span>
+        <span class="opt">}</span>
+        <span class="kwa">this</span><span class="opt">-&gt;</span>p<span class="opt">.</span><span class="kwd">assign</span><span class="opt">(</span>p<span class="opt">,</span> <span class="num">16</span><span class="opt">);</span>
+    <span class="opt">}</span>
+    <span class="kwb">void</span> <span class="kwd">next_permutation</span><span class="opt">(){</span>
+        p<span class="opt">.</span><span class="kwd">rotate</span><span class="opt">(</span><span class="num">1</span><span class="opt">);</span>
+        <span class="kwb">int</span> i<span class="opt">=</span><span class="num">1</span><span class="opt">;</span>
+        <span class="kwa">while</span> <span class="opt">(++</span>count<span class="opt">[</span>i<span class="opt">] &gt;</span> i<span class="opt">){</span>
+            count<span class="opt">[</span>i<span class="opt">++] =</span> <span class="num">0</span><span class="opt">;</span>
+            p<span class="opt">.</span><span class="kwd">rotate</span><span class="opt">(</span> i <span class="opt">);</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+    <span class="kwb">char</span> <span class="kwd">get_first_item</span><span class="opt">()</span><span class="kwb">const</span><span class="opt">{</span> <span class="kwa">return</span> p<span class="opt">[</span><span class="num">0</span><span class="opt">];}</span>
+    <span class="kwb">void</span> <span class="kwd">get_permutation</span><span class="opt">(</span> P <span class="opt">&amp;</span> out <span class="opt">){</span> out <span class="opt">=</span> p<span class="opt">;}</span>
+<span class="opt">};</span>
+<span class="kwb">struct</span> Fannkuchredux<span class="opt">{</span>
+    <span class="kwb">struct</span> R<span class="opt">{</span> <span class="kwb">int</span> maxflips<span class="opt">,</span> checksum<span class="opt">; };</span>
+    R <span class="kwd">run</span><span class="opt">(</span>G<span class="opt">*</span> g<span class="opt">,</span> <span class="kwb">int</span> i<span class="opt">,</span> <span class="kwb">int</span> N<span class="opt">){</span>
+        R r <span class="opt">= {</span> <span class="num">0</span><span class="opt">,</span> <span class="num">0</span> <span class="opt">};</span>
+        g<span class="opt">-&gt;</span><span class="kwd">first_permutation</span><span class="opt">(</span>i<span class="opt">);</span>
+        <span class="kwa">for</span><span class="opt">(;</span> i <span class="opt">&lt;</span> N<span class="opt">; ++</span>i<span class="opt">,</span> g<span class="opt">-&gt;</span><span class="kwd">next_permutation</span><span class="opt">()){</span>
+            <span class="slc">//count flips</span>
+            <span class="kwc">register</span> <span class="kwb">int</span> flips <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+            <span class="kwc">register</span> <span class="kwb">int</span> f <span class="opt">=</span> g<span class="opt">-&gt;</span><span class="kwd">get_first_item</span><span class="opt">();</span>
+            <span class="kwa">if</span><span class="opt">(</span>f<span class="opt">){</span>
+                P p<span class="opt">;</span>
+                g<span class="opt">-&gt;</span><span class="kwd">get_permutation</span><span class="opt">(</span>p<span class="opt">);</span>
+                <span class="kwa">do</span><span class="opt">{</span>
+                    p<span class="opt">.</span><span class="kwd">reverse</span><span class="opt">(</span>f<span class="opt">);</span>
+                    <span class="opt">++</span>flips<span class="opt">;</span>
+                <span class="opt">}</span><span class="kwa">while</span><span class="opt">(</span>f <span class="opt">=</span> p<span class="opt">[</span><span class="num">0</span><span class="opt">]);</span>
+            <span class="opt">}</span>
+            <span class="kwb">int</span> total_flips <span class="opt">=</span> flips<span class="opt">;</span>
+            r<span class="opt">.</span>maxflips <span class="opt">=</span> <span class="kwd">max</span><span class="opt">(</span>r<span class="opt">.</span>maxflips<span class="opt">,</span> total_flips<span class="opt">);</span>
+            r<span class="opt">.</span>checksum <span class="opt">+=</span> i<span class="opt">%</span><span class="num">2</span> <span class="opt">==</span><span class="num">0</span> <span class="opt">?</span> total_flips <span class="opt">: -</span>total_flips<span class="opt">;</span>
+        <span class="opt">}</span>
+        <span class="kwa">return</span> r<span class="opt">;</span>
+    <span class="opt">}</span>
+<span class="opt">};</span>
+<span class="slc">//two phase construction to be default constructible</span>
+<span class="kwc">class</span> Task <span class="opt">:</span> <span class="kwc">public</span> Fannkuchredux <span class="opt">{</span>
+    G g<span class="opt">;</span>
+    <span class="kwb">int</span> first_index<span class="opt">,</span> last_index<span class="opt">;</span>
+    <span class="kwb">int</span> padding<span class="opt">[</span><span class="num">14</span><span class="opt">];</span>
+<span class="kwc">public</span><span class="opt">:</span>
+    <span class="kwc">Fannkuchredux</span><span class="opt">::</span>R r<span class="opt">;</span>
+    <span class="kwb">void</span> <span class="kwd">init</span><span class="opt">(</span><span class="kwb">const int</span> <span class="opt">*</span>p<span class="opt">,</span> <span class="kwb">int</span> n<span class="opt">,</span> <span class="kwb">int</span> b<span class="opt">,</span> <span class="kwb">int</span> e<span class="opt">){</span>
+        g<span class="opt">.</span><span class="kwd">init</span><span class="opt">(</span> p<span class="opt">,</span> n <span class="opt">);</span>
+        first_index <span class="opt">=</span> b<span class="opt">;</span>
+        last_index <span class="opt">=</span> e<span class="opt">;</span>
+        r<span class="opt">.</span>checksum <span class="opt">=</span> r<span class="opt">.</span>maxflips <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+    <span class="opt">}</span>
+    <span class="kwb">void</span> <span class="kwc">operator</span><span class="opt">()()</span>
+    <span class="opt">{</span>
+        <span class="kwa">assert</span><span class="opt">(</span> g<span class="opt">.</span><span class="kwd">constructed</span><span class="opt">() );</span>
+        r <span class="opt">=</span> <span class="kwd">run</span><span class="opt">( &amp;</span>g<span class="opt">,</span> first_index<span class="opt">,</span> last_index <span class="opt">);</span>
+    <span class="opt">}</span>
+<span class="opt">};</span>
+<span class="kwb">const char</span><span class="opt">*</span> usage <span class="opt">=</span> <span class="str">&quot;usage fannkuchredux number</span><span class="esc">\n</span><span class="str">\</span>
+<span class="str">number has to be in range [3-12]</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+<span class="kwb">int</span> <span class="kwd">main</span><span class="opt">(</span><span class="kwb">int</span> argc<span class="opt">,</span> <span class="kwb">char</span><span class="opt">*</span> argv<span class="opt">[])</span>
+<span class="opt">{</span>
+    <span class="kwa">if</span><span class="opt">(</span> argc <span class="opt">&lt;</span> <span class="num">2</span> <span class="opt">){</span>
+        <span class="kwd">printf</span><span class="opt">(</span><span class="str">&quot;%s&quot;</span><span class="opt">,</span> usage<span class="opt">);</span>
+        <span class="kwa">return</span> <span class="num">1</span><span class="opt">;</span>
+    <span class="opt">}</span>
+    <span class="kwb">int</span> len <span class="opt">=</span> <span class="kwd">atoi</span><span class="opt">(</span>argv<span class="opt">[</span><span class="num">1</span><span class="opt">] );</span> 
+    <span class="kwa">if</span><span class="opt">(</span> len <span class="opt">&lt;</span> <span class="num">3</span> <span class="opt">||</span> len <span class="opt">&gt;</span> <span class="num">12</span> <span class="opt">){</span>
+        <span class="kwd">printf</span><span class="opt">(</span><span class="str">&quot;%s&quot;</span><span class="opt">,</span> usage<span class="opt">);</span>
+        <span class="kwa">return</span> <span class="num">2</span><span class="opt">;</span>
+    <span class="opt">}</span>
+    <span class="kwb">int</span> fact<span class="opt">[</span><span class="num">16</span><span class="opt">];</span>
+    fact<span class="opt">[</span><span class="num">0</span><span class="opt">] =</span> <span class="num">1</span><span class="opt">;</span>
+    <span class="kwa">for</span><span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span> i<span class="opt">&lt;</span>len<span class="opt">+</span><span class="num">1</span><span class="opt">; ++</span>i<span class="opt">)</span>
+        fact<span class="opt">[</span>i<span class="opt">] =</span> fact<span class="opt">[</span>i<span class="opt">-</span><span class="num">1</span><span class="opt">]*</span>i<span class="opt">;</span>
+    <span class="kwb">unsigned</span> n_cpu <span class="opt">=</span> <span class="kwc">thread</span><span class="opt">::</span><span class="kwd">hardware_concurrency</span><span class="opt">();</span>
+    <span class="kwc">Fannkuchredux</span><span class="opt">::</span>R r<span class="opt">= {</span> <span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">};</span>
+    <span class="kwb">const unsigned</span> max_cpu_limit <span class="opt">=</span> <span class="num">4</span><span class="opt">;</span>
+    Task parts<span class="opt">[</span>max_cpu_limit<span class="opt">];</span>
+    <span class="kwb">unsigned</span> n <span class="opt">=</span> <span class="kwd">min</span><span class="opt">(</span>n_cpu<span class="opt">,</span> max_cpu_limit<span class="opt">);</span>
+    thread_group tg<span class="opt">;</span>
+    <span class="kwb">int</span> index <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+    <span class="kwb">int</span> index_max <span class="opt">=</span> fact<span class="opt">[</span>len<span class="opt">];</span> 
+    <span class="kwb">int</span> index_step <span class="opt">= (</span>index_max <span class="opt">+</span> n<span class="opt">-</span><span class="num">1</span><span class="opt">)/</span>n<span class="opt">;</span>
+    <span class="kwa">for</span><span class="opt">(</span><span class="kwb">unsigned</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i<span class="opt">&lt;</span>n<span class="opt">; ++</span>i<span class="opt">,</span> index <span class="opt">+=</span> index_step<span class="opt">){</span>
+        Task<span class="opt">&amp;</span> p <span class="opt">=</span> parts<span class="opt">[</span>i<span class="opt">];</span>
+        p<span class="opt">.</span><span class="kwd">init</span><span class="opt">(</span>fact<span class="opt">,</span> len<span class="opt">,</span> index<span class="opt">,</span> index <span class="opt">+</span> index_step<span class="opt">);</span>
+        tg<span class="opt">.</span><span class="kwd">create_thread</span><span class="opt">(</span><span class="kwd">ref</span><span class="opt">(</span>p<span class="opt">));</span>
+    <span class="opt">}</span>
+    tg<span class="opt">.</span><span class="kwd">join_all</span><span class="opt">();</span>
+    <span class="kwa">for</span><span class="opt">(</span><span class="kwb">unsigned</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i<span class="opt">&lt;</span>n<span class="opt">; ++</span>i<span class="opt">){</span>
+        Task <span class="kwb">const</span><span class="opt">&amp;</span> p <span class="opt">=</span> parts<span class="opt">[</span>i<span class="opt">];</span>
+        r<span class="opt">.</span>maxflips <span class="opt">=</span> <span class="kwd">max</span><span class="opt">(</span> p<span class="opt">.</span>r<span class="opt">.</span>maxflips<span class="opt">,</span> r<span class="opt">.</span>maxflips <span class="opt">);</span>
+        r<span class="opt">.</span>checksum <span class="opt">+=</span> p<span class="opt">.</span>r<span class="opt">.</span>checksum<span class="opt">;</span>
+    <span class="opt">}</span>
+    <span class="kwd">printf</span><span class="opt">(</span><span class="str">&quot;%d</span><span class="esc">\n</span><span class="str">Pfannkuchen(%d) = %d</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span> r<span class="opt">.</span>checksum<span class="opt">,</span> len<span class="opt">,</span> r<span class="opt">.</span>maxflips<span class="opt">);</span>
+    <span class="kwa">return</span> <span class="num">0</span><span class="opt">;</span>
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+g++ (Ubuntu 7.2.0-8ubuntu3) 7.2.0
+
+
+Mon, 30 Oct 2017 18:56:55 GMT
+
+MAKE:
+/usr/bin/g++ -c -pipe -O3 -fomit-frame-pointer -march=native  -pthread fannkuchredux.gpp-2.c++ -o fannkuchredux.gpp-2.c++.o &amp;&amp;  \
+        /usr/bin/g++ fannkuchredux.gpp-2.c++.o -o fannkuchredux.gpp-2.gpp_run -lpthread -lboost_thread -lboost_system 
+rm fannkuchredux.gpp-2.c++
+
+6.11s to complete and log all make actions
+
+COMMAND LINE:
+./fannkuchredux.gpp-2.gpp_run 12
+
+PROGRAM OUTPUT:
+3968050
+Pfannkuchen(12) = 65
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

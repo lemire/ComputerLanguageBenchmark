@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>chameneos-redux Lisp SBCL&nbsp;#3 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>chameneos-redux Lisp SBCL&nbsp;#3 program</h2>
+    <aside>
+      <p><a href="./chameneosredux-description.html#chameneosredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">;; The Computer Language Benchmarks Game</span>
+<span class="slc">;;   http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">;;</span>
+<span class="slc">;;   contributed by Alexey Voznyuk</span>
+<span class="slc">;;</span>
+
+<span class="opt">(</span><span class="kwa">defpackage</span> <span class="opt">#:</span>smp-utils
+  <span class="opt">(:</span>use <span class="opt">:</span>cl <span class="opt">:</span>sb-alien <span class="opt">:</span>sb-thread<span class="opt">)</span>
+  <span class="opt">(:</span>export <span class="opt">#:</span>affinity <span class="opt">#:</span>apic-core-map<span class="opt">))</span>
+
+<span class="opt">(</span><span class="kwa">in-package</span> <span class="opt">:</span>smp-utils<span class="opt">)</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">cpuset-</span><span class="opt">&gt;</span>list <span class="opt">(</span><span class="kwa">cpuset</span><span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">loop</span> <span class="opt">:</span>for i <span class="opt">:</span>from <span class="num">0</span> <span class="opt">:</span>below <span class="num">128</span>
+     <span class="opt">:</span>unless <span class="opt">(</span><span class="kwa">zerop</span> <span class="opt">(</span><span class="kwa">ldb</span> <span class="opt">(</span><span class="kwa">byte</span> <span class="num">1</span> <span class="opt">(</span><span class="kwa">mod</span> i <span class="num">8</span><span class="opt">)) (</span><span class="kwa">elt</span> cpuset <span class="opt">(</span><span class="kwa">truncate</span> i <span class="num">8</span><span class="opt">))))</span>
+     <span class="opt">:</span>collect i<span class="opt">))</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">list-</span><span class="opt">&gt;</span>cpuset <span class="opt">(</span><span class="kwa">cpuset-list</span><span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">loop</span> <span class="opt">:</span>with cpuset <span class="opt">= (</span><span class="kwa">make-array</span> <span class="num">16</span> <span class="opt">:</span>element-type <span class="opt">&apos;(</span><span class="kwa">unsigned-byte</span> <span class="num">8</span><span class="opt">))</span>
+     <span class="opt">:</span>for i <span class="opt">:</span>from <span class="num">0</span> <span class="opt">:</span>below <span class="num">128</span>
+     <span class="opt">:</span>when <span class="opt">(</span><span class="kwa">find</span> i cpuset-list <span class="opt">:</span>test <span class="opt">#&apos;=)</span>
+     <span class="opt">:</span>do <span class="opt">(</span><span class="kwa">setf</span> <span class="opt">(</span><span class="kwa">ldb</span> <span class="opt">(</span><span class="kwa">byte</span> <span class="num">1</span> <span class="opt">(</span><span class="kwa">mod</span> i <span class="num">8</span><span class="opt">)) (</span><span class="kwa">elt</span> cpuset <span class="opt">(</span><span class="kwa">truncate</span> i <span class="num">8</span><span class="opt">)))</span> <span class="num">1</span><span class="opt">)</span>
+     <span class="opt">:</span>finally <span class="opt">(</span><span class="kwa">return</span> cpuset<span class="opt">)))</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">affinity</span> <span class="opt">(</span><span class="kwa">thread</span><span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">with-alien</span> <span class="opt">((</span><span class="kwa">alien-cpuset</span> <span class="opt">(</span><span class="kwa">array</span> unsigned-char <span class="num">16</span><span class="opt">)))</span>
+    <span class="opt">(</span><span class="kwa">let</span> <span class="opt">((</span><span class="kwa">retcode</span> <span class="opt">(</span><span class="kwa">alien-funcall</span> <span class="opt">(</span><span class="kwa">extern-alien</span> <span class="str">&quot;pthread_getaffinity_np&quot;</span> 
+                                                <span class="opt">(</span><span class="kwa">function</span> int 
+                                                          unsigned-long 
+                                                          unsigned-long 
+                                                          <span class="opt">(*</span> unsigned-char<span class="opt">)))</span>
+                                  <span class="opt">(</span><span class="kwa">sb-thread</span><span class="opt">::</span>thread-os-thread thread<span class="opt">)</span>
+                                  <span class="num">16</span>
+                                  <span class="opt">(</span><span class="kwa">cast</span> alien-cpuset <span class="opt">(*</span> unsigned-char<span class="opt">)))))</span>
+      <span class="opt">(</span><span class="kwa">when</span> <span class="opt">(</span><span class="kwa">zerop</span> retcode<span class="opt">)</span>
+        <span class="opt">(</span><span class="kwa">values</span> t <span class="opt">(</span><span class="kwa">loop</span> <span class="opt">:</span>with cpuset <span class="opt">= (</span><span class="kwa">make-array</span> <span class="num">16</span> <span class="opt">:</span>element-type <span class="opt">&apos;(</span><span class="kwa">unsigned-byte</span> <span class="num">8</span><span class="opt">))</span>
+                     <span class="opt">:</span>for i <span class="opt">:</span>from <span class="num">0</span> <span class="opt">:</span>below <span class="num">16</span>
+                     <span class="opt">:</span>do <span class="opt">(</span><span class="kwa">setf</span> <span class="opt">(</span><span class="kwa">elt</span> cpuset i<span class="opt">) (</span><span class="kwa">deref</span> alien-cpuset i<span class="opt">))</span>
+                     <span class="opt">:</span>finally <span class="opt">(</span><span class="kwa">return</span> <span class="opt">(</span><span class="kwa">cpuset-</span><span class="opt">&gt;</span>list cpuset<span class="opt">))))))))</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="opt">(</span><span class="kwa">setf</span> affinity<span class="opt">) (</span><span class="kwa">affinity</span> thread<span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">with-alien</span> <span class="opt">((</span><span class="kwa">alien-cpuset</span> <span class="opt">(</span><span class="kwa">array</span> unsigned-char <span class="num">16</span><span class="opt">)))</span>
+    <span class="opt">(</span><span class="kwa">loop</span> <span class="opt">:</span>with cpuset <span class="opt">= (</span><span class="kwa">list-</span><span class="opt">&gt;</span>cpuset affinity<span class="opt">)</span>
+       <span class="opt">:</span>for i <span class="opt">:</span>from <span class="num">0</span> <span class="opt">:</span>below <span class="num">16</span>
+       <span class="opt">:</span>do <span class="opt">(</span><span class="kwa">setf</span> <span class="opt">(</span><span class="kwa">deref</span> alien-cpuset i<span class="opt">) (</span><span class="kwa">elt</span> cpuset i<span class="opt">)))</span>
+    <span class="opt">(</span><span class="kwa">zerop</span> <span class="opt">(</span><span class="kwa">alien-funcall</span> <span class="opt">(</span><span class="kwa">extern-alien</span> <span class="str">&quot;pthread_setaffinity_np&quot;</span> 
+                                        <span class="opt">(</span><span class="kwa">function</span> int 
+                                                  unsigned-long 
+                                                  unsigned-long 
+                                                  <span class="opt">(*</span> unsigned-char<span class="opt">)))</span>
+                          <span class="opt">(</span><span class="kwa">sb-thread</span><span class="opt">::</span>thread-os-thread thread<span class="opt">)</span>
+                          <span class="num">16</span>
+                          <span class="opt">(</span><span class="kwa">cast</span> alien-cpuset <span class="opt">(*</span> unsigned-char<span class="opt">))))))</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">apic-core-map</span> <span class="opt">(</span><span class="kwa">cpuset-list</span><span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">let</span> <span class="opt">((</span><span class="kwa">default-map</span> <span class="opt">(</span><span class="kwa">mapcar</span> <span class="opt">#&apos;</span>list cpuset-list cpuset-list<span class="opt">)))</span>
+    <span class="opt">(</span><span class="kwa">unless</span> <span class="opt">(</span><span class="kwa">probe-file</span> <span class="opt">#</span>p<span class="str">&quot;/proc/cpuinfo&quot;</span><span class="opt">)</span>
+      <span class="opt">(</span><span class="kwa">return-from</span> apic-core-map default-map<span class="opt">))</span>
+    <span class="opt">(</span><span class="kwa">with-open-file</span> <span class="opt">(</span><span class="kwa">cpuinfo</span> <span class="opt">#</span>p<span class="str">&quot;/proc/cpuinfo&quot;</span><span class="opt">)</span>
+      <span class="opt">(</span><span class="kwa">flet</span> <span class="opt">((</span><span class="kwa">parse-key-value</span> <span class="opt">(</span><span class="kwa">line</span> key<span class="opt">)</span>
+               <span class="opt">(</span><span class="kwa">when</span> <span class="opt">(</span><span class="kwa">and</span> <span class="opt">(&gt; (</span><span class="kwa">length</span> line<span class="opt">) (</span><span class="kwa">length</span> key<span class="opt">))</span>
+                          <span class="opt">(</span><span class="kwa">string</span><span class="opt">=</span> line key <span class="opt">:</span>end1 <span class="opt">(</span><span class="kwa">length</span> key<span class="opt">)))</span>
+                 <span class="opt">(</span><span class="kwa">let</span> <span class="opt">((</span><span class="kwa">value-offset</span> <span class="opt">(</span><span class="kwa">position</span> <span class="opt">#</span>\<span class="opt">:</span> line <span class="opt">:</span>start <span class="opt">(</span><span class="kwa">length</span> key<span class="opt">))))</span>
+                   <span class="opt">(</span><span class="kwa">when</span> value-offset
+                     <span class="opt">(</span><span class="kwa">parse-integer</span> line <span class="opt">:</span>start <span class="opt">(</span><span class="kwa">1</span><span class="opt">+</span> value-offset<span class="opt">) :</span>junk-allowed t<span class="opt">))))))</span>
+        <span class="opt">(</span><span class="kwa">loop</span> <span class="opt">:</span>with current-cpu <span class="opt">=</span> nil
+           <span class="opt">:</span>for line <span class="opt">= (</span><span class="kwa">read-line</span> cpuinfo nil nil<span class="opt">)</span>
+           <span class="opt">:</span>while line
+           <span class="opt">:</span>do <span class="opt">(</span><span class="kwa">multiple-value-bind</span> <span class="opt">(</span><span class="kwa">processor</span> apicid<span class="opt">)</span>
+                   <span class="opt">(</span><span class="kwa">values</span> <span class="opt">(</span><span class="kwa">parse-key-value</span> line <span class="str">&quot;processor&quot;</span><span class="opt">)</span>
+                           <span class="opt">(</span><span class="kwa">parse-key-value</span> line <span class="str">&quot;apicid&quot;</span><span class="opt">))</span>
+                 <span class="opt">(</span><span class="kwa">cond</span> <span class="opt">((</span><span class="kwa">and</span> current-cpu apicid<span class="opt">) (</span><span class="kwa">setf</span> <span class="opt">(</span><span class="kwa">first</span> <span class="opt">(</span><span class="kwa">find</span> current-cpu default-map <span class="opt">:</span>key <span class="opt">#&apos;</span>second<span class="opt">))</span> apicid
+                                                       current-cpu nil<span class="opt">))</span>
+                       <span class="opt">(</span><span class="kwa">processor</span> <span class="opt">(</span><span class="kwa">setf</span> current-cpu processor<span class="opt">))))</span>
+           <span class="opt">:</span>finally <span class="opt">(</span><span class="kwa">return</span> <span class="opt">(</span><span class="kwa">sort</span> default-map <span class="opt">#&apos;&lt; :</span>key <span class="opt">#&apos;</span>first<span class="opt">)))))))</span>
+  
+
+<span class="opt">(</span><span class="kwa">defpackage</span> <span class="opt">#:</span>chameneos-redux
+  <span class="opt">(:</span>use <span class="opt">:</span>cl <span class="opt">:</span>smp-utils<span class="opt">))</span>
+
+<span class="opt">(</span><span class="kwa">in-package</span> <span class="opt">:</span>chameneos-redux<span class="opt">)</span>
+
+<span class="slc">;;</span>
+<span class="slc">;; Game DSL compiler</span>
+<span class="slc">;;</span>
+
+<span class="opt">(</span><span class="kwa">defmacro</span> declare-colors-map <span class="opt">(&amp;</span>rest transformations<span class="opt">)</span>
+  <span class="opt">`(</span><span class="kwa">progn</span>
+     <span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">complement-color</span> <span class="opt">(</span><span class="kwa">color-a</span> color-b<span class="opt">)</span>
+       <span class="opt">(</span><span class="kwa">cond</span>
+         <span class="opt">,&#64;(</span><span class="kwa">loop</span>
+              <span class="opt">:</span>for <span class="opt">(</span><span class="kwa">test-a</span> kw-plus test-b kw-arrow test-result<span class="opt">) :</span>in transformations
+              <span class="opt">:</span>do <span class="opt">(</span><span class="kwa">assert</span> <span class="opt">(</span><span class="kwa">and</span> <span class="opt">(</span><span class="kwa">eq</span> kw-plus <span class="opt">&apos;+) (</span><span class="kwa">eq</span> kw-arrow <span class="opt">&apos;</span>-<span class="opt">&gt;)))</span>
+              <span class="opt">:</span>collect <span class="opt">`((</span><span class="kwa">and</span> <span class="opt">(</span><span class="kwa">eq</span> color-a <span class="opt">&apos;,</span>test-a<span class="opt">) (</span><span class="kwa">eq</span> color-b <span class="opt">&apos;,</span>test-b<span class="opt">))</span>
+                         <span class="opt">&apos;,</span>test-result<span class="opt">))</span>
+         <span class="opt">(</span><span class="kwa">t</span> <span class="opt">(</span><span class="kwa">error</span> <span class="str">&quot;Invalid colors combinations&quot;</span><span class="opt">))))</span>
+     <span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">print-colors</span> <span class="opt">()</span>
+       <span class="opt">(</span><span class="kwa">format</span> t <span class="str">&quot;~{~{~a + ~a -&gt; ~a~%~}~}~%&quot;</span>
+               <span class="opt">(</span><span class="kwa">list</span> <span class="opt">,&#64;(</span><span class="kwa">loop</span>
+                          <span class="opt">:</span>for <span class="opt">(</span><span class="kwa">test-a</span> kw-plus test-b<span class="opt">) :</span>in transformations
+                          <span class="opt">:</span>collect <span class="opt">`(</span><span class="kwa">list</span> <span class="opt">,(</span><span class="kwa">string-downcase</span> <span class="opt">(</span><span class="kwa">string</span> test-a<span class="opt">))</span>
+                                          <span class="opt">,(</span><span class="kwa">string-downcase</span> <span class="opt">(</span><span class="kwa">string</span> test-b<span class="opt">))</span>
+                                          <span class="opt">(</span><span class="kwa">string-downcase</span>
+                                           <span class="opt">(</span><span class="kwa">string</span> <span class="opt">(</span><span class="kwa">complement-color</span> <span class="opt">&apos;,</span>test-a
+                                                                     <span class="opt">&apos;,</span>test-b<span class="opt">))))))))))</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">spell-number</span> <span class="opt">(</span><span class="kwa">number</span><span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">with-output-to-string</span> <span class="opt">(</span><span class="kwa">result-string</span><span class="opt">)</span>
+    <span class="opt">(</span><span class="kwa">loop</span>
+       <span class="opt">:</span>for char <span class="opt">:</span>across <span class="opt">(</span><span class="kwa">the</span> simple-string <span class="opt">(</span><span class="kwa">format</span> nil <span class="str">&quot;~a&quot;</span> number<span class="opt">))</span>
+       <span class="opt">:</span>do <span class="opt">(</span><span class="kwa">format</span> result-string <span class="str">&quot; ~r&quot;</span> <span class="opt">(</span><span class="kwa">-</span> <span class="opt">(</span><span class="kwa">char-code</span> char<span class="opt">) (</span><span class="kwa">char-code</span> <span class="opt">#</span>\<span class="num">0</span><span class="opt">))))))</span>
+
+<span class="opt">(</span><span class="kwa">defmacro</span> spin-wait <span class="opt">(</span><span class="kwa">condition</span> <span class="opt">&amp;</span>key no-spin<span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">let</span> <span class="opt">((</span><span class="kwa">yield-spin</span> <span class="opt">`(</span><span class="kwa">loop</span> <span class="opt">:</span>until <span class="opt">,</span>condition <span class="opt">:</span>do <span class="opt">(</span><span class="kwa">sb-thread</span><span class="opt">:</span>thread-yield<span class="opt">))))</span>
+    <span class="opt">(</span><span class="kwa">if</span> no-spin
+        yield-spin
+        <span class="opt">`(</span><span class="kwa">loop</span>
+            <span class="opt">:</span>repeat <span class="num">16384</span>
+            <span class="opt">:</span>do <span class="opt">(</span><span class="kwa">when</span> <span class="opt">,</span>condition
+                  <span class="opt">(</span><span class="kwa">return</span><span class="opt">))</span>
+            <span class="opt">:</span>finally <span class="opt">,</span>yield-spin<span class="opt">))))</span>
+
+<span class="opt">(</span><span class="kwa">defstruct</span> chameneo
+  <span class="opt">(</span><span class="kwa">color</span> <span class="opt">&apos;</span>none <span class="opt">:</span>type symbol<span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">meet-count</span> <span class="num">0</span> <span class="opt">:</span>type fixnum<span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">same-count</span> <span class="num">0</span> <span class="opt">:</span>type fixnum<span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">meet-wait</span> nil <span class="opt">:</span>type boolean<span class="opt">))</span>
+
+<span class="opt">(</span><span class="kwa">defmacro</span> with-games <span class="opt">((&amp;</span>rest descriptions<span class="opt">) &amp;</span>body body<span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">if</span> <span class="opt">(</span><span class="kwa">null</span> descriptions<span class="opt">)</span>
+      <span class="opt">`(</span><span class="kwa">progn</span> <span class="opt">,&#64;</span>body<span class="opt">)</span>
+      <span class="opt">(</span><span class="kwa">destructuring-bind</span> <span class="opt">(</span><span class="kwa">game-name</span> <span class="opt">&amp;</span>rest colors<span class="opt">)</span>
+          <span class="opt">(</span><span class="kwa">car</span> descriptions<span class="opt">)</span>
+        <span class="opt">(</span><span class="kwa">let</span><span class="opt">* ((</span><span class="kwa">colors-count</span> <span class="opt">(</span><span class="kwa">length</span> colors<span class="opt">))</span>
+               <span class="opt">(</span><span class="kwa">worker-binds</span> <span class="opt">(</span><span class="kwa">loop</span> <span class="opt">:</span>repeat colors-count <span class="opt">:</span>collect <span class="opt">(</span><span class="kwa">gensym</span><span class="opt">)))</span>
+               <span class="opt">(</span><span class="kwa">chameneos</span> <span class="opt">(</span><span class="kwa">gensym</span> <span class="str">&quot;CHAMENEOS&quot;</span><span class="opt">))</span>
+               <span class="opt">(</span><span class="kwa">action-cas</span> <span class="opt">(</span><span class="kwa">gensym</span> <span class="str">&quot;ACTION-CAS&quot;</span><span class="opt">)))</span>
+          <span class="opt">`(</span><span class="kwa">let</span> <span class="opt">((,</span>chameneos <span class="opt">(</span><span class="kwa">coerce</span> <span class="opt">(</span><span class="kwa">list</span> <span class="opt">,&#64;(</span><span class="kwa">loop</span> <span class="opt">:</span>repeat colors-count <span class="opt">:</span>collect <span class="opt">`(</span><span class="kwa">make-chameneo</span><span class="opt">)))</span>
+                                     <span class="opt">&apos;</span>simple-vector<span class="opt">))</span>
+                 <span class="opt">(,</span>action-cas <span class="opt">(</span><span class="kwa">list</span> <span class="num">0</span><span class="opt">))</span>
+                 <span class="opt">,&#64;</span>worker-binds<span class="opt">)</span>
+             <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> <span class="opt">(</span><span class="kwa">simple-vector</span> <span class="opt">,</span>colors-count<span class="opt">) ,</span>chameneos<span class="opt">)</span>
+                      <span class="opt">(</span><span class="kwa">type</span> cons <span class="opt">,</span>action-cas<span class="opt">)</span>
+                      <span class="opt">(</span><span class="kwa">type</span> <span class="opt">(</span><span class="kwa">or</span> null sb-thread<span class="opt">:</span>thread<span class="opt">) ,&#64;</span>worker-binds<span class="opt">))</span>
+             <span class="opt">(</span><span class="kwa">flet</span> <span class="opt">((,(</span><span class="kwa">intern</span> <span class="opt">(</span><span class="kwa">format</span> nil <span class="str">&quot;RUN-~a&quot;</span> game-name<span class="opt">)) (</span><span class="kwa">count</span> threads-affinity smp-p<span class="opt">)</span>
+                      <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> fixnum count<span class="opt">) (</span><span class="kwa">type</span> list threads-affinity<span class="opt">) (</span><span class="kwa">type</span> boolean smp-p<span class="opt">))</span>
+                      <span class="opt">(</span><span class="kwa">setf</span> <span class="opt">(</span><span class="kwa">car</span> <span class="opt">,</span>action-cas<span class="opt">) (</span><span class="kwa">the</span> fixnum <span class="opt">(</span><span class="kwa">ash</span> count <span class="opt">,(</span><span class="kwa">integer-length</span> <span class="opt">(</span><span class="kwa">1</span><span class="opt">+</span> colors-count<span class="opt">)))))</span>
+                      <span class="opt">(</span><span class="kwa">flet</span> <span class="opt">((</span><span class="kwa">color-worker</span> <span class="opt">(</span><span class="kwa">id</span> color<span class="opt">)</span>
+                               <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> <span class="opt">(</span><span class="kwa">integer</span> <span class="num">0</span> <span class="opt">,(</span><span class="kwa">1-</span> colors-count<span class="opt">))</span> id<span class="opt">) (</span><span class="kwa">type</span> symbol color<span class="opt">))</span>
+                               <span class="opt">(</span><span class="kwa">lambda</span> <span class="opt">()</span>
+                                 <span class="opt">(</span><span class="kwa">setf</span> <span class="opt">(</span><span class="kwa">affinity</span> sb-thread<span class="opt">:*</span>current-thread<span class="opt">*)</span> threads-affinity<span class="opt">)</span>
+                                 <span class="opt">(</span><span class="kwa">let</span> <span class="opt">((</span><span class="kwa">state</span> <span class="opt">(</span><span class="kwa">car</span> <span class="opt">,</span>action-cas<span class="opt">))</span>
+                                       <span class="opt">(</span><span class="kwa">self</span> <span class="opt">(</span><span class="kwa">elt</span> <span class="opt">,</span>chameneos id<span class="opt">)))</span>
+                                   <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> <span class="opt">(</span><span class="kwa">integer</span> <span class="num">0</span> <span class="opt">,</span>most-positive-fixnum<span class="opt">)</span> state<span class="opt">)</span>
+                                            <span class="opt">(</span><span class="kwa">type</span> chameneo self<span class="opt">))</span>
+                                   <span class="opt">(</span><span class="kwa">setf</span> <span class="opt">(</span><span class="kwa">chameneo-color</span> self<span class="opt">)</span> color<span class="opt">)</span>
+                                   <span class="opt">(</span><span class="kwa">loop</span>
+                                      <span class="opt">(</span><span class="kwa">when</span> <span class="opt">(</span><span class="kwa">zerop</span> state<span class="opt">)</span>
+                                        <span class="opt">(</span><span class="kwa">return</span><span class="opt">))</span>
+                                      <span class="opt">(</span><span class="kwa">let</span><span class="opt">* ((</span><span class="kwa">peer-id</span> <span class="opt">(</span><span class="kwa">logand</span> state <span class="opt">,(</span><span class="kwa">1-</span> <span class="opt">(</span><span class="kwa">ash</span> <span class="num">1</span> <span class="opt">(</span><span class="kwa">integer-length</span> <span class="opt">(</span><span class="kwa">1</span><span class="opt">+</span> colors-count<span class="opt">))))))</span>
+                                             <span class="opt">(</span><span class="kwa">new-state</span> <span class="opt">(</span><span class="kwa">if</span> <span class="opt">(</span><span class="kwa">zerop</span> peer-id<span class="opt">)</span>
+                                                            <span class="opt">(</span><span class="kwa">logior</span> state <span class="opt">(</span><span class="kwa">1</span><span class="opt">+</span> id<span class="opt">))</span>
+                                                            <span class="opt">(</span><span class="kwa">-</span> state peer-id <span class="opt">,(</span><span class="kwa">ash</span> <span class="num">1</span> <span class="opt">(</span><span class="kwa">integer-length</span> <span class="opt">(</span><span class="kwa">1</span><span class="opt">+</span> colors-count<span class="opt">)))))))</span>
+                                        <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> <span class="opt">(</span><span class="kwa">integer</span> <span class="num">0</span> <span class="opt">,(</span><span class="kwa">1</span><span class="opt">+</span> colors-count<span class="opt">))</span> peer-id<span class="opt">)</span>
+                                                 <span class="opt">(</span><span class="kwa">type</span> <span class="opt">(</span><span class="kwa">integer</span> <span class="num">0</span> <span class="opt">,</span>most-positive-fixnum<span class="opt">)</span> new-state<span class="opt">))</span>
+                                        <span class="opt">(</span><span class="kwa">let</span> <span class="opt">((</span><span class="kwa">prev-state</span> <span class="opt">(</span><span class="kwa">sb-ext</span><span class="opt">:</span>compare-and-swap <span class="opt">(</span><span class="kwa">car</span> <span class="opt">,</span>action-cas<span class="opt">)</span> state new-state<span class="opt">)))</span>
+                                          <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> <span class="opt">(</span><span class="kwa">integer</span> <span class="num">0</span> <span class="opt">,</span>most-positive-fixnum<span class="opt">)</span> prev-state<span class="opt">))</span>
+                                          <span class="opt">(</span><span class="kwa">if</span> <span class="opt">(=</span> prev-state state<span class="opt">)</span>
+                                              <span class="opt">(</span><span class="kwa">progn</span> 
+                                                <span class="opt">(</span><span class="kwa">if</span> <span class="opt">(</span><span class="kwa">zerop</span> peer-id<span class="opt">)</span>
+                                                    <span class="opt">(</span><span class="kwa">progn</span>
+                                                      <span class="opt">(</span><span class="kwa">if</span> smp-p
+                                                          <span class="opt">(</span><span class="kwa">spin-wait</span> <span class="opt">(</span><span class="kwa">chameneo-meet-wait</span> self<span class="opt">))</span>
+                                                          <span class="opt">(</span><span class="kwa">spin-wait</span> <span class="opt">(</span><span class="kwa">chameneo-meet-wait</span> self<span class="opt">) :</span>no-spin t<span class="opt">))</span>
+                                                      <span class="opt">(</span><span class="kwa">setf</span> <span class="opt">(</span><span class="kwa">chameneo-meet-wait</span> self<span class="opt">)</span> nil<span class="opt">))</span>
+                                                    <span class="opt">(</span><span class="kwa">let</span> <span class="opt">((</span><span class="kwa">peer</span> <span class="opt">(</span><span class="kwa">elt</span> <span class="opt">,</span>chameneos <span class="opt">(</span><span class="kwa">1-</span> peer-id<span class="opt">))))</span>
+                                                      <span class="opt">(</span><span class="kwa">when</span> <span class="opt">(=</span> id <span class="opt">(</span><span class="kwa">1-</span> peer-id<span class="opt">))</span>
+                                                        <span class="opt">(</span><span class="kwa">incf</span> <span class="opt">(</span><span class="kwa">chameneo-same-count</span> self<span class="opt">))</span>
+                                                        <span class="opt">(</span><span class="kwa">incf</span> <span class="opt">(</span><span class="kwa">chameneo-same-count</span> peer<span class="opt">)))</span>
+                                                      <span class="opt">(</span><span class="kwa">let</span> <span class="opt">((</span><span class="kwa">new-color</span> <span class="opt">(</span><span class="kwa">complement-color</span> <span class="opt">(</span><span class="kwa">chameneo-color</span> self<span class="opt">)</span>
+                                                                                         <span class="opt">(</span><span class="kwa">chameneo-color</span> peer<span class="opt">))))</span>
+                                                        <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> symbol new-color<span class="opt">))</span>
+                                                        <span class="opt">(</span><span class="kwa">setf</span> <span class="opt">(</span><span class="kwa">chameneo-color</span> self<span class="opt">)</span> new-color
+                                                              <span class="opt">(</span><span class="kwa">chameneo-color</span> peer<span class="opt">)</span> new-color<span class="opt">)</span>
+                                                        <span class="opt">(</span><span class="kwa">incf</span> <span class="opt">(</span><span class="kwa">chameneo-meet-count</span> self<span class="opt">))</span>
+                                                        <span class="opt">(</span><span class="kwa">incf</span> <span class="opt">(</span><span class="kwa">chameneo-meet-count</span> peer<span class="opt">))</span>
+                                                        <span class="opt">(</span><span class="kwa">setf</span> <span class="opt">(</span><span class="kwa">chameneo-meet-wait</span> peer<span class="opt">)</span> t<span class="opt">))))</span>
+                                                <span class="opt">(</span><span class="kwa">setf</span> state <span class="opt">(</span><span class="kwa">car</span> <span class="opt">,</span>action-cas<span class="opt">)))</span>
+                                              <span class="opt">(</span><span class="kwa">setf</span> state prev-state<span class="opt">)))))))))</span>
+                        <span class="opt">,&#64;(</span><span class="kwa">loop</span> <span class="opt">:</span>for color <span class="opt">:</span>in colors <span class="opt">:</span>for thread-index <span class="opt">:</span>from <span class="num">0</span>
+                             <span class="opt">:</span>collect <span class="opt">`(</span><span class="kwa">setf</span> <span class="opt">,(</span><span class="kwa">elt</span> worker-binds thread-index<span class="opt">)</span>
+                                             <span class="opt">(</span><span class="kwa">sb-thread</span><span class="opt">:</span>make-thread <span class="opt">(</span><span class="kwa">color-worker</span> <span class="opt">,</span>thread-index <span class="opt">&apos;,</span>color<span class="opt">)</span>
+                                                                    <span class="opt">:</span>name <span class="opt">,(</span><span class="kwa">format</span> nil <span class="str">&quot;chameneos-worker-~a-~a/~a&quot;</span>
+                                                                                   <span class="opt">(</span><span class="kwa">string-downcase</span> <span class="opt">(</span><span class="kwa">string</span> color<span class="opt">))</span>
+                                                                                   thread-index
+                                                                                   colors-count<span class="opt">)))))</span>
+                      nil<span class="opt">)</span>
+                    <span class="opt">(,(</span><span class="kwa">intern</span> <span class="opt">(</span><span class="kwa">format</span> nil <span class="str">&quot;WAIT-~a&quot;</span> game-name<span class="opt">)) ()</span>
+                      <span class="opt">,&#64;(</span><span class="kwa">loop</span> <span class="opt">:</span>for i <span class="opt">:</span>from <span class="num">0</span> <span class="opt">:</span>below colors-count <span class="opt">:</span>collect <span class="opt">`(</span><span class="kwa">sb-thread</span><span class="opt">:</span>join-thread <span class="opt">,(</span><span class="kwa">elt</span> worker-binds i<span class="opt">)))</span>
+                      <span class="opt">(</span><span class="kwa">format</span> t <span class="opt">,(</span><span class="kwa">format</span> nil <span class="str">&quot;~{ ~a~}~~%&quot;</span> <span class="opt">(</span><span class="kwa">loop</span> <span class="opt">:</span>for color <span class="opt">:</span>in colors <span class="opt">:</span>collect <span class="opt">(</span><span class="kwa">string-downcase</span> <span class="opt">(</span><span class="kwa">string</span> color<span class="opt">)))))</span>
+                      <span class="opt">(</span><span class="kwa">loop</span> <span class="opt">:</span>for i <span class="opt">:</span>from <span class="num">0</span> <span class="opt">:</span>below <span class="opt">,</span>colors-count
+                         <span class="opt">:</span>summing <span class="opt">(</span><span class="kwa">chameneo-meet-count</span> <span class="opt">(</span><span class="kwa">elt</span> <span class="opt">,</span>chameneos i<span class="opt">)) :</span>into total <span class="opt">:</span>of-type fixnum
+                         <span class="opt">:</span>do <span class="opt">(</span><span class="kwa">format</span> t <span class="str">&quot;~a~a~%&quot;</span>
+                                     <span class="opt">(</span><span class="kwa">chameneo-meet-count</span> <span class="opt">(</span><span class="kwa">elt</span> <span class="opt">,</span>chameneos i<span class="opt">))</span>
+                                     <span class="opt">(</span><span class="kwa">spell-number</span> <span class="opt">(</span><span class="kwa">chameneo-same-count</span> <span class="opt">(</span><span class="kwa">elt</span> <span class="opt">,</span>chameneos i<span class="opt">))))</span>
+                         <span class="opt">:</span>finally <span class="opt">(</span><span class="kwa">format</span> t <span class="str">&quot;~a~%~%&quot;</span> <span class="opt">(</span><span class="kwa">spell-number</span> total<span class="opt">)))))</span>
+               <span class="opt">(</span><span class="kwa">with-games</span> <span class="opt">(,&#64;(</span><span class="kwa">cdr</span> descriptions<span class="opt">))</span>
+                 <span class="opt">,&#64;</span>body<span class="opt">)))))))</span>
+                      
+
+<span class="slc">;;</span>
+<span class="slc">;; Game contents</span>
+<span class="slc">;;</span>
+
+<span class="opt">(</span><span class="kwa">progn</span>
+  <span class="opt">(</span><span class="kwa">declare-colors-map</span>
+   <span class="opt">(</span><span class="kwa">blue</span> <span class="opt">+</span> blue -<span class="opt">&gt;</span> blue<span class="opt">)</span>
+   <span class="opt">(</span><span class="kwa">blue</span> <span class="opt">+</span> red -<span class="opt">&gt;</span> yellow<span class="opt">)</span>
+   <span class="opt">(</span><span class="kwa">blue</span> <span class="opt">+</span> yellow -<span class="opt">&gt;</span> red<span class="opt">)</span>
+   <span class="opt">(</span><span class="kwa">red</span> <span class="opt">+</span> blue -<span class="opt">&gt;</span> yellow<span class="opt">)</span>
+   <span class="opt">(</span><span class="kwa">red</span> <span class="opt">+</span> red -<span class="opt">&gt;</span> red<span class="opt">)</span>
+   <span class="opt">(</span><span class="kwa">red</span> <span class="opt">+</span> yellow -<span class="opt">&gt;</span> blue<span class="opt">)</span>
+   <span class="opt">(</span><span class="kwa">yellow</span> <span class="opt">+</span> blue -<span class="opt">&gt;</span> red<span class="opt">)</span>
+   <span class="opt">(</span><span class="kwa">yellow</span> <span class="opt">+</span> red -<span class="opt">&gt;</span> blue<span class="opt">)</span>
+   <span class="opt">(</span><span class="kwa">yellow</span> <span class="opt">+</span> yellow -<span class="opt">&gt;</span> yellow<span class="opt">))</span>
+
+  <span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">run-games</span> <span class="opt">(</span><span class="kwa">count</span> current-affinity<span class="opt">)</span>
+    <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">optimize</span> <span class="opt">(</span><span class="kwa">speed</span> <span class="num">3</span><span class="opt">) (</span><span class="kwa">safety</span> <span class="num">0</span><span class="opt">) (</span><span class="kwa">debug</span> <span class="num">0</span><span class="opt">))</span>
+             <span class="opt">(</span><span class="kwa">type</span> fixnum count<span class="opt">)</span>
+             <span class="opt">(</span><span class="kwa">type</span> list current-affinity<span class="opt">))</span>
+    <span class="opt">(</span><span class="kwa">let</span><span class="opt">* ((</span><span class="kwa">active-cores</span> <span class="opt">(</span><span class="kwa">length</span> current-affinity<span class="opt">))</span>
+           <span class="opt">(</span><span class="kwa">smp-p</span> <span class="opt">(&gt;</span> active-cores <span class="num">1</span><span class="opt">)))</span>
+      <span class="opt">(</span><span class="kwa">with-games</span> <span class="opt">((</span><span class="kwa">game-a</span> blue red yellow<span class="opt">)</span>
+                   <span class="opt">(</span><span class="kwa">game-b</span> blue red yellow red yellow blue red yellow red blue<span class="opt">))</span>
+        <span class="opt">(</span><span class="kwa">if</span> smp-p
+            <span class="opt">(</span><span class="kwa">multiple-value-bind</span> <span class="opt">(</span><span class="kwa">affinity-a</span> affinity-b<span class="opt">)</span>
+                <span class="opt">(</span><span class="kwa">if</span> <span class="opt">(&lt;</span> active-cores <span class="num">4</span><span class="opt">)</span>
+                    <span class="opt">(</span><span class="kwa">values</span> current-affinity current-affinity<span class="opt">)</span>
+                    <span class="opt">(</span><span class="kwa">let</span> <span class="opt">((</span><span class="kwa">apic-map</span> <span class="opt">(</span><span class="kwa">apic-core-map</span> current-affinity<span class="opt">)))</span>
+                      <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> list apic-map<span class="opt">))</span>
+                      <span class="opt">(</span><span class="kwa">values</span> <span class="opt">(</span><span class="kwa">list</span> <span class="opt">(</span><span class="kwa">second</span> <span class="opt">(</span><span class="kwa">elt</span> apic-map <span class="num">0</span><span class="opt">)) (</span><span class="kwa">second</span> <span class="opt">(</span><span class="kwa">elt</span> apic-map <span class="num">1</span><span class="opt">)))</span>
+                              <span class="opt">(</span><span class="kwa">list</span> <span class="opt">(</span><span class="kwa">second</span> <span class="opt">(</span><span class="kwa">elt</span> apic-map <span class="num">2</span><span class="opt">)) (</span><span class="kwa">second</span> <span class="opt">(</span><span class="kwa">elt</span> apic-map <span class="num">3</span><span class="opt">))))))</span>
+              <span class="opt">(</span><span class="kwa">run-game-a</span> count affinity-a smp-p<span class="opt">)</span>
+              <span class="opt">(</span><span class="kwa">run-game-b</span> count affinity-b smp-p<span class="opt">)</span>
+              <span class="opt">(</span><span class="kwa">wait-game-a</span><span class="opt">)</span>
+              <span class="opt">(</span><span class="kwa">wait-game-b</span><span class="opt">))</span>
+            <span class="opt">(</span><span class="kwa">progn</span> <span class="opt">(</span><span class="kwa">run-game-a</span> count current-affinity smp-p<span class="opt">)</span>
+                   <span class="opt">(</span><span class="kwa">wait-game-a</span><span class="opt">)</span>
+                   <span class="opt">(</span><span class="kwa">run-game-b</span> count current-affinity smp-p<span class="opt">)</span>
+                   <span class="opt">(</span><span class="kwa">wait-game-b</span><span class="opt">))))))</span>
+  
+  <span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">main</span> <span class="opt">(&amp;</span>optional force-count<span class="opt">)</span>
+    <span class="opt">(</span><span class="kwa">let</span><span class="opt">* ((</span><span class="kwa">args</span> <span class="opt">(</span><span class="kwa">cdr</span> sb-ext<span class="opt">:*</span>posix-argv<span class="opt">*))</span>
+           <span class="opt">(</span><span class="kwa">count</span> <span class="opt">(</span><span class="kwa">or</span> force-count <span class="opt">(</span><span class="kwa">if</span> args <span class="opt">(</span><span class="kwa">parse-integer</span> <span class="opt">(</span><span class="kwa">car</span> args<span class="opt">))</span> <span class="num">600</span><span class="opt">))))</span>
+      <span class="opt">(</span><span class="kwa">print-colors</span><span class="opt">)</span>
+      <span class="opt">(</span><span class="kwa">multiple-value-bind</span> <span class="opt">(</span><span class="kwa">success-p</span> current-affinity<span class="opt">)</span>
+          <span class="opt">(</span><span class="kwa">affinity</span> sb-thread<span class="opt">:*</span>current-thread<span class="opt">*)</span>
+        <span class="opt">(</span><span class="kwa">unless</span> success-p
+          <span class="opt">(</span><span class="kwa">error</span> <span class="str">&quot;Failed to retrieve current thread affinity&quot;</span><span class="opt">))</span>
+        <span class="opt">(</span><span class="kwa">run-games</span> count current-affinity<span class="opt">)))))</span>
+
+
+<span class="opt">(</span><span class="kwa">in-package</span> <span class="opt">:</span>cl-user<span class="opt">)</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">main</span> <span class="opt">()</span>
+  <span class="opt">(</span><span class="kwa">chameneos-redux</span><span class="opt">::</span>main<span class="opt">))</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+SBCL 1.4.0
+
+
+Thu, 26 Oct 2017 16:25:17 GMT
+
+MAKE:
+cp: 'chameneosredux.sbcl-3.sbcl' and './chameneosredux.sbcl-3.sbcl' are the same file
+SBCL built with: /opt/src/sbcl-1.4.0/bin/sbcl --userinit /dev/null --batch --eval '(load &quot;chameneosredux.sbcl-3.sbcl_compile&quot;)'
+### START chameneosredux.sbcl-3.sbcl_compile
+(handler-bind ((sb-ext:defconstant-uneql      (lambda (c) (abort c))))      (load (compile-file &quot;chameneosredux.sbcl-3.sbcl&quot; ))) (save-lisp-and-die &quot;sbcl.core&quot; :purify t)
+### END chameneosredux.sbcl-3.sbcl_compile
+
+; compiling file &quot;/home/dunham/benchmarksgame/bench/chameneosredux/chameneosredux.sbcl-3.sbcl&quot; (written 24 JAN 2013 01:22:33 PM):
+; compiling (DEFPACKAGE #:SMP-UTILS ...)
+; compiling (IN-PACKAGE :SMP-UTILS)
+; compiling (DEFUN CPUSET-&gt;LIST ...)
+; compiling (DEFUN LIST-&gt;CPUSET ...)
+; compiling (DEFUN AFFINITY ...)
+; compiling (DEFUN (SETF AFFINITY) ...)
+; compiling (DEFUN APIC-CORE-MAP ...)
+; compiling (DEFPACKAGE #:CHAMENEOS-REDUX ...)
+; compiling (IN-PACKAGE :CHAMENEOS-REDUX)
+; compiling (DEFMACRO DECLARE-COLORS-MAP ...)
+; compiling (DEFUN SPELL-NUMBER ...)
+; compiling (DEFMACRO SPIN-WAIT ...)
+; compiling (DEFSTRUCT CHAMENEO ...)
+; compiling (DEFMACRO WITH-GAMES ...)
+; compiling (DECLARE-COLORS-MAP (BLUE + ...) ...)
+; compiling (DEFUN RUN-GAMES ...)
+; compiling (DEFUN MAIN ...)
+; compiling (IN-PACKAGE :CL-USER)
+; compiling (DEFUN MAIN ...)
+
+; /home/dunham/benchmarksgame_quadcore/chameneosredux/tmp/chameneosredux.sbcl-3.fasl written
+; compilation finished in 0:00:00.204
+### START chameneosredux.sbcl-3.sbcl_run
+(main) (quit)
+### END chameneosredux.sbcl-3.sbcl_run
+
+
+3.73s to complete and log all make actions
+
+COMMAND LINE:
+/opt/src/sbcl-1.4.0/bin/sbcl  --noinform --core sbcl.core --userinit /dev/null --load chameneosredux.sbcl-3.sbcl_run 6000000
+
+PROGRAM OUTPUT:
+blue + blue -&gt; blue
+blue + red -&gt; yellow
+blue + yellow -&gt; red
+red + blue -&gt; yellow
+red + red -&gt; red
+red + yellow -&gt; blue
+yellow + blue -&gt; red
+yellow + red -&gt; blue
+yellow + yellow -&gt; yellow
+
+ blue red yellow
+4460624 zero
+3856085 zero
+3683291 zero
+ one two zero zero zero zero zero zero
+
+ blue red yellow red yellow blue red yellow red blue
+1456850 zero
+1726051 zero
+1240631 zero
+1846751 zero
+1265888 zero
+1034576 zero
+945867 zero
+895653 zero
+860856 zero
+726877 zero
+ one two zero zero zero zero zero zero
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

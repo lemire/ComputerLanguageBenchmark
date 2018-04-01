@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>mandelbrot Fortran Intel&nbsp;#2 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>mandelbrot Fortran Intel&nbsp;#2 program</h2>
+    <aside>
+      <p><a href="./mandelbrot-description.html#mandelbrot">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">! The Computer Language Benchmarks Game</span>
+<span class="slc">! http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">!</span>
+<span class="slc">!      contributed by George R. Gonzalez</span>
+<span class="slc">!      fixed by Simon Geard</span>
+
+<span class="kwa">program</span> mandelbrot
+    <span class="kwa">IMPLICIT NONE</span>
+    <span class="kwa">INTEGER</span><span class="opt">,</span> <span class="kwa">PARAMETER</span>                      <span class="opt">::</span> WantedPrecision <span class="opt">=</span> <span class="num">8</span><span class="opt">,</span> Iterations <span class="opt">=</span> <span class="num">50</span>
+    <span class="kwa">INTEGER</span>                                 <span class="opt">::</span> w<span class="opt">,</span> h<span class="opt">,</span>   Len<span class="opt">,</span>   i
+    <span class="kwa">INTEGER</span>                                 <span class="opt">::</span> y<span class="opt">,</span> x<span class="opt">,</span> LenOut<span class="opt">,</span> row
+    <span class="kwa">REAL</span><span class="opt">(</span> WantedPrecision <span class="opt">)                 ::</span> limit<span class="opt">,</span> limit2
+    <span class="kwa">REAL</span><span class="opt">(</span> WantedPrecision <span class="opt">)                 ::</span> rx<span class="opt">,</span> ry<span class="opt">,</span> rw<span class="opt">,</span> rh
+    <span class="kwa">REAL</span><span class="opt">(</span> WantedPrecision <span class="opt">)                 ::</span> Zr<span class="opt">,</span> Zi<span class="opt">,</span> Cr<span class="opt">,</span> Ci<span class="opt">,</span> Tr<span class="opt">,</span> Ti
+    <span class="kwa">REAL</span><span class="opt">(</span> WantedPrecision <span class="opt">)                 ::</span> zero<span class="opt">,</span> one<span class="opt">,</span> v1p5<span class="opt">,</span> two
+    <span class="kwa">CHARACTER</span><span class="opt">(</span><span class="num">10</span><span class="opt">)                           ::</span> NUM
+    <span class="kwa">INTEGER</span><span class="opt">(</span><span class="num">1</span><span class="opt">),</span> ALLOCATABLE<span class="opt">,</span> <span class="kwa">DIMENSION</span><span class="opt">( : ) ::</span> OUTA
+    <span class="kwa">INTEGER</span>                                 <span class="opt">::</span> OUTP<span class="opt">,</span> OUTB<span class="opt">,</span> OutUnit
+    <span class="kwa">INTEGER</span><span class="opt">(</span><span class="num">1</span><span class="opt">),</span> ALLOCATABLE<span class="opt">,</span> <span class="kwa">DIMENSION</span><span class="opt">( : ) ::</span> OutBuf
+    <span class="kwa">INTEGER</span><span class="opt">(</span><span class="num">1</span><span class="opt">)                              ::</span> B
+    <span class="kwa">LOGICAL</span>                                 <span class="opt">::</span> Ans
+    <span class="kwa">CONTINUE</span>
+    OutUnit <span class="opt">=</span> <span class="num">6</span> 
+    <span class="kwa">Call</span> <span class="kwd">GetArg</span><span class="opt">(</span> <span class="num">1</span><span class="opt">,</span> NUM <span class="opt">)</span>
+    <span class="kwa">READ</span><span class="opt">(</span> NUM<span class="opt">, *,</span> <span class="kwa">END</span> <span class="opt">=</span> <span class="num">100</span> <span class="opt">)</span> w<span class="opt">;</span>  h <span class="opt">=</span> w<span class="opt">;</span>    rw <span class="opt">=</span> w<span class="opt">;</span> rh <span class="opt">=</span> h
+    Len <span class="opt">=</span> w <span class="opt">*</span> h
+    <span class="kwd">ALLOCATE</span><span class="opt">(</span> <span class="kwd">OUTA</span> <span class="opt">(</span> Len <span class="opt">) )</span>
+    OUTA <span class="opt">=</span> <span class="num">0</span>
+    OUTB <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+    limit <span class="opt">=</span> <span class="num">2.0</span><span class="opt">;</span> limit2 <span class="opt">=</span> limit <span class="opt">*</span> limit
+    <span class="kwa">IF</span><span class="opt">(</span> w <span class="opt">&lt;</span> <span class="num">1000</span> <span class="opt">)</span> <span class="kwa">THEN</span>
+        <span class="kwa">WRITE</span><span class="opt">(</span> UNIT <span class="opt">=</span> OutUnit<span class="opt">,</span> FMT <span class="opt">=</span> <span class="str">&quot;( &apos;P4&apos;, /, I3, 1X, I3 )&quot;</span> <span class="opt">)</span> w<span class="opt">,</span> h
+    <span class="kwa">ELSE</span>
+        <span class="kwa">WRITE</span><span class="opt">(</span> UNIT <span class="opt">=</span> OutUnit<span class="opt">,</span> FMT <span class="opt">=</span> <span class="str">&quot;( &apos;P4&apos;, /, I4, 1X, I4 )&quot;</span> <span class="opt">)</span> w<span class="opt">,</span> h
+    <span class="kwa">ENDIF</span>
+
+    <span class="kwa">DO</span> y <span class="opt">=</span> <span class="num">0</span><span class="opt">,</span>h<span class="opt">-</span><span class="num">1</span>
+        ry <span class="opt">=</span> y
+
+        <span class="kwa">DO</span> x <span class="opt">=</span> <span class="num">0</span><span class="opt">,</span>w<span class="opt">-</span><span class="num">1</span> 
+            rx <span class="opt">=</span> x<span class="opt">;</span>
+            Zr <span class="opt">=</span> <span class="num">0.0</span><span class="opt">;</span>Zi <span class="opt">=</span> <span class="num">0.0</span><span class="opt">;</span>Tr <span class="opt">=</span> <span class="num">0.0</span><span class="opt">;</span>Ti <span class="opt">=</span> <span class="num">0.0</span><span class="opt">;</span>
+            Cr <span class="opt">=</span> <span class="num">2.0</span> <span class="opt">*</span> rx <span class="opt">/</span> rw <span class="opt">-</span> <span class="num">1.5</span>
+            Ci <span class="opt">=</span> <span class="num">2.0</span> <span class="opt">*</span> ry <span class="opt">/</span> rh <span class="opt">-</span> <span class="num">1.0</span>
+            Ans <span class="opt">= .</span>TRUE<span class="opt">.</span>
+            i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> 
+            OUTB <span class="opt">=</span> OUTB <span class="opt">+</span> <span class="num">1</span>
+
+            <span class="kwa">DO WHILE</span><span class="opt">(</span>  i <span class="opt">&lt;</span> Iterations   <span class="opt">.</span>AND<span class="opt">.</span>   Ans  <span class="opt">)</span> 
+                Zi    <span class="opt">=</span>       <span class="num">2.0</span> <span class="opt">*</span> Zr <span class="opt">*</span> Zi <span class="opt">+</span> Ci
+                Zr    <span class="opt">=</span>       Tr <span class="opt">-</span> Ti <span class="opt">+</span> Cr
+                Ti    <span class="opt">=</span>       Zi <span class="opt">*</span> Zi
+                Tr    <span class="opt">=</span>       Zr <span class="opt">*</span> Zr
+                i     <span class="opt">=</span>       i <span class="opt">+</span> <span class="num">1</span>
+                Ans   <span class="opt">=</span>       Tr <span class="opt">+</span> Ti <span class="opt">&lt;=</span> limit2
+            <span class="kwa">END DO</span>
+
+            <span class="kwa">IF</span><span class="opt">(</span> Ans <span class="opt">)</span> <span class="kwd">OUTA</span><span class="opt">(</span> OUTB <span class="opt">) =</span> <span class="num">1</span><span class="opt">;</span>
+          <span class="kwa">END DO</span>
+
+    <span class="kwa">END DO</span>
+
+   LenOut <span class="opt">=</span> Len <span class="opt">/</span> <span class="num">8</span> <span class="opt">+</span> <span class="num">10</span> <span class="opt">+</span> h<span class="opt">;</span>
+   <span class="kwd">ALLOCATE</span><span class="opt">(</span> <span class="kwd">OutBuf</span><span class="opt">(</span> LenOut <span class="opt">) )</span>
+
+   I <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>  OUTP <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> B <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> row <span class="opt">=</span> <span class="num">0</span>
+
+   <span class="kwa">DO WHILE</span><span class="opt">(</span> I <span class="opt">&lt;</span> OUTB <span class="opt">)</span>
+      I <span class="opt">=</span> I <span class="opt">+</span> <span class="num">1</span>
+      B <span class="opt">=</span> <span class="kwd">ISHFT</span><span class="opt">(</span> B<span class="opt">,</span> <span class="num">1</span> <span class="opt">) +</span> <span class="kwd">OUTA</span><span class="opt">(</span> I <span class="opt">)</span>
+      row <span class="opt">=</span> row <span class="opt">+</span> <span class="num">1</span>
+      <span class="kwa">IF</span><span class="opt">(</span> <span class="kwd">IAND</span><span class="opt">(</span> I<span class="opt">,</span> <span class="num">7</span> <span class="opt">) ==</span> <span class="num">0</span> <span class="opt">)</span> <span class="kwa">THEN</span>
+         OUTP <span class="opt">=</span> OUTP <span class="opt">+</span> <span class="num">1</span>
+         <span class="kwd">OutBuf</span><span class="opt">(</span> OUTP <span class="opt">) =</span> B<span class="opt">;</span>
+         B              <span class="opt">=</span> <span class="num">0</span>
+      <span class="kwa">ELSEIF</span><span class="opt">(</span>  row <span class="opt">&gt;=</span> w <span class="opt">-</span> <span class="num">1</span> <span class="opt">)</span> <span class="kwa">THEN</span>
+         OUTP <span class="opt">=</span> OUTP <span class="opt">+</span> <span class="num">1</span>
+
+         <span class="kwa">DO WHILE</span><span class="opt">(</span> <span class="kwd">IAND</span><span class="opt">(</span> I<span class="opt">,</span> <span class="num">7</span> <span class="opt">) /=</span> <span class="num">0</span> <span class="opt">)</span>
+            B <span class="opt">=</span> <span class="kwd">ISHFT</span><span class="opt">(</span> B<span class="opt">,</span> <span class="num">1</span> <span class="opt">)</span>
+            I <span class="opt">=</span> I <span class="opt">+</span> <span class="num">1</span>
+         <span class="kwa">END DO</span>
+
+         <span class="kwd">OutBuf</span><span class="opt">(</span> OUTP <span class="opt">) =</span> B<span class="opt">;</span>
+         B              <span class="opt">=</span> <span class="num">0</span>
+         row            <span class="opt">=</span> <span class="num">0</span>
+      <span class="kwa">ENDIF</span>
+   <span class="kwa">ENDDO</span>
+
+
+   <span class="kwa">WRITE</span><span class="opt">(</span> OutUnit<span class="opt">,</span> FMT <span class="opt">=</span> <span class="str">&quot;(10000000A1)&quot;</span> <span class="opt">,</span> advance<span class="opt">=</span><span class="str">&apos;no&apos;</span><span class="opt">) (</span> <span class="kwd">OutBuf</span><span class="opt">(</span>I<span class="opt">),</span>I<span class="opt">=</span><span class="num">1</span><span class="opt">,</span>OUTP <span class="opt">)</span>
+
+<span class="num">100</span>     <span class="kwa">CONTINUE</span>
+
+<span class="kwa">end program</span> mandelbrot
+
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+Intel(R) Fortran Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 18.0.0.128 Build 20170811
+Copyright (C) 1985-2017 Intel Corporation.  All rights reserved.
+FOR NON-COMMERCIAL USE ONLY
+
+
+Thu, 26 Oct 2017 20:38:36 GMT
+
+MAKE:
+/opt/src/intel/bin/ifort -O3 -fast -qopenmp mandelbrot.ifc-2.f90 -o mandelbrot.ifc-2.ifc_run
+ipo: warning #11021: unresolved __pthread_create
+        Referenced in libpthread.a(pthread_cancel.o)
+        Referenced in libpthread.a(pthread_exit.o)
+rm mandelbrot.ifc-2.f90
+
+0.39s to complete and log all make actions
+
+COMMAND LINE:
+./mandelbrot.ifc-2.ifc_run 16000
+
+UNEXPECTED OUTPUT 
+
+_out 16000_out differ: byte 4, line 2
+
+(BINARY) PROGRAM OUTPUT NOT SHOWN
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

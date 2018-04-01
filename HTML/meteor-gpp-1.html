@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>meteor-contest C++ g++ program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>meteor-contest C++ g++ program</h2>
+    <aside>
+      <p><a href="./meteor-description.html#meteor">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">// The Computer Language Benchmarks Game</span>
+<span class="slc">//  http://benchmarksgame.alioth.debian.org</span>
+<span class="slc">//  contributed by Kevin Barnes</span>
+
+<span class="ppc">#include &lt;memory.h&gt;</span>
+<span class="ppc">#include &lt;cstdio&gt;</span>
+<span class="ppc">#include &lt;cstdlib&gt;</span>
+<span class="ppc">#include &lt;ctime&gt;</span>
+<span class="ppc">#include &lt;iostream&gt;</span>
+<span class="ppc">#include &lt;vector&gt;</span>
+<span class="ppc">#include &lt;string&gt;</span>
+<span class="ppc">#include &lt;set&gt;</span>
+
+<span class="kwa">using namespace</span> std<span class="opt">;</span>
+
+<span class="ppc">#define WEST 0</span>
+<span class="ppc">#define EAST 1</span>
+<span class="ppc">#define SW 2</span>
+<span class="ppc">#define SE 3</span>
+<span class="ppc">#define NW 4</span>
+<span class="ppc">#define NE 5</span>
+
+<span class="ppc">#define BIT ((long long)1)</span>
+
+<span class="slc">// constant masks</span>
+<span class="kwb">const long long</span> row_mask <span class="opt">= (</span><span class="kwb">long long</span><span class="opt">)</span><span class="num">31</span><span class="opt">;</span>
+<span class="kwb">const long long</span> full_mask <span class="opt">= (</span>BIT <span class="opt">&lt;&lt;</span> <span class="num">50</span><span class="opt">) -</span> <span class="num">1</span><span class="opt">;</span>
+<span class="kwb">const long long</span> row_masks<span class="opt">[] = {</span> row_mask<span class="opt">,</span> row_mask <span class="opt">&lt;&lt;</span> <span class="num">5</span><span class="opt">,</span> row_mask <span class="opt">&lt;&lt;</span> <span class="num">10</span><span class="opt">,</span> row_mask <span class="opt">&lt;&lt;</span> <span class="num">15</span><span class="opt">,</span> row_mask <span class="opt">&lt;&lt;</span> <span class="num">20</span><span class="opt">,</span> row_mask <span class="opt">&lt;&lt;</span> <span class="num">25</span><span class="opt">,</span> row_mask <span class="opt">&lt;&lt;</span> <span class="num">30</span><span class="opt">,</span>
+row_mask <span class="opt">&lt;&lt;</span> <span class="num">35</span><span class="opt">,</span> row_mask <span class="opt">&lt;&lt;</span> <span class="num">40</span><span class="opt">,</span> row_mask <span class="opt">&lt;&lt;</span> <span class="num">45</span> <span class="opt">};</span>
+<span class="kwb">const long long</span> all_even_rows <span class="opt">=</span> row_masks<span class="opt">[</span><span class="num">0</span><span class="opt">] |</span> row_masks<span class="opt">[</span><span class="num">2</span><span class="opt">] |</span> row_masks<span class="opt">[</span><span class="num">4</span><span class="opt">] |</span> row_masks<span class="opt">[</span><span class="num">6</span><span class="opt">] |</span> row_masks<span class="opt">[</span><span class="num">8</span><span class="opt">];</span>
+<span class="kwb">const long long</span> all_odd_rows <span class="opt">=</span> row_masks<span class="opt">[</span><span class="num">1</span><span class="opt">] |</span> row_masks<span class="opt">[</span><span class="num">3</span><span class="opt">] |</span> row_masks<span class="opt">[</span><span class="num">5</span><span class="opt">] |</span> row_masks<span class="opt">[</span><span class="num">7</span><span class="opt">] |</span> row_masks<span class="opt">[</span><span class="num">9</span><span class="opt">];</span>
+<span class="kwb">const long long</span> all_rows<span class="opt">[</span><span class="num">2</span><span class="opt">] = {</span> all_even_rows<span class="opt">,</span> all_odd_rows <span class="opt">};</span>
+
+<span class="kwb">const long long</span> even_left_edges <span class="opt">=</span> BIT <span class="opt">| (</span>BIT <span class="opt">&lt;&lt;</span> <span class="num">10</span><span class="opt">) | (</span>BIT <span class="opt">&lt;&lt;</span> <span class="num">20</span><span class="opt">) | (</span>BIT <span class="opt">&lt;&lt;</span> <span class="num">30</span> <span class="opt">| (</span>BIT <span class="opt">&lt;&lt;</span> <span class="num">40</span><span class="opt">));</span>
+<span class="kwb">const long long</span> odd_left_edges <span class="opt">= (</span>BIT <span class="opt">&lt;&lt;</span> <span class="num">5</span><span class="opt">) | (</span>BIT <span class="opt">&lt;&lt;</span> <span class="num">15</span><span class="opt">) | (</span>BIT <span class="opt">&lt;&lt;</span> <span class="num">25</span><span class="opt">) | (</span>BIT <span class="opt">&lt;&lt;</span> <span class="num">35</span><span class="opt">) | (</span>BIT <span class="opt">&lt;&lt;</span> <span class="num">45</span><span class="opt">);</span>
+<span class="kwb">const long long</span> left_edges <span class="opt">=</span> even_left_edges <span class="opt">|</span> odd_left_edges<span class="opt">;</span>
+<span class="kwb">const long long</span> even_right_edges <span class="opt">=</span> even_left_edges <span class="opt">&lt;&lt;</span> <span class="num">4</span><span class="opt">;</span>
+<span class="kwb">const long long</span> odd_right_edges <span class="opt">=</span> odd_left_edges <span class="opt">&lt;&lt;</span> <span class="num">4</span><span class="opt">;</span>
+<span class="kwb">const long long</span> right_edges <span class="opt">=</span> left_edges <span class="opt">&lt;&lt;</span> <span class="num">4</span><span class="opt">;</span>
+<span class="kwb">const long long</span> top_edge <span class="opt">=</span> row_masks<span class="opt">[</span><span class="num">0</span><span class="opt">];</span>
+<span class="kwb">const long long</span> bottom_edge <span class="opt">=</span> row_masks<span class="opt">[</span><span class="num">9</span><span class="opt">];</span>
+
+<span class="kwb">const long long</span> illegal_move_masks<span class="opt">[</span><span class="num">6</span><span class="opt">] = {</span>
+   left_edges<span class="opt">,</span> right_edges<span class="opt">,</span>
+   bottom_edge <span class="opt">|</span> even_left_edges<span class="opt">,</span> bottom_edge <span class="opt">|</span> odd_right_edges<span class="opt">,</span>
+   top_edge <span class="opt">|</span> even_left_edges<span class="opt">,</span> top_edge <span class="opt">|</span> odd_right_edges <span class="opt">};</span>
+
+<span class="slc">// mapping and bit manipulation</span>
+<span class="kwc">inline</span> <span class="kwb">int</span> <span class="kwd">location_of</span><span class="opt">(</span> <span class="kwb">int</span> row<span class="opt">,</span> <span class="kwb">int</span> col<span class="opt">) {</span> <span class="kwa">return</span> row <span class="opt">*</span> <span class="num">5</span> <span class="opt">+</span> col<span class="opt">; }</span>
+<span class="kwc">inline</span> <span class="kwb">int</span> <span class="kwd">row_of</span><span class="opt">(</span> <span class="kwb">int</span> location<span class="opt">) {</span> <span class="kwa">return</span> location <span class="opt">/</span> <span class="num">5</span><span class="opt">; }</span>
+<span class="kwc">inline</span> <span class="kwb">int</span> <span class="kwd">col_of</span><span class="opt">(</span> <span class="kwb">int</span> location<span class="opt">) {</span> <span class="kwa">return</span> location <span class="opt">%</span> <span class="num">5</span><span class="opt">; }</span>
+<span class="kwc">inline</span> <span class="kwb">long long</span> <span class="kwd">get_bit</span><span class="opt">(</span> <span class="kwb">long long</span> value<span class="opt">,</span> <span class="kwb">int</span> pos<span class="opt">) {</span> <span class="kwa">return</span> value <span class="opt">&amp; (</span>BIT <span class="opt">&lt;&lt;</span> pos<span class="opt">); }</span>
+<span class="kwc">inline</span> <span class="kwb">long long</span> <span class="kwd">get_bit</span><span class="opt">(</span> <span class="kwb">long long</span> value<span class="opt">,</span> <span class="kwb">int</span> row<span class="opt">,</span> <span class="kwb">int</span> col<span class="opt">) {</span> <span class="kwa">return</span> value <span class="opt">&amp; (</span>BIT <span class="opt">&lt;&lt;</span> <span class="kwd">location_of</span><span class="opt">(</span>row<span class="opt">,</span> col<span class="opt">)); }</span>
+<span class="kwc">inline</span> <span class="kwb">long long</span> <span class="kwd">has_bit</span><span class="opt">(</span> <span class="kwb">long long</span> value<span class="opt">,</span> <span class="kwb">int</span> pos<span class="opt">) {</span> <span class="kwa">return</span> <span class="kwd">get_bit</span><span class="opt">(</span>value<span class="opt">,</span> pos<span class="opt">) ?</span> <span class="kwa">true</span> <span class="opt">:</span> <span class="kwa">false</span><span class="opt">; }</span>
+<span class="kwc">inline</span> <span class="kwb">long long</span> <span class="kwd">has_bit</span><span class="opt">(</span> <span class="kwb">long long</span> value<span class="opt">,</span> <span class="kwb">int</span> row<span class="opt">,</span> <span class="kwb">int</span> col<span class="opt">) {</span> <span class="kwa">return</span> <span class="kwd">get_bit</span><span class="opt">(</span>value<span class="opt">,</span> row<span class="opt">,</span> col<span class="opt">) ?</span> <span class="kwa">true</span> <span class="opt">:</span> <span class="kwa">false</span><span class="opt">;  }</span>
+<span class="kwc">inline</span> <span class="kwb">void</span> <span class="kwd">set_bit</span><span class="opt">(</span> <span class="kwb">long long</span> <span class="opt">&amp;</span>value<span class="opt">,</span> <span class="kwb">int</span> pos<span class="opt">) {</span> value <span class="opt">|= (</span>BIT <span class="opt">&lt;&lt;</span> pos<span class="opt">); }</span>
+<span class="kwc">inline</span> <span class="kwb">void</span> <span class="kwd">set_bit</span><span class="opt">(</span> <span class="kwb">long long</span> <span class="opt">&amp;</span>value<span class="opt">,</span> <span class="kwb">int</span> row<span class="opt">,</span> <span class="kwb">int</span> col<span class="opt">) {</span> value <span class="opt">|= (</span>BIT <span class="opt">&lt;&lt;</span> <span class="kwd">location_of</span><span class="opt">(</span>row<span class="opt">,</span> col<span class="opt">)); }</span>
+<span class="kwc">inline</span> <span class="kwb">int</span> <span class="kwd">get_row</span><span class="opt">(</span> <span class="kwb">long long</span> mask<span class="opt">,</span> <span class="kwb">int</span> row<span class="opt">) {</span> <span class="kwa">return</span> <span class="opt">(</span><span class="kwb">int</span><span class="opt">)((</span>mask <span class="opt">&gt;&gt; (</span>row <span class="opt">*</span> <span class="num">5</span><span class="opt">)) &amp;</span> row_mask<span class="opt">); }</span>
+
+<span class="kwc">inline</span> <span class="kwb">long long</span> <span class="kwd">shift_east</span><span class="opt">(</span> <span class="kwb">const long long</span> mask<span class="opt">) {</span> <span class="kwa">return</span> mask <span class="opt">&lt;&lt;</span> <span class="num">1</span><span class="opt">; }</span>
+<span class="kwc">inline</span> <span class="kwb">long long</span> <span class="kwd">shift_west</span><span class="opt">(</span> <span class="kwb">const long long</span> mask<span class="opt">) {</span> <span class="kwa">return</span> mask <span class="opt">&gt;&gt;</span> <span class="num">1</span><span class="opt">; }</span>
+<span class="kwc">inline</span> <span class="kwb">long long</span> <span class="kwd">shift_nw</span><span class="opt">(</span> <span class="kwb">const long long</span> mask<span class="opt">) {</span> <span class="kwa">return</span> <span class="opt">((</span>mask <span class="opt">&amp;</span> all_even_rows<span class="opt">) &gt;&gt;</span> <span class="num">6</span><span class="opt">) | ((</span>mask <span class="opt">&amp;</span> all_odd_rows<span class="opt">) &gt;&gt;</span> <span class="num">5</span><span class="opt">); }</span>
+<span class="kwc">inline</span> <span class="kwb">long long</span> <span class="kwd">shift_ne</span><span class="opt">(</span> <span class="kwb">const long long</span> mask<span class="opt">) {</span> <span class="kwa">return</span> <span class="opt">((</span>mask <span class="opt">&amp;</span> all_even_rows<span class="opt">) &gt;&gt;</span> <span class="num">5</span><span class="opt">) | ((</span>mask <span class="opt">&amp;</span> all_odd_rows<span class="opt">) &gt;&gt;</span> <span class="num">4</span><span class="opt">); }</span>
+<span class="kwc">inline</span> <span class="kwb">long long</span> <span class="kwd">shift_sw</span><span class="opt">(</span> <span class="kwb">const long long</span> mask<span class="opt">) {</span> <span class="kwa">return</span> <span class="opt">((</span>mask <span class="opt">&amp;</span> all_even_rows<span class="opt">) &lt;&lt;</span> <span class="num">4</span><span class="opt">) | ((</span>mask <span class="opt">&amp;</span> all_odd_rows<span class="opt">) &lt;&lt;</span> <span class="num">5</span><span class="opt">); }</span>
+<span class="kwc">inline</span> <span class="kwb">long long</span> <span class="kwd">shift_se</span><span class="opt">(</span> <span class="kwb">const long long</span> mask<span class="opt">) {</span> <span class="kwa">return</span> <span class="opt">((</span>mask <span class="opt">&amp;</span> all_even_rows<span class="opt">) &lt;&lt;</span> <span class="num">5</span><span class="opt">) | ((</span>mask <span class="opt">&amp;</span> all_odd_rows<span class="opt">) &lt;&lt;</span> <span class="num">6</span><span class="opt">); }</span>
+<span class="kwc">inline</span> <span class="kwb">long long</span> <span class="kwd">shift_mask</span><span class="opt">(</span> <span class="kwb">int</span> direction<span class="opt">,</span> <span class="kwb">const long long</span> mask<span class="opt">) {</span>
+   <span class="kwa">switch</span> <span class="opt">(</span>direction<span class="opt">) {</span>
+  <span class="kwa">case</span> WEST<span class="opt">:</span> <span class="kwa">return</span> <span class="kwd">shift_west</span><span class="opt">(</span>mask<span class="opt">);</span>
+  <span class="kwa">case</span> EAST<span class="opt">:</span> <span class="kwa">return</span> <span class="kwd">shift_east</span><span class="opt">(</span>mask<span class="opt">);</span>
+  <span class="kwa">case</span> SW<span class="opt">:</span> <span class="kwa">return</span> <span class="kwd">shift_sw</span><span class="opt">(</span>mask<span class="opt">);</span>
+  <span class="kwa">case</span> SE<span class="opt">:</span> <span class="kwa">return</span> <span class="kwd">shift_se</span><span class="opt">(</span>mask<span class="opt">);</span>
+  <span class="kwa">case</span> NW<span class="opt">:</span> <span class="kwa">return</span> <span class="kwd">shift_nw</span><span class="opt">(</span>mask<span class="opt">);</span>
+   <span class="opt">}</span>
+   <span class="kwa">return</span> <span class="kwd">shift_ne</span><span class="opt">(</span>mask<span class="opt">);</span>
+<span class="opt">}</span>
+
+
+<span class="kwb">char const</span><span class="opt">*</span> dir_texts<span class="opt">[] =       {</span><span class="str">&quot;WEST&quot;</span><span class="opt">,</span><span class="str">&quot;EAST&quot;</span><span class="opt">,</span><span class="str">&quot;SW&quot;</span><span class="opt">,</span>  <span class="str">&quot;SE&quot;</span><span class="opt">,</span>  <span class="str">&quot;NW&quot;</span><span class="opt">,</span>  <span class="str">&quot;NE&quot;</span>  <span class="opt">};</span>
+<span class="kwb">int</span> rotation_adder<span class="opt">[</span><span class="num">2</span><span class="opt">][</span><span class="num">6</span><span class="opt">] = {</span>
+   <span class="opt">{ -</span><span class="num">1</span><span class="opt">,</span>    <span class="num">1</span><span class="opt">,</span>     <span class="num">4</span><span class="opt">,</span>     <span class="num">5</span><span class="opt">,     -</span><span class="num">6</span><span class="opt">,    -</span><span class="num">5</span>   <span class="opt">},</span>
+   <span class="opt">{ -</span><span class="num">1</span><span class="opt">,</span>    <span class="num">1</span><span class="opt">,</span>     <span class="num">5</span><span class="opt">,</span>     <span class="num">6</span><span class="opt">,     -</span><span class="num">5</span><span class="opt">,    -</span><span class="num">4</span>   <span class="opt">} };</span>
+
+<span class="kwb">int</span> flip_transform<span class="opt">[</span><span class="num">6</span><span class="opt">] =    {</span> WEST<span class="opt">,</span>  EAST<span class="opt">,</span>  NW<span class="opt">,</span>    NE<span class="opt">,</span>    SW<span class="opt">,</span>    SE   <span class="opt">};</span>
+<span class="kwb">int</span> rotate_transform<span class="opt">[</span><span class="num">6</span><span class="opt">] =  {</span> NW<span class="opt">,</span>    SE<span class="opt">,</span>    WEST<span class="opt">,</span>  SW<span class="opt">,</span>    NE<span class="opt">,</span>    EAST <span class="opt">};</span>
+<span class="kwb">int</span> opposite_transform<span class="opt">[</span><span class="num">6</span><span class="opt">] ={</span> EAST<span class="opt">,</span>  WEST<span class="opt">,</span>  NE<span class="opt">,</span>    NW<span class="opt">,</span>    SE<span class="opt">,</span>    SW   <span class="opt">};</span>
+
+<span class="kwb">int</span> two_row_mask <span class="opt">=</span> <span class="num">1024</span><span class="opt">-</span><span class="num">1</span><span class="opt">;</span>
+<span class="kwb">int</span> bit_counts<span class="opt">[</span><span class="num">32</span><span class="opt">];</span>
+<span class="kwb">int</span> first_bits<span class="opt">[</span><span class="num">32</span><span class="opt">];</span>
+
+
+<span class="kwc">typedef</span> <span class="kwb">struct</span> MaskInfo <span class="opt">{</span>
+   <span class="kwb">bool</span> is_legal<span class="opt">[</span><span class="num">2</span><span class="opt">];</span>
+   <span class="kwb">int</span> start<span class="opt">;</span>
+
+   <span class="kwd">MaskInfo</span><span class="opt">() {</span> is_legal<span class="opt">[</span><span class="num">0</span><span class="opt">] =</span> is_legal<span class="opt">[</span><span class="num">1</span><span class="opt">] =</span> <span class="kwa">true</span><span class="opt">; }</span>
+   <span class="slc">// bool piece_allowed[10];</span>
+<span class="opt">};</span>
+
+MaskInfo big_map<span class="opt">[</span><span class="num">1024</span><span class="opt">];</span>
+
+<span class="kwb">long long</span> <span class="kwd">flood_fill_actual</span><span class="opt">(</span> <span class="kwb">long long</span> <span class="opt">&amp;</span>mask<span class="opt">,</span> <span class="kwb">const int</span> pos<span class="opt">) {</span>
+   <span class="kwd">set_bit</span><span class="opt">(</span>mask<span class="opt">,</span> pos<span class="opt">);</span>
+   <span class="kwa">if</span> <span class="opt">(</span>pos <span class="opt">%</span> <span class="num">5</span> <span class="opt">&amp;&amp; !</span><span class="kwd">has_bit</span><span class="opt">(</span> mask<span class="opt">,</span> pos <span class="opt">-</span> <span class="num">1</span><span class="opt">))</span> <span class="kwd">flood_fill_actual</span><span class="opt">(</span> mask<span class="opt">,</span> pos <span class="opt">-</span> <span class="num">1</span><span class="opt">);</span>
+   <span class="kwa">if</span> <span class="opt">(</span>pos <span class="opt">%</span> <span class="num">5</span> <span class="opt">&lt;</span> <span class="num">4</span> <span class="opt">&amp;&amp; !</span><span class="kwd">has_bit</span><span class="opt">(</span> mask<span class="opt">,</span> pos <span class="opt">+</span> <span class="num">1</span><span class="opt">))</span> <span class="kwd">flood_fill_actual</span><span class="opt">(</span> mask<span class="opt">,</span> pos <span class="opt">+</span> <span class="num">1</span><span class="opt">);</span>
+   <span class="kwa">if</span> <span class="opt">(</span>pos <span class="opt">&gt;=</span> <span class="num">5</span><span class="opt">) {</span>
+      <span class="kwa">if</span> <span class="opt">(!</span><span class="kwd">has_bit</span><span class="opt">(</span> mask<span class="opt">,</span> pos <span class="opt">-</span> <span class="num">5</span><span class="opt">))</span> <span class="kwd">flood_fill_actual</span><span class="opt">(</span> mask<span class="opt">,</span> pos <span class="opt">-</span> <span class="num">5</span><span class="opt">);</span>
+      <span class="kwa">if</span> <span class="opt">(</span>pos <span class="opt">/</span> <span class="num">10</span> <span class="opt">&lt;</span> <span class="num">5</span><span class="opt">) {</span>
+         <span class="kwa">if</span> <span class="opt">(</span>pos <span class="opt">%</span> <span class="num">5</span> <span class="opt">&amp;&amp; !</span><span class="kwd">has_bit</span><span class="opt">(</span> mask<span class="opt">,</span> mask<span class="opt">,</span> pos <span class="opt">-</span> <span class="num">6</span><span class="opt">))</span> <span class="kwd">flood_fill_actual</span><span class="opt">(</span> mask<span class="opt">,</span> pos <span class="opt">-</span> <span class="num">6</span><span class="opt">);</span>
+      <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span>
+         <span class="kwa">if</span> <span class="opt">(</span>pos <span class="opt">%</span> <span class="num">5</span> <span class="opt">&lt;</span> <span class="num">4</span> <span class="opt">&amp;&amp; !</span><span class="kwd">has_bit</span><span class="opt">(</span> mask<span class="opt">,</span> mask<span class="opt">,</span> pos <span class="opt">-</span> <span class="num">4</span><span class="opt">))</span> <span class="kwd">flood_fill_actual</span><span class="opt">(</span> mask<span class="opt">,</span> pos <span class="opt">-</span> <span class="num">4</span><span class="opt">);</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+   <span class="kwa">if</span> <span class="opt">(</span>pos <span class="opt">&lt;</span> <span class="num">45</span><span class="opt">) {</span>
+      <span class="kwa">if</span> <span class="opt">(!</span><span class="kwd">has_bit</span><span class="opt">(</span> mask<span class="opt">,</span> pos <span class="opt">+</span> <span class="num">5</span><span class="opt">))</span> <span class="kwd">flood_fill_actual</span><span class="opt">(</span> mask<span class="opt">,</span> pos <span class="opt">+</span> <span class="num">5</span><span class="opt">);</span>
+      <span class="kwa">if</span> <span class="opt">(</span>pos <span class="opt">/</span> <span class="num">10</span> <span class="opt">&lt;</span> <span class="num">5</span><span class="opt">) {</span>
+         <span class="kwa">if</span> <span class="opt">(</span>pos <span class="opt">%</span> <span class="num">5</span> <span class="opt">&amp;&amp; !</span><span class="kwd">has_bit</span><span class="opt">(</span> mask<span class="opt">,</span> pos <span class="opt">+</span> <span class="num">4</span><span class="opt">))</span> <span class="kwd">flood_fill_actual</span><span class="opt">(</span> mask<span class="opt">,</span> pos <span class="opt">+</span> <span class="num">4</span><span class="opt">);</span>
+      <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span>
+         <span class="kwa">if</span> <span class="opt">(</span>pos <span class="opt">%</span> <span class="num">5</span> <span class="opt">&lt;</span> <span class="num">4</span> <span class="opt">&amp;&amp; !</span><span class="kwd">has_bit</span><span class="opt">(</span> mask<span class="opt">,</span> pos <span class="opt">+</span> <span class="num">6</span><span class="opt">))</span> <span class="kwd">flood_fill_actual</span><span class="opt">(</span> mask<span class="opt">,</span> pos <span class="opt">+</span> <span class="num">6</span><span class="opt">);</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+   <span class="kwa">return</span> mask<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwb">long long</span> <span class="kwd">flood_fill_down</span><span class="opt">(</span> <span class="kwb">long long</span> mask<span class="opt">,</span> <span class="kwb">int</span> row<span class="opt">,</span> <span class="kwb">int</span> col<span class="opt">) {</span>
+   <span class="kwa">if</span> <span class="opt">(</span>row <span class="opt">&amp;</span> row_masks<span class="opt">[</span>row<span class="opt">]) {</span>
+      <span class="kwd">flood_fill_actual</span><span class="opt">(</span> mask<span class="opt">,</span> <span class="kwd">location_of</span><span class="opt">(</span>row<span class="opt">,</span> col<span class="opt">));</span>
+      <span class="kwa">return</span> mask<span class="opt">;</span>
+   <span class="opt">}</span>
+
+   <span class="kwa">while</span> <span class="opt">(</span>row <span class="opt">&lt;</span> <span class="num">10</span> <span class="opt">&amp;&amp; !(</span>mask <span class="opt">&amp;</span> row_masks<span class="opt">[</span>row<span class="opt">])) {</span>
+      mask <span class="opt">|=</span> row_masks<span class="opt">[</span>row<span class="opt">];</span>
+      row<span class="opt">++;</span>
+   <span class="opt">}</span>
+
+   <span class="kwa">if</span> <span class="opt">(</span>row <span class="opt">&lt;</span> <span class="num">10</span><span class="opt">)</span> <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> row <span class="opt">*</span> <span class="num">5</span><span class="opt">;</span> i <span class="opt">&lt; (</span>row <span class="opt">+</span> <span class="num">1</span><span class="opt">) *</span> <span class="num">5</span><span class="opt">;</span> i<span class="opt">++) {</span>
+      <span class="kwa">if</span> <span class="opt">(!</span><span class="kwd">has_bit</span><span class="opt">(</span> mask<span class="opt">,</span> i<span class="opt">))</span> <span class="kwd">flood_fill_actual</span><span class="opt">(</span> mask<span class="opt">,</span> i<span class="opt">);</span>
+   <span class="opt">}</span>
+   <span class="kwa">return</span> mask<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwb">long long</span> <span class="kwd">flood_fill_up</span><span class="opt">(</span> <span class="kwb">long long</span> mask<span class="opt">,</span> <span class="kwb">int</span> row<span class="opt">,</span> <span class="kwb">int</span> col<span class="opt">) {</span>
+   <span class="kwa">if</span> <span class="opt">(</span>row <span class="opt">&amp;</span> row_masks<span class="opt">[</span>row<span class="opt">]) {</span>
+      <span class="kwd">flood_fill_actual</span><span class="opt">(</span> mask<span class="opt">,</span> <span class="kwd">location_of</span><span class="opt">(</span>row<span class="opt">,</span> col<span class="opt">));</span>
+      <span class="kwa">return</span> mask<span class="opt">;</span>
+   <span class="opt">}</span>
+
+   <span class="kwa">while</span> <span class="opt">(</span>row <span class="opt">&gt;=</span> <span class="num">0</span> <span class="opt">&amp;&amp; !(</span>mask <span class="opt">&amp;</span> row_masks<span class="opt">[</span>row<span class="opt">])) {</span>
+      mask <span class="opt">|=</span> row_masks<span class="opt">[</span>row<span class="opt">];</span>
+      row<span class="opt">--;</span>
+   <span class="opt">}</span>
+
+   <span class="kwa">if</span> <span class="opt">(</span>row <span class="opt">&gt;=</span> <span class="num">0</span><span class="opt">)</span> <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> row <span class="opt">*</span> <span class="num">5</span><span class="opt">;</span> i <span class="opt">&lt; (</span>row <span class="opt">+</span> <span class="num">1</span><span class="opt">) *</span> <span class="num">5</span><span class="opt">;</span> i<span class="opt">++) {</span>
+      <span class="kwa">if</span> <span class="opt">(!</span><span class="kwd">has_bit</span><span class="opt">(</span> mask<span class="opt">,</span> i<span class="opt">))</span> <span class="kwd">flood_fill_actual</span><span class="opt">(</span> mask<span class="opt">,</span> i<span class="opt">);</span>
+   <span class="opt">}</span>
+   <span class="kwa">return</span> mask<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwc">typedef</span> <span class="kwb">struct</span> MaskData <span class="opt">{</span>
+   <span class="kwb">long long</span> mask<span class="opt">[</span><span class="num">2</span><span class="opt">];</span>
+   <span class="kwb">int</span> height<span class="opt">;</span>
+   <span class="kwb">int</span> min_col<span class="opt">[</span><span class="num">2</span><span class="opt">];</span>
+   <span class="kwb">int</span> max_col<span class="opt">[</span><span class="num">2</span><span class="opt">];</span>
+
+   <span class="kwd">MaskData</span><span class="opt">() {</span>
+      mask<span class="opt">[</span><span class="num">0</span><span class="opt">] =</span> <span class="num">0</span><span class="opt">;</span>
+      mask<span class="opt">[</span><span class="num">1</span><span class="opt">] =</span> <span class="num">0</span><span class="opt">;</span>
+      height <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+      min_col<span class="opt">[</span><span class="num">0</span><span class="opt">] =</span> <span class="num">0</span><span class="opt">;</span>
+      min_col<span class="opt">[</span><span class="num">1</span><span class="opt">] =</span> <span class="num">0</span><span class="opt">;</span>
+      max_col<span class="opt">[</span><span class="num">0</span><span class="opt">] =</span> <span class="num">0</span><span class="opt">;</span>
+      max_col<span class="opt">[</span><span class="num">1</span><span class="opt">] =</span> <span class="num">0</span><span class="opt">;</span>
+   <span class="opt">}</span>
+<span class="opt">};</span>
+
+<span class="kwc">typedef</span> <span class="kwb">struct</span> RotationData <span class="opt">{</span>
+   <span class="kwb">int</span> mask<span class="opt">;</span>
+   <span class="kwb">int</span> iMask<span class="opt">;</span>
+   <span class="kwb">int</span> cMask<span class="opt">;</span>
+   <span class="kwb">int</span> row<span class="opt">;</span>
+   <span class="kwb">int</span> positions<span class="opt">[</span><span class="num">5</span><span class="opt">];</span>
+   <span class="kwb">int</span> number<span class="opt">;</span>
+<span class="opt">};</span>
+
+<span class="kwb">void</span> <span class="kwd">print_mask</span><span class="opt">(</span> <span class="kwb">long long</span> mask<span class="opt">) {</span>
+   <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> row <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> row <span class="opt">&lt;</span> <span class="num">10</span><span class="opt">;</span> row<span class="opt">++) {</span>
+      <span class="kwa">if</span> <span class="opt">(</span>row <span class="opt">%</span> <span class="num">2</span><span class="opt">)</span> cout <span class="opt">&lt;&lt;</span> <span class="str">&quot; &quot;</span><span class="opt">;</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> col <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> col <span class="opt">&lt;</span> <span class="num">5</span><span class="opt">;</span> col<span class="opt">++) {</span>
+         cout <span class="opt">&lt;&lt; (</span><span class="kwd">get_bit</span><span class="opt">(</span> mask<span class="opt">,</span> row<span class="opt">,</span> col<span class="opt">)?</span><span class="str">&quot;1&quot;</span><span class="opt">:</span><span class="str">&quot;0&quot;</span><span class="opt">) &lt;&lt;</span> <span class="str">&quot; &quot;</span><span class="opt">;</span>
+      <span class="opt">}</span>
+      cout <span class="opt">&lt;&lt;</span> <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+   <span class="opt">}</span>
+   cout <span class="opt">&lt;&lt;</span> <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwc">class</span> LList <span class="opt">{</span>
+<span class="kwc">public</span><span class="opt">:</span>
+   LList <span class="opt">*</span>next<span class="opt">;</span>
+   <span class="kwd">LList</span><span class="opt">() {</span> next <span class="opt">=</span> NULL<span class="opt">; }</span>
+<span class="opt">};</span>
+
+<span class="kwb">struct</span> RotationSet <span class="opt">{</span>
+   <span class="kwb">int</span> size<span class="opt">;</span>
+   RotationData rotations<span class="opt">[</span><span class="num">12</span><span class="opt">];</span>
+
+   <span class="kwd">RotationSet</span><span class="opt">() {</span> size <span class="opt">=</span> <span class="num">0</span><span class="opt">; }</span>
+
+   <span class="kwb">void</span> <span class="kwd">add</span><span class="opt">(</span> RotationData <span class="opt">&amp;</span>data<span class="opt">) {</span> rotations<span class="opt">[</span> size<span class="opt">] =</span> data<span class="opt">;</span> size<span class="opt">++; }</span>
+<span class="opt">};</span>
+
+<span class="kwc">class</span> PieceData <span class="opt">:</span> <span class="kwc">public</span> LList <span class="opt">{</span>
+<span class="kwc">private</span><span class="opt">:</span>
+   <span class="kwb">void</span> <span class="kwd">transform</span><span class="opt">(</span> <span class="kwb">const int</span> matrix <span class="opt">[],</span> vector<span class="opt">&lt;</span><span class="kwb">int</span><span class="opt">&gt; &amp;</span>list <span class="opt">) {</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> list<span class="opt">.</span><span class="kwd">size</span><span class="opt">();</span> i<span class="opt">++) {</span>
+         list<span class="opt">[</span>i<span class="opt">] =</span> matrix<span class="opt">[</span>list<span class="opt">[</span>i<span class="opt">]];</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">int</span> <span class="kwd">get_offset</span><span class="opt">(</span> vector<span class="opt">&lt;</span><span class="kwb">int</span><span class="opt">&gt; &amp;</span>directions <span class="opt">) {</span>
+      <span class="kwb">int</span> offset <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> directions<span class="opt">.</span><span class="kwd">size</span><span class="opt">();</span> i<span class="opt">++) {</span>
+         <span class="kwa">if</span> <span class="opt">(</span>directions<span class="opt">[</span>i<span class="opt">] ==</span> SW <span class="opt">||</span> directions<span class="opt">[</span>i<span class="opt">] ==</span> NW <span class="opt">||</span> directions<span class="opt">[</span>i<span class="opt">] ==</span> WEST<span class="opt">)</span> offset<span class="opt">++;</span>
+         <span class="kwa">if</span> <span class="opt">(</span>directions<span class="opt">[</span>i<span class="opt">] ==</span> NW <span class="opt">||</span> directions<span class="opt">[</span>i<span class="opt">] ==</span> NE<span class="opt">)</span> offset <span class="opt">+=</span> <span class="num">5</span><span class="opt">;</span>
+      <span class="opt">}</span>
+      <span class="kwa">return</span> offset<span class="opt">;</span>
+   <span class="opt">}</span>
+
+   MaskData <span class="kwd">mask_for_directions</span><span class="opt">(</span> vector<span class="opt">&lt;</span><span class="kwb">int</span><span class="opt">&gt; &amp;</span>directions<span class="opt">) {</span>
+      MaskData data<span class="opt">;</span>
+
+      <span class="kwb">long long</span> mask <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+      <span class="kwb">int</span> start_offset <span class="opt">=</span> <span class="kwd">get_offset</span><span class="opt">(</span> directions<span class="opt">);</span>
+      <span class="kwb">int</span> location <span class="opt">=</span> start_offset<span class="opt">;</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> directions<span class="opt">.</span><span class="kwd">size</span><span class="opt">();</span> i<span class="opt">++) {</span>
+         <span class="kwd">set_bit</span><span class="opt">(</span> mask<span class="opt">,</span> location<span class="opt">);</span>
+         <span class="kwb">int</span> addition <span class="opt">=</span> rotation_adder<span class="opt">[ (</span>location <span class="opt">/</span> <span class="num">5</span><span class="opt">) %</span> <span class="num">2</span> <span class="opt">][</span> directions<span class="opt">[</span>i<span class="opt">] ];</span>
+         <span class="slc">//             int row = location / 5;</span>
+         <span class="slc">//             int other_row = (location + addition) / 5;</span>
+         <span class="slc">//             char * error = NULL;</span>
+         <span class="slc">//             if ((directions[i] == SW || directions[i] == SE) &amp;&amp; other_row != row + 1) error = &quot;ERROR moving down!&quot;;</span>
+         <span class="slc">//             if ((directions[i] == NW || directions[i] == NE) &amp;&amp; other_row != row - 1) error =  &quot;ERROR moving up!&quot;;</span>
+         <span class="slc">//             if ((directions[i] == EAST || directions[i] == WEST) &amp;&amp;row != other_row) error = &quot;ERROR moving to the side!&quot;;</span>
+         <span class="slc">//             if (error != NULL) {</span>
+         <span class="slc">//               int opposite = opposite_transform[directions[i]];</span>
+         <span class="slc">//               if (illegal_move_masks[opposite] &amp; mask) {</span>
+         <span class="slc">//                  cout &lt;&lt; error &lt;&lt; &quot; directions = &quot;;</span>
+         <span class="slc">//                  for (int j = 0; j &lt; directions.size(); j++) cout &lt;&lt; dir_texts[directions[j]] &lt;&lt; &quot; &quot;;</span>
+         <span class="slc">//                  cout &lt;&lt; &quot; [[[ current direction = &quot; &lt;&lt; dir_texts[directions[i]] &lt;&lt; &quot;]]]&quot; &lt;&lt; &quot; opposite unavailable: &quot; &lt;&lt; dir_texts[opposite] &lt;&lt; &quot;\n&quot;;</span>
+         <span class="slc">//                  cout &lt;&lt; &quot;row = &quot; &lt;&lt; row &lt;&lt; &quot;, other row = &quot; &lt;&lt; other_row &lt;&lt;&quot;\n&quot;;</span>
+         <span class="slc">//                  print_mask( mask);</span>
+         <span class="slc">//               } else {</span>
+         <span class="slc">//                  addition = 0;</span>
+         <span class="slc">//                  mask = shift_mask( opposite, mask);</span>
+         <span class="slc">//               }</span>
+         <span class="slc">//             }</span>
+         location <span class="opt">+=</span> addition<span class="opt">;</span>
+      <span class="opt">}</span>
+      <span class="kwd">set_bit</span><span class="opt">(</span> mask<span class="opt">,</span> location<span class="opt">);</span>
+
+      <span class="kwa">while</span> <span class="opt">(!(</span>mask <span class="opt">&amp;</span> top_edge<span class="opt">)) {</span>
+         <span class="kwa">if</span> <span class="opt">(</span>illegal_move_masks<span class="opt">[</span>NW<span class="opt">] &amp;</span> mask<span class="opt">) {</span>
+            <span class="kwa">if</span> <span class="opt">(</span>illegal_move_masks<span class="opt">[</span>NE<span class="opt">] &amp;</span> mask<span class="opt">)</span> cout <span class="opt">&lt;&lt;</span> <span class="str">&quot;ERROR SHIFTING UPWARD</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+            <span class="kwa">else</span> mask <span class="opt">=</span> <span class="kwd">shift_ne</span><span class="opt">(</span>mask<span class="opt">);</span>
+         <span class="opt">}</span> <span class="kwa">else</span> mask <span class="opt">=</span> <span class="kwd">shift_nw</span><span class="opt">(</span>mask<span class="opt">);</span>
+      <span class="opt">}</span>
+
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> row <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> mask <span class="opt">&amp;</span> row_masks<span class="opt">[</span>row<span class="opt">];</span> row<span class="opt">++)</span> data<span class="opt">.</span>height<span class="opt">++;</span>
+      <span class="kwa">while</span> <span class="opt">(!(</span>mask <span class="opt">&amp;</span> right_edges<span class="opt">))</span> mask <span class="opt">=</span> <span class="kwd">shift_east</span><span class="opt">(</span>mask<span class="opt">);</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> col_on <span class="opt">=</span> <span class="num">0</span><span class="opt">; !</span><span class="kwd">has_bit</span><span class="opt">(</span>mask<span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> col_on<span class="opt">);</span> col_on<span class="opt">++)</span> data<span class="opt">.</span>max_col<span class="opt">[</span><span class="num">0</span><span class="opt">]++;</span>
+      <span class="kwa">while</span> <span class="opt">(!(</span>mask <span class="opt">&amp;</span> left_edges<span class="opt">))</span> mask <span class="opt">=</span> <span class="kwd">shift_west</span><span class="opt">(</span>mask<span class="opt">);</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> col_on <span class="opt">=</span> <span class="num">0</span><span class="opt">; !</span><span class="kwd">has_bit</span><span class="opt">(</span>mask<span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> col_on<span class="opt">);</span> col_on<span class="opt">++)</span> data<span class="opt">.</span>min_col<span class="opt">[</span><span class="num">0</span><span class="opt">]++;</span>
+      data<span class="opt">.</span>mask<span class="opt">[</span><span class="num">0</span><span class="opt">] =</span> mask <span class="opt">&gt;&gt;</span> data<span class="opt">.</span>min_col<span class="opt">[</span><span class="num">0</span><span class="opt">];</span>
+
+      <span class="kwa">if</span> <span class="opt">(</span>mask <span class="opt">&amp;</span> illegal_move_masks<span class="opt">[</span>SE<span class="opt">]) {</span>
+         cout <span class="opt">&lt;&lt;</span> <span class="str">&quot;ERROR SHIFTING DOWNWARD</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+      <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span>
+         mask <span class="opt">=</span> <span class="kwd">shift_se</span><span class="opt">(</span> mask<span class="opt">);</span>
+         <span class="kwa">while</span> <span class="opt">(!(</span>mask <span class="opt">&amp;</span> right_edges<span class="opt">))</span> mask <span class="opt">=</span> <span class="kwd">shift_east</span><span class="opt">(</span>mask<span class="opt">);</span>
+         <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> col_on <span class="opt">=</span> <span class="num">0</span><span class="opt">; !</span><span class="kwd">get_bit</span><span class="opt">(</span>mask<span class="opt">,</span> <span class="num">1</span><span class="opt">,</span> col_on<span class="opt">);</span> col_on<span class="opt">++)</span> data<span class="opt">.</span>max_col<span class="opt">[</span><span class="num">1</span><span class="opt">]++;</span>
+         <span class="kwa">while</span> <span class="opt">(!(</span>mask <span class="opt">&amp;</span> left_edges<span class="opt">))</span> mask <span class="opt">=</span> <span class="kwd">shift_west</span><span class="opt">(</span>mask<span class="opt">);</span>
+         <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> col_on <span class="opt">=</span> <span class="num">0</span><span class="opt">; !</span><span class="kwd">get_bit</span><span class="opt">(</span>mask<span class="opt">,</span> <span class="num">1</span><span class="opt">,</span> col_on<span class="opt">);</span> col_on<span class="opt">++)</span> data<span class="opt">.</span>min_col<span class="opt">[</span><span class="num">1</span><span class="opt">]++;</span>
+         data<span class="opt">.</span>mask<span class="opt">[</span><span class="num">1</span><span class="opt">] =</span> mask <span class="opt">&gt;&gt; (</span>data<span class="opt">.</span>min_col<span class="opt">[</span><span class="num">1</span><span class="opt">] +</span> <span class="num">5</span><span class="opt">);</span>
+      <span class="opt">}</span>
+
+      <span class="slc">//cout &lt;&lt; &quot;\nDIRECTIONS: &quot; &lt;&lt; directions[0] &lt;&lt; directions[1] &lt;&lt; directions[2] &lt;&lt; directions[3] &lt;&lt; &quot; [&quot; &lt;&lt; start_offset &lt;&lt; &quot;]\n&quot;;</span>
+      <span class="slc">//cout &lt;&lt; &quot;height = &quot; &lt;&lt; data.height &lt;&lt; &quot;, min[0] = &quot; &lt;&lt; data.min_col[0] &lt;&lt; &quot;, max[0] = &quot; &lt;&lt; data.max_col[0] &lt;&lt;</span>
+      <span class="slc">//   &quot;, min[1] = &quot; &lt;&lt; data.min_col[1] &lt;&lt; &quot;, max[1] = &quot; &lt;&lt; data.max_col[1] &lt;&lt; &quot;\n&quot;;</span>
+      <span class="slc">//print_mask( data.mask[1]);</span>
+      <span class="slc">//exit(0);</span>
+
+      <span class="kwa">return</span> data<span class="opt">;</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">void</span> <span class="kwd">compute_rotation_positions</span><span class="opt">(</span> <span class="kwb">long long</span> board<span class="opt">,</span> RotationData <span class="opt">&amp;</span>rotation<span class="opt">) {</span>
+      <span class="kwb">int</span> pos <span class="opt">=</span> rotation<span class="opt">.</span>row <span class="opt">*</span> <span class="num">5</span><span class="opt">;</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> num <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> num <span class="opt">&lt;</span> <span class="num">5</span><span class="opt">;</span> pos<span class="opt">++) {</span>
+         <span class="kwa">if</span> <span class="opt">(</span><span class="kwd">has_bit</span><span class="opt">(</span>board<span class="opt">,</span> pos<span class="opt">)) {</span>
+            rotation<span class="opt">.</span>positions<span class="opt">[</span>num<span class="opt">] =</span> pos<span class="opt">;</span>
+            num<span class="opt">++;</span>
+         <span class="opt">}</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">void</span> <span class="kwd">add_rotation</span><span class="opt">(</span> <span class="kwb">long long</span> mask<span class="opt">,</span> <span class="kwb">int</span> row<span class="opt">,</span> <span class="kwb">int</span> col<span class="opt">) {</span>
+      RotationData rotation<span class="opt">;</span>
+      rotation<span class="opt">.</span>row <span class="opt">=</span> row<span class="opt">;</span>
+      rotation<span class="opt">.</span>mask <span class="opt">= (</span><span class="kwb">int</span><span class="opt">)(</span>mask <span class="opt">&gt;&gt; (</span><span class="num">5</span> <span class="opt">*</span> row<span class="opt">));</span>
+      rotation<span class="opt">.</span>number <span class="opt">=</span> number<span class="opt">;</span>
+      <span class="kwb">long long</span> board <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> row<span class="opt">;</span> i<span class="opt">++)</span> board <span class="opt">|=</span> row_masks<span class="opt">[</span>i<span class="opt">];</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> col<span class="opt">;</span> i<span class="opt">++)</span> <span class="kwd">set_bit</span><span class="opt">(</span> board<span class="opt">,</span> row<span class="opt">,</span> i<span class="opt">);</span>
+      board <span class="opt">|=</span> mask<span class="opt">;</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> <span class="num">4</span><span class="opt">;</span> i <span class="opt">&gt;=</span> <span class="num">0</span><span class="opt">;</span> i<span class="opt">--) {</span>
+         <span class="kwa">if</span> <span class="opt">(!</span><span class="kwd">has_bit</span><span class="opt">(</span> board<span class="opt">,</span> <span class="num">9</span><span class="opt">,</span> i<span class="opt">)) {</span>
+            board <span class="opt">=</span> <span class="kwd">flood_fill_up</span><span class="opt">(</span> board<span class="opt">,</span> <span class="num">9</span><span class="opt">,</span> i<span class="opt">);</span>
+            <span class="kwa">break</span><span class="opt">;</span>
+         <span class="opt">}</span>
+      <span class="opt">}</span>
+      <span class="kwa">if</span> <span class="opt">(</span>board <span class="opt">==</span> full_mask<span class="opt">) {</span>
+         rotation<span class="opt">.</span>iMask <span class="opt">=</span> rotation<span class="opt">.</span>mask<span class="opt">;</span>
+         rotation<span class="opt">.</span>cMask <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+      <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span>
+         <span class="kwb">int</span> count <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+         <span class="kwb">long long</span> cMask <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+         <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> pos <span class="opt">=</span> <span class="kwd">location_of</span><span class="opt">(</span>row<span class="opt">,</span> col<span class="opt">);</span> pos <span class="opt">&lt;</span> <span class="num">50</span><span class="opt">;</span> pos<span class="opt">++) {</span>
+            <span class="kwa">if</span> <span class="opt">(!</span><span class="kwd">has_bit</span><span class="opt">(</span>board<span class="opt">,</span>pos<span class="opt">)) {</span>
+               <span class="kwd">set_bit</span><span class="opt">(</span>cMask<span class="opt">,</span> pos<span class="opt">);</span>
+               count<span class="opt">++;</span>
+            <span class="opt">}</span>
+            <span class="kwa">if</span> <span class="opt">(</span>count <span class="opt">&gt;=</span> <span class="num">5</span><span class="opt">) {</span>
+               cMask <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+               <span class="kwa">break</span><span class="opt">;</span>
+            <span class="opt">}</span>
+         <span class="opt">}</span>
+         rotation<span class="opt">.</span>cMask <span class="opt">= (</span><span class="kwb">int</span><span class="opt">)(</span>cMask <span class="opt">&gt;&gt; (</span><span class="num">5</span> <span class="opt">*</span> row<span class="opt">));</span>
+         rotation<span class="opt">.</span>iMask <span class="opt">=</span> rotation<span class="opt">.</span>mask <span class="opt">|</span> rotation<span class="opt">.</span>cMask<span class="opt">;</span>
+      <span class="opt">}</span>
+
+      <span class="kwd">compute_rotation_positions</span><span class="opt">(</span> mask<span class="opt">,</span> rotation<span class="opt">);</span>
+      rotation_sets<span class="opt">[</span>row<span class="opt">][</span>col<span class="opt">].</span><span class="kwd">add</span><span class="opt">(</span> rotation<span class="opt">);</span>
+   <span class="opt">}</span>
+
+   <span class="kwb">void</span> <span class="kwd">build_piece</span><span class="opt">(</span> vector<span class="opt">&lt;</span><span class="kwb">int</span><span class="opt">&gt; &amp;</span>directions<span class="opt">) {</span>
+      vector<span class="opt">&lt;</span>MaskData<span class="opt">&gt;</span> base_masks<span class="opt">;</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> <span class="num">2</span><span class="opt">;</span> i<span class="opt">++) {</span>
+         <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> j <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> j <span class="opt">&lt;</span> <span class="num">6</span><span class="opt">;</span> j<span class="opt">++) {</span>
+            base_masks<span class="opt">.</span><span class="kwd">push_back</span><span class="opt">(</span><span class="kwd">mask_for_directions</span><span class="opt">(</span>directions<span class="opt">));</span>
+            <span class="kwd">transform</span><span class="opt">(</span> rotate_transform<span class="opt">,</span> directions<span class="opt">);</span>
+         <span class="opt">}</span>
+         <span class="kwd">transform</span><span class="opt">(</span> flip_transform<span class="opt">,</span> directions<span class="opt">);</span>
+      <span class="opt">}</span>
+
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> mask_on <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> mask_on <span class="opt">&lt;</span> base_masks<span class="opt">.</span><span class="kwd">size</span><span class="opt">();</span> mask_on<span class="opt">++) {</span>
+         MaskData data <span class="opt">=</span> base_masks<span class="opt">[</span>mask_on<span class="opt">];</span>
+         <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> row <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> row <span class="opt">&lt;= (</span><span class="num">10</span> <span class="opt">-</span> data<span class="opt">.</span>height<span class="opt">);</span> row<span class="opt">++) {</span>
+            <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> col <span class="opt">=</span> data<span class="opt">.</span>min_col<span class="opt">[</span>row <span class="opt">%</span> <span class="num">2</span><span class="opt">];</span> col <span class="opt">&lt;=</span> data<span class="opt">.</span>max_col<span class="opt">[</span>row <span class="opt">%</span> <span class="num">2</span><span class="opt">];</span> col<span class="opt">++) {</span>
+               <span class="kwb">long long</span> mask <span class="opt">=</span> data<span class="opt">.</span>mask<span class="opt">[</span>row <span class="opt">%</span> <span class="num">2</span><span class="opt">] &lt;&lt; (</span>row <span class="opt">*</span> <span class="num">5</span> <span class="opt">+</span> col<span class="opt">);</span>
+               <span class="kwb">long long</span> board <span class="opt">=</span> mask<span class="opt">;</span>
+               <span class="kwa">if</span> <span class="opt">(</span> row <span class="opt">&gt;=</span> <span class="num">3</span><span class="opt">)</span> board <span class="opt">=</span> <span class="kwd">flood_fill_down</span><span class="opt">(</span> board<span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">);</span>
+               <span class="kwa">else</span> board <span class="opt">=</span> <span class="kwd">flood_fill_up</span><span class="opt">(</span> board<span class="opt">,</span> <span class="num">9</span><span class="opt">,</span> <span class="num">4</span><span class="opt">);</span>
+               <span class="kwa">if</span> <span class="opt">(</span>board <span class="opt">==</span> full_mask<span class="opt">) {</span>
+                  <span class="kwd">add_rotation</span><span class="opt">(</span> mask<span class="opt">,</span> row<span class="opt">,</span> col<span class="opt">);</span>
+               <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span>
+                  <span class="kwb">int</span> count <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+                  <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> t <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> t <span class="opt">&lt;</span> <span class="num">10</span><span class="opt">;</span> t<span class="opt">++)</span> count <span class="opt">+=</span> bit_counts<span class="opt">[ (</span><span class="kwb">int</span><span class="opt">)((</span>board <span class="opt">&gt;&gt; (</span>t <span class="opt">*</span> <span class="num">5</span><span class="opt">)) &amp;</span> row_masks<span class="opt">[</span><span class="num">0</span><span class="opt">])];</span>
+                  <span class="kwa">if</span> <span class="opt">(</span>count <span class="opt">%</span> <span class="num">5</span> <span class="opt">==</span> <span class="num">0</span><span class="opt">) {</span>
+                     <span class="kwd">add_rotation</span><span class="opt">(</span> mask<span class="opt">,</span> row<span class="opt">,</span> col<span class="opt">);</span>
+                  <span class="opt">}</span>
+               <span class="opt">}</span>
+            <span class="opt">}</span>
+         <span class="opt">}</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+
+<span class="kwc">public</span><span class="opt">:</span>
+   <span class="kwb">int</span> number<span class="opt">;</span>
+   RotationSet rotation_sets<span class="opt">[</span><span class="num">10</span><span class="opt">][</span><span class="num">5</span><span class="opt">];</span>
+
+   <span class="kwd">PieceData</span><span class="opt">(</span> <span class="kwb">int</span> d1<span class="opt">,</span> <span class="kwb">int</span> d2<span class="opt">,</span> <span class="kwb">int</span> d3<span class="opt">,</span> <span class="kwb">int</span> d4<span class="opt">,</span> <span class="kwb">int</span> piece_number <span class="opt">) :</span> <span class="kwd">LList</span><span class="opt">()  {</span>
+      number <span class="opt">=</span> piece_number<span class="opt">;</span>
+      vector<span class="opt">&lt;</span><span class="kwb">int</span><span class="opt">&gt;</span> directions<span class="opt">;</span>
+      directions<span class="opt">.</span><span class="kwd">push_back</span><span class="opt">(</span>d1<span class="opt">);</span>
+      directions<span class="opt">.</span><span class="kwd">push_back</span><span class="opt">(</span>d2<span class="opt">);</span>
+      directions<span class="opt">.</span><span class="kwd">push_back</span><span class="opt">(</span>d3<span class="opt">);</span>
+      directions<span class="opt">.</span><span class="kwd">push_back</span><span class="opt">(</span>d4<span class="opt">);</span>
+      <span class="kwd">build_piece</span><span class="opt">(</span> directions<span class="opt">);</span>
+   <span class="opt">}</span>
+
+   <span class="kwd">PieceData</span><span class="opt">(</span> <span class="kwb">int</span> d1<span class="opt">,</span> <span class="kwb">int</span> d2<span class="opt">,</span> <span class="kwb">int</span> d3<span class="opt">,</span> <span class="kwb">int</span> d4<span class="opt">,</span> <span class="kwb">int</span> d5<span class="opt">,</span> <span class="kwb">int</span> piece_number <span class="opt">) :</span> <span class="kwd">LList</span><span class="opt">() {</span>
+      number <span class="opt">=</span> piece_number<span class="opt">;</span>
+      vector<span class="opt">&lt;</span><span class="kwb">int</span><span class="opt">&gt;</span> directions<span class="opt">;</span>
+      directions<span class="opt">.</span><span class="kwd">push_back</span><span class="opt">(</span>d1<span class="opt">);</span>
+      directions<span class="opt">.</span><span class="kwd">push_back</span><span class="opt">(</span>d2<span class="opt">);</span>
+      directions<span class="opt">.</span><span class="kwd">push_back</span><span class="opt">(</span>d3<span class="opt">);</span>
+      directions<span class="opt">.</span><span class="kwd">push_back</span><span class="opt">(</span>d4<span class="opt">);</span>
+      directions<span class="opt">.</span><span class="kwd">push_back</span><span class="opt">(</span>d5<span class="opt">);</span>
+      <span class="kwd">build_piece</span><span class="opt">(</span> directions<span class="opt">);</span>
+   <span class="opt">}</span>
+<span class="opt">};</span>
+
+<span class="slc">// GOLBAL VARIABLES MUH-HA-HA-HA</span>
+LList <span class="opt">*</span>head<span class="opt">;</span>
+LList <span class="opt">*</span>tail<span class="opt">;</span>
+
+<span class="kwb">int</span> num_placed <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+<span class="kwb">int</span> num_found <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+<span class="kwb">int</span> num_to_find <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+<span class="kwb">int</span> tries<span class="opt">[</span><span class="num">10</span><span class="opt">] = {</span> <span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">0</span> <span class="opt">};</span>
+RotationData <span class="opt">*</span>active_rotations<span class="opt">[</span><span class="num">10</span><span class="opt">];</span>
+set<span class="opt">&lt;</span>string<span class="opt">&gt;</span> found_boards<span class="opt">;</span>
+
+<span class="kwb">void</span> <span class="kwd">create_piece_maps</span><span class="opt">() {</span>
+   tail <span class="opt">=</span> head <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">PieceData</span><span class="opt">(</span> NW<span class="opt">,</span> NE<span class="opt">,</span> EAST<span class="opt">,</span> EAST<span class="opt">,</span>  <span class="num">2</span><span class="opt">);</span>
+   tail<span class="opt">-&gt;</span>next <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">PieceData</span><span class="opt">(</span> NE<span class="opt">,</span> SE<span class="opt">,</span> EAST<span class="opt">,</span> NE<span class="opt">,</span>  <span class="num">7</span><span class="opt">);</span>
+   tail <span class="opt">=</span> tail<span class="opt">-&gt;</span>next<span class="opt">;</span>
+   tail<span class="opt">-&gt;</span>next <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">PieceData</span><span class="opt">(</span> NE<span class="opt">,</span> EAST<span class="opt">,</span> NE<span class="opt">,</span> NW<span class="opt">,</span>  <span class="num">1</span><span class="opt">);</span>
+   tail <span class="opt">=</span> tail<span class="opt">-&gt;</span>next<span class="opt">;</span>
+   tail<span class="opt">-&gt;</span>next <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">PieceData</span><span class="opt">(</span> EAST<span class="opt">,</span> SW<span class="opt">,</span> SW<span class="opt">,</span> SE<span class="opt">,</span>  <span class="num">6</span><span class="opt">);</span>
+   tail <span class="opt">=</span> tail<span class="opt">-&gt;</span>next<span class="opt">;</span>
+   tail<span class="opt">-&gt;</span>next <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">PieceData</span><span class="opt">(</span> EAST<span class="opt">,</span> NE<span class="opt">,</span> SE<span class="opt">,</span> NE<span class="opt">,</span>  <span class="num">5</span><span class="opt">);</span>
+   tail <span class="opt">=</span> tail<span class="opt">-&gt;</span>next<span class="opt">;</span>
+   tail<span class="opt">-&gt;</span>next <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">PieceData</span><span class="opt">(</span> EAST<span class="opt">,</span> EAST<span class="opt">,</span> EAST<span class="opt">,</span> SE<span class="opt">,</span>  <span class="num">0</span><span class="opt">);</span>
+   tail <span class="opt">=</span> tail<span class="opt">-&gt;</span>next<span class="opt">;</span>
+   tail<span class="opt">-&gt;</span>next <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">PieceData</span><span class="opt">(</span> NE<span class="opt">,</span> NW<span class="opt">,</span> SE<span class="opt">,</span> EAST<span class="opt">,</span> SE<span class="opt">,</span>  <span class="num">4</span><span class="opt">);</span>
+   tail <span class="opt">=</span> tail<span class="opt">-&gt;</span>next<span class="opt">;</span>
+   tail<span class="opt">-&gt;</span>next <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">PieceData</span><span class="opt">(</span> SE<span class="opt">,</span> SE<span class="opt">,</span> SE<span class="opt">,</span> WEST<span class="opt">,</span>  <span class="num">9</span><span class="opt">);</span>
+   tail <span class="opt">=</span> tail<span class="opt">-&gt;</span>next<span class="opt">;</span>
+   tail<span class="opt">-&gt;</span>next <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">PieceData</span><span class="opt">(</span> SE<span class="opt">,</span> SE<span class="opt">,</span> EAST<span class="opt">,</span> SE<span class="opt">,</span>  <span class="num">8</span><span class="opt">);</span>
+   tail <span class="opt">=</span> tail<span class="opt">-&gt;</span>next<span class="opt">;</span>
+   tail<span class="opt">-&gt;</span>next <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">PieceData</span><span class="opt">(</span> EAST<span class="opt">,</span> EAST<span class="opt">,</span> SW<span class="opt">,</span> SE<span class="opt">,</span>  <span class="num">3</span><span class="opt">);</span>
+   tail <span class="opt">=</span> tail<span class="opt">-&gt;</span>next<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwb">void</span> <span class="kwd">print_board</span><span class="opt">(</span> string board_string<span class="opt">) {</span>
+   <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> row <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> row <span class="opt">&lt;</span> <span class="num">10</span><span class="opt">;</span> row<span class="opt">++) {</span>
+      <span class="kwa">if</span> <span class="opt">(</span>row <span class="opt">%</span> <span class="num">2</span><span class="opt">)</span> cout <span class="opt">&lt;&lt;</span> <span class="str">&quot; &quot;</span><span class="opt">;</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> col <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> col <span class="opt">&lt;</span> <span class="num">5</span><span class="opt">;</span> col<span class="opt">++)</span> cout <span class="opt">&lt;&lt;</span> board_string<span class="opt">[</span>row <span class="opt">*</span> <span class="num">5</span> <span class="opt">+</span> col<span class="opt">] &lt;&lt;</span> <span class="str">&quot; &quot;</span><span class="opt">;</span>
+      cout <span class="opt">&lt;&lt;</span> <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+   <span class="opt">}</span>
+   cout <span class="opt">&lt;&lt;</span> <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwb">void</span> <span class="kwd">print_results</span><span class="opt">() {</span>
+   cout <span class="opt">&lt;&lt;</span> num_found <span class="opt">&lt;&lt;</span> <span class="str">&quot; solutions found</span><span class="esc">\n\n</span><span class="str">&quot;</span><span class="opt">;</span>
+   <span class="kwd">print_board</span><span class="opt">( *</span>found_boards<span class="opt">.</span><span class="kwd">begin</span><span class="opt">());</span>
+   <span class="kwd">print_board</span><span class="opt">( *</span>found_boards<span class="opt">.</span><span class="kwd">rbegin</span><span class="opt">());</span>
+<span class="opt">}</span>
+
+<span class="kwb">void</span> <span class="kwd">add_board_string</span><span class="opt">(</span> <span class="kwb">const char</span> <span class="opt">*</span> board_string<span class="opt">) {</span>
+   string s <span class="opt">=</span> board_string<span class="opt">;</span>
+   <span class="kwa">if</span> <span class="opt">(</span>found_boards<span class="opt">.</span><span class="kwd">count</span><span class="opt">(</span>s<span class="opt">) ==</span> <span class="num">0</span><span class="opt">) {</span>
+      found_boards<span class="opt">.</span><span class="kwd">insert</span><span class="opt">(</span>s<span class="opt">);</span>
+      num_found<span class="opt">++;</span>
+      <span class="kwa">if</span> <span class="opt">(</span>num_to_find <span class="opt">==</span> num_found<span class="opt">) {</span>
+         <span class="kwd">print_results</span><span class="opt">();</span>
+         <span class="kwd">exit</span><span class="opt">(</span><span class="num">0</span><span class="opt">);</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+<span class="opt">}</span>
+
+
+<span class="kwb">void</span> <span class="kwd">board_found</span><span class="opt">() {</span>
+   <span class="kwb">char</span> board_string<span class="opt">[</span><span class="num">51</span><span class="opt">];</span>
+   <span class="kwd">memset</span><span class="opt">(</span>board_string<span class="opt">,</span><span class="str">&apos;x&apos;</span><span class="opt">,</span><span class="num">51</span><span class="opt">);</span>
+   <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> <span class="num">10</span><span class="opt">;</span> i<span class="opt">++) {</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> j <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> j <span class="opt">&lt;</span> <span class="num">5</span><span class="opt">;</span> j<span class="opt">++) {</span>
+         board_string<span class="opt">[</span>active_rotations<span class="opt">[</span>i<span class="opt">]-&gt;</span>positions<span class="opt">[</span>j<span class="opt">]] =</span> <span class="str">&apos;0&apos;</span> <span class="opt">+</span> active_rotations<span class="opt">[</span>i<span class="opt">]-&gt;</span>number<span class="opt">;</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+   board_string<span class="opt">[</span><span class="num">50</span><span class="opt">] =</span> <span class="num">0</span><span class="opt">;</span>
+   <span class="kwd">add_board_string</span><span class="opt">(</span> board_string<span class="opt">);</span>
+   <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> <span class="num">25</span><span class="opt">;</span> i<span class="opt">++) {</span> <span class="kwb">char</span> c <span class="opt">=</span> board_string<span class="opt">[</span>i<span class="opt">];</span> board_string<span class="opt">[</span>i<span class="opt">] =</span> board_string<span class="opt">[</span><span class="num">49</span> <span class="opt">-</span> i<span class="opt">];</span> board_string<span class="opt">[</span><span class="num">49</span><span class="opt">-</span>i<span class="opt">] =</span> c<span class="opt">; }</span>
+   <span class="kwd">add_board_string</span><span class="opt">(</span> board_string<span class="opt">);</span>
+<span class="opt">}</span>
+
+<span class="kwb">void</span> <span class="kwd">find</span><span class="opt">(</span> <span class="kwb">int</span> row<span class="opt">,</span> <span class="kwb">int</span> board<span class="opt">) {</span>
+   <span class="kwa">while</span> <span class="opt">((</span>board <span class="opt">&amp;</span> <span class="num">31</span><span class="opt">) ==</span> <span class="num">31</span><span class="opt">) {</span>
+      row<span class="opt">++;</span>
+      board <span class="opt">&gt;&gt;=</span> <span class="num">5</span><span class="opt">;</span>
+   <span class="opt">}</span>
+   MaskInfo <span class="opt">&amp;</span>info <span class="opt">=</span> big_map<span class="opt">[</span>board <span class="opt">&amp;</span> two_row_mask<span class="opt">];</span>
+   <span class="kwa">if</span> <span class="opt">(!</span>info<span class="opt">.</span>is_legal<span class="opt">[</span>row <span class="opt">%</span> <span class="num">2</span><span class="opt">])</span> <span class="kwa">return</span><span class="opt">;</span>
+   <span class="kwb">int</span> col <span class="opt">=</span> info<span class="opt">.</span>start<span class="opt">;</span>
+
+
+   PieceData <span class="opt">*</span>start <span class="opt">= (</span>PieceData <span class="opt">*)</span>head<span class="opt">;</span>
+   <span class="kwa">do</span> <span class="opt">{</span>
+      PieceData <span class="opt">*</span>piece <span class="opt">= (</span>PieceData <span class="opt">*)</span>head<span class="opt">;</span>
+      head <span class="opt">=</span> piece<span class="opt">-&gt;</span>next<span class="opt">;</span>
+      piece<span class="opt">-&gt;</span>next <span class="opt">=</span> NULL<span class="opt">;</span>
+      RotationSet <span class="opt">*</span>rotations <span class="opt">= &amp;(</span>piece<span class="opt">-&gt;</span>rotation_sets<span class="opt">[</span>row<span class="opt">][</span>col<span class="opt">]);</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> rotations<span class="opt">-&gt;</span>size<span class="opt">-</span><span class="num">1</span><span class="opt">;</span> i <span class="opt">&gt;=</span> <span class="num">0</span><span class="opt">;</span> i<span class="opt">--) {</span>
+         <span class="slc">//tries[num_placed]++;</span>
+         RotationData <span class="opt">*</span>rotation <span class="opt">= &amp;</span>rotations<span class="opt">-&gt;</span>rotations<span class="opt">[</span>i<span class="opt">];</span>
+         <span class="kwa">if</span> <span class="opt">((</span>board <span class="opt">&amp;</span> rotation<span class="opt">-&gt;</span>iMask<span class="opt">) ==</span> rotation<span class="opt">-&gt;</span>cMask<span class="opt">) {</span>
+            <span class="kwa">if</span> <span class="opt">(</span>num_placed <span class="opt">==</span> <span class="num">9</span><span class="opt">) {</span>
+               active_rotations<span class="opt">[</span>num_placed<span class="opt">] =</span> rotation<span class="opt">;</span>
+               <span class="kwd">board_found</span><span class="opt">();</span>
+            <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span>
+               active_rotations<span class="opt">[</span>num_placed<span class="opt">] =</span> rotation<span class="opt">;</span>
+               num_placed<span class="opt">++;</span>
+               <span class="kwd">find</span><span class="opt">(</span> row<span class="opt">,</span> board <span class="opt">|</span> rotation<span class="opt">-&gt;</span>mask<span class="opt">);</span>
+               num_placed<span class="opt">--;</span>
+            <span class="opt">}</span>
+         <span class="opt">}</span>
+      <span class="opt">}</span>
+      <span class="kwa">if</span> <span class="opt">(</span>head <span class="opt">==</span> NULL<span class="opt">)</span> head <span class="opt">=</span> piece<span class="opt">;</span>
+      <span class="kwa">else</span> tail<span class="opt">-&gt;</span>next <span class="opt">=</span> piece<span class="opt">;</span>
+      tail <span class="opt">=</span> piece<span class="opt">;</span>
+   <span class="opt">}</span> <span class="kwa">while</span> <span class="opt">(</span>start <span class="opt">!=</span> head<span class="opt">);</span>
+<span class="opt">}</span>
+
+<span class="kwb">void</span> <span class="kwd">find_all</span><span class="opt">() {</span>
+   num_found <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+   num_placed <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span>
+   found_boards<span class="opt">.</span><span class="kwd">clear</span><span class="opt">();</span>
+   PieceData <span class="opt">*</span>start <span class="opt">= (</span>PieceData <span class="opt">*)</span>head<span class="opt">;</span>
+   <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> odd <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> odd <span class="opt">&lt;</span> <span class="num">2</span><span class="opt">;</span> odd<span class="opt">++) {</span>
+      <span class="kwa">do</span> <span class="opt">{</span>
+         PieceData <span class="opt">*</span>piece <span class="opt">= (</span>PieceData <span class="opt">*)</span>head<span class="opt">;</span>
+         head <span class="opt">=</span> piece<span class="opt">-&gt;</span>next<span class="opt">;</span>
+         piece<span class="opt">-&gt;</span>next <span class="opt">=</span> NULL<span class="opt">;</span>
+         <span class="kwa">if</span> <span class="opt">(</span>head <span class="opt">!=</span> start<span class="opt">) {</span>
+            RotationSet <span class="opt">*</span>rotations <span class="opt">= &amp;(</span>piece<span class="opt">-&gt;</span>rotation_sets<span class="opt">[</span><span class="num">0</span><span class="opt">][</span><span class="num">0</span><span class="opt">]);</span>
+            <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> rotations<span class="opt">-&gt;</span>size<span class="opt">-</span><span class="num">1</span><span class="opt">;</span> i <span class="opt">&gt;=</span> <span class="num">0</span><span class="opt">;</span> i<span class="opt">--) {</span>
+               <span class="kwa">if</span> <span class="opt">(</span>i <span class="opt">%</span> <span class="num">2</span> <span class="opt">==</span> odd<span class="opt">) {</span>
+                  RotationData <span class="opt">*</span>rotation <span class="opt">= &amp;</span>rotations<span class="opt">-&gt;</span>rotations<span class="opt">[</span>i<span class="opt">];</span>
+                  active_rotations<span class="opt">[</span><span class="num">0</span><span class="opt">] =</span> rotation<span class="opt">;</span>
+                  <span class="kwd">find</span><span class="opt">(</span> <span class="num">0</span><span class="opt">,</span> rotation<span class="opt">-&gt;</span>mask<span class="opt">);</span>
+               <span class="opt">}</span>
+            <span class="opt">}</span>
+         <span class="opt">}</span>
+         <span class="kwa">if</span> <span class="opt">(</span>head <span class="opt">==</span> NULL<span class="opt">)</span> head <span class="opt">=</span> piece<span class="opt">;</span>
+         <span class="kwa">else</span> tail<span class="opt">-&gt;</span>next <span class="opt">=</span> piece<span class="opt">;</span>
+         tail <span class="opt">=</span> piece<span class="opt">;</span>
+      <span class="opt">}</span> <span class="kwa">while</span> <span class="opt">(</span>start <span class="opt">!=</span> head<span class="opt">);</span>
+   <span class="opt">}</span>
+<span class="opt">}</span>
+
+
+<span class="kwb">void</span> <span class="kwd">create_utlity_maps</span><span class="opt">() {</span>
+   <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> <span class="num">32</span><span class="opt">;</span> i<span class="opt">++) {</span>
+      bit_counts<span class="opt">[</span>i<span class="opt">] =</span> <span class="num">0</span><span class="opt">;</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> j <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> j <span class="opt">&lt;</span> <span class="num">5</span><span class="opt">;</span> j<span class="opt">++)</span> <span class="kwa">if</span> <span class="opt">((</span><span class="num">1</span> <span class="opt">&lt;&lt;</span> j<span class="opt">) &amp;</span> i<span class="opt">)</span> bit_counts<span class="opt">[</span>i<span class="opt">]++;</span>
+      <span class="kwa">for</span> <span class="opt">(</span>first_bits<span class="opt">[</span>i<span class="opt">] =</span> <span class="num">0</span><span class="opt">; (</span><span class="num">1</span> <span class="opt">&lt;&lt;</span> first_bits<span class="opt">[</span>i<span class="opt">]) &amp;</span> i<span class="opt">;</span> first_bits<span class="opt">[</span>i<span class="opt">]++);</span>
+   <span class="opt">}</span>
+
+   <span class="slc">// build starts</span>
+   <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> <span class="num">1024</span><span class="opt">;</span> i<span class="opt">++)</span> big_map<span class="opt">[</span>i<span class="opt">].</span>start <span class="opt">=</span> first_bits<span class="opt">[</span>i <span class="opt">&amp;</span> <span class="num">31</span><span class="opt">];</span>
+
+   <span class="slc">// build legality</span>
+   <span class="kwb">int</span> legal_count <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+   <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> <span class="num">1024</span><span class="opt">;</span> i<span class="opt">++) {</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> odd <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> odd <span class="opt">&lt;</span> <span class="num">2</span><span class="opt">;</span> odd<span class="opt">++) {</span>
+         <span class="kwb">int</span> legal <span class="opt">=</span> <span class="num">2</span><span class="opt">;</span>
+         <span class="kwb">int</span> bit <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span>
+         <span class="kwa">while</span> <span class="opt">(</span>legal <span class="opt">&amp;&amp;</span> bit <span class="opt">&lt;</span> <span class="num">32</span><span class="opt">) {</span>
+            <span class="kwa">if</span> <span class="opt">(</span>i <span class="opt">&amp;</span> bit<span class="opt">) {</span>
+               <span class="kwa">if</span> <span class="opt">(</span>legal <span class="opt">==</span> <span class="num">2</span> <span class="opt">&amp;&amp;</span> bit <span class="opt">&gt;</span> <span class="num">1</span> <span class="opt">&amp;&amp; ((</span>bit <span class="opt">&gt;&gt;</span> <span class="num">1</span><span class="opt">) &amp;</span> i<span class="opt">) ==</span> <span class="num">0</span><span class="opt">)</span> legal <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+               <span class="kwa">else</span> legal <span class="opt">=</span> <span class="num">2</span><span class="opt">;</span>
+            <span class="opt">}</span> <span class="kwa">else if</span> <span class="opt">(</span>legal <span class="opt">==</span> <span class="num">2</span><span class="opt">) {</span>
+               <span class="kwa">if</span> <span class="opt">(((</span>bit <span class="opt">&lt;&lt;</span> <span class="num">5</span><span class="opt">) &amp;</span> i<span class="opt">) ==</span> <span class="num">0</span><span class="opt">)</span> legal <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span>
+               <span class="kwa">else</span> <span class="opt">{</span>
+                  <span class="kwa">if</span> <span class="opt">(</span>odd<span class="opt">) {</span>
+                     <span class="kwa">if</span> <span class="opt">( (</span>bit <span class="opt">&lt;</span> <span class="num">16</span><span class="opt">) &amp;&amp; (((</span>bit <span class="opt">&lt;&lt;</span> <span class="num">6</span><span class="opt">) &amp;</span> i<span class="opt">) ==</span> <span class="num">0</span><span class="opt">))</span> legal <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span>
+                  <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span>
+                     <span class="kwa">if</span> <span class="opt">( (</span>bit <span class="opt">&gt;</span> <span class="num">1</span><span class="opt">) &amp;&amp; (((</span>bit <span class="opt">&lt;&lt;</span> <span class="num">4</span><span class="opt">) &amp;</span> i<span class="opt">) ==</span> <span class="num">0</span><span class="opt">))</span> legal <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span>
+                  <span class="opt">}</span>
+               <span class="opt">}</span>
+            <span class="opt">}</span>
+            bit <span class="opt">&lt;&lt;=</span> <span class="num">1</span><span class="opt">;</span>
+         <span class="opt">}</span>
+         <span class="kwa">if</span> <span class="opt">(</span>legal <span class="opt">==</span> <span class="num">2</span> <span class="opt">&amp;&amp; ((</span>bit <span class="opt">&gt;&gt;</span> <span class="num">1</span><span class="opt">) &amp;</span> i<span class="opt">) ==</span> <span class="num">0</span><span class="opt">)</span> legal <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+         big_map<span class="opt">[</span>i<span class="opt">].</span>is_legal<span class="opt">[</span>odd<span class="opt">] =</span> legal <span class="opt">?</span> <span class="kwa">true</span> <span class="opt">:</span> <span class="kwa">false</span><span class="opt">;</span>
+         <span class="kwa">if</span> <span class="opt">(</span>legal<span class="opt">)</span> legal_count<span class="opt">++;</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="kwb">int</span> <span class="kwd">main</span> <span class="opt">(</span><span class="kwb">int</span> argc<span class="opt">,</span> <span class="kwb">char</span> <span class="opt">*</span> <span class="kwb">const</span> argv<span class="opt">[]) {</span>
+   num_to_find <span class="opt">=</span> <span class="num">2098</span><span class="opt">;</span>
+   <span class="kwa">if</span> <span class="opt">(</span>argc <span class="opt">&gt;</span> <span class="num">1</span><span class="opt">)</span> <span class="kwd">sscanf</span><span class="opt">(</span>argv<span class="opt">[</span><span class="num">1</span><span class="opt">],</span><span class="str">&quot;%d&quot;</span><span class="opt">, &amp;</span>num_to_find<span class="opt">);</span>
+
+   <span class="kwd">create_piece_maps</span><span class="opt">();</span>
+   <span class="kwd">create_utlity_maps</span><span class="opt">();</span>
+   <span class="kwd">find_all</span><span class="opt">();</span>
+   <span class="kwd">print_results</span><span class="opt">();</span>
+
+   <span class="kwa">return</span> <span class="num">0</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+g++ (Ubuntu 7.2.0-8ubuntu3) 7.2.0
+
+
+Mon, 30 Oct 2017 21:58:23 GMT
+
+MAKE:
+/usr/bin/g++ -c -pipe -O3 -fomit-frame-pointer -march=native   meteor.c++ -o meteor.c++.o &amp;&amp;  \
+        /usr/bin/g++ meteor.c++.o -o meteor.gpp_run  
+meteor.c++:92:1: warning: ‘typedef’ was ignored in this declaration
+ typedef struct MaskInfo {
+ ^~~~~~~
+meteor.c++:159:1: warning: ‘typedef’ was ignored in this declaration
+ typedef struct MaskData {
+ ^~~~~~~
+meteor.c++:176:1: warning: ‘typedef’ was ignored in this declaration
+ typedef struct RotationData {
+ ^~~~~~~
+rm meteor.c++
+
+2.02s to complete and log all make actions
+
+COMMAND LINE:
+./meteor.gpp_run 2098
+
+PROGRAM OUTPUT:
+2098 solutions found
+
+0 0 0 0 1 
+ 2 2 2 0 1 
+2 6 6 1 1 
+ 2 6 1 5 5 
+8 6 5 5 5 
+ 8 6 3 3 3 
+4 8 8 9 3 
+ 4 4 8 9 3 
+4 7 4 7 9 
+ 7 7 7 9 9 
+
+9 9 9 9 8 
+ 9 6 6 8 5 
+6 6 8 8 5 
+ 6 8 2 5 5 
+7 7 7 2 5 
+ 7 4 7 2 0 
+1 4 2 2 0 
+ 1 4 4 0 3 
+1 4 0 0 3 
+ 1 1 3 3 3 
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

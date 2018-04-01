@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>regex-redux Hack program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>regex-redux Hack program</h2>
+    <aside>
+      <p><a href="./regexredux-description.html#regexredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="opt">&lt;</span>?hh
+<span class="com">/* The Computer Language Benchmarks Game</span>
+<span class="com">   http://benchmarksgame.alioth.debian.org/</span>
+<span class="com"></span>
+<span class="com">   regex-dna program contributed by Danny Sauer</span>
+<span class="com">   modified by Josh Goldfoot</span>
+<span class="com">   modified by Sergey Khripunov</span>
+<span class="com">   modified by Craig Russell</span>
+<span class="com">   PHP as HHVM/Hack by Isaac Gouy</span>
+<span class="com">   converted from regex-dna program</span>
+<span class="com">*/</span>
+
+<span class="kwc">$tok</span> <span class="opt">=</span> <span class="kwd">ftok</span><span class="opt">(</span>__FILE__<span class="opt">,</span> <span class="kwd">chr</span><span class="opt">(</span><span class="kwd">time</span><span class="opt">() &amp;</span> <span class="num">255</span><span class="opt">));</span>
+<span class="kwc">$queue</span> <span class="opt">=</span> <span class="kwd">msg_get_queue</span><span class="opt">(</span><span class="kwc">$tok</span><span class="opt">);</span>
+
+<span class="kwc">$variants</span> <span class="opt">=</span> <span class="kwa">array</span><span class="opt">(</span>
+    <span class="str">&apos;agggtaaa|tttaccct&apos;</span><span class="opt">,</span>
+    <span class="str">&apos;[cgt]gggtaaa|tttaccc[acg]&apos;</span><span class="opt">,</span>
+    <span class="str">&apos;a[act]ggtaaa|tttacc[agt]t&apos;</span><span class="opt">,</span>
+    <span class="str">&apos;ag[act]gtaaa|tttac[agt]ct&apos;</span><span class="opt">,</span>
+    <span class="str">&apos;agg[act]taaa|ttta[agt]cct&apos;</span><span class="opt">,</span>
+    <span class="str">&apos;aggg[acg]aaa|ttt[cgt]ccct&apos;</span><span class="opt">,</span>
+    <span class="str">&apos;agggt[cgt]aa|tt[acg]accct&apos;</span><span class="opt">,</span>
+    <span class="str">&apos;agggta[cgt]a|t[acg]taccct&apos;</span><span class="opt">,</span>
+    <span class="str">&apos;agggtaa[cgt]|[acg]ttaccct&apos;</span><span class="opt">,</span>
+<span class="opt">);</span>
+
+<span class="slc">// IUB replacement parallel arrays</span>
+<span class="kwc">$IUB</span> <span class="opt">=</span> <span class="kwa">array</span><span class="opt">();</span>                 <span class="kwc">$IUBnew</span> <span class="opt">=</span> <span class="kwa">array</span><span class="opt">();</span>
+<span class="kwc">$IUB</span><span class="opt">[]=</span><span class="str">&apos;/tHa[Nt]/S&apos;</span><span class="opt">;</span>            <span class="kwc">$IUBnew</span><span class="opt">[]=</span><span class="str">&apos;&lt;4&gt;&apos;</span><span class="opt">;</span>
+<span class="kwc">$IUB</span><span class="opt">[]=</span><span class="str">&apos;/aND|caN|Ha[DS]|WaS/S&apos;</span><span class="opt">;</span> <span class="kwc">$IUBnew</span><span class="opt">[]=</span><span class="str">&apos;&lt;3&gt;&apos;</span><span class="opt">;</span>
+<span class="kwc">$IUB</span><span class="opt">[]=</span><span class="str">&apos;/a[NSt]|BY/S&apos;</span><span class="opt">;</span>          <span class="kwc">$IUBnew</span><span class="opt">[]=</span><span class="str">&apos;&lt;2&gt;&apos;</span><span class="opt">;</span>
+<span class="kwc">$IUB</span><span class="opt">[]=</span><span class="str">&apos;/&lt;[^&gt;]*&gt;/S&apos;</span><span class="opt">;</span>            <span class="kwc">$IUBnew</span><span class="opt">[]=</span><span class="str">&apos;|&apos;</span><span class="opt">;</span>
+<span class="kwc">$IUB</span><span class="opt">[]=</span><span class="str">&apos;/</span><span class="esc">\\</span><span class="str">|[^|][^|]*</span><span class="esc">\\</span><span class="str">|/S&apos;</span><span class="opt">;</span>    <span class="kwc">$IUBnew</span><span class="opt">[]=</span><span class="str">&apos;-&apos;</span><span class="opt">;</span>
+
+
+<span class="slc">// read in file</span>
+<span class="kwc">$contents</span> <span class="opt">=</span> <span class="kwd">file_get_contents</span><span class="opt">(</span><span class="str">&apos;php://stdin&apos;</span><span class="opt">);</span>
+<span class="kwc">$initialLength</span> <span class="opt">=</span> <span class="kwd">strlen</span><span class="opt">(</span><span class="kwc">$contents</span><span class="opt">);</span>
+
+<span class="slc">// remove things</span>
+<span class="kwc">$contents</span> <span class="opt">=</span> <span class="kwd">preg_replace</span><span class="opt">(</span><span class="str">&apos;/^&gt;.*$|</span><span class="esc">\n</span><span class="str">/mS&apos;</span><span class="opt">,</span> <span class="str">&apos;&apos;</span><span class="opt">,</span> <span class="kwc">$contents</span><span class="opt">);</span>
+<span class="kwc">$codeLength</span> <span class="opt">=</span> <span class="kwd">strlen</span><span class="opt">(</span><span class="kwc">$contents</span><span class="opt">);</span>
+
+<span class="slc">// do regexp counts</span>
+<span class="kwc">$messages</span> <span class="opt">=</span> <span class="kwd">array_flip</span><span class="opt">(</span><span class="kwc">$variants</span><span class="opt">);</span>
+<span class="kwc">$workers</span> <span class="opt">=</span> <span class="kwc">$results</span> <span class="opt">=</span> <span class="kwa">array</span><span class="opt">();</span>
+<span class="kwa">foreach</span> <span class="opt">(</span><span class="kwc">$variants</span> <span class="kwa">as</span> <span class="kwc">$key</span> <span class="opt">=&gt;</span> <span class="kwc">$regex</span><span class="opt">){</span>
+   <span class="kwa">if</span><span class="opt">(</span><span class="kwc">$key</span> <span class="opt">==</span> <span class="num">0</span> || <span class="kwc">$key</span> <span class="opt">==</span> <span class="num">2</span> || <span class="kwc">$key</span> <span class="opt">==</span> <span class="num">4</span> || <span class="kwc">$key</span> <span class="opt">==</span> <span class="num">6</span><span class="opt">) {</span>
+      <span class="kwc">$pid</span> <span class="opt">=</span> <span class="kwd">pcntl_fork</span><span class="opt">();</span>
+      <span class="kwa">if</span><span class="opt">(</span><span class="kwc">$pid</span><span class="opt">)</span> <span class="kwc">$workers</span><span class="opt">[] =</span> <span class="kwc">$pid</span><span class="opt">;</span>
+   <span class="opt">}</span>
+   <span class="kwa">if</span><span class="opt">(</span><span class="kwc">$pid</span> <span class="opt">&amp;&amp;</span> <span class="kwc">$key</span> <span class="opt">&gt;</span> <span class="num">7</span><span class="opt">) {</span>
+      <span class="kwc">$messages</span><span class="opt">[</span><span class="kwc">$regex</span><span class="opt">] =</span>
+         <span class="kwd">preg_match_all</span><span class="opt">(</span><span class="str">&apos;/&apos;</span> <span class="opt">.</span> <span class="kwc">$regex</span> <span class="opt">.</span> <span class="str">&apos;/iS&apos;</span><span class="opt">,</span> <span class="kwc">$contents</span><span class="opt">,</span> <span class="kwc">$discard</span><span class="opt">);</span>
+   <span class="opt">}</span>
+   <span class="kwa">else if</span><span class="opt">(!</span><span class="kwc">$pid</span><span class="opt">) {</span>
+      <span class="kwc">$results</span><span class="opt">[] =</span> <span class="kwc">$regex</span> <span class="opt">.</span> <span class="str">&apos;,&apos;</span> <span class="opt">.</span> 
+         <span class="kwd">preg_match_all</span><span class="opt">(</span><span class="str">&apos;/&apos;</span> <span class="opt">.</span> <span class="kwc">$regex</span> <span class="opt">.</span> <span class="str">&apos;/iS&apos;</span><span class="opt">,</span> <span class="kwc">$contents</span><span class="opt">,</span> <span class="kwc">$discard</span><span class="opt">);</span>
+      <span class="kwa">if</span><span class="opt">(</span><span class="kwc">$key</span> <span class="opt">==</span> <span class="num">1</span> || <span class="kwc">$key</span> <span class="opt">==</span> <span class="num">3</span> || <span class="kwc">$key</span> <span class="opt">==</span> <span class="num">5</span> || <span class="kwc">$key</span> <span class="opt">==</span> <span class="num">7</span><span class="opt">) {</span>
+         <span class="kwd">msg_send</span><span class="opt">(</span><span class="kwc">$queue</span><span class="opt">,</span> <span class="num">2</span><span class="opt">,</span> <span class="kwd">implode</span><span class="opt">(</span><span class="str">&apos;;&apos;</span><span class="opt">,</span> <span class="kwc">$results</span><span class="opt">),</span> <span class="kwa">false</span><span class="opt">,</span> <span class="kwa">false</span><span class="opt">,</span> <span class="kwc">$errno</span><span class="opt">);</span>
+         <span class="kwa">exit</span><span class="opt">;</span>
+	  <span class="opt">}</span>
+   <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="slc">// receive and output the counts</span>
+<span class="kwd">pcntl_wait</span><span class="opt">(</span><span class="kwc">$status</span><span class="opt">);</span>
+<span class="kwa">foreach</span><span class="opt">(</span><span class="kwc">$workers</span> <span class="kwa">as</span> <span class="kwc">$worker</span><span class="opt">) {</span>
+   <span class="kwd">msg_receive</span><span class="opt">(</span><span class="kwc">$queue</span><span class="opt">,</span> <span class="num">2</span><span class="opt">,</span> <span class="kwc">$msgtype</span><span class="opt">,</span> <span class="num">4096</span><span class="opt">,</span> <span class="kwc">$message</span><span class="opt">,</span> <span class="kwa">false</span><span class="opt">);</span>
+   <span class="kwc">$message</span> <span class="opt">=</span> <span class="kwd">explode</span><span class="opt">(</span><span class="str">&apos;;&apos;</span><span class="opt">,</span> <span class="kwc">$message</span><span class="opt">,</span> <span class="num">3</span><span class="opt">);</span>
+   <span class="kwa">foreach</span><span class="opt">(</span><span class="kwc">$message</span> <span class="kwa">as</span> <span class="kwc">$line</span><span class="opt">) {</span>
+      <span class="kwc">$tmp</span> <span class="opt">=</span> <span class="kwd">explode</span><span class="opt">(</span><span class="str">&apos;,&apos;</span><span class="opt">,</span> <span class="kwc">$line</span><span class="opt">,</span> <span class="num">2</span><span class="opt">);</span>
+      <span class="kwc">$messages</span><span class="opt">[</span><span class="kwc">$tmp</span><span class="opt">[</span><span class="num">0</span><span class="opt">]] =</span> <span class="kwc">$tmp</span><span class="opt">[</span><span class="num">1</span><span class="opt">];</span>
+   <span class="opt">}</span>
+<span class="opt">}</span>
+<span class="kwa">foreach</span><span class="opt">(</span><span class="kwc">$messages</span> <span class="kwa">as</span> <span class="kwc">$regex</span> <span class="opt">=&gt;</span> <span class="kwc">$count</span><span class="opt">) {</span>
+   <span class="kwa">echo</span> <span class="kwc">$regex</span><span class="opt">,</span> <span class="str">&apos; &apos;</span><span class="opt">,</span> <span class="kwc">$count</span><span class="opt">,</span> <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="slc">// do replacements</span>
+<span class="kwc">$contents</span> <span class="opt">=</span> <span class="kwd">preg_replace</span><span class="opt">(</span><span class="kwc">$IUB</span><span class="opt">,</span> <span class="kwc">$IUBnew</span><span class="opt">,</span> <span class="kwc">$contents</span><span class="opt">);</span>
+
+<span class="kwa">echo</span> <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span>
+      <span class="kwc">$initialLength</span><span class="opt">,</span> <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span>
+      <span class="kwc">$codeLength</span><span class="opt">,</span> <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span>
+      <span class="kwd">strlen</span><span class="opt">(</span><span class="kwc">$contents</span><span class="opt">),</span> <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+HipHop VM 3.21.0 (rel)
+Compiler: 3.21.0+dfsg-2
+Repo schema: 1c159cf2047dca5f4a3363b2138a33e14a1e99fa
+
+
+Thu, 16 Nov 2017 00:39:29 GMT
+
+MAKE:
+/usr/bin/hh_client
+No errors!
+
+0.03s to complete and log all make actions
+
+COMMAND LINE:
+/usr/bin/hhvm  -d hhvm.hack.lang.look_for_typechecker=0 regexredux.hack 0 &lt; regexredux-input5000000.txt
+
+PROGRAM OUTPUT:
+agggtaaa|tttaccct 356
+[cgt]gggtaaa|tttaccc[acg] 1250
+a[act]ggtaaa|tttacc[agt]t 4252
+ag[act]gtaaa|tttac[agt]ct 2894
+agg[act]taaa|ttta[agt]cct 5435
+aggg[acg]aaa|ttt[cgt]ccct 1537
+agggt[cgt]aa|tt[acg]accct 1431
+agggta[cgt]a|t[acg]taccct 1608
+agggtaa[cgt]|[acg]ttaccct 2178
+
+50833411
+50000000
+27388361
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

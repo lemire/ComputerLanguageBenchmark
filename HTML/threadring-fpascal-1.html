@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>thread-ring Pascal Free Pascal program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>thread-ring Pascal Free Pascal program</h2>
+    <aside>
+      <p><a href="./threadring-description.html#threadring">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">{ The Computer Language Benchmarks Game</span>
+<span class="com">  http://benchmarksgame.alioth.debian.org</span>
+<span class="com"></span>
+<span class="com">  contributed by Marc Weustink</span>
+<span class="com">}</span>
+
+<span class="ppc">{$mode objfpc}</span>
+
+<span class="kwa">program</span> thread_ring<span class="opt">;</span>
+
+<span class="kwa">uses</span>
+  PThreads<span class="opt">;</span>
+
+<span class="kwa">var</span>
+  SemList<span class="opt">:</span> <span class="kwa">array</span><span class="opt">[</span><span class="num">1</span><span class="opt">.</span><span class="num">.503</span><span class="opt">]</span> <span class="kwa">of</span> TSemaphore<span class="opt">;</span>
+
+  ThreadAttr<span class="opt">:</span> TThreadAttr<span class="opt">;</span>
+  ThreadFuncAddr<span class="opt">:</span> TStartRoutine<span class="opt">;</span>
+  FinishedSem<span class="opt">:</span> TSemaphore<span class="opt">;</span>
+  Count<span class="opt">:</span> <span class="kwb">Integer</span><span class="opt">;</span>
+  
+<span class="kwa">function</span> <span class="kwd">ThreadFunc</span><span class="opt">(</span>AIndex<span class="opt">:</span> PtrInt<span class="opt">):</span> <span class="kwb">Pointer</span><span class="opt">;</span> <span class="kwa">cdecl</span><span class="opt">;</span>
+<span class="kwa">var</span>
+  MySem<span class="opt">,</span> NextSem<span class="opt">:</span> PSemaphore<span class="opt">;</span>
+  Id<span class="opt">:</span> TThreadID<span class="opt">;</span>
+<span class="kwa">begin</span>
+  MySem <span class="opt">:= &#64;</span>SemList<span class="opt">[</span>AIndex<span class="opt">];</span>
+  <span class="kwa">if</span> AIndex <span class="opt">&lt;</span> <span class="kwd">High</span><span class="opt">(</span>SemList<span class="opt">)</span>
+  <span class="kwa">then begin</span>
+    NextSem <span class="opt">:=</span> MySem<span class="opt">+</span><span class="num">1</span><span class="opt">;</span>
+    <span class="kwd">sem_init</span><span class="opt">(</span>NextSem<span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">);</span>
+    <span class="kwd">pthread_create</span><span class="opt">(&#64;</span>Id<span class="opt">, &#64;</span>ThreadAttr<span class="opt">,</span> ThreadFuncAddr<span class="opt">,</span> <span class="kwb">Pointer</span><span class="opt">(</span>AIndex<span class="opt">+</span><span class="num">1</span><span class="opt">));</span>
+  <span class="kwa">end</span>
+  <span class="kwa">else</span> NextSem <span class="opt">:= &#64;</span>SemList<span class="opt">[</span><span class="kwd">Low</span><span class="opt">(</span>SemList<span class="opt">)];</span>
+
+  <span class="kwa">repeat</span>
+    <span class="kwd">sem_wait</span><span class="opt">(</span>MySem<span class="opt">);</span>
+    <span class="kwa">if</span> Count <span class="opt">=</span> <span class="num">0</span> <span class="kwa">then begin</span>
+      <span class="kwd">WriteLn</span><span class="opt">(</span>Aindex<span class="opt">);</span>
+      <span class="kwd">sem_post</span><span class="opt">(</span>FinishedSem<span class="opt">);</span>
+    <span class="kwa">end</span>
+    <span class="kwa">else begin</span>
+      <span class="kwd">Dec</span><span class="opt">(</span>Count<span class="opt">);</span>
+      <span class="kwd">sem_post</span><span class="opt">(</span>NextSem<span class="opt">);</span>
+    <span class="kwa">end</span><span class="opt">;</span>
+  <span class="kwa">until</span> <span class="kwb">False</span><span class="opt">;</span>
+<span class="kwa">end</span><span class="opt">;</span>
+
+
+<span class="kwa">var</span>
+  n<span class="opt">:</span> <span class="kwb">Integer</span><span class="opt">;</span>
+  Id<span class="opt">:</span> TThreadId<span class="opt">;</span>
+<span class="kwa">begin</span>
+  <span class="kwd">Val</span><span class="opt">(</span><span class="kwd">paramstr</span><span class="opt">(</span><span class="num">1</span><span class="opt">),</span> count<span class="opt">,</span> n<span class="opt">);</span>
+  <span class="kwa">if</span> n <span class="opt">&lt;&gt;</span> <span class="num">0</span> <span class="kwa">then</span> exit<span class="opt">;</span>
+
+  <span class="kwd">sem_init</span><span class="opt">(</span>SemList<span class="opt">[</span><span class="kwd">Low</span><span class="opt">(</span>SemList<span class="opt">)],</span> <span class="num">0</span><span class="opt">,</span> <span class="num">1</span><span class="opt">);</span>
+  <span class="kwd">sem_init</span><span class="opt">(</span>FinishedSem<span class="opt">,</span> <span class="num">0</span><span class="opt">,</span> <span class="num">0</span><span class="opt">);</span>
+
+  <span class="kwd">pthread_attr_init</span><span class="opt">(&#64;</span>ThreadAttr<span class="opt">);</span>
+  <span class="kwd">pthread_attr_setdetachstate</span><span class="opt">(&#64;</span>ThreadAttr<span class="opt">,</span> <span class="num">1</span><span class="opt">);</span>
+  <span class="kwd">pthread_attr_setstacksize</span><span class="opt">(&#64;</span>ThreadAttr<span class="opt">,</span> <span class="num">1024</span> <span class="opt">*</span> <span class="num">16</span><span class="opt">);</span>
+
+  ThreadFuncAddr <span class="opt">:=</span> <span class="kwd">TStartRoutine</span><span class="opt">(&#64;</span>ThreadFunc<span class="opt">);</span>
+  <span class="kwd">pthread_create</span><span class="opt">(&#64;</span>Id<span class="opt">, &#64;</span>ThreadAttr<span class="opt">,</span> ThreadFuncAddr<span class="opt">,</span> <span class="kwb">Pointer</span><span class="opt">(</span><span class="kwd">PtrUInt</span><span class="opt">(</span><span class="kwd">Low</span><span class="opt">(</span>SemList<span class="opt">))));</span>
+
+  <span class="kwd">sem_wait</span><span class="opt">(</span>FinishedSem<span class="opt">);</span>
+<span class="kwa">end</span><span class="opt">.</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+Free Pascal Compiler version 3.0.4 [2017/10/03] for x86_64
+
+
+Sun, 10 Dec 2017 05:46:15 GMT
+
+MAKE:
+mv threadring.fpascal threadring.pas
+/opt/src/fpc-3.0.4/bin/fpc -FuInclude/fpascal -XXs -O4 -Tlinux  -oFPASCAL_RUN threadring.pas
+Free Pascal Compiler version 3.0.4 [2017/10/03] for x86_64
+Copyright (c) 1993-2017 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling threadring.pas
+threadring.pas(40,27) Error: Incompatible type for arg no. 1: Got &quot;sem_t&quot;, expected &quot;psem_t&quot;
+threadring.pas(57,33) Error: Incompatible type for arg no. 1: Got &quot;sem_t&quot;, expected &quot;psem_t&quot;
+threadring.pas(58,23) Error: Incompatible type for arg no. 1: Got &quot;sem_t&quot;, expected &quot;psem_t&quot;
+threadring.pas(67,23) Error: Incompatible type for arg no. 1: Got &quot;sem_t&quot;, expected &quot;psem_t&quot;
+threadring.pas(69) Fatal: There were 4 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /opt/src/fpc-3.0.4/bin/ppcx64 returned an error exitcode
+/home/dunham/benchmarksgame/nanobench/makefiles/u64q.programs.Makefile:463: recipe for target 'threadring.fpascal_run' failed
+make: [threadring.fpascal_run] Error 1 (ignored)
+mv FPASCAL_RUN threadring.fpascal_run
+mv: cannot stat 'FPASCAL_RUN': No such file or directory
+/home/dunham/benchmarksgame/nanobench/makefiles/u64q.programs.Makefile:463: recipe for target 'threadring.fpascal_run' failed
+make: [threadring.fpascal_run] Error 1 (ignored)
+rm threadring.pas
+
+0.07s to complete and log all make actions
+
+COMMAND LINE:
+./threadring.fpascal_run 500000
+
+MAKE ERROR 
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

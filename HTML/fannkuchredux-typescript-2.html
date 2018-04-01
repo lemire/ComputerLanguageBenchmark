@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>fannkuch-redux TypeScript&nbsp;#2 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>fannkuch-redux TypeScript&nbsp;#2 program</h2>
+    <aside>
+      <p><a href="./fannkuchredux-description.html#fannkuchredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">/* The Computer Language Benchmarks Game</span>
+<span class="com">   http://benchmarksgame.alioth.debian.org/</span>
+<span class="com">   contributed by Isaac Gouy </span>
+<span class="com">*/</span>
+
+
+<span class="slc">/// &lt;reference path=&quot;./Include/node/index.d.ts&quot; /&gt;</span>
+
+<span class="kwa">function</span> <span class="kwd">fannkuch</span><span class="opt">(</span>n<span class="opt">:</span> <span class="kwb">number</span><span class="opt">):</span> <span class="kwb">number</span> <span class="opt">{</span>
+   <span class="kwa">const</span> perm <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">Int32Array</span><span class="opt">(</span>n<span class="opt">),</span> count <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">Int32Array</span><span class="opt">(</span>n<span class="opt">)</span>
+
+   <span class="kwa">const</span> perm1 <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">Int32Array</span><span class="opt">(</span>n<span class="opt">)</span>
+   <span class="kwa">for</span> <span class="opt">(</span><span class="kwa">let</span> i<span class="opt">=</span><span class="num">0</span><span class="opt">;</span> i<span class="opt">&lt;</span>n<span class="opt">;</span> i<span class="opt">++) {</span> perm1<span class="opt">[</span>i<span class="opt">] =</span> i <span class="opt">}</span>
+
+   <span class="kwa">let</span> f <span class="opt">=</span> <span class="num">0</span><span class="opt">,</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">,</span> k <span class="opt">=</span> <span class="num">0</span><span class="opt">,</span> r <span class="opt">=</span> <span class="num">0</span><span class="opt">,</span> flips <span class="opt">=</span> <span class="num">0</span><span class="opt">,</span> nperm <span class="opt">=</span> <span class="num">0</span><span class="opt">,</span> checksum <span class="opt">=</span> <span class="num">0</span>
+
+   r <span class="opt">=</span> n
+   <span class="kwa">while</span> <span class="opt">(</span>r <span class="opt">&gt;</span> <span class="num">0</span><span class="opt">) {</span>
+      i <span class="opt">=</span> <span class="num">0</span>
+      <span class="kwa">while</span> <span class="opt">(</span>r <span class="opt">!=</span> <span class="num">1</span><span class="opt">) {</span> count<span class="opt">[</span>r<span class="opt">-</span><span class="num">1</span><span class="opt">] =</span> r<span class="opt">;</span> r <span class="opt">-=</span> <span class="num">1</span> <span class="opt">}</span>
+      <span class="kwa">while</span> <span class="opt">(</span>i <span class="opt">&lt;</span> n<span class="opt">) {</span> perm<span class="opt">[</span>i<span class="opt">] =</span> perm1<span class="opt">[</span>i<span class="opt">];</span> i <span class="opt">+=</span> <span class="num">1</span> <span class="opt">}</span>
+
+      <span class="slc">// Count flips and update max  and checksum</span>
+      f <span class="opt">=</span> <span class="num">0</span>
+      k <span class="opt">=</span> perm<span class="opt">[</span><span class="num">0</span><span class="opt">]</span>
+      <span class="kwa">while</span> <span class="opt">(</span>k <span class="opt">!=</span> <span class="num">0</span><span class="opt">) {</span>
+         i <span class="opt">=</span> <span class="num">0</span>
+         <span class="kwa">while</span> <span class="opt">(</span><span class="num">2</span><span class="opt">*</span>i <span class="opt">&lt;</span> k<span class="opt">) {</span>
+            <span class="kwa">const</span> t <span class="opt">=</span> perm<span class="opt">[</span>i<span class="opt">];</span> perm<span class="opt">[</span>i<span class="opt">] =</span> perm<span class="opt">[</span>k<span class="opt">-</span>i<span class="opt">];</span> perm<span class="opt">[</span>k<span class="opt">-</span>i<span class="opt">] =</span> t
+            i <span class="opt">+=</span> <span class="num">1</span>
+         <span class="opt">}</span>
+         k <span class="opt">=</span> perm<span class="opt">[</span><span class="num">0</span><span class="opt">]</span>
+         f <span class="opt">+=</span> <span class="num">1</span>
+      <span class="opt">}</span>
+      <span class="kwa">if</span> <span class="opt">(</span>f <span class="opt">&gt;</span> flips<span class="opt">) {</span> flips <span class="opt">=</span> f <span class="opt">}</span>
+      <span class="kwa">if</span> <span class="opt">((</span>nperm <span class="opt">&amp;</span> <span class="num">0x1</span><span class="opt">) ==</span> <span class="num">0</span><span class="opt">) {</span> checksum <span class="opt">+=</span> f <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span> checksum <span class="opt">-=</span> f <span class="opt">}</span>
+
+      <span class="slc">// Use incremental change to generate another permutation</span>
+      <span class="kwa">let</span> go <span class="opt">=</span> <span class="kwb">true</span>
+      <span class="kwa">while</span> <span class="opt">(</span>go<span class="opt">) {</span>
+         <span class="kwa">if</span> <span class="opt">(</span>r <span class="opt">==</span> n<span class="opt">) {</span>
+            console<span class="opt">.</span><span class="kwd">log</span><span class="opt">(</span>checksum<span class="opt">)</span>
+            <span class="kwa">return</span> flips
+         <span class="opt">}</span>
+         <span class="kwa">let</span> p0 <span class="opt">=</span> perm1<span class="opt">[</span><span class="num">0</span><span class="opt">]</span>
+         i <span class="opt">=</span> <span class="num">0</span>
+         <span class="kwa">while</span> <span class="opt">(</span>i <span class="opt">&lt;</span> r<span class="opt">) {</span>
+            <span class="kwa">const</span> j <span class="opt">=</span> i<span class="opt">+</span><span class="num">1</span>
+            perm1<span class="opt">[</span>i<span class="opt">] =</span> perm1<span class="opt">[</span>j<span class="opt">]</span>
+            i <span class="opt">=</span> j
+         <span class="opt">}</span>
+         perm1<span class="opt">[</span>r<span class="opt">] =</span> p0
+
+         count<span class="opt">[</span>r<span class="opt">] -=</span> <span class="num">1</span>
+         <span class="kwa">if</span> <span class="opt">(</span>count<span class="opt">[</span>r<span class="opt">] &gt;</span> <span class="num">0</span><span class="opt">) {</span> go <span class="opt">=</span> <span class="kwb">false</span> <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span> r <span class="opt">+=</span> <span class="num">1</span> <span class="opt">}</span>
+      <span class="opt">}</span>
+      nperm <span class="opt">+=</span> <span class="num">1</span>
+   <span class="opt">}</span>
+   <span class="kwa">return</span> flips
+<span class="opt">}</span>
+
+
+<span class="kwa">const</span> n <span class="opt">= +</span>process<span class="opt">.</span>argv<span class="opt">[</span><span class="num">2</span><span class="opt">]</span>
+console<span class="opt">.</span><span class="kwd">log</span><span class="opt">(</span> <span class="str">&quot;Pfannkuchen(&quot;</span> <span class="opt">+</span> n <span class="opt">+</span> <span class="str">&quot;) = &quot;</span> <span class="opt">+</span> <span class="kwd">fannkuch</span><span class="opt">(</span>n<span class="opt">) )</span>
+
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+Version 2.6.2
+node.js v9.4.0
+
+
+Wed, 10 Jan 2018 20:25:24 GMT
+
+MAKE:
+mv fannkuchredux.typescript-2.typescript fannkuchredux.typescript-2.ts
+/opt/src/node-v9.4.0-linux-x64/bin/tsc --alwaysStrict -t ESNEXT  fannkuchredux.typescript-2.ts
+
+2.86s to complete and log all make actions
+
+COMMAND LINE:
+/opt/src/node-v9.4.0-linux-x64/bin/node --use_strict fannkuchredux.typescript-2.js 12
+
+PROGRAM OUTPUT:
+3968050
+Pfannkuchen(12) = 65
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>reverse-complement Ruby JRuby&nbsp;#3 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>reverse-complement Ruby JRuby&nbsp;#3 program</h2>
+    <aside>
+      <p><a href="./revcomp-description.html#revcomp">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc"># The Computer Language Benchmarks Game</span>
+<span class="slc"># http://benchmarksgame.alioth.debian.org</span>
+<span class="slc">#</span>
+<span class="slc"># Contributed by Aaron Tavistock</span>
+
+<span class="kwa">def</span> <span class="kwd">process_segment</span><span class="opt">(</span>segment<span class="opt">)</span>
+  <span class="opt">(</span>header<span class="opt">,</span> _<span class="opt">,</span> sequence<span class="opt">) =</span> segment<span class="opt">.</span><span class="kwd">partition</span><span class="opt">(</span><span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">)</span>
+
+  sequence<span class="opt">.</span>delete<span class="opt">!(</span><span class="str">&quot;</span><span class="esc">\n\r</span> <span class="str">&gt;&quot;</span><span class="opt">)</span>
+  sequence<span class="opt">.</span>reverse<span class="opt">!</span>
+  sequence<span class="opt">.</span>tr<span class="opt">!(</span>
+    <span class="str">&apos;wsatugcyrkmbdhvnATUGCYRKMBDHVN&apos;</span><span class="opt">,</span>
+    <span class="str">&apos;WSTAACGRYMKVHDBNTAACGRYMKVHDBN&apos;</span>
+  <span class="opt">)</span>
+
+  results <span class="opt">= [</span><span class="str">&quot;&gt;</span><span class="ipl">#{header}</span><span class="str">&quot;</span><span class="opt">]</span>
+
+  idx <span class="opt">=</span> <span class="num">0</span>
+  length <span class="opt">=</span> sequence<span class="opt">.</span>length
+  <span class="kwa">while</span> idx <span class="opt">&lt;</span> length
+    results <span class="opt">&lt;&lt;</span> sequence<span class="opt">[</span>idx<span class="opt">,</span><span class="num">60</span><span class="opt">]</span>
+    idx <span class="opt">+=</span> <span class="num">60</span>
+  <span class="kwa">end</span>
+
+  results<span class="opt">.</span><span class="kwd">join</span><span class="opt">(</span><span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">)</span>
+<span class="kwa">end</span>
+
+<span class="kwa">def</span> <span class="kwd">forking_worker</span><span class="opt">(</span>segment<span class="opt">)</span>
+  reader<span class="opt">,</span> writer <span class="opt">=</span> IO<span class="opt">.</span>pipe
+
+  pid <span class="opt">=</span> Process<span class="opt">.</span>fork <span class="kwa">do</span>
+    <span class="kwa">begin</span>
+      reader<span class="opt">.</span>close
+      results <span class="opt">=</span> <span class="kwd">process_segment</span><span class="opt">(</span>segment<span class="opt">)</span>
+      Marshal<span class="opt">.</span><span class="kwd">dump</span><span class="opt">(</span>results<span class="opt">,</span> writer<span class="opt">)</span>
+    <span class="kwa">ensure</span>
+      writer<span class="opt">.</span>close
+    <span class="kwa">end</span>
+  <span class="kwa">end</span>
+
+  writer<span class="opt">.</span>close
+  <span class="kwa">begin</span>
+    results <span class="opt">=</span> Marshal<span class="opt">.</span><span class="kwd">load</span><span class="opt">(</span>reader<span class="opt">)</span>
+  <span class="kwa">ensure</span>
+    reader<span class="opt">.</span>close
+  <span class="kwa">end</span>
+  Process<span class="opt">.</span><span class="kwd">waitpid</span><span class="opt">(</span>pid<span class="opt">)</span>
+
+  results
+<span class="kwa">end</span>
+
+threads <span class="opt">= []</span>
+<span class="kwb">$stdin</span><span class="opt">.</span><span class="kwd">each_line</span><span class="opt">(</span><span class="str">&apos;&gt;&apos;</span><span class="opt">)</span> <span class="kwa">do</span> <span class="opt">|</span>segment<span class="opt">|</span>
+  <span class="kwa">next if</span> segment<span class="opt">.</span>length <span class="opt">&lt;</span> <span class="num">2</span>
+
+  threads <span class="opt">&lt;&lt;</span> Thread<span class="opt">.</span>new <span class="kwa">do</span>
+    <span class="kwa">if</span> <span class="kwc">RUBY_PLATFORM</span> <span class="opt">==</span> <span class="str">&apos;java&apos;</span>
+      Thread<span class="opt">.</span>current<span class="opt">[</span><span class="kwc">:output</span><span class="opt">] =</span> <span class="kwd">process_segment</span><span class="opt">(</span>segment<span class="opt">)</span>
+    <span class="kwa">else</span>
+      Thread<span class="opt">.</span>current<span class="opt">[</span><span class="kwc">:output</span><span class="opt">] =</span> <span class="kwd">forking_worker</span><span class="opt">(</span>segment<span class="opt">)</span>
+    <span class="kwa">end</span>
+  <span class="kwa">end</span>
+<span class="kwa">end</span>
+threads<span class="opt">.</span><span class="kwd">each</span><span class="opt">(&amp;</span><span class="kwc">:join</span><span class="opt">)</span>
+
+threads<span class="opt">.</span>each <span class="kwa">do</span> <span class="opt">|</span>thread<span class="opt">|</span>
+  puts thread<span class="opt">[</span><span class="kwc">:output</span><span class="opt">]</span>
+<span class="kwa">end</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+jruby 9.1.16.0 (2.3.3) 2018-02-21 8f3f95a Java HotSpot(TM) 64-Bit Server VM 10+46 on 10+46 +jit [linux-x86_64]
+
+
+Tue, 27 Mar 2018 15:41:51 GMT
+
+MAKE:
+mv revcomp.jruby-3.jruby revcomp.rb
+
+0.24s to complete and log all make actions
+
+COMMAND LINE:
+/opt/src/jruby-9.1.16.0/bin/jruby -Xcompile.fastest=true -Xcompile.invokedynamic=true -J-server -J-Xmn512m -J-Xms3072m -J-Xmx3072m revcomp.rb 0 &lt; revcomp-input100000000.txt
+
+UNEXPECTED OUTPUT 
+
+8333337c8333337,16666671
+&lt; 
+---
+&gt; &gt;THREE Homo sapiens frequency
+&gt; GTCTCGCTACCTACTGTGAATGTTAATAAAGCCTACGGCCAAAAAAGTCCCAAGCTGCAC
+&gt; CTTATTAATGAAATCGTTGCACAGAGTATCCCGTGTATTTTTCTCTAAGAACAAGTTAGC
+&gt; GTCTGATCATAAATCTACATTTTGAGTGCGATGGGAGGGTGTTGTGACACAGGAAATACA
+&gt; GCCGTTATAGGGACTGTACACGCGCTGTCGAGAACTCCTTTTTTGATAAGTTGGGGTCTT
+&gt; ATTGCTCAATCATGATTTTCTACCTTTTATAGAGCGTTATCAAAATTCTACCTTGAATAG
+&gt; TCTAAAGGACACTACTTCGCTCCCCTGCCGTTATAGGACACACTCTCACGCACCGTGGAC
+&gt; CTGAAATAAGCGTAACTATCAGGTCACAAAAAACACATCCTTACATTCTAGGCAGAAAAC
+&gt; AAATAACAGTCACAAAAAATTTGAATAAATAATATTCCTTGTTATGTTATTCCGTGCACT
+&gt; ACCACCAACTTTATCGACACAAGCCGCATTTGTACCGAGAGTTGTTTAGCTTTTTTCAGT
+&gt; AGTGTTCTCGTTGCGAACTACGCACACGGACGCGGAGTAGTTGCTTCAAGGATGGAGTTA
+&gt; TAGTTGACCTACGAGATTCTTCACCACCTTTATGTTTGTTAGGGACGGATGACGGTAGAC
+&gt; ATACATGCTTTTCATCTTGTTGCGATGTAACTAACCCTTTGTATTTACGTTCGGAGCCCG
+&gt; TTGATTTATGTAAACTATTTGCGTAGGTGCACTGGCAACTAATTTCCAGCTGTCCGCCCA
+&gt; GTATTATCAGAATTTACGCGCTATCAAGAACTATACCATGCTAGCTTGAGGTTTCGTTCA
+&gt; TTCCCGAAGACGGTCTAATAGTTAAGACTTATCAGGAACGTTATTTTTGGTGAGATGCTC
+&gt; CTCCTTAAGAATGCCCGATTAACGAGAAATATGGAGCCGTTTTTTTTATTATGCATCTCC
+&gt; ATATGTGTCATTTATTCGATTATAGGTTTGTACACAGCACAAGAACGTATTGAAATTTAA
+&gt; TGGAAGCGCAGTTAACTTATGAGTTAGTTTGATAGAGTACTCACAGACCAATATAGAGTG
+&gt; TCCGAACTGTATAAGTGATAAGTTGATAACTGCCCAGTATCGTGACAGTTTATTTCGATT
+&gt; CGCTTAATTTATTTGGATAGTAAACTATAACTAATATATTCGTCTTTATTAATTGTATGG
+&gt; GTAAGGCCGTCAGAATCTAATCAGAACATTTAGTATAAATCTACTATAAACAGAAATCCT
+&gt; ACGGATGTTCTAATTAAACCTATTACGTTCGAGATTTATGCGTTTGTAACTACAAGACTT
+&gt; TTGCGCGGCCTTTATAAATTTCAAACCGTAGAACACTGGCCAAATATTGAGCATAATGCT
+&gt; AGTTGAGTTTGTGGCTCAATCCAGTGCAAAATGCATCACACTATGTCATTAAGTTTTCGC
+&gt; CAAGCGGGATTCCGGCCCAAACCCGATTACAATTATTTTCATGCTTATTGTATTGCTGGG
+&gt; TTAATTTGATACGTATTTCTACCCTGTCACTAAATTTGGTTAACAAATAAGTTTCACCTG
+&gt; GTTAAGCTCCGGAGTATGACACGTAGTAATATTAGTTCTGTTTAGACCCTAAAGGCTAAA
+&gt; GATCCGGGTAGTCACGATGAGGCATCACTGGTGATAGATAAACTTTTTTAAAGTTTGGTT
+&gt; AAACGGACATTACATAATTAGACTGCGAAGTGCTACGTTATCAAGCATGGGTAATGCATG
+&gt; TTAGACCGAATTTAGATATATATGAAAACGACACTATCCTAACGTGTTTGATCTACAGCA
+&gt; GTTAATCCGCTTCCGGCGTAATAAAAGAAATTCGAGCTAGTTTGATAACCGTTTATGCCA
+&gt; TTATAGAGCACTTAGCTTAACTTCATGGTATGTGAACAAAATAGCATATGTAATTTGGGG
+&gt; AACAGCAGACTTCACAGTGTATCACCTAGGAGTTGTTAATTGTTATTTATCGAAGATAAA
+&gt; CATTAAATTCTTATTCAGACATACAGCGATAGCTAAACTTATCAGTAGAACCTCAAAATT
+&gt; TCAAATACTACTCTGGAACGCGTCCGTATAGATACAAGTACCTGAATGAACTGGTCATGA
+&gt; CAAATTGACTCCTTGTTAATCGGACATTATTCGTTGTACTAAAGTTGGAGAAGGTAGCCT
+&gt; AACATTGGACATTACAGGCCAGTTACCTCTATGAGAGCGATTTACCGCGCCACTAAGTGG
+&gt; GCGAGAATGATCGTTTATGGGACGGAACCACATTCCGTTATCCTCTGCACATGGTGGACG
+&gt; CTTCGAAGTACAAATGGCCCAACCACACAAGGGAGGGTGTTAGATTTTATTGCAATGTCC
+&gt; TCTGATAAGAACGTATGACTGCACTTGACAATAAGAATTCAAAGAAGATCGCCTTTCCTT
+&gt; AACATTTTCTATTCCGGGGCTGGTTATGGCTTTATTTCTTACAATCTCAATGATGCCCGC
+&gt; CTACTTGACAAACACATTTGTCGTAACTTTAGTTTTCTAGCCTTTTCAATTTTAAATTTA
+&gt; CCTTTTCTAAGAAAACAGCTAAAATTAATGAATAACCTTCATAGCGACATTTATGTCTTT
+&gt; TAAACGCAGGTGTGAGGGCGGTACTGTTATCACATTAGCGTGCGATGGACAAAAAGGGCC
+&gt; AGCAGTTGCAACCCAGTGAATGGGTGACATGTCTTATTTAAGTCAGTTACAATCAACTTC
+&gt; TTTAAAGGAGGACAATACACTGGACCTCAATATTAAGGCCGGAATACGCTGTAAAGGACC
+&gt; ATCTGTTCTATGTCAAATAACAGATGTTGGTTACGGCCTAAATTAATATCCGTTTCTGTG
+&gt; TTTTATAGCAATCAAAAGACATACAGTGTTATAGCTCATTTATCTCGGTCGCCTTCATCG
+&gt; AAAAATTGCAAAGGTATCTCTACCTGGATTCGTGTTTGAAGGACCCAACCCATGTTTCGA
+&gt; CATGCACTGTTTTGATAATGCACAGCAGCGAATCTTGTGGATTGAGTGGTAAATCTCCTA
+&gt; CGGGTCATTTCCATCAATACGTACTATTAAACAACTTTAATAGTCTATCTACCCTCTTCA
+&gt; CGGAGGTATGAGTGCCTTGAACTTACTATATGAAATTCATATTACGCAACGAAAAGGGAA
+&gt; GTAAGGTACAAAGCGCTTCCTAGCCGGCTGCAACGAGTGAGTATCTAGAGTCTTGTAAAT
+&gt; TTGACTATAGAATTTCTATGATGTAAATATCGATTAACCGCAAACCTTTAAAACCTACAT
+&gt; GTATGGTCCTTATAACGAACGTAGGGATGCCATGTTGGAGAAGGCGAAAATTAACTCGCC
+&gt; GAATCATTCCTTCTATATTTATGTTACAGACGCATTCATCGAAGTTAGGATGAATCATAT
+&gt; CTTGGTTGAAGAGCGCTTTGAGGCATGTGGCAGAACACATGCTTGTGCCTAAACTTCACT
+&gt; GGATATGAAAATTAACTTCAATGGTCTCTTTCGAACCGGATTACGGGCTACTCCGTGGAG
+&gt; GAAATAAAGGCTTTAATTCTTTAGCGCGAGCGTTGGAACCACTTGGTTTAAGATACACTT
+&gt; GAATATGGAGGCAGGCCGCACCCACTCGGGCCACTTATTTCTCTATGAGTGTAGCCAGAA
+&gt; CTCCCAACAAATGTGCTTTCATTTTTCTTGTAGCAAATAGATGTAGCTCAACCGGATCCC
+&gt; GGCCTCATAGCTCAAACAGCTCAGTCGAACAAGCAGTTACAAGTCGTGATTGGGAAGTTA
+&gt; TATAAAACATATGAGAGTTATTGACGACATAAAGATATATGGTTTAAATTACCAGGTTCG
+&gt; AGTTTTTCGACAAAAAATTCATGATGGAAGACTCGTGTATTTTTTATCTCATTAGACTAA
+&gt; AGTGCTTATGTAGCCCATGCATTGATTCTCTAGTATATTCTTCCGAGAAACCGGTAAAGT
+&gt; TGTAAGGGTAAGTCTTCACTACCAATCACATCATTTAGCTCCAAGACCTATTATTCTACA
+&gt; TACAATATAACGTTTTACTTCGTTGATCATTACGGTACATCAAATTTCAAACTACTAGGA
+&gt; TACGGCGATCAGTTTAGGTAGATAATGGTTCTTAGCGGAATATCTTTAATCAATTAAATG
+&gt; GTTAAAACCATGAAGCGGGTATGTATTGATCACTATTTTGTGATTTAGTATAGTTGACTA
+&gt; CTAGATGGTTTACATCGTTTAATGCAAGTATGACAACCCAATCCACGCGGTTGAATAAGC
+&gt; CCCCACCGTATCAAGAGGGAAGGGACCGTATAACGATTCTTCCAGCGCAAGTCACCACTG
+&gt; GCAAAACGAATTAGCTGATGAAGCTACTATTGTGACCGGATAACATCATGACGATCGCTA
+&gt; TCATCATATCTATAATGTTCTTAGAGTGTTGCTAATTATATGCTCTTTGGCTGCTGCCAT
+&gt; TACACCTGATTCATCTATCTTTTCAGGGTTCTTCAAAGTCATGACTTTTTTAATAACCAT
+&gt; AGGTGCGGCAGAAGCATATTCATAAAAAATAGTCGATTGTAGACGCAAGGGGACTTACCC
+&gt; AGCTATTATTCCTCCAATCCTAATGTTGGGATAATGTAGTTGAAAACCTAAACTATTGAG
+&gt; ACTTAGAATATGTAGCCAAAATGCTATGTTGATGCAAATTTGTTCTTGGAGGATGGTAAA
+&gt; TCCGCGGAGTTTTTGGTCTGTATCTGACCACAGAGAATTAACATCAGAAAAGAAGTAACT
+&gt; GATTTGTTCCGGACACCAAAAGGCTGTCTTTTCGAGTTGGATATTCGAGCAAGGGGGTTG
+&gt; AACGCAGCGGAAGTTTATGACTTGGCCAATTATCAGATTCCGTAGAACAACTATTGGTGT
+&gt; ATCATAGAAGTGGTAGCTTAGAGGAGGCATGATGAACAACTCTACCGCGAAGTTAACTAT
+&gt; GCGGTGTATTAAATTCAGGCCTGAATAACAAGAATTTAGACATATCCACTGTGCTTCTTT
+&gt; CCAAATTAGTTGCCGCCTAGTTTAAAATACTGAACAACTGCTTTAAACGTCACAAAGGGT
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

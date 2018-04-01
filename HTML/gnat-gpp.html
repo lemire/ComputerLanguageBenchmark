@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="all" />
+<meta name="description" content="Ada 2005 GNAT programs vs C++ g++ programs (performance on 64-bit Ubuntu quad core)." />
+<title>Ada 2005 GNAT&nbsp;vs&nbsp;C++ g++ (64-bit Ubuntu quad core) | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article,footer{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,nav li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{display:inline-block}nav li{list-style-type:none}nav li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}nav ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,span{border-bottom:.1em solid #333;padding-bottom:.1em}
+#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.best{font-weight:bold}.message{font-size:.8em}table{color:#333;margin:1.3em auto 0;text-align:right}tbody:after{content:"-";display:block;line-height:2.6em;visibility:hidden}tbody:last-child{text-align:left}td{border-bottom:.15em dotted #eee;padding:.7em 0 0 1em}td a,th a{display:block}td:first-child,th:first-child{text-align:left;padding-left:0}td:nth-child(6),th:nth-child(6){display:table-cell}th{font-weight:normal;padding:.7em 0 0 1em}
+@media only screen{th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:none}}@media only screen and (min-width:28em){th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5){display:table-cell}}@media only screen and (min-width:41em){th:nth-child(6),td:nth-child(6){display:table-cell}}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>Ada 2005 GNAT programs versus C++ g++</h2>
+    <aside>
+      <p><a href="./measurements-gnat.html">all other Ada 2005 GNAT programs & measurements</a>
+    </aside>
+  </div>
+  <section>
+    <div>
+      <h3>by benchmark task performance</h3>
+    </div>
+    <table>
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./pidigits.html"><span>pidigits</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./pidigits-gnat-2.html"><span>Ada&nbsp;2005&nbsp;GNAT</span></a>
+        <td class="best">1.75
+        <td>4,328
+        <td>1068
+        <td>1.74
+        <td class="message">1%&nbsp;1%&nbsp;100%&nbsp;1%
+      <tr>
+        <td><a href="./pidigits-gpp-4.html"><span>C++&nbsp;g++</span></a>
+        <td>1.88
+        <td>4,276
+        <td>513
+        <td>1.88
+        <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;0%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./fannkuchredux.html"><span>fannkuch-redux</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./fannkuchredux-gnat-3.html"><span>Ada&nbsp;2005&nbsp;GNAT</span></a>
+        <td class="best">10.23
+        <td>4,504
+        <td>2113
+        <td>40.77
+        <td class="message">100%&nbsp;100%&nbsp;99%&nbsp;100%
+      <tr>
+        <td><a href="./fannkuchredux-gpp-5.html"><span>C++&nbsp;g++</span></a>
+        <td>10.61
+        <td>2,044
+        <td>980
+        <td>41.90
+        <td class="message">100%&nbsp;96%&nbsp;100%&nbsp;100%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./spectralnorm.html"><span>spectral-norm</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./spectralnorm-gnat-4.html"><span>Ada&nbsp;2005&nbsp;GNAT</span></a>
+        <td class="best">2.00
+        <td>4,468
+        <td>2770
+        <td>7.87
+        <td class="message">99%&nbsp;98%&nbsp;99%&nbsp;99%
+      <tr>
+        <td><a href="./spectralnorm-gpp-6.html"><span>C++&nbsp;g++</span></a>
+        <td>2.02
+        <td>1,332
+        <td>1044
+        <td>7.91
+        <td class="message">99%&nbsp;99%&nbsp;99%&nbsp;99%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./nbody.html"><span>n-body</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./nbody-gnat-2.html"><span>Ada&nbsp;2005&nbsp;GNAT</span></a>
+        <td>8.83
+        <td>2,072
+        <td>2617
+        <td>8.83
+        <td class="message">1%&nbsp;0%&nbsp;0%&nbsp;100%
+      <tr>
+        <td><a href="./nbody-gpp-3.html"><span>C++&nbsp;g++</span></a>
+        <td>8.23
+        <td>1,856
+        <td>1763
+        <td>8.23
+        <td class="message">100%&nbsp;1%&nbsp;1%&nbsp;0%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./revcomp.html"><span>reverse-complement</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./revcomp-gnat-2.html"><span>Ada&nbsp;2005&nbsp;GNAT</span></a>
+        <td>3.93
+        <td>785,560
+        <td>3283
+        <td>4.49
+        <td class="message">1%&nbsp;41%&nbsp;74%&nbsp;1%
+      <tr>
+        <td><a href="./revcomp-gpp-4.html"><span>C++&nbsp;g++</span></a>
+        <td>3.08
+        <td>980,604
+        <td>2280
+        <td>4.66
+        <td class="message">62%&nbsp;25%&nbsp;12%&nbsp;54%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./knucleotide.html"><span>k-nucleotide</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./knucleotide-gnat-2.html"><span>Ada&nbsp;2005&nbsp;GNAT</span></a>
+        <td>11.32
+        <td>258,596
+        <td>4908
+        <td>25.26
+        <td class="message">30%&nbsp;65%&nbsp;42%&nbsp;87%
+      <tr>
+        <td><a href="./knucleotide-gpp-3.html"><span>C++&nbsp;g++</span></a>
+        <td>7.75
+        <td>165,180
+        <td>1276
+        <td>26.02
+        <td class="message">80%&nbsp;96%&nbsp;82%&nbsp;79%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./fasta.html"><span>fasta</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./fasta-gnat-5.html"><span>Ada&nbsp;2005&nbsp;GNAT</span></a>
+        <td>4.08
+        <td>2,092
+        <td>2221
+        <td>4.08
+        <td class="message">0%&nbsp;29%&nbsp;72%&nbsp;3%
+      <tr>
+        <td><a href="./fasta-gpp-7.html"><span>C++&nbsp;g++</span></a>
+        <td>1.35
+        <td>1,952
+        <td>2711
+        <td>4.18
+        <td class="message">79%&nbsp;78%&nbsp;78%&nbsp;79%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./binarytrees.html"><span>binary-trees</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./binarytrees-gnat-5.html"><span>Ada&nbsp;2005&nbsp;GNAT</span></a>
+        <td>8.27
+        <td>202,500
+        <td>2107
+        <td>26.49
+        <td class="message">93%&nbsp;80%&nbsp;73%&nbsp;80%
+      <tr>
+        <td><a href="./binarytrees-gpp-9.html"><span>C++&nbsp;g++</span></a>
+        <td>2.55
+        <td>135,568
+        <td>809
+        <td>7.99
+        <td class="message">85%&nbsp;96%&nbsp;69%&nbsp;66%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./mandelbrot.html"><span>mandelbrot</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./mandelbrot-gnat-3.html"><span>Ada&nbsp;2005&nbsp;GNAT</span></a>
+        <td>5.59
+        <td>32,376
+        <td>1819
+        <td>22.17
+        <td class="message">100%&nbsp;100%&nbsp;98%&nbsp;99%
+      <tr>
+        <td><a href="./mandelbrot-gpp-1.html"><span>C++&nbsp;g++</span></a>
+        <td>1.51
+        <td>25,704
+        <td>1791
+        <td>5.99
+        <td class="message">99%&nbsp;100%&nbsp;100%&nbsp;100%
+      <tbody>
+      <tr>
+        <th colspan="3"><a href="./regexredux.html"><span>regex-redux</span></a>
+        <th colspan="3">
+      <tr>
+        <th>source
+        <th>secs
+        <th>mem
+        <th>gz
+        <th>cpu
+        <th>cpu load
+      <tr>
+        <td><a href="./regexredux-gnat-5.html"><span>Ada&nbsp;2005&nbsp;GNAT</span></a>
+        <td>6.70
+        <td>154,440
+        <td>3640
+        <td>19.34
+        <td class="message">68%&nbsp;92%&nbsp;63%&nbsp;66%
+      <tr>
+        <td><a href="./regexredux-gpp-4.html"><span>C++&nbsp;g++</span></a>
+        <td>1.61
+        <td>203,572
+        <td>1315
+        <td>4.18
+        <td class="message">100%&nbsp;52%&nbsp;57%&nbsp;54%
+      <tbody>
+      <tr>
+        <td>Ada&nbsp;2005&nbsp;GNAT
+        <td colspan="5" class="message"><p>GNATMAKE 7.2.0
+<p>gcc (Ubuntu 7.2.0-8ubuntu3) 7.2.0
+
+
+      <tr>
+        <td>C++&nbsp;g++
+        <td colspan="5" class="message"><p>g++ (Ubuntu 7.2.0-8ubuntu3) 7.2.0
+
+    </table>
+    <nav>
+      <ul>
+        <li><a href="./ada.html"><span>vs C</span></a>
+          <li class="best">vs C++
+      </ul>
+    </nav>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./why-measure-toy-benchmark-programs.html"><span>toy programs</span></a>
+      <li><a href="./how-programs-are-measured.html"><span>details</span></a>
+      <li><a href="./dont-jump-to-conclusions.html"><span>conclusions</span></a>
+    </ul>
+  </nav>
+  <aside>
+    <p>We want easy answers, but easy answers are often incomplete or wrong. You and I know, <a href="./index.html"><span>there's more we need to understand</span></a>.
+  </aside>
+</footer>
+
+

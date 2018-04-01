@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>chameneos-redux C gcc&nbsp;#5 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>chameneos-redux C gcc&nbsp;#5 program</h2>
+    <aside>
+      <p><a href="./chameneosredux-description.html#chameneosredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">/* The Computer Language Benchmarks Game</span>
+<span class="com"> * http://benchmarksgame.alioth.debian.org/</span>
+<span class="com"></span>
+<span class="com">Contributed by Dmitry Vyukov</span>
+<span class="com"></span>
+<span class="com">Kernel thread is created for each chameneous.</span>
+<span class="com">Atomic compare-and-swap primitive is used </span>
+<span class="com">for meeting place state manipulation.</span>
+<span class="com">*/</span>
+
+<span class="ppc">#define _GNU_SOURCE</span>
+<span class="ppc">#include &lt;stdlib.h&gt;</span>
+<span class="ppc">#include &lt;malloc.h&gt;</span>
+<span class="ppc">#include &lt;string.h&gt;</span>
+<span class="ppc">#include &lt;assert.h&gt;</span>
+<span class="ppc">#include &lt;stdio.h&gt;</span>
+<span class="ppc">#include &lt;stdint.h&gt;</span>
+<span class="ppc">#include &lt;sys/time.h&gt;</span>
+<span class="ppc">#include &lt;pthread.h&gt;</span>
+<span class="ppc">#include &lt;sched.h&gt;</span>
+
+<span class="ppc">#define CPUINFO_FILENAME</span> <span class="pps">&quot;/proc/cpuinfo&quot;</span><span class="ppc"></span>
+
+<span class="ppc">#define CL_SIZE 64</span>
+
+<span class="kwb">void</span><span class="opt">*</span> <span class="kwd">cache_aligned_malloc</span><span class="opt">(</span><span class="kwb">size_t</span> sz<span class="opt">)</span>
+<span class="opt">{</span>
+    <span class="kwb">char</span><span class="opt">*</span>                       mem<span class="opt">;</span>
+    <span class="kwb">char</span><span class="opt">*</span>                       res<span class="opt">;</span>
+    <span class="kwb">void</span><span class="opt">**</span>                      pos<span class="opt">;</span>
+
+    mem <span class="opt">= (</span><span class="kwb">char</span><span class="opt">*)</span><span class="kwd">malloc</span><span class="opt">(</span>sz <span class="opt">+</span> <span class="num">2</span> <span class="opt">*</span> CL_SIZE<span class="opt">);</span>
+    <span class="kwa">if</span> <span class="opt">(</span>mem <span class="opt">==</span> <span class="num">0</span><span class="opt">)</span>
+        <span class="kwd">exit</span><span class="opt">(</span><span class="num">1</span><span class="opt">);</span>
+    res <span class="opt">= (</span><span class="kwb">char</span><span class="opt">*)((</span><span class="kwb">uintptr_t</span><span class="opt">)(</span>mem <span class="opt">+</span> CL_SIZE<span class="opt">) &amp; ~(</span>CL_SIZE <span class="opt">-</span> <span class="num">1</span><span class="opt">));</span>
+    pos <span class="opt">= (</span><span class="kwb">void</span><span class="opt">**)(</span>res <span class="opt">-</span> <span class="kwa">sizeof</span><span class="opt">(</span><span class="kwb">void</span><span class="opt">*));</span>
+    pos<span class="opt">[</span><span class="num">0</span><span class="opt">] =</span> mem<span class="opt">;</span>
+    <span class="kwa">return</span> res<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwb">void</span> <span class="kwd">cache_aligned_free</span><span class="opt">(</span><span class="kwb">void</span><span class="opt">*</span> res<span class="opt">)</span>
+<span class="opt">{</span>
+    <span class="kwb">void</span><span class="opt">*</span>                       mem<span class="opt">;</span>
+    <span class="kwb">void</span><span class="opt">**</span>                      pos<span class="opt">;</span>
+
+    <span class="kwa">assert</span><span class="opt">(((</span><span class="kwb">uintptr_t</span><span class="opt">)</span>res <span class="opt">&amp; (</span>CL_SIZE <span class="opt">-</span> <span class="num">1</span><span class="opt">)) ==</span> <span class="num">0</span><span class="opt">);</span>
+    pos <span class="opt">= (</span><span class="kwb">void</span><span class="opt">**)((</span><span class="kwb">char</span><span class="opt">*)</span>res <span class="opt">-</span> <span class="kwa">sizeof</span><span class="opt">(</span><span class="kwb">void</span><span class="opt">*));</span>
+    mem <span class="opt">=</span> pos<span class="opt">[</span><span class="num">0</span><span class="opt">];</span>
+    <span class="kwd">free</span><span class="opt">(</span>mem<span class="opt">);</span>
+<span class="opt">}</span>
+
+<span class="kwb">enum</span> color_t
+<span class="opt">{</span>
+    color_blue<span class="opt">,</span>
+    color_red<span class="opt">,</span>
+    color_yellow<span class="opt">,</span>
+<span class="opt">};</span>
+
+<span class="kwb">char const</span><span class="opt">*</span> color_names<span class="opt">[] = {</span><span class="str">&quot;blue&quot;</span><span class="opt">,</span> <span class="str">&quot;red&quot;</span><span class="opt">,</span> <span class="str">&quot;yellow&quot;</span><span class="opt">};</span>
+
+<span class="kwb">enum</span> color_t <span class="kwd">color_complement</span><span class="opt">(</span><span class="kwb">enum</span> color_t c1<span class="opt">,</span> <span class="kwb">enum</span> color_t c2<span class="opt">)</span>
+<span class="opt">{</span>
+   <span class="kwa">switch</span> <span class="opt">(</span>c1<span class="opt">)</span>
+   <span class="opt">{</span>
+   <span class="kwa">case</span> color_blue<span class="opt">:</span>
+      <span class="kwa">switch</span> <span class="opt">(</span>c2<span class="opt">)</span>
+      <span class="opt">{</span>
+      <span class="kwa">case</span> color_blue<span class="opt">:</span>      <span class="kwa">return</span> color_blue<span class="opt">;</span>
+      <span class="kwa">case</span> color_red<span class="opt">:</span>       <span class="kwa">return</span> color_yellow<span class="opt">;</span>
+      <span class="kwa">case</span> color_yellow<span class="opt">:</span>    <span class="kwa">return</span> color_red<span class="opt">;</span>
+      <span class="opt">}</span>
+   <span class="kwa">case</span> color_red<span class="opt">:</span>
+      <span class="kwa">switch</span> <span class="opt">(</span>c2<span class="opt">)</span>
+      <span class="opt">{</span>
+      <span class="kwa">case</span> color_blue<span class="opt">:</span>      <span class="kwa">return</span> color_yellow<span class="opt">;</span>
+      <span class="kwa">case</span> color_red<span class="opt">:</span>       <span class="kwa">return</span> color_red<span class="opt">;</span>
+      <span class="kwa">case</span> color_yellow<span class="opt">:</span>    <span class="kwa">return</span> color_blue<span class="opt">;</span>
+      <span class="opt">}</span>
+   <span class="kwa">case</span> color_yellow<span class="opt">:</span>
+      <span class="kwa">switch</span> <span class="opt">(</span>c2<span class="opt">)</span>
+      <span class="opt">{</span>
+      <span class="kwa">case</span> color_blue<span class="opt">:</span>      <span class="kwa">return</span> color_red<span class="opt">;</span>
+      <span class="kwa">case</span> color_red<span class="opt">:</span>       <span class="kwa">return</span> color_blue<span class="opt">;</span>
+      <span class="kwa">case</span> color_yellow<span class="opt">:</span>    <span class="kwa">return</span> color_yellow<span class="opt">;</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+   <span class="kwa">assert</span><span class="opt">(</span><span class="num">0</span><span class="opt">);</span>
+   <span class="kwa">return</span> <span class="num">0</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwb">void</span> <span class="kwd">print_colors</span><span class="opt">()</span>
+<span class="opt">{</span>
+    <span class="kwb">enum</span> color_t                c1<span class="opt">;</span>
+    <span class="kwb">enum</span> color_t                c2<span class="opt">;</span>
+    <span class="kwb">enum</span> color_t                c3<span class="opt">;</span>
+
+    <span class="kwa">for</span> <span class="opt">(</span>c1 <span class="opt">=</span> color_blue<span class="opt">;</span> c1 <span class="opt">&lt;=</span> color_yellow<span class="opt">;</span> c1 <span class="opt">+=</span> <span class="num">1</span><span class="opt">)</span>
+    <span class="opt">{</span>
+        <span class="kwa">for</span> <span class="opt">(</span>c2 <span class="opt">=</span> color_blue<span class="opt">;</span> c2 <span class="opt">&lt;=</span> color_yellow<span class="opt">;</span> c2 <span class="opt">+=</span> <span class="num">1</span><span class="opt">)</span>
+        <span class="opt">{</span>
+            c3 <span class="opt">=</span> <span class="kwd">color_complement</span><span class="opt">(</span>c1<span class="opt">,</span> c2<span class="opt">);</span>
+            <span class="kwd">printf</span><span class="opt">(</span><span class="str">&quot;%s + %s -&gt; %s</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span>
+                color_names<span class="opt">[</span>c1<span class="opt">],</span> color_names<span class="opt">[</span>c2<span class="opt">],</span> color_names<span class="opt">[</span>c3<span class="opt">]);</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+    <span class="kwd">printf</span><span class="opt">(</span><span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">);</span>
+<span class="opt">}</span>
+
+<span class="kwb">char const</span><span class="opt">*</span> <span class="kwd">spell_number</span><span class="opt">(</span><span class="kwb">size_t</span> n<span class="opt">)</span>
+<span class="opt">{</span>
+    <span class="kwb">static char</span>                 buf <span class="opt">[</span><span class="num">128</span><span class="opt">];</span>
+    <span class="kwb">static char const</span><span class="opt">*</span>          numbers <span class="opt">[] = {</span>
+        <span class="str">&quot; zero&quot;</span><span class="opt">,</span> <span class="str">&quot; one&quot;</span><span class="opt">,</span> <span class="str">&quot; two&quot;</span><span class="opt">,</span>   <span class="str">&quot; three&quot;</span><span class="opt">,</span> <span class="str">&quot; four&quot;</span><span class="opt">,</span>
+        <span class="str">&quot; five&quot;</span><span class="opt">,</span> <span class="str">&quot; six&quot;</span><span class="opt">,</span> <span class="str">&quot; seven&quot;</span><span class="opt">,</span> <span class="str">&quot; eight&quot;</span><span class="opt">,</span> <span class="str">&quot; nine&quot;</span><span class="opt">};</span>
+
+    <span class="kwb">size_t</span>                      tokens <span class="opt">[</span><span class="num">32</span><span class="opt">];</span>
+    <span class="kwb">size_t</span>                      token_count<span class="opt">;</span>
+    <span class="kwb">char const</span><span class="opt">*</span>                 tok<span class="opt">;</span>
+    <span class="kwb">char</span><span class="opt">*</span>                       pos<span class="opt">;</span>
+
+    token_count <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+    <span class="kwa">do</span>
+    <span class="opt">{</span>
+        tokens<span class="opt">[</span>token_count<span class="opt">] =</span> n <span class="opt">%</span> <span class="num">10</span><span class="opt">;</span>
+        token_count <span class="opt">+=</span> <span class="num">1</span><span class="opt">;</span>
+        n <span class="opt">/=</span> <span class="num">10</span><span class="opt">;</span>
+    <span class="opt">}</span>
+    <span class="kwa">while</span> <span class="opt">(</span>n<span class="opt">);</span>
+
+    pos <span class="opt">=</span> buf<span class="opt">;</span>
+    <span class="kwa">while</span> <span class="opt">(</span>token_count<span class="opt">)</span>
+    <span class="opt">{</span>
+        token_count <span class="opt">-=</span> <span class="num">1</span><span class="opt">;</span>
+        tok <span class="opt">=</span> numbers<span class="opt">[</span>tokens<span class="opt">[</span>token_count<span class="opt">]];</span>
+        <span class="kwa">while</span> <span class="opt">(</span>tok<span class="opt">[</span><span class="num">0</span><span class="opt">])</span>
+            pos<span class="opt">++[</span><span class="num">0</span><span class="opt">] =</span> tok<span class="opt">++[</span><span class="num">0</span><span class="opt">];</span>
+    <span class="opt">}</span>
+    pos<span class="opt">[</span><span class="num">0</span><span class="opt">] =</span> <span class="num">0</span><span class="opt">;</span>
+    <span class="kwa">return</span> buf<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwb">struct</span> meeting_place_t
+<span class="opt">{</span>
+    <span class="kwb">uintptr_t</span> <span class="kwc">volatile</span>          state<span class="opt">;</span>
+<span class="opt">};</span>
+
+<span class="ppc">#define CHAMENEOS_IDX_MASK      0xFF</span>
+<span class="ppc">#define MEET_COUNT_SHIFT        8</span>
+
+<span class="kwb">struct</span> chameneos_t
+<span class="opt">{</span>
+    <span class="kwb">enum</span> color_t                color<span class="opt">;</span>
+    <span class="kwb">size_t</span>                      meet_count<span class="opt">;</span>
+    <span class="kwb">size_t</span>                      meet_same_count<span class="opt">;</span>
+    <span class="kwb">int</span> <span class="kwc">volatile</span>                meeting_completed<span class="opt">;</span>
+    <span class="kwb">struct</span> meeting_place_t<span class="opt">*</span>     place<span class="opt">;</span>
+    <span class="kwb">struct</span> chameneos_t<span class="opt">**</span>        chameneos<span class="opt">;</span>
+    <span class="kwb">size_t</span>                      id<span class="opt">;</span>
+    <span class="kwb">int</span>                         is_smp<span class="opt">;</span>
+    pthread_t                   thread<span class="opt">;</span>
+    pthread_attr_t              thread_attr<span class="opt">;</span>
+<span class="opt">};</span>
+
+<span class="kwb">void</span><span class="opt">*</span> <span class="kwd">chameneos_func</span><span class="opt">(</span><span class="kwb">void</span><span class="opt">*</span> ctx<span class="opt">)</span>
+<span class="opt">{</span>
+    <span class="kwb">struct</span> chameneos_t<span class="opt">*</span>         chameneos<span class="opt">;</span>
+    <span class="kwb">struct</span> chameneos_t<span class="opt">**</span>        chameneoses<span class="opt">;</span>
+    <span class="kwb">struct</span> chameneos_t<span class="opt">*</span>         peer<span class="opt">;</span>
+    <span class="kwb">size_t</span>                      my_id<span class="opt">;</span>
+    <span class="kwb">size_t</span>                      is_same<span class="opt">;</span>
+    <span class="kwb">size_t</span>                      spin_count<span class="opt">;</span>
+    <span class="kwb">uintptr_t</span> <span class="kwc">volatile</span><span class="opt">*</span>         state_p<span class="opt">;</span>
+    <span class="kwb">uintptr_t</span>                   state<span class="opt">;</span>
+    <span class="kwb">uintptr_t</span>                   peer_idx<span class="opt">;</span>
+    <span class="kwb">uintptr_t</span>                   xchg<span class="opt">;</span>
+    <span class="kwb">uintptr_t</span>                   prev<span class="opt">;</span>
+    <span class="kwb">enum</span> color_t                new_color<span class="opt">;</span>
+    <span class="kwb">int</span>                         is_smp<span class="opt">;</span>
+
+    chameneos <span class="opt">= (</span><span class="kwb">struct</span> chameneos_t<span class="opt">*)</span>ctx<span class="opt">;</span>
+    chameneoses <span class="opt">=</span> chameneos<span class="opt">-&gt;</span>chameneos<span class="opt">;</span>
+    state_p <span class="opt">= &amp;</span>chameneos<span class="opt">-&gt;</span>place<span class="opt">-&gt;</span>state<span class="opt">;</span>
+    my_id <span class="opt">=</span> chameneos<span class="opt">-&gt;</span>id<span class="opt">;</span>
+    is_smp <span class="opt">=</span> chameneos<span class="opt">-&gt;</span>is_smp<span class="opt">;</span>
+
+    state <span class="opt">=</span> state_p<span class="opt">[</span><span class="num">0</span><span class="opt">];</span>
+    <span class="kwa">for</span> <span class="opt">(;;)</span>
+    <span class="opt">{</span>
+        peer_idx <span class="opt">=</span> state <span class="opt">&amp;</span> CHAMENEOS_IDX_MASK<span class="opt">;</span>
+        <span class="kwa">if</span> <span class="opt">(</span>peer_idx<span class="opt">)</span>
+            xchg <span class="opt">=</span> state <span class="opt">-</span> peer_idx <span class="opt">- (</span><span class="num">1</span> <span class="opt">&lt;&lt;</span> MEET_COUNT_SHIFT<span class="opt">);</span>
+        <span class="kwa">else if</span> <span class="opt">(</span>state<span class="opt">)</span>
+            xchg <span class="opt">=</span> state <span class="opt">|</span> my_id<span class="opt">;</span>
+        <span class="kwa">else</span>
+            <span class="kwa">break</span><span class="opt">;</span>
+        prev <span class="opt">=</span> <span class="kwd">__sync_val_compare_and_swap</span><span class="opt">(</span>state_p<span class="opt">,</span> state<span class="opt">,</span> xchg<span class="opt">);</span>
+        <span class="kwa">if</span> <span class="opt">(</span>prev <span class="opt">==</span> state<span class="opt">)</span>
+        <span class="opt">{</span>
+            <span class="kwa">if</span> <span class="opt">(</span>peer_idx<span class="opt">)</span>
+            <span class="opt">{</span>
+                is_same <span class="opt">= (</span>peer_idx <span class="opt">==</span> my_id<span class="opt">);</span>
+                peer <span class="opt">=</span> chameneoses<span class="opt">[</span>peer_idx <span class="opt">-</span> <span class="num">1</span><span class="opt">];</span>
+                new_color <span class="opt">=</span> <span class="kwd">color_complement</span><span class="opt">(</span>chameneos<span class="opt">-&gt;</span>color<span class="opt">,</span> peer<span class="opt">-&gt;</span>color<span class="opt">);</span>
+                peer<span class="opt">-&gt;</span>color <span class="opt">=</span> new_color<span class="opt">;</span>
+                peer<span class="opt">-&gt;</span>meet_count <span class="opt">+=</span> <span class="num">1</span><span class="opt">;</span>
+                peer<span class="opt">-&gt;</span>meet_same_count <span class="opt">+=</span> is_same<span class="opt">;</span>
+                peer<span class="opt">-&gt;</span>meeting_completed <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span>
+                chameneos<span class="opt">-&gt;</span>color <span class="opt">=</span> new_color<span class="opt">;</span>
+                chameneos<span class="opt">-&gt;</span>meet_count <span class="opt">+=</span> <span class="num">1</span><span class="opt">;</span>
+                chameneos<span class="opt">-&gt;</span>meet_same_count <span class="opt">+=</span> is_same<span class="opt">;</span>
+            <span class="opt">}</span>
+            <span class="kwa">else</span>
+            <span class="opt">{</span>
+                <span class="kwa">if</span> <span class="opt">(</span>is_smp<span class="opt">)</span>
+                <span class="opt">{</span>
+                    spin_count <span class="opt">=</span> <span class="num">20000</span><span class="opt">;</span>
+                    <span class="kwa">while</span> <span class="opt">(</span>chameneos<span class="opt">-&gt;</span>meeting_completed <span class="opt">==</span> <span class="num">0</span><span class="opt">)</span>
+                    <span class="opt">{</span>
+                        <span class="kwa">if</span> <span class="opt">(</span>spin_count<span class="opt">)</span>
+                            spin_count <span class="opt">-=</span> <span class="num">1</span><span class="opt">;</span>
+                        <span class="kwa">else</span>
+                            <span class="kwd">sched_yield</span><span class="opt">();</span>
+                    <span class="opt">}</span>
+                <span class="opt">}</span>
+                <span class="kwa">else</span>
+                <span class="opt">{</span>
+                    <span class="kwa">while</span> <span class="opt">(</span>chameneos<span class="opt">-&gt;</span>meeting_completed <span class="opt">==</span> <span class="num">0</span><span class="opt">)</span>
+                    <span class="opt">{</span>
+                        <span class="kwd">sched_yield</span><span class="opt">();</span>
+                    <span class="opt">}</span>
+                <span class="opt">}</span>
+                chameneos<span class="opt">-&gt;</span>meeting_completed <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+                state <span class="opt">=</span> state_p<span class="opt">[</span><span class="num">0</span><span class="opt">];</span>
+            <span class="opt">}</span>
+        <span class="opt">}</span>
+        <span class="kwa">else</span>
+        <span class="opt">{</span>
+            state <span class="opt">=</span> prev<span class="opt">;</span>
+
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+    <span class="kwa">return</span> <span class="num">0</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwb">void</span> <span class="kwd">get_affinity</span><span class="opt">(</span><span class="kwb">int</span><span class="opt">*</span> is_smp<span class="opt">,</span> cpu_set_t<span class="opt">*</span> affinity1<span class="opt">,</span> cpu_set_t<span class="opt">*</span> affinity2<span class="opt">)</span>
+<span class="opt">{</span>
+    cpu_set_t                   active_cpus<span class="opt">;</span>
+    <span class="kwb">FILE</span><span class="opt">*</span>                       f<span class="opt">;</span>
+    <span class="kwb">char</span>                        buf <span class="opt">[</span><span class="num">2048</span><span class="opt">];</span>
+    <span class="kwb">char const</span><span class="opt">*</span>                 pos<span class="opt">;</span>
+    <span class="kwb">int</span>                         cpu_idx<span class="opt">;</span>
+    <span class="kwb">int</span>                         physical_id<span class="opt">;</span>
+    <span class="kwb">int</span>                         core_id<span class="opt">;</span>
+    <span class="kwb">int</span>                         cpu_cores<span class="opt">;</span>
+    <span class="kwb">int</span>                         apic_id<span class="opt">;</span>
+    <span class="kwb">size_t</span>                      cpu_count<span class="opt">;</span>
+    <span class="kwb">size_t</span>                      i<span class="opt">;</span>
+
+    <span class="kwb">char const</span><span class="opt">*</span>                 processor_str       <span class="opt">=</span> <span class="str">&quot;processor&quot;</span><span class="opt">;</span>
+    <span class="kwb">size_t</span>                      processor_str_len   <span class="opt">=</span> <span class="kwd">strlen</span><span class="opt">(</span>processor_str<span class="opt">);</span>
+    <span class="kwb">char const</span><span class="opt">*</span>                 physical_id_str     <span class="opt">=</span> <span class="str">&quot;physical id&quot;</span><span class="opt">;</span>
+    <span class="kwb">size_t</span>                      physical_id_str_len <span class="opt">=</span> <span class="kwd">strlen</span><span class="opt">(</span>physical_id_str<span class="opt">);</span>
+    <span class="kwb">char const</span><span class="opt">*</span>                 core_id_str         <span class="opt">=</span> <span class="str">&quot;core id&quot;</span><span class="opt">;</span>
+    <span class="kwb">size_t</span>                      core_id_str_len     <span class="opt">=</span> <span class="kwd">strlen</span><span class="opt">(</span>core_id_str<span class="opt">);</span>
+    <span class="kwb">char const</span><span class="opt">*</span>                 cpu_cores_str       <span class="opt">=</span> <span class="str">&quot;cpu cores&quot;</span><span class="opt">;</span>
+    <span class="kwb">size_t</span>                      cpu_cores_str_len   <span class="opt">=</span> <span class="kwd">strlen</span><span class="opt">(</span>cpu_cores_str<span class="opt">);</span>
+    
+    <span class="kwd">CPU_ZERO</span><span class="opt">(&amp;</span>active_cpus<span class="opt">);</span>
+    <span class="kwd">sched_getaffinity</span><span class="opt">(</span><span class="num">0</span><span class="opt">,</span> <span class="kwa">sizeof</span><span class="opt">(</span>active_cpus<span class="opt">), &amp;</span>active_cpus<span class="opt">);</span>
+    cpu_count <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+    <span class="kwa">for</span> <span class="opt">(</span>i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">!=</span> CPU_SETSIZE<span class="opt">;</span> i <span class="opt">+=</span> <span class="num">1</span><span class="opt">)</span>
+    <span class="opt">{</span>
+        <span class="kwa">if</span> <span class="opt">(</span><span class="kwd">CPU_ISSET</span><span class="opt">(</span>i<span class="opt">, &amp;</span>active_cpus<span class="opt">))</span>
+        <span class="opt">{</span>
+            cpu_count <span class="opt">+=</span> <span class="num">1</span><span class="opt">;</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+
+    <span class="kwa">if</span> <span class="opt">(</span>cpu_count <span class="opt">==</span> <span class="num">1</span><span class="opt">)</span>
+    <span class="opt">{</span>
+        is_smp<span class="opt">[</span><span class="num">0</span><span class="opt">] =</span> <span class="num">0</span><span class="opt">;</span>
+        <span class="kwa">return</span><span class="opt">;</span>
+    <span class="opt">}</span>
+
+    is_smp<span class="opt">[</span><span class="num">0</span><span class="opt">] =</span> <span class="num">1</span><span class="opt">;</span>
+    <span class="kwd">CPU_ZERO</span><span class="opt">(</span>affinity1<span class="opt">);</span>
+    <span class="kwd">CPU_ZERO</span><span class="opt">(</span>affinity2<span class="opt">);</span>
+
+    f <span class="opt">=</span> <span class="kwd">fopen</span><span class="opt">(</span>CPUINFO_FILENAME<span class="opt">,</span> <span class="str">&quot;r&quot;</span><span class="opt">);</span>
+
+    <span class="kwa">if</span> <span class="opt">(</span>cpu_count <span class="opt">&lt;</span> <span class="num">4</span> <span class="opt">||</span> f <span class="opt">==</span> <span class="num">0</span><span class="opt">)</span>
+    <span class="opt">{</span>
+        <span class="kwa">for</span> <span class="opt">(</span>i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">!=</span> CPU_SETSIZE<span class="opt">;</span> i <span class="opt">+=</span> <span class="num">1</span><span class="opt">)</span>
+        <span class="opt">{</span>
+            <span class="kwa">if</span> <span class="opt">(</span><span class="kwd">CPU_ISSET</span><span class="opt">(</span>i<span class="opt">, &amp;</span>active_cpus<span class="opt">))</span>
+            <span class="opt">{</span>
+                <span class="kwd">CPU_SET</span><span class="opt">(</span>i<span class="opt">,</span> affinity1<span class="opt">);</span>
+                <span class="kwd">CPU_SET</span><span class="opt">(</span>i<span class="opt">,</span> affinity2<span class="opt">);</span>
+            <span class="opt">}</span>
+        <span class="opt">}</span>
+        <span class="kwa">return</span><span class="opt">;</span>
+    <span class="opt">}</span>
+
+    cpu_idx <span class="opt">=</span> physical_id <span class="opt">=</span> core_id <span class="opt">=</span> cpu_cores <span class="opt">= -</span><span class="num">1</span><span class="opt">;</span>
+    <span class="kwa">while</span> <span class="opt">(</span><span class="kwd">fgets</span><span class="opt">(</span>buf<span class="opt">,</span> <span class="num">2048</span><span class="opt">,</span> f<span class="opt">))</span>
+    <span class="opt">{</span>
+        <span class="kwa">if</span> <span class="opt">(</span><span class="num">0</span> <span class="opt">==</span> <span class="kwd">strncmp</span><span class="opt">(</span>buf<span class="opt">,</span> processor_str<span class="opt">,</span> processor_str_len<span class="opt">))</span>
+        <span class="opt">{</span>
+            pos <span class="opt">=</span> <span class="kwd">strchr</span><span class="opt">(</span>buf <span class="opt">+</span> processor_str_len<span class="opt">,</span> <span class="str">&apos;:&apos;</span><span class="opt">);</span>
+            <span class="kwa">if</span> <span class="opt">(</span>pos<span class="opt">)</span>
+                cpu_idx <span class="opt">=</span> <span class="kwd">atoi</span><span class="opt">(</span>pos <span class="opt">+</span> <span class="num">1</span><span class="opt">);</span>
+        <span class="opt">}</span>
+        <span class="kwa">else if</span> <span class="opt">(</span><span class="num">0</span> <span class="opt">==</span> <span class="kwd">strncmp</span><span class="opt">(</span>buf<span class="opt">,</span> physical_id_str<span class="opt">,</span> physical_id_str_len<span class="opt">))</span>
+        <span class="opt">{</span>
+            pos <span class="opt">=</span> <span class="kwd">strchr</span><span class="opt">(</span>buf <span class="opt">+</span> physical_id_str_len<span class="opt">,</span> <span class="str">&apos;:&apos;</span><span class="opt">);</span>
+            <span class="kwa">if</span> <span class="opt">(</span>pos<span class="opt">)</span>
+                physical_id <span class="opt">=</span> <span class="kwd">atoi</span><span class="opt">(</span>pos <span class="opt">+</span> <span class="num">1</span><span class="opt">);</span>
+        <span class="opt">}</span>
+        <span class="kwa">else if</span> <span class="opt">(</span><span class="num">0</span> <span class="opt">==</span> <span class="kwd">strncmp</span><span class="opt">(</span>buf<span class="opt">,</span> core_id_str<span class="opt">,</span> core_id_str_len<span class="opt">))</span>
+        <span class="opt">{</span>
+            pos <span class="opt">=</span> <span class="kwd">strchr</span><span class="opt">(</span>buf <span class="opt">+</span> core_id_str_len<span class="opt">,</span> <span class="str">&apos;:&apos;</span><span class="opt">);</span>
+            <span class="kwa">if</span> <span class="opt">(</span>pos<span class="opt">)</span>
+                core_id <span class="opt">=</span> <span class="kwd">atoi</span><span class="opt">(</span>pos <span class="opt">+</span> <span class="num">1</span><span class="opt">);</span>
+        <span class="opt">}</span>
+        <span class="kwa">else if</span> <span class="opt">(</span><span class="num">0</span> <span class="opt">==</span> <span class="kwd">strncmp</span><span class="opt">(</span>buf<span class="opt">,</span> cpu_cores_str<span class="opt">,</span> cpu_cores_str_len<span class="opt">))</span>
+        <span class="opt">{</span>
+            pos <span class="opt">=</span> <span class="kwd">strchr</span><span class="opt">(</span>buf <span class="opt">+</span> cpu_cores_str_len<span class="opt">,</span> <span class="str">&apos;:&apos;</span><span class="opt">);</span>
+            <span class="kwa">if</span> <span class="opt">(</span>pos<span class="opt">)</span>
+                cpu_cores <span class="opt">=</span> <span class="kwd">atoi</span><span class="opt">(</span>pos <span class="opt">+</span> <span class="num">1</span><span class="opt">);</span>
+        <span class="opt">}</span>
+        <span class="kwa">if</span> <span class="opt">(</span>cpu_idx <span class="opt">&gt;=</span> <span class="num">0</span> <span class="opt">&amp;&amp;</span> physical_id <span class="opt">&gt;=</span> <span class="num">0</span> <span class="opt">&amp;&amp;</span> core_id <span class="opt">&gt;=</span> <span class="num">0</span> <span class="opt">&amp;&amp;</span> cpu_cores <span class="opt">&gt;=</span> <span class="num">0</span><span class="opt">)</span>
+        <span class="opt">{</span>
+            apic_id <span class="opt">=</span> physical_id <span class="opt">*</span> cpu_cores <span class="opt">+</span> core_id<span class="opt">;</span>
+            <span class="kwa">if</span> <span class="opt">(</span>apic_id <span class="opt">==</span> <span class="num">0</span> <span class="opt">||</span> apic_id <span class="opt">==</span> <span class="num">1</span><span class="opt">)</span>
+                <span class="kwd">CPU_SET</span><span class="opt">(</span>cpu_idx<span class="opt">,</span> affinity1<span class="opt">);</span>
+            <span class="kwa">else if</span> <span class="opt">(</span>apic_id <span class="opt">==</span> <span class="num">2</span> <span class="opt">||</span> apic_id <span class="opt">==</span> <span class="num">3</span><span class="opt">)</span>
+                <span class="kwd">CPU_SET</span><span class="opt">(</span>cpu_idx<span class="opt">,</span> affinity2<span class="opt">);</span>
+            cpu_idx <span class="opt">=</span> physical_id <span class="opt">=</span> core_id <span class="opt">=</span> cpu_cores <span class="opt">= -</span><span class="num">1</span><span class="opt">;</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+
+    <span class="kwd">fclose</span><span class="opt">(</span>f<span class="opt">);</span>
+<span class="opt">}</span>
+
+<span class="kwb">void</span> <span class="kwd">init_and_start</span><span class="opt">(</span><span class="kwb">enum</span> color_t<span class="opt">*</span> initial_colors<span class="opt">,</span> <span class="kwb">size_t</span> chameneos_count<span class="opt">,</span>
+    <span class="kwb">struct</span> meeting_place_t<span class="opt">**</span> place<span class="opt">,</span> <span class="kwb">struct</span> chameneos_t<span class="opt">***</span> chameneos<span class="opt">,</span>
+    <span class="kwb">size_t</span> meet_count<span class="opt">,</span> <span class="kwb">int</span> is_smp<span class="opt">,</span> cpu_set_t<span class="opt">*</span> affinity<span class="opt">)</span>
+<span class="opt">{</span>
+    <span class="kwb">size_t</span>                      i<span class="opt">;</span>
+
+    place<span class="opt">[</span><span class="num">0</span><span class="opt">] = (</span><span class="kwb">struct</span> meeting_place_t<span class="opt">*)</span>
+        <span class="kwd">cache_aligned_malloc</span><span class="opt">(</span><span class="kwa">sizeof</span><span class="opt">(</span><span class="kwb">struct</span> meeting_place_t<span class="opt">));</span>
+    place<span class="opt">[</span><span class="num">0</span><span class="opt">]-&gt;</span>state <span class="opt">=</span> meet_count <span class="opt">&lt;&lt;</span> MEET_COUNT_SHIFT<span class="opt">;</span>
+    chameneos<span class="opt">[</span><span class="num">0</span><span class="opt">] = (</span><span class="kwb">struct</span> chameneos_t<span class="opt">**)</span>
+        <span class="kwd">cache_aligned_malloc</span><span class="opt">(</span>chameneos_count <span class="opt">*</span> <span class="kwa">sizeof</span><span class="opt">(</span><span class="kwb">struct</span> chameneos_t<span class="opt">*));</span>
+    <span class="kwa">for</span> <span class="opt">(</span>i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">!=</span> chameneos_count<span class="opt">;</span> i <span class="opt">+=</span> <span class="num">1</span><span class="opt">)</span>
+    <span class="opt">{</span>
+        chameneos<span class="opt">[</span><span class="num">0</span><span class="opt">][</span>i<span class="opt">] = (</span><span class="kwb">struct</span> chameneos_t<span class="opt">*)</span>
+            <span class="kwd">cache_aligned_malloc</span><span class="opt">(</span><span class="kwa">sizeof</span><span class="opt">(</span><span class="kwb">struct</span> chameneos_t<span class="opt">));</span>
+        chameneos<span class="opt">[</span><span class="num">0</span><span class="opt">][</span>i<span class="opt">]-&gt;</span>place <span class="opt">=</span> place<span class="opt">[</span><span class="num">0</span><span class="opt">];</span>
+        chameneos<span class="opt">[</span><span class="num">0</span><span class="opt">][</span>i<span class="opt">]-&gt;</span>chameneos <span class="opt">=</span> chameneos<span class="opt">[</span><span class="num">0</span><span class="opt">];</span>
+        chameneos<span class="opt">[</span><span class="num">0</span><span class="opt">][</span>i<span class="opt">]-&gt;</span>id <span class="opt">=</span> i <span class="opt">+</span> <span class="num">1</span><span class="opt">;</span>
+        chameneos<span class="opt">[</span><span class="num">0</span><span class="opt">][</span>i<span class="opt">]-&gt;</span>is_smp <span class="opt">=</span> is_smp<span class="opt">;</span>
+        chameneos<span class="opt">[</span><span class="num">0</span><span class="opt">][</span>i<span class="opt">]-&gt;</span>meet_count <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+        chameneos<span class="opt">[</span><span class="num">0</span><span class="opt">][</span>i<span class="opt">]-&gt;</span>meet_same_count <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+        chameneos<span class="opt">[</span><span class="num">0</span><span class="opt">][</span>i<span class="opt">]-&gt;</span>color <span class="opt">=</span> initial_colors<span class="opt">[</span>i<span class="opt">];</span>
+        chameneos<span class="opt">[</span><span class="num">0</span><span class="opt">][</span>i<span class="opt">]-&gt;</span>meeting_completed <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+        <span class="kwa">if</span> <span class="opt">(</span><span class="kwd">pthread_attr_init</span><span class="opt">(&amp;</span>chameneos<span class="opt">[</span><span class="num">0</span><span class="opt">][</span>i<span class="opt">]-&gt;</span>thread_attr<span class="opt">))</span>
+            <span class="kwd">exit</span><span class="opt">(</span><span class="num">1</span><span class="opt">);</span>
+        <span class="kwa">if</span> <span class="opt">(</span>is_smp<span class="opt">)</span>
+            <span class="kwd">pthread_attr_setaffinity_np</span><span class="opt">(&amp;</span>chameneos<span class="opt">[</span><span class="num">0</span><span class="opt">][</span>i<span class="opt">]-&gt;</span>thread_attr<span class="opt">,</span>
+                <span class="kwa">sizeof</span><span class="opt">(</span>cpu_set_t<span class="opt">),</span> affinity<span class="opt">);</span>
+        <span class="kwa">if</span> <span class="opt">(</span><span class="kwd">pthread_create</span><span class="opt">(&amp;</span>chameneos<span class="opt">[</span><span class="num">0</span><span class="opt">][</span>i<span class="opt">]-&gt;</span>thread<span class="opt">,</span>
+            <span class="opt">&amp;</span>chameneos<span class="opt">[</span><span class="num">0</span><span class="opt">][</span>i<span class="opt">]-&gt;</span>thread_attr<span class="opt">,</span> chameneos_func<span class="opt">,</span> chameneos<span class="opt">[</span><span class="num">0</span><span class="opt">][</span>i<span class="opt">]))</span>
+            <span class="kwd">exit</span><span class="opt">(</span><span class="num">1</span><span class="opt">);</span>
+    <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="kwb">void</span> <span class="kwd">join_and_output</span><span class="opt">(</span><span class="kwb">enum</span> color_t<span class="opt">*</span> initial_colors<span class="opt">,</span> <span class="kwb">size_t</span> chameneos_count<span class="opt">,</span>
+    <span class="kwb">struct</span> meeting_place_t<span class="opt">*</span> place<span class="opt">,</span> <span class="kwb">struct</span> chameneos_t<span class="opt">**</span> chameneos<span class="opt">)</span>
+<span class="opt">{</span>
+    <span class="kwb">size_t</span>                      total_meet_count<span class="opt">;</span>
+    <span class="kwb">size_t</span>                      i<span class="opt">;</span>
+
+    <span class="kwa">for</span> <span class="opt">(</span>i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">!=</span> chameneos_count<span class="opt">;</span> i <span class="opt">+=</span> <span class="num">1</span><span class="opt">)</span>
+        <span class="kwd">printf</span><span class="opt">(</span><span class="str">&quot; %s&quot;</span><span class="opt">,</span> color_names<span class="opt">[</span>initial_colors<span class="opt">[</span>i<span class="opt">]]);</span>
+    <span class="kwd">printf</span><span class="opt">(</span><span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">);</span>
+
+    <span class="kwa">for</span> <span class="opt">(</span>i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">!=</span> chameneos_count<span class="opt">;</span> i <span class="opt">+=</span> <span class="num">1</span><span class="opt">)</span>
+    <span class="opt">{</span>
+        <span class="kwd">pthread_join</span><span class="opt">(</span>chameneos<span class="opt">[</span>i<span class="opt">]-&gt;</span>thread<span class="opt">,</span> <span class="num">0</span><span class="opt">);</span>
+        <span class="kwd">pthread_attr_destroy</span><span class="opt">(&amp;</span>chameneos<span class="opt">[</span>i<span class="opt">]-&gt;</span>thread_attr<span class="opt">);</span>
+    <span class="opt">}</span>
+
+    total_meet_count <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+    <span class="kwa">for</span> <span class="opt">(</span>i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">!=</span> chameneos_count<span class="opt">;</span> i <span class="opt">+=</span> <span class="num">1</span><span class="opt">)</span>
+    <span class="opt">{</span>
+        total_meet_count <span class="opt">+=</span> chameneos<span class="opt">[</span>i<span class="opt">]-&gt;</span>meet_count<span class="opt">;</span>
+        <span class="kwd">printf</span><span class="opt">(</span><span class="str">&quot;%u%s</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span> chameneos<span class="opt">[</span>i<span class="opt">]-&gt;</span>meet_count<span class="opt">,</span>
+            <span class="kwd">spell_number</span><span class="opt">(</span>chameneos<span class="opt">[</span>i<span class="opt">]-&gt;</span>meet_same_count<span class="opt">));</span>
+        <span class="kwd">cache_aligned_free</span><span class="opt">(</span>chameneos<span class="opt">[</span>i<span class="opt">]);</span>
+    <span class="opt">}</span>
+    <span class="kwd">printf</span><span class="opt">(</span><span class="str">&quot;%s</span><span class="esc">\n\n</span><span class="str">&quot;</span><span class="opt">,</span> <span class="kwd">spell_number</span><span class="opt">(</span>total_meet_count<span class="opt">));</span>
+
+    <span class="kwd">cache_aligned_free</span><span class="opt">(</span>chameneos<span class="opt">);</span>
+    <span class="kwd">cache_aligned_free</span><span class="opt">(</span>place<span class="opt">);</span>
+<span class="opt">}</span>
+
+<span class="kwb">int</span> <span class="kwd">main</span><span class="opt">(</span><span class="kwb">int</span> argc<span class="opt">,</span> <span class="kwb">char</span><span class="opt">**</span> argv<span class="opt">)</span>
+<span class="opt">{</span>
+    <span class="kwb">enum</span> color_t                initial_colors1 <span class="opt">[] =</span> 
+        <span class="opt">{</span>color_blue<span class="opt">,</span> color_red<span class="opt">,</span> color_yellow<span class="opt">};</span>
+
+    <span class="kwb">enum</span> color_t                initial_colors2 <span class="opt">[] =</span> 
+        <span class="opt">{</span>color_blue<span class="opt">,</span> color_red<span class="opt">,</span> color_yellow<span class="opt">,</span> color_red<span class="opt">,</span> color_yellow<span class="opt">,</span>
+        color_blue<span class="opt">,</span> color_red<span class="opt">,</span> color_yellow<span class="opt">,</span> color_red<span class="opt">,</span> color_blue<span class="opt">};</span>
+
+    <span class="kwb">struct</span> meeting_place_t<span class="opt">*</span>     place1<span class="opt">;</span>
+    <span class="kwb">struct</span> chameneos_t<span class="opt">**</span>        chameneos1<span class="opt">;</span>
+    <span class="kwb">size_t</span>                      chameneos_count1<span class="opt">;</span>
+
+    <span class="kwb">struct</span> meeting_place_t<span class="opt">*</span>     place2<span class="opt">;</span>
+    <span class="kwb">struct</span> chameneos_t<span class="opt">**</span>        chameneos2<span class="opt">;</span>
+    <span class="kwb">size_t</span>                      chameneos_count2<span class="opt">;</span>
+
+    <span class="kwb">int</span>                         is_smp<span class="opt">;</span>
+    cpu_set_t                   affinity1<span class="opt">;</span>
+    cpu_set_t                   affinity2<span class="opt">;</span>
+    <span class="kwb">size_t</span>                      meet_count<span class="opt">;</span>
+
+    meet_count <span class="opt">=</span> <span class="num">6000000</span><span class="opt">;</span>
+    <span class="kwa">if</span> <span class="opt">(</span>argc <span class="opt">&gt;</span> <span class="num">1</span> <span class="opt">&amp;&amp;</span> <span class="kwd">atoi</span><span class="opt">(</span>argv<span class="opt">[</span><span class="num">1</span><span class="opt">]) &gt;</span> <span class="num">0</span><span class="opt">)</span>
+        meet_count <span class="opt">=</span> <span class="kwd">atoi</span><span class="opt">(</span>argv<span class="opt">[</span><span class="num">1</span><span class="opt">]);</span>
+
+    <span class="kwd">print_colors</span><span class="opt">();</span>
+
+    <span class="kwd">get_affinity</span><span class="opt">(&amp;</span>is_smp<span class="opt">, &amp;</span>affinity1<span class="opt">, &amp;</span>affinity2<span class="opt">);</span>
+
+    chameneos_count1 <span class="opt">=</span> <span class="kwa">sizeof</span><span class="opt">(</span>initial_colors1<span class="opt">)/</span><span class="kwa">sizeof</span><span class="opt">(</span>initial_colors1<span class="opt">[</span><span class="num">0</span><span class="opt">]);</span>
+    chameneos_count2 <span class="opt">=</span> <span class="kwa">sizeof</span><span class="opt">(</span>initial_colors2<span class="opt">)/</span><span class="kwa">sizeof</span><span class="opt">(</span>initial_colors2<span class="opt">[</span><span class="num">0</span><span class="opt">]);</span>
+
+    <span class="kwa">if</span> <span class="opt">(</span>is_smp<span class="opt">)</span>
+    <span class="opt">{</span>
+        <span class="kwd">init_and_start</span><span class="opt">(</span>initial_colors1<span class="opt">,</span> chameneos_count1<span class="opt">, &amp;</span>place1<span class="opt">, &amp;</span>chameneos1<span class="opt">,</span> meet_count<span class="opt">,</span> is_smp<span class="opt">, &amp;</span>affinity1<span class="opt">);</span>
+        <span class="kwd">init_and_start</span><span class="opt">(</span>initial_colors2<span class="opt">,</span> chameneos_count2<span class="opt">, &amp;</span>place2<span class="opt">, &amp;</span>chameneos2<span class="opt">,</span> meet_count<span class="opt">,</span> is_smp<span class="opt">, &amp;</span>affinity2<span class="opt">);</span>
+        <span class="kwd">join_and_output</span><span class="opt">(</span>initial_colors1<span class="opt">,</span> chameneos_count1<span class="opt">,</span> place1<span class="opt">,</span> chameneos1<span class="opt">);</span>
+        <span class="kwd">join_and_output</span><span class="opt">(</span>initial_colors2<span class="opt">,</span> chameneos_count2<span class="opt">,</span> place2<span class="opt">,</span> chameneos2<span class="opt">);</span>
+    <span class="opt">}</span>
+    <span class="kwa">else</span>
+    <span class="opt">{</span>
+        <span class="kwd">init_and_start</span><span class="opt">(</span>initial_colors1<span class="opt">,</span> chameneos_count1<span class="opt">, &amp;</span>place1<span class="opt">, &amp;</span>chameneos1<span class="opt">,</span> meet_count<span class="opt">,</span> is_smp<span class="opt">, &amp;</span>affinity1<span class="opt">);</span>
+        <span class="kwd">join_and_output</span><span class="opt">(</span>initial_colors1<span class="opt">,</span> chameneos_count1<span class="opt">,</span> place1<span class="opt">,</span> chameneos1<span class="opt">);</span>
+        <span class="kwd">init_and_start</span><span class="opt">(</span>initial_colors2<span class="opt">,</span> chameneos_count2<span class="opt">, &amp;</span>place2<span class="opt">, &amp;</span>chameneos2<span class="opt">,</span> meet_count<span class="opt">,</span> is_smp<span class="opt">, &amp;</span>affinity2<span class="opt">);</span>
+        <span class="kwd">join_and_output</span><span class="opt">(</span>initial_colors2<span class="opt">,</span> chameneos_count2<span class="opt">,</span> place2<span class="opt">,</span> chameneos2<span class="opt">);</span>
+    <span class="opt">}</span>
+
+    <span class="kwa">return</span> <span class="num">0</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+gcc (Ubuntu 7.2.0-8ubuntu3) 7.2.0
+
+
+Sat, 28 Oct 2017 17:57:32 GMT
+
+MAKE:
+/usr/bin/gcc -pipe -Wall -O3 -fomit-frame-pointer -march=native -pthread chameneosredux.gcc-5.c -o chameneosredux.gcc-5.gcc_run 
+chameneosredux.gcc-5.c: In function ‘join_and_output’:
+chameneosredux.gcc-5.c:399:18: warning: format ‘%u’ expects argument of type ‘unsigned int’, but argument 2 has type ‘size_t {aka long unsigned int}’ [-Wformat=]
+         printf(&quot;%u%s\n&quot;, chameneos[i]-&gt;meet_count,
+                 ~^       ~~~~~~~~~~~~~~~~~~~~~~~~
+                 %lu
+rm chameneosredux.gcc-5.c
+
+0.31s to complete and log all make actions
+
+COMMAND LINE:
+./chameneosredux.gcc-5.gcc_run 6000000
+
+PROGRAM OUTPUT:
+blue + blue -&gt; blue
+blue + red -&gt; yellow
+blue + yellow -&gt; red
+red + blue -&gt; yellow
+red + red -&gt; red
+red + yellow -&gt; blue
+yellow + blue -&gt; red
+yellow + red -&gt; blue
+yellow + yellow -&gt; yellow
+
+ blue red yellow
+3839763 zero
+3824530 zero
+4335707 zero
+ one two zero zero zero zero zero zero
+
+ blue red yellow red yellow blue red yellow red blue
+1631512 zero
+1167741 zero
+1177745 zero
+1134390 zero
+1097346 zero
+1090959 zero
+1215781 zero
+1220470 zero
+1109918 zero
+1154138 zero
+ one two zero zero zero zero zero zero
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

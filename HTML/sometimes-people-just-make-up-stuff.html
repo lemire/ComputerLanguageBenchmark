@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="index,follow,archive">
+<meta name="description" content="Trust, but verify. Sometimes people just make up stuff because the facts don't fit the story they want to tell you.">
+<title>stories | The Computer Language Benchmarks Game</title>
+<link rel="shortcut icon" href="./favicon.ico">
+<style><!-- 
+a{color:black;text-decoration:none}article,footer,header{margin:auto;max-width:31em;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,table{font-family:Ubuntu Mono,Consolas,Menlo,monospace}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}p{color:#333;line-height:1.4;margin:.3em 0 0}p a{border-bottom:.1em solid #333;padding-bottom:.1em}#core{background-color:black}
+@media only screen{th:nth-child(4),td:nth-child(4){display:none}}@media only screen and (min-width:33em){th:nth-child(4),td:nth-child(4){display:table-cell}}body{quotes:'\201C' '\201D' '\2018' '\2019' '\2039' '\203A'}q:before{content:open-quote}q:after{content:close-quote}table{font-family:Menlo,Consolas,Ubuntu Monospace,Andale Mono,monospace;margin:0.7em 0;text-align:right}td{border-bottom:.15em dotted #eee;padding:.7em .7em 0 0}td:first-child,th:first-child{text-align:left}th{font-weight:normal;padding:0 .7em 0 0;text-align:left}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<header id="top">
+  <h1 id="core"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <h2><q><a href="https://www.facebook.com/carrieunderwood/posts/10151639746554568">Why do people just make up stuff sometimes?</a></q></h2>
+  <section>
+    <h3 id="verify">Trust, but verify</h3>
+    <p>Sometimes people just make up stuff because the facts don't fit <b>the story they want to tell you</b>. 
+    <p>You will probably come across stuff that people say about the benchmarks game. Do they show that what they claim is true? If they provide a URL, does the content actually confirm what they say?
+    <p>Perhaps they are genuinely mistaken. Perhaps the content changed.
+  </section>
+  <section>
+    <h3 id="jvm-startup-time"><q>Wtf kind of benchmark counts the jvm startup time?</q></h3>
+    <p>Compare the times against [pdf] <a href="https://shipilev.net/talks/devoxx-Nov2013-benchmarking.pdf">Java Microbenchmark Harness</a> reports:
+    <table>
+      <tr>
+        <th>
+        <th>secs
+        <th>JMH Average
+      <tr>
+        <td>n-body
+        <td>21.54
+        <td>23.367 ± 0.062
+      <tr>
+        <td>spectral-norm
+        <td>4.29
+        <td>4.061 ± 0.054
+      <tr>
+        <td>meteor-contest
+        <td>0.24
+        <td>0.112 ± 0.001
+    </table>
+    <p>JVM start-up, JIT, OSR&hellip; are quickly effective and typical cold / warmed-up comparison at most of these workloads will show miniscule difference. Note the exception.
+    <p>(<q>In stark contrast to the traditional expectation of <q>warmup</q>, some benchmarks exhibit <a href="https://arxiv.org/abs/1602.00602"><q>slowdown</q></a>, where the performance of in-process iterations drops over time.</q>)
+  </section>
+  <section>
+    <h3 id="ridicule"><q> <q>Прогрелось</q>. Но работает минимум в 65x медленнее
+– Поэтому супер-оптимизация&hellip;</q></h3>
+    <p>No. The repeated measurements of the Java pi-digits program without restarting the JVM, did not make the Java program seem 65x slower. 
+    <p>That really would have been ridiculous. The JavaOne expert's slides mysteriously fail to show that the sum was correctly divided by 65 to give an average.
+  </section>
+  <section>
+    <h3 id="dispute"><q>&hellip;to dispute a decision you basically need to pray the maintainer reopens it for some reason.</q></h3>
+    <p>No. Followup comments can always be made in the project ticket tracker. There's a public discussion forum, etc. etc.
+    <p>Someone's <q>brilliant hack</q> was rejected. Someone took the opportunity to push traffic to their personal blog.
+  </section>
+  <section>
+    <h3 id="name-game"><q>There's a reason they call it <q>a game</q>&hellip;</q><br/> <q>It's <q>a game</q>&hellip;</q></h3>
+    <p>The name "benchmarks game" signifies nothing more than the fact that programmers contribute programs that compete (but try to remain comparable) for fun not money.
+    <p>It's what you make of it.
+  </section>
+  <section>
+    <h3 id="trending">Trending</h3>
+    <p>April 2017 through March 2018, Google Analytics shows 477,419 users.
+    <p>Popular enough that many web search results show web spam - be careful!
+    <table>
+      <tr>
+        <th colspan="2">unique page views<br/>(go.html python.html <i>etc</i> March 2018)
+      <tr>
+        <td>Go
+        <td>6,403
+      <tr>
+        <td>Rust
+        <td>4,352
+      <tr>
+        <td>Python
+        <td>4,076
+      <tr>
+        <td>C#
+        <td>3,600
+      <tr>
+        <td>PHP
+        <td>2,673
+      <tr>
+        <td>JavaScript
+        <td>2,633
+      <tr>
+        <td>Java
+        <td>2,519
+      <tr>
+        <td>C
+        <td>2,510
+      <tr>
+        <td>C++
+        <td>1,619
+      <tr>
+        <td>Ruby
+        <td>1,361
+      <tr>
+        <td>Swift
+        <td>1,219
+      <tr>
+        <td>Haskell
+        <td>1,108
+      <tr>
+        <td>Ada
+        <td>764
+      <tr>
+        <td>Lua
+        <td>758
+      <tr>
+        <td>Fortran
+        <td>756
+      <tr>
+        <td>Dart
+        <td>733
+      <tr>
+        <td>Erlang
+        <td>725
+      <tr>
+        <td>Perl
+        <td>630
+      <tr>
+        <td>Lisp
+        <td>608
+      <tr>
+        <td>OCaml
+        <td>501
+      <tr>
+        <td>F#
+        <td>470
+      <tr>
+        <td>Pascal
+        <td>448
+      <tr>
+        <td>Racket
+        <td>362
+      <tr>
+        <td>Chapel
+        <td>325
+      <tr>
+        <td>Smalltalk
+        <td>248
+      <tr>
+        <td>Hack
+        <td>247
+    </table>
+  </section>
+  <section>
+    <h3 id="history">Once upon a time&hellip;</h3>
+    <p>Doug Bagley had a burst of crazy curiosity: <q><a href="https://web.archive.org/web/20010124090400/http://www.bagley.org/~doug/shootout/">When I started this project</a>, my goal was to compare all the major scripting languages. Then I started adding in some compiled languages for comparison&hellip;</q> 
+    <p>That project was abandoned in 2002, restarted in 2004 by Brent Fulgham and continued from 2008 by Isaac Gouy. Everything has changed; several times.
+    <p>Alioth hosting service was deprecated and will vanish 2018-05-01. So this website will vanish 2018-05-01.
+  </section>
+</article>
+<footer>
+</footer>

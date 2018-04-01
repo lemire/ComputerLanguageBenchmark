@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>mandelbrot Go program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>mandelbrot Go program</h2>
+    <aside>
+      <p><a href="./mandelbrot-description.html#mandelbrot">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">// The Computer Language Benchmarks Game</span>
+<span class="slc">// http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">//</span>
+<span class="slc">// Contributed by Kristian Meyer</span>
+<span class="slc">// Translated Jeremy Zerfas&apos;s C gcc #9 program to use goroutines instead of openmp.</span>
+
+<span class="kwa">package</span> main
+
+<span class="kwa">import</span> <span class="opt">(</span>
+   <span class="str">&quot;flag&quot;</span>
+   <span class="str">&quot;fmt&quot;</span>
+   <span class="str">&quot;log&quot;</span>
+   <span class="str">&quot;os&quot;</span>
+   <span class="str">&quot;runtime&quot;</span>
+   <span class="str">&quot;strconv&quot;</span>
+   <span class="str">&quot;sync&quot;</span>
+<span class="opt">)</span>
+
+<span class="slc">// This is the square of the limit that pixels will need to exceed in order to</span>
+<span class="slc">// escape from the Mandelbrot set.</span>
+<span class="kwa">const</span> LIMIT_SQUARED <span class="opt">=</span> <span class="num">4.0</span>
+
+<span class="slc">// This controls the maximum amount of iterations that are done for each pixel.</span>
+<span class="kwa">const</span> MAXIMUM_ITERATIONS <span class="opt">=</span> <span class="num">50</span>
+
+<span class="slc">// targeting a q6600 system, 1 cpu worker per core.</span>
+<span class="kwa">const</span> POOL <span class="opt">=</span> <span class="num">4</span>
+
+<span class="kwa">var</span> image_Width_And_Height <span class="kwb">int</span>
+<span class="kwa">var</span> initial_r <span class="opt">[]</span><span class="kwb">float64</span>
+<span class="kwa">var</span> initial_i <span class="opt">[]</span><span class="kwb">float64</span>
+<span class="kwa">var</span> pixels <span class="opt">[]</span><span class="kwb">byte</span>
+
+<span class="kwa">func</span> <span class="kwd">calc</span><span class="opt">(</span>wg <span class="opt">*</span>sync<span class="opt">.</span>WaitGroup<span class="opt">,</span> band <span class="kwb">int</span><span class="opt">) {</span>
+   <span class="kwa">for</span> y <span class="opt">:=</span> band<span class="opt">;</span> y <span class="opt">&lt;</span> image_Width_And_Height<span class="opt">;</span> y <span class="opt">+=</span> POOL <span class="opt">{</span>
+
+      prefetched_Initial_i <span class="opt">:=</span> initial_i<span class="opt">[</span>y<span class="opt">]</span>
+      <span class="kwa">for</span> x_Major <span class="opt">:=</span> <span class="num">0</span><span class="opt">;</span> x_Major <span class="opt">&lt;</span> image_Width_And_Height<span class="opt">;</span> x_Major <span class="opt">+=</span> <span class="num">8</span> <span class="opt">{</span>
+
+         <span class="slc">// pixel_Group_r and pixel_Group_i will store real and imaginary</span>
+         <span class="slc">// values for each pixel in the current pixel group as we perform</span>
+         <span class="slc">// iterations. Set their initial values here.</span>
+         <span class="kwa">var</span> pixel_Group_r <span class="opt">[</span><span class="num">8</span><span class="opt">]</span><span class="kwb">float64</span>
+         <span class="kwa">var</span> pixel_Group_i <span class="opt">[</span><span class="num">8</span><span class="opt">]</span><span class="kwb">float64</span>
+         <span class="kwa">for</span> x_Minor <span class="opt">:=</span> <span class="num">0</span><span class="opt">;</span> x_Minor <span class="opt">&lt;</span> <span class="num">8</span><span class="opt">;</span> x_Minor<span class="opt">++ {</span>
+            pixel_Group_r<span class="opt">[</span>x_Minor<span class="opt">] =</span> initial_r<span class="opt">[</span>x_Major<span class="opt">+</span>x_Minor<span class="opt">]</span>
+            pixel_Group_i<span class="opt">[</span>x_Minor<span class="opt">] =</span> prefetched_Initial_i
+         <span class="opt">}</span>
+
+         <span class="slc">// Assume all pixels are in the Mandelbrot set initially.</span>
+         <span class="kwa">var</span> eight_Pixels <span class="kwb">byte</span> <span class="opt">=</span> <span class="num">0xff</span>
+
+         iteration <span class="opt">:=</span> MAXIMUM_ITERATIONS
+         <span class="kwa">for</span> <span class="opt">{</span>
+            <span class="kwa">var</span> current_Pixel_Bitmask <span class="kwb">byte</span> <span class="opt">=</span> <span class="num">0x80</span>
+            <span class="kwa">for</span> x_Minor <span class="opt">:=</span> <span class="num">0</span><span class="opt">;</span> x_Minor <span class="opt">&lt;</span> <span class="num">8</span><span class="opt">;</span> x_Minor<span class="opt">++ {</span>
+               r <span class="opt">:=</span> pixel_Group_r<span class="opt">[</span>x_Minor<span class="opt">]</span>
+               i <span class="opt">:=</span> pixel_Group_i<span class="opt">[</span>x_Minor<span class="opt">]</span>
+
+               pixel_Group_r<span class="opt">[</span>x_Minor<span class="opt">] =</span> r<span class="opt">*</span>r <span class="opt">-</span> i<span class="opt">*</span>i <span class="opt">+</span>
+                  initial_r<span class="opt">[</span>x_Major<span class="opt">+</span>x_Minor<span class="opt">]</span>
+               pixel_Group_i<span class="opt">[</span>x_Minor<span class="opt">] =</span> <span class="num">2.0</span><span class="opt">*</span>r<span class="opt">*</span>i <span class="opt">+</span> prefetched_Initial_i
+
+               <span class="slc">// Clear the bit for the pixel if it escapes from the</span>
+               <span class="slc">// Mandelbrot set.</span>
+               <span class="kwa">if</span> r<span class="opt">*</span>r<span class="opt">+</span>i<span class="opt">*</span>i <span class="opt">&gt;</span> LIMIT_SQUARED <span class="opt">{</span>
+                  eight_Pixels <span class="opt">&amp;= ^</span>current_Pixel_Bitmask
+               <span class="opt">}</span>
+
+               current_Pixel_Bitmask <span class="opt">&gt;&gt;=</span> <span class="num">1</span>
+            <span class="opt">}</span>
+            iteration<span class="opt">--</span>
+            <span class="kwa">if</span> eight_Pixels <span class="opt">==</span> <span class="num">0</span> || iteration <span class="opt">==</span> <span class="num">0</span> <span class="opt">{</span>
+               <span class="kwa">break</span>
+            <span class="opt">}</span>
+         <span class="opt">}</span>
+
+         pixels<span class="opt">[</span>y<span class="opt">*</span>image_Width_And_Height<span class="opt">/</span><span class="num">8</span><span class="opt">+</span>x_Major<span class="opt">/</span><span class="num">8</span><span class="opt">] =</span> eight_Pixels
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+   wg<span class="opt">.</span><span class="kwd">Done</span><span class="opt">()</span>
+<span class="opt">}</span>
+
+<span class="kwa">func</span> <span class="kwd">main</span><span class="opt">() {</span>
+   runtime<span class="opt">.</span><span class="kwd">GOMAXPROCS</span><span class="opt">(</span>POOL<span class="opt">)</span>
+   <span class="kwa">var</span> size <span class="kwb">int</span>
+   flag<span class="opt">.</span><span class="kwd">Parse</span><span class="opt">()</span>
+   <span class="kwa">if</span> flag<span class="opt">.</span><span class="kwd">NArg</span><span class="opt">() &gt;</span> <span class="num">0</span> <span class="opt">{</span>
+      <span class="kwa">var</span> err error
+      size<span class="opt">,</span> err <span class="opt">=</span> strconv<span class="opt">.</span><span class="kwd">Atoi</span><span class="opt">(</span>flag<span class="opt">.</span><span class="kwd">Arg</span><span class="opt">(</span><span class="num">0</span><span class="opt">))</span>
+      <span class="kwa">if</span> err <span class="opt">!=</span> <span class="kwb">nil</span> <span class="opt">{</span>
+         log<span class="opt">.</span><span class="kwd">Fatal</span><span class="opt">(</span>err<span class="opt">)</span>
+      <span class="opt">}</span>
+   <span class="opt">}</span>
+
+   <span class="slc">// Ensure image_Width_And_Height are multiples of 8.</span>
+   image_Width_And_Height <span class="opt">= (</span>size <span class="opt">+</span> <span class="num">7</span><span class="opt">) /</span> <span class="num">8</span> <span class="opt">*</span> <span class="num">8</span>
+   <span class="slc">// The image will be black and white with one bit for each pixel. Bits with</span>
+   <span class="slc">// a value of zero are white pixels which are the ones that &quot;escape&quot; from</span>
+   <span class="slc">// the Mandelbrot set. We&apos;ll be working on one line at a time and each line</span>
+   <span class="slc">// will be made up of pixel groups that are eight pixels in size so each</span>
+   <span class="slc">// pixel group will be one byte. This allows for some more optimizations to</span>
+   <span class="slc">// be done.</span>
+   pixels <span class="opt">=</span> <span class="kwb">make</span><span class="opt">([]</span><span class="kwb">byte</span><span class="opt">,</span> image_Width_And_Height<span class="opt">*</span>image_Width_And_Height<span class="opt">/</span><span class="num">8</span><span class="opt">)</span>
+
+   <span class="slc">// Precompute the initial real and imaginary values for each x and y</span>
+   <span class="slc">// coordinate in the image.</span>
+   initial_r <span class="opt">=</span> <span class="kwb">make</span><span class="opt">([]</span><span class="kwb">float64</span><span class="opt">,</span> image_Width_And_Height<span class="opt">)</span>
+   initial_i <span class="opt">=</span> <span class="kwb">make</span><span class="opt">([]</span><span class="kwb">float64</span><span class="opt">,</span> image_Width_And_Height<span class="opt">)</span>
+
+   <span class="slc">// todo: multi-thread this part too</span>
+   <span class="kwa">for</span> xy <span class="opt">:=</span> <span class="num">0</span><span class="opt">;</span> xy <span class="opt">&lt;</span> image_Width_And_Height<span class="opt">;</span> xy<span class="opt">++ {</span>
+      initial_r<span class="opt">[</span>xy<span class="opt">] =</span> <span class="num">2.0</span><span class="opt">/</span><span class="kwb">float64</span><span class="opt">(</span>image_Width_And_Height<span class="opt">)*</span><span class="kwb">float64</span><span class="opt">(</span>xy<span class="opt">) -</span> <span class="num">1.5</span>
+      initial_i<span class="opt">[</span>xy<span class="opt">] =</span> <span class="num">2.0</span><span class="opt">/</span><span class="kwb">float64</span><span class="opt">(</span>image_Width_And_Height<span class="opt">)*</span><span class="kwb">float64</span><span class="opt">(</span>xy<span class="opt">) -</span> <span class="num">1.0</span>
+   <span class="opt">}</span>
+
+   <span class="kwa">var</span> wg sync<span class="opt">.</span>WaitGroup
+   <span class="kwa">for</span> i <span class="opt">:=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> POOL<span class="opt">;</span> i<span class="opt">++ {</span>
+      wg<span class="opt">.</span><span class="kwd">Add</span><span class="opt">(</span><span class="num">1</span><span class="opt">)</span>
+      <span class="kwa">go</span> <span class="kwd">calc</span><span class="opt">(&amp;</span>wg<span class="opt">,</span> i<span class="opt">)</span>
+   <span class="opt">}</span>
+   wg<span class="opt">.</span><span class="kwd">Wait</span><span class="opt">()</span>
+
+   <span class="slc">// Output the image to stdout.</span>
+   fmt<span class="opt">.</span><span class="kwd">Printf</span><span class="opt">(</span><span class="str">&quot;P4</span><span class="esc">\n</span><span class="str"></span><span class="ipl">%d %d</span><span class="str"></span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">,</span> image_Width_And_Height<span class="opt">,</span> image_Width_And_Height<span class="opt">)</span>
+   os<span class="opt">.</span>Stdout<span class="opt">.</span><span class="kwd">Write</span><span class="opt">(</span>pixels<span class="opt">)</span>
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+go version go1.10 linux/amd64
+
+
+Sat, 17 Feb 2018 18:57:40 GMT
+
+MAKE:
+/opt/src/go1.10.linux-amd64/go/bin/go build -o mandelbrot.go_run
+
+0.41s to complete and log all make actions
+
+COMMAND LINE:
+./mandelbrot.go_run 16000
+
+(BINARY) PROGRAM OUTPUT NOT SHOWN
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="all">
+<meta name="description" content="What the fasta benchmarks game programs should do (64-bit Ubuntu quad core)." />
+<title>fasta description (64-bit Ubuntu quad core) | Computer Language Benchmarks Game </title>
+<style><!-- 
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,header{margin:auto;max-width:31em;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,nav li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}nav li{list-style-type:none;vertical-align:top}nav li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}nav p{margin:0 .5em}nav ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}@media only screen and (min-width:33em){nav li{display:inline-block}nav p{text-align:left;width:17em}}@media only screen and (min-width:60em){article,div,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<div>
+  <nav>
+    <ul>
+      <li><a href="./nbody-description.html#nbody"><span>n-body</span></a><p>Double-precision N-body simulation
+      <li><a href="./fannkuchredux-description.html#fannkuchredux"><span>fannkuch-redux</span></a><p>Indexed-access to tiny integer-sequence
+      <li><a href="./spectralnorm-description.html#spectralnorm"><span>spectral-norm</span></a><p>Eigenvalue using the power method
+      <li><a href="./mandelbrot-description.html#mandelbrot"><span>mandelbrot</span></a><p>Generate Mandelbrot set portable bitmap file
+      <li><a href="./pidigits-description.html#pidigits"><span>pidigits</span></a><p>Streaming arbitrary-precision arithmetic
+      <li><a href="./regexredux-description.html#regexredux"><span>regex-redux</span></a><p>Match DNA 8-mers and substitute magic patterns
+    </ul>
+  </nav>
+</div>
+<article>
+  <h2 id="fasta">fasta description</h2>
+  <aside>
+    <p><a href="./fasta.html">program measurements</a>
+  </aside>
+  <section>
+    <h3>Variance</h3>
+    <p>Please don't optimize the cumulative-probabilities lookup (for example, by using a scaling factor) or na&iuml;ve LCG arithmetic - those programs will not be accepted. 
+  </section>
+  <section>
+    <h3>How to implement</h3>
+    <p>We ask that contributed programs not only give the correct result, but also <b>use the same algorithm</b> to calculate that result.
+    <p>Each program should:
+    <ul>
+      <li><p>generate DNA sequences, by copying from a given sequence
+      <li><p>generate DNA sequences, by weighted random selection from 2 alphabets
+      <ul>
+        <li><p>convert the expected probability of selecting each nucleotide into cumulative probabilities
+        <li><p>match a random number against those cumulative probabilities to select each nucleotide (use linear search or binary search)
+        <li><p>use this na&iuml;ve linear congruential generator to calculate a random number each time a nucleotide needs to be selected (don't cache the random number sequence)
+<pre>IM = 139968
+IA = 3877
+IC = 29573
+Seed = 42
+ 	
+Random (Max)
+   Seed = (Seed * IA + IC) modulo IM
+   = Max * Seed / IM
+</pre>
+      </ul>
+    </ul>
+    <p><strong>diff</strong> program output N = 1000 with this 10KB <a href="./fasta-output.txt">output file</a> to check your program output has the correct format, before you <a href="./play.html">contribute your program</a>.
+    <p>Use a larger command line argument (25000000) to check program performance.
+  </section>
+
+</article>
+<div>
+  <nav>
+    <ul>
+      <li><a href="./knucleotide-description.html#knucleotide"><span>k-nucleotide</span></a><p>Hashtable update and k-nucleotide strings
+      <li><a href="./revcomp-description.html#revcomp"><span>reverse-complement</span></a><p>Read DNA sequences - write their reverse-complement
+      <li><a href="./binarytrees-description.html#binarytrees"><span>binary-trees</span></a><p>Allocate and deallocate many many binary trees
+      <li><a href="./chameneosredux-description.html#chameneosredux"><span>chameneos-redux</span></a><p>Symmetrical thread rendezvous requests
+      <li><a href="./meteor-description.html#meteor"><span>meteor-contest</span></a><p>Search for solutions to shape packing puzzle
+      <li><a href="./threadring-description.html#threadring"><span>thread-ring</span></a><p>Switch from thread to thread passing one token
+      <li><a href="./-description.html#"><span></span></a><p>
+    </ul>
+  </nav>
+</div>

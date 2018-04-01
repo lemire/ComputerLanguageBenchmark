@@ -1,0 +1,20 @@
+# The Computer Language Benchmarks Game
+# $Id: README,v 1.1 2018/03/31 16:21:58 igouy-guest Exp $
+
+	benchmarksgame-html - April 2018
+
+
+
+ AUDIENCE
+
+ Someone who just downloaded benchmarksgame-html.zip
+
+
+ WHAT YOU GOT
+
+ A self-contained website generated from the hosted benchmarks game 
+ website, with internal links converted to reference static HTML pages 
+ (rather than PHP pages) -- prior to the 2018-05-01 Alioth hosting 
+ service shutdown.
+
+

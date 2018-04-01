@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 288">
+
+<!-- Copyright 2015 Isaac Gouy -->
+<!-- http://benchmarksgame.alioth.debian.org/license.html -->
+
+<g style="stroke: #ccc;" >
+<line x1="51" y1="264" x2="511" y2="264" />
+<line x1="51" y1="221.57" x2="511" y2="221.57" />
+<line x1="51" y1="201.85" x2="511" y2="201.85" />
+<line x1="51" y1="175.08" x2="511" y2="175.08" />
+<line x1="51" y1="132.65" x2="511" y2="132.65" />
+<line x1="51" y1="112.92" x2="511" y2="112.92" />
+<line x1="51" y1="86.15" x2="511" y2="86.15" />
+<line x1="51" y1="43.73" x2="511" y2="43.73" />
+<line x1="51" y1="24" x2="511" y2="24" />
+</g>
+<g style="text-anchor: end; font-family: Ubuntu,Verdana,sans-serif; font-size: 0.9em;" >
+<text x="51" y="262" >1</text>
+<text x="51" y="219.57" >3</text>
+<text x="51" y="199.85" >5</text>
+<text x="51" y="173.08" >10</text>
+<text x="51" y="130.65" >30</text>
+<text x="51" y="110.92" >50</text>
+<text x="51" y="84.15" >100</text>
+<text x="51" y="41.73" >300</text>
+<text x="51" y="22" ></text>
+</g>
+<defs>
+<linearGradient id="grade" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" style="stop-color: white" stop-opacity="0.6"/>
+<stop offset="1" style="stop-color: white" stop-opacity="0.8"/>
+</linearGradient>
+<mask id="fade">
+<rect x="58" y="24" width="452" height="288" fill="url(#grade)"  />
+</mask>
+<g id="backgroundText" style="text-anchor: end; font-family: Ubuntu,Verdana,sans-serif; font-size: 1em;">
+<text x="14" y="0" transform="rotate(270,14,0)" xml:space="preserve">   C gcc   C gcc   C gcc   C gcc   C gcc   C gcc   C gcc</text>
+<text x="37" y="0" transform="rotate(270,37,0)" xml:space="preserve">   C++ g++   C++ g++   C++ g++   C++ g++   C++ g++   C++ g++</text>
+<text x="60" y="0" transform="rotate(270,60,0)" xml:space="preserve">Rust   Rust   Rust   Rust   Rust   Rust   Rust   Rust   Rust</text>
+<text x="83" y="0" transform="rotate(270,83,0)" xml:space="preserve">ortran Intel   Fortran Intel   Fortran Intel   Fortran Intel</text>
+<text x="106" y="0" transform="rotate(270,106,0)" xml:space="preserve">da 2005 GNAT   Ada 2005 GNAT   Ada 2005 GNAT   Ada 2005 GNAT</text>
+<text x="129" y="0" transform="rotate(270,129,0)" xml:space="preserve">   </text>
+<text x="152" y="0" transform="rotate(270,152,0)" xml:space="preserve">Java   Java   Java   Java   Java   Java   Java   Java   Java</text>
+<text x="175" y="0" transform="rotate(270,175,0)" xml:space="preserve">   Chapel   Chapel   Chapel   Chapel   Chapel   Chapel</text>
+<text x="198" y="0" transform="rotate(270,198,0)" xml:space="preserve">   Swift   Swift   Swift   Swift   Swift   Swift   Swift</text>
+<text x="221" y="0" transform="rotate(270,221,0)" xml:space="preserve">   C# .NET Core   C# .NET Core   C# .NET Core   C# .NET Core</text>
+<text x="244" y="0" transform="rotate(270,244,0)" xml:space="preserve">   Lisp SBCL   Lisp SBCL   Lisp SBCL   Lisp SBCL   Lisp SBCL</text>
+<text x="267" y="0" transform="rotate(270,267,0)" xml:space="preserve">   </text>
+<text x="290" y="0" transform="rotate(270,290,0)" xml:space="preserve">   Go   Go   Go   Go   Go   Go   Go   Go   Go   Go   Go   Go</text>
+<text x="313" y="0" transform="rotate(270,313,0)" xml:space="preserve">Pascal Free Pascal   Pascal Free Pascal   Pascal Free Pascal</text>
+<text x="336" y="0" transform="rotate(270,336,0)" xml:space="preserve">   F# .NET Core   F# .NET Core   F# .NET Core   F# .NET Core</text>
+<text x="359" y="0" transform="rotate(270,359,0)" xml:space="preserve">   Haskell GHC   Haskell GHC   Haskell GHC   Haskell GHC</text>
+<text x="382" y="0" transform="rotate(270,382,0)" xml:space="preserve">   OCaml   OCaml   OCaml   OCaml   OCaml   OCaml   OCaml</text>
+</g>
+</defs>
+<use x="60" y="27" xlink:href="#backgroundText"/>
+<rect x="58" y="24" width="452" height="288" fill="white" mask="url(#fade)" />
+<rect x="58" y="264" width="452" height="288" style="fill: white; stroke: white;" />
+<g style="fill: black; stroke: black;">
+<rect x="71" y="256.76" width="1" height="7.24" />
+<rect x="94" y="247.37" width="1" height="16.63" />
+<rect x="117" y="222.91" width="1" height="41.09" />
+<rect x="140" y="209.76" width="1" height="54.24" />
+<rect x="163" y="205.6" width="1" height="58.02" />
+<rect x="186" y="708.61" width="1" height="0" />
+<rect x="209" y="195.21" width="1" height="51.08" />
+<rect x="232" y="196.12" width="1" height="67.88" />
+<rect x="255" y="210.55" width="1" height="50.16" />
+<rect x="278" y="195.04" width="1" height="51.4" />
+<rect x="301" y="194.58" width="1" height="65.41" />
+<rect x="324" y="708.61" width="1" height="0" />
+<rect x="347" y="191.58" width="1" height="63.58" />
+<rect x="370" y="159.59" width="1" height="101.68" />
+<rect x="393" y="182.89" width="1" height="72.26" />
+<rect x="416" y="173.93" width="1" height="67.82" />
+<rect x="439" y="183.46" width="1" height="56.54" />
+</g>
+<g style="fill: white; stroke: black;">
+<rect x="62" y="260.77" width="18" height="3.23" />
+<rect x="85" y="256.15" width="18" height="7.21" />
+<rect x="108" y="236.35" width="18" height="18.92" />
+<rect x="131" y="230.26" width="18" height="33.74" />
+<rect x="154" y="216.85" width="18" height="43.98" />
+<rect x="177" y="708.61" width="18" height="0" />
+<rect x="200" y="216.3" width="18" height="25.58" />
+<rect x="223" y="212.73" width="18" height="41.28" />
+<rect x="246" y="226.11" width="18" height="15.51" />
+<rect x="269" y="216.9" width="18" height="27.34" />
+<rect x="292" y="202.28" width="18" height="32.6" />
+<rect x="315" y="708.61" width="18" height="0" />
+<rect x="338" y="214.22" width="18" height="29.29" />
+<rect x="361" y="182.76" width="18" height="53.2" />
+<rect x="384" y="206.74" width="18" height="32.58" />
+<rect x="407" y="186.22" width="18" height="44.67" />
+<rect x="430" y="205.67" width="18" height="28.21" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="67" y1="264" x2="75.5" y2="264" />
+<line x1="67" y1="256.76" x2="75.5" y2="256.76" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="63" y="262.75" width="16" height="1" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="90" y1="264" x2="98.5" y2="264" />
+<line x1="90" y1="247.37" x2="98.5" y2="247.37" />
+<line x1="90" y1="242.7" x2="98.5" y2="242.7" />
+<rect x="94" y="242.7" width="1" height="5" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="86" y="260.45" width="16" height="1" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="113" y1="264" x2="121.5" y2="264" />
+<line x1="113" y1="222.91" x2="121.5" y2="222.91" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="109" y="247.27" width="16" height="1" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="136" y1="264" x2="144.5" y2="264" />
+<line x1="136" y1="209.76" x2="144.5" y2="209.76" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="132" y="239.37" width="16" height="1" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="159" y1="263.61" x2="167.5" y2="263.61" />
+<line x1="159" y1="205.6" x2="167.5" y2="205.6" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="155" y="233.77" width="16" height="1" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="182" y1="708.61" x2="190.5" y2="708.61" />
+<line x1="182" y1="708.61" x2="190.5" y2="708.61" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="178" y="707.61" width="16" height="1" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="205" y1="246.29" x2="213.5" y2="246.29" />
+<line x1="205" y1="195.21" x2="213.5" y2="195.21" />
+<line x1="205" y1="188.2" x2="213.5" y2="188.2" />
+<rect x="209" y="188.2" width="1" height="5" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="201" y="233.2" width="16" height="1" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="228" y1="264" x2="236.5" y2="264" />
+<line x1="228" y1="196.12" x2="236.5" y2="196.12" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="224" y="221.75" width="16" height="1" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="251" y1="260.71" x2="259.5" y2="260.71" />
+<line x1="251" y1="210.55" x2="259.5" y2="210.55" />
+<line x1="251" y1="112.08" x2="259.5" y2="112.08" />
+<rect x="255" y="112.08" width="1" height="5" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="247" y="234.29" width="16" height="1" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="274" y1="246.44" x2="282.5" y2="246.44" />
+<line x1="274" y1="195.04" x2="282.5" y2="195.04" />
+<line x1="274" y1="146.74" x2="282.5" y2="146.74" />
+<rect x="278" y="146.74" width="1" height="5" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="270" y="234.99" width="16" height="1" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="297" y1="259.99" x2="305.5" y2="259.99" />
+<line x1="297" y1="194.58" x2="305.5" y2="194.58" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="293" y="217.72" width="16" height="1" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="320" y1="708.61" x2="328.5" y2="708.61" />
+<line x1="320" y1="708.61" x2="328.5" y2="708.61" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="316" y="707.61" width="16" height="1" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="343" y1="255.15" x2="351.5" y2="255.15" />
+<line x1="343" y1="191.58" x2="351.5" y2="191.58" />
+<line x1="343" y1="150.06" x2="351.5" y2="150.06" />
+<rect x="347" y="150.06" width="1" height="5" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="339" y="231.15" width="16" height="1" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="366" y1="261.27" x2="374.5" y2="261.27" />
+<line x1="366" y1="159.59" x2="374.5" y2="159.59" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="362" y="224.34" width="16" height="1" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="389" y1="255.15" x2="397.5" y2="255.15" />
+<line x1="389" y1="182.89" x2="397.5" y2="182.89" />
+<line x1="389" y1="70.08" x2="397.5" y2="70.08" />
+<rect x="393" y="70.08" width="1" height="5" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="385" y="228.27" width="16" height="1" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="412" y1="241.75" x2="420.5" y2="241.75" />
+<line x1="412" y1="173.93" x2="420.5" y2="173.93" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="408" y="198.92" width="16" height="1" />
+</g>
+<g style="fill: black; stroke: black;">
+<line x1="435" y1="239.99" x2="443.5" y2="239.99" />
+<line x1="435" y1="183.46" x2="443.5" y2="183.46" />
+<line x1="435" y1="125.06" x2="443.5" y2="125.06" />
+<rect x="439" y="125.06" width="1" height="5" />
+</g>
+<g style="fill: black; stroke: black;">
+<rect x="431" y="210.33" width="16" height="1" />
+</g>
+<g style="text-anchor: end; font-family: Ubuntu,Verdana,sans-serif; font-size: 0.9em;" >
+<text x="512" y="282" >29 Mar 2018 u64q</text>
+<text x="58" y="282" style="text-anchor: start;" >benchmarks game</text>
+</g>
+<text x="16" y="144" transform="rotate(270,16,144)" style="text-anchor: middle; font-family: Ubuntu,Verdana,sans-serif; font-size: 0.9em;" >program time / fastest program time</text>
+<text x="285" y="18" style="text-anchor: middle; font-family: Ubuntu,Verdana,sans-serif; font-size: 1.2em;" >How many times slower?</text>
+<g style="stroke: #333;">
+<line x1="58" y1="24" x2="58" y2="264" />
+<line x1="511" y1="24" x2="511" y2="264" />
+<line x1="58" y1="264" x2="511" y2="264" />
+</g>
+</svg>
+

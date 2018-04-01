@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="all" />
+<meta name="description" content="Performance measurements for all the Fortran Intel programs implementing ~12 simple benchmark tasks, (64-bit Ubuntu quad core)." />
+<title>Fortran Intel measurements (64-bit Ubuntu quad core) | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article,footer{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}code,h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}nav p{margin:0 .5em}ul{clear:left;margin:-0.3em 0 1.5em;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,span{border-bottom:.1em solid #333;padding-bottom:.1em}
+#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.best{font-weight:bold}.message{font-size:.8em}table{color:#333;margin:1.3em auto 0;text-align:right}tbody:after{content:"-";display:block;line-height:2.6em;visibility:hidden}td{border-bottom:.15em dotted #eee;padding:.7em 0 0 1em}td a,th a{display:block}td:first-child,th:first-child{text-align:left;padding-left:0}th{font-weight:normal;padding:0 0 0 1em}
+@media only screen{th:nth-child(3),td:nth-child(3),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6),th:nth-child(7),td:nth-child(7){display:none}}@media only screen and (min-width:27em){th:nth-child(3),td:nth-child(3){display:table-cell}}@media only screen and (min-width:38em){th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:table-cell}}@media only screen and (min-width:47em){th:nth-child(7),td:nth-child(7){display:table-cell}}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+
+<article>
+  <div>
+    <h2>all Fortran Intel programs & measurements</h2>
+    <aside>
+      <p>&nbsp;</a>
+    </aside>
+  </div>
+  <section>
+    <table>
+      <tbody>
+      <tr>
+        <td colspan="7" class="message"><p>Intel(R) Fortran Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 18.0.0.128 Build 20170811</br>
+Copyright (C) 1985-2017 Intel Corporation.  All rights reserved.</br>
+FOR NON-COMMERCIAL USE ONLY
+
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./binarytrees-ifc-2.html"><span>binary-trees&nbsp;&nbsp;#2</span></a>
+          <td>
+          <td>&nbsp;7
+          <td>?
+          <td>1148
+          <td>0.01
+          <td class="message">
+        <tr>
+          <td><a href="./binarytrees-ifc-2.html"><span>binary-trees&nbsp;&nbsp;#2</span></a>
+          <td>0.04
+          <td>&nbsp;14
+          <td>?
+          <td>1148
+          <td>0.14
+          <td class="message">83%&nbsp;80%&nbsp;75%&nbsp;80%
+        <tr>
+          <td><a href="./binarytrees-ifc-2.html"><span>binary-trees&nbsp;&nbsp;#2</span></a>
+          <td>5.84
+          <td>&nbsp;21
+          <td>115,892
+          <td>1148
+          <td>17.30
+          <td class="message">63%&nbsp;68%&nbsp;66%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./binarytrees-ifc-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>
+          <td>&nbsp;7
+          <td>?
+          <td>773
+          <td>0.00
+          <td class="message">
+        <tr>
+          <td><a href="./binarytrees-ifc-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>0.33
+          <td>&nbsp;14
+          <td>2,404
+          <td>773
+          <td>0.32
+          <td class="message">0%&nbsp;6%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./binarytrees-ifc-1.html"><span>binary-trees&nbsp;</span></a>
+          <td>65.64
+          <td>&nbsp;21
+          <td>250,956
+          <td>773
+          <td>65.60
+          <td class="message">0%&nbsp;6%&nbsp;95%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fannkuchredux-ifc-3.html"><span>fannkuch-redux&nbsp;&nbsp;#3</span></a>
+          <td>0.11
+          <td>&nbsp;10
+          <td>?
+          <td>1158
+          <td>0.31
+          <td class="message">67%&nbsp;67%&nbsp;73%&nbsp;90%
+        <tr>
+          <td><a href="./fannkuchredux-ifc-3.html"><span>fannkuch-redux&nbsp;&nbsp;#3</span></a>
+          <td>0.96
+          <td>&nbsp;11
+          <td>3,456
+          <td>1158
+          <td>3.74
+          <td class="message">97%&nbsp;97%&nbsp;97%&nbsp;100%
+        <tr>
+          <td><a href="./fannkuchredux-ifc-3.html"><span>fannkuch-redux&nbsp;&nbsp;#3</span></a>
+          <td>12.93
+          <td>&nbsp;12
+          <td>10,848
+          <td>1158
+          <td>51.60
+          <td class="message">100%&nbsp;100%&nbsp;100%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fannkuchredux-ifc-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>0.42
+          <td>&nbsp;10
+          <td>1,412
+          <td>599
+          <td>0.42
+          <td class="message">0%&nbsp;100%&nbsp;0%&nbsp;2%
+        <tr>
+          <td><a href="./fannkuchredux-ifc-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>5.18
+          <td>&nbsp;11
+          <td>1,408
+          <td>599
+          <td>5.18
+          <td class="message">1%&nbsp;100%&nbsp;2%&nbsp;1%
+        <tr>
+          <td><a href="./fannkuchredux-ifc-1.html"><span>fannkuch-redux&nbsp;</span></a>
+          <td>69.43
+          <td>&nbsp;12
+          <td>1,412
+          <td>599
+          <td>69.41
+          <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fasta-ifc-3.html"><span>fasta&nbsp;&nbsp;#3</span></a>
+          <td>0.16
+          <td>&nbsp;250,000
+          <td>?
+          <td>1215
+          <td>0.16
+          <td class="message">0%&nbsp;100%&nbsp;0%&nbsp;0%
+        <tr>
+          <td><a href="./fasta-ifc-3.html"><span>fasta&nbsp;&nbsp;#3</span></a>
+          <td>1.58
+          <td>&nbsp;2,500,000
+          <td>8
+          <td>1215
+          <td>1.58
+          <td class="message">1%&nbsp;1%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./fasta-ifc-3.html"><span>fasta&nbsp;&nbsp;#3</span></a>
+          <td>4.73
+          <td>&nbsp;25,000,000
+          <td>8
+          <td>1215
+          <td>4.73
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;2%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fasta-ifc-4.html"><span>fasta&nbsp;&nbsp;#4</span></a>
+          <td>0.04
+          <td>&nbsp;250,000
+          <td>?
+          <td>1351
+          <td>0.04
+          <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./fasta-ifc-4.html"><span>fasta&nbsp;&nbsp;#4</span></a>
+          <td>0.33
+          <td>&nbsp;2,500,000
+          <td>8
+          <td>1351
+          <td>0.33
+          <td class="message">6%&nbsp;0%&nbsp;3%&nbsp;100%
+        <tr>
+          <td><a href="./fasta-ifc-4.html"><span>fasta&nbsp;&nbsp;#4</span></a>
+          <td>2.91
+          <td>&nbsp;25,000,000
+          <td>8
+          <td>1351
+          <td>2.90
+          <td class="message">100%&nbsp;0%&nbsp;1%&nbsp;2%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./fasta-ifc-1.html"><span>fasta&nbsp;</span></a>
+          <td>0.19
+          <td>&nbsp;250,000
+          <td>?
+          <td>1190
+          <td>0.18
+          <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./fasta-ifc-1.html"><span>fasta&nbsp;</span></a>
+          <td>1.84
+          <td>&nbsp;2,500,000
+          <td>8
+          <td>1190
+          <td>1.84
+          <td class="message">0%&nbsp;99%&nbsp;2%&nbsp;0%
+        <tr>
+          <td><a href="./fasta-ifc-1.html"><span>fasta&nbsp;</span></a>
+          <td>6.22
+          <td>&nbsp;25,000,000
+          <td>8
+          <td>1190
+          <td>6.22
+          <td class="message">0%&nbsp;61%&nbsp;40%&nbsp;0%
+      <tbody>
+        <tr>
+          <td><a href="./knucleotide-ifc-1.html"><span>k-nucleotide&nbsp;</span></a>
+          <td class="message">Failed
+          <td>&nbsp;250,000
+          <td>
+          <td>
+          <td>
+          <td class="message">
+      <tbody>
+        <tr>
+          <td><a href="./mandelbrot-ifc-3.html"><span>mandelbrot&nbsp;&nbsp;#3</span></a>
+          <td class="message">Bad&nbsp;Output
+          <td>&nbsp;1,000
+          <td>
+          <td>
+          <td>
+          <td class="message">
+      <tbody>
+        <tr>
+          <td><a href="./mandelbrot-ifc-7.html"><span>mandelbrot&nbsp;&nbsp;#7</span></a>
+          <td class="message">Bad&nbsp;Output
+          <td>&nbsp;1,000
+          <td>
+          <td>
+          <td>
+          <td class="message">
+      <tbody>
+        <tr>
+          <td><a href="./mandelbrot-ifc-1.html"><span>mandelbrot&nbsp;</span></a>
+          <td class="message">Bad&nbsp;Output
+          <td>&nbsp;1,000
+          <td>
+          <td>
+          <td>
+          <td class="message">
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-ifc-6.html"><span>mandelbrot&nbsp;&nbsp;#6</span></a>
+          <td>0.03
+          <td>&nbsp;1,000
+          <td>?
+          <td>661
+          <td>0.12
+          <td class="message">100%&nbsp;100%&nbsp;100%&nbsp;100%
+        <tr>
+          <td><a href="./mandelbrot-ifc-6.html"><span>mandelbrot&nbsp;&nbsp;#6</span></a>
+          <td>0.41
+          <td>&nbsp;4,000
+          <td>2,444
+          <td>661
+          <td>1.60
+          <td class="message">100%&nbsp;100%&nbsp;100%&nbsp;100%
+        <tr>
+          <td><a href="./mandelbrot-ifc-6.html"><span>mandelbrot&nbsp;&nbsp;#6</span></a>
+          <td>6.16
+          <td>&nbsp;16,000
+          <td>59,724
+          <td>661
+          <td>20.76
+          <td class="message">79%&nbsp;80%&nbsp;79%&nbsp;100%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-ifc-5.html"><span>mandelbrot&nbsp;&nbsp;#5</span></a>
+          <td>0.24
+          <td>&nbsp;1,000
+          <td>1,408
+          <td>520
+          <td>0.24
+          <td class="message">4%&nbsp;4%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./mandelbrot-ifc-5.html"><span>mandelbrot&nbsp;&nbsp;#5</span></a>
+          <td>3.80
+          <td>&nbsp;4,000
+          <td>3,936
+          <td>520
+          <td>3.80
+          <td class="message">1%&nbsp;0%&nbsp;1%&nbsp;100%
+        <tr>
+          <td><a href="./mandelbrot-ifc-5.html"><span>mandelbrot&nbsp;&nbsp;#5</span></a>
+          <td>60.31
+          <td>&nbsp;16,000
+          <td>34,036
+          <td>520
+          <td>60.30
+          <td class="message">0%&nbsp;52%&nbsp;49%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-ifc-4.html"><span>mandelbrot&nbsp;&nbsp;#4</span></a>
+          <td>0.09
+          <td>&nbsp;1,000
+          <td>?
+          <td>618
+          <td>0.31
+          <td class="message">100%&nbsp;89%&nbsp;75%&nbsp;100%
+        <tr>
+          <td><a href="./mandelbrot-ifc-4.html"><span>mandelbrot&nbsp;&nbsp;#4</span></a>
+          <td>1.19
+          <td>&nbsp;4,000
+          <td>4,416
+          <td>618
+          <td>3.60
+          <td class="message">99%&nbsp;96%&nbsp;56%&nbsp;52%
+        <tr>
+          <td><a href="./mandelbrot-ifc-4.html"><span>mandelbrot&nbsp;&nbsp;#4</span></a>
+          <td>18.83
+          <td>&nbsp;16,000
+          <td>62,360
+          <td>618
+          <td>48.70
+          <td class="message">84%&nbsp;50%&nbsp;93%&nbsp;33%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./mandelbrot-ifc-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>0.20
+          <td>&nbsp;1,000
+          <td>?
+          <td>821
+          <td>0.20
+          <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./mandelbrot-ifc-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td>3.18
+          <td>&nbsp;4,000
+          <td>18,568
+          <td>821
+          <td>3.17
+          <td class="message">100%&nbsp;0%&nbsp;0%&nbsp;0%
+        <tr>
+          <td><a href="./mandelbrot-ifc-2.html"><span>mandelbrot&nbsp;&nbsp;#2</span></a>
+          <td class="message">Bad&nbsp;Output
+          <td>&nbsp;16,000
+          <td>
+          <td>
+          <td>
+          <td class="message">
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-ifc-1.html"><span>n-body&nbsp;</span></a>
+          <td>0.20
+          <td>&nbsp;500,000
+          <td>?
+          <td>1393
+          <td>0.20
+          <td class="message">100%&nbsp;5%&nbsp;0%&nbsp;5%
+        <tr>
+          <td><a href="./nbody-ifc-1.html"><span>n-body&nbsp;</span></a>
+          <td>1.96
+          <td>&nbsp;5,000,000
+          <td>8
+          <td>1393
+          <td>1.96
+          <td class="message">99%&nbsp;1%&nbsp;1%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-ifc-1.html"><span>n-body&nbsp;</span></a>
+          <td>19.61
+          <td>&nbsp;50,000,000
+          <td>8
+          <td>1393
+          <td>19.61
+          <td class="message">100%&nbsp;0%&nbsp;1%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-ifc-5.html"><span>n-body&nbsp;&nbsp;#5</span></a>
+          <td>0.09
+          <td>&nbsp;500,000
+          <td>?
+          <td>1664
+          <td>0.09
+          <td class="message">0%&nbsp;0%&nbsp;0%&nbsp;91%
+        <tr>
+          <td><a href="./nbody-ifc-5.html"><span>n-body&nbsp;&nbsp;#5</span></a>
+          <td>0.91
+          <td>&nbsp;5,000,000
+          <td>8
+          <td>1664
+          <td>0.91
+          <td class="message">3%&nbsp;1%&nbsp;1%&nbsp;100%
+        <tr>
+          <td><a href="./nbody-ifc-5.html"><span>n-body&nbsp;&nbsp;#5</span></a>
+          <td>9.09
+          <td>&nbsp;50,000,000
+          <td>8
+          <td>1664
+          <td>9.09
+          <td class="message">100%&nbsp;0%&nbsp;1%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-ifc-6.html"><span>n-body&nbsp;&nbsp;#6</span></a>
+          <td>0.09
+          <td>&nbsp;500,000
+          <td>?
+          <td>1524
+          <td>0.08
+          <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;11%
+        <tr>
+          <td><a href="./nbody-ifc-6.html"><span>n-body&nbsp;&nbsp;#6</span></a>
+          <td>0.83
+          <td>&nbsp;5,000,000
+          <td>8
+          <td>1524
+          <td>0.82
+          <td class="message">1%&nbsp;0%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-ifc-6.html"><span>n-body&nbsp;&nbsp;#6</span></a>
+          <td>8.21
+          <td>&nbsp;50,000,000
+          <td>8
+          <td>1524
+          <td>8.21
+          <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-ifc-2.html"><span>n-body&nbsp;&nbsp;#2</span></a>
+          <td>0.20
+          <td>&nbsp;500,000
+          <td>?
+          <td>1500
+          <td>0.20
+          <td class="message">100%&nbsp;0%&nbsp;5%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-ifc-2.html"><span>n-body&nbsp;&nbsp;#2</span></a>
+          <td>1.98
+          <td>&nbsp;5,000,000
+          <td>8
+          <td>1500
+          <td>1.97
+          <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;1%
+        <tr>
+          <td><a href="./nbody-ifc-2.html"><span>n-body&nbsp;&nbsp;#2</span></a>
+          <td>19.71
+          <td>&nbsp;50,000,000
+          <td>8
+          <td>1500
+          <td>19.71
+          <td class="message">100%&nbsp;0%&nbsp;1%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-ifc-3.html"><span>n-body&nbsp;&nbsp;#3</span></a>
+          <td>0.23
+          <td>&nbsp;500,000
+          <td>8
+          <td>1305
+          <td>0.23
+          <td class="message">4%&nbsp;0%&nbsp;0%&nbsp;100%
+        <tr>
+          <td><a href="./nbody-ifc-3.html"><span>n-body&nbsp;&nbsp;#3</span></a>
+          <td>2.25
+          <td>&nbsp;5,000,000
+          <td>8
+          <td>1305
+          <td>2.25
+          <td class="message">0%&nbsp;100%&nbsp;2%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-ifc-3.html"><span>n-body&nbsp;&nbsp;#3</span></a>
+          <td>22.41
+          <td>&nbsp;50,000,000
+          <td>8
+          <td>1305
+          <td>22.41
+          <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;0%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./nbody-ifc-4.html"><span>n-body&nbsp;&nbsp;#4</span></a>
+          <td>0.23
+          <td>&nbsp;500,000
+          <td>8
+          <td>1179
+          <td>0.22
+          <td class="message">0%&nbsp;5%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-ifc-4.html"><span>n-body&nbsp;&nbsp;#4</span></a>
+          <td>2.17
+          <td>&nbsp;5,000,000
+          <td>8
+          <td>1179
+          <td>2.17
+          <td class="message">0%&nbsp;100%&nbsp;1%&nbsp;0%
+        <tr>
+          <td><a href="./nbody-ifc-4.html"><span>n-body&nbsp;&nbsp;#4</span></a>
+          <td>21.68
+          <td>&nbsp;50,000,000
+          <td>8
+          <td>1179
+          <td>21.67
+          <td class="message">100%&nbsp;0%&nbsp;1%&nbsp;0%
+      <tbody>
+        <tr>
+          <td><a href="./pidigits-ifc-3.html"><span>pidigits&nbsp;&nbsp;#3</span></a>
+          <td class="message">Make&nbsp;Error
+          <td>&nbsp;2,000
+          <td>
+          <td>
+          <td>
+          <td class="message">
+      <tbody>
+        <tr>
+          <td><a href="./pidigits-ifc-1.html"><span>pidigits&nbsp;</span></a>
+          <td class="message">Failed
+          <td>&nbsp;2,000
+          <td>
+          <td>
+          <td>
+          <td class="message">
+      <tbody>
+        <tr>
+          <td><a href="./revcomp-ifc-1.html"><span>reverse-complement&nbsp;</span></a>
+          <td class="message">Make&nbsp;Error
+          <td>&nbsp;250,000
+          <td>
+          <td>
+          <td>
+          <td class="message">
+      <tbody>
+        <tr>
+          <td><a href="./revcomp-ifc-2.html"><span>reverse-complement&nbsp;&nbsp;#2</span></a>
+          <td class="message">Make&nbsp;Error
+          <td>&nbsp;250,000
+          <td>
+          <td>
+          <td>
+          <td class="message">
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-ifc-3.html"><span>spectral-norm&nbsp;&nbsp;#3</span></a>
+          <td>0.02
+          <td>&nbsp;500
+          <td>?
+          <td>638
+          <td>0.08
+          <td class="message">100%&nbsp;100%&nbsp;100%&nbsp;67%
+        <tr>
+          <td><a href="./spectralnorm-ifc-3.html"><span>spectral-norm&nbsp;&nbsp;#3</span></a>
+          <td>0.60
+          <td>&nbsp;3,000
+          <td>2,940
+          <td>638
+          <td>2.38
+          <td class="message">98%&nbsp;100%&nbsp;100%&nbsp;100%
+        <tr>
+          <td><a href="./spectralnorm-ifc-3.html"><span>spectral-norm&nbsp;&nbsp;#3</span></a>
+          <td>1.98
+          <td>&nbsp;5,500
+          <td>2,944
+          <td>638
+          <td>7.88
+          <td class="message">100%&nbsp;100%&nbsp;100%&nbsp;99%
+      <tbody>
+        <tr>
+          <th>source
+          <th>secs
+          <th>N
+          <th>mem
+          <th>gz
+          <th>cpu
+          <th>cpu load
+        <tr>
+          <td><a href="./spectralnorm-ifc-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>0.07
+          <td>&nbsp;500
+          <td>?
+          <td>513
+          <td>0.07
+          <td class="message">0%&nbsp;0%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./spectralnorm-ifc-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>2.34
+          <td>&nbsp;3,000
+          <td>2,880
+          <td>513
+          <td>2.34
+          <td class="message">0%&nbsp;2%&nbsp;100%&nbsp;0%
+        <tr>
+          <td><a href="./spectralnorm-ifc-2.html"><span>spectral-norm&nbsp;&nbsp;#2</span></a>
+          <td>7.85
+          <td>&nbsp;5,500
+          <td>2,880
+          <td>513
+          <td>7.85
+          <td class="message">0%&nbsp;1%&nbsp;100%&nbsp;0%
+    </table>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./why-measure-toy-benchmark-programs.html"><span>toy programs</span></a>
+      <li><a href="./how-programs-are-measured.html"><span>details</span></a>
+      <li><a href="./dont-jump-to-conclusions.html"><span>conclusions</span></a>
+    </ul>
+  </nav>
+  <aside>
+    <p>We want easy answers, but easy answers are often incomplete or wrong. You and I know, there's more we need to understand.
+  </aside>
+</footer>
+

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>chameneos-redux Java&nbsp;#2 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>chameneos-redux Java&nbsp;#2 program</h2>
+    <aside>
+      <p><a href="./chameneosredux-description.html#chameneosredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">/* The Computer Language Benchmarks Game</span>
+<span class="com">   http://benchmarksgame.alioth.debian.org/</span>
+<span class="com"></span>
+<span class="com">   contributed by Michael Barker</span>
+<span class="com">   based on a contribution by Luzius Meisser</span>
+<span class="com">*/</span>
+
+<span class="com">/**</span>
+<span class="com"> * This implementation uses standard Java threading (native threads).</span>
+<span class="com"> * </span>
+<span class="com"> * This implementation simply adds the new functionality to the orginal </span>
+<span class="com"> * implementation by Luzius Meisser from old chameneos shootout.  The interesting</span>
+<span class="com"> * part of this implementation, is that while a creature is waiting it does not</span>
+<span class="com"> * block its thread, rather it spins in a loop using a Thread.yield().</span>
+<span class="com"> */</span>
+<span class="kwa">public class</span> chameneosredux <span class="opt">{</span>
+
+    <span class="kwa">enum</span> Colour <span class="opt">{</span>
+        blue<span class="opt">,</span>
+        red<span class="opt">,</span>
+        yellow
+    <span class="opt">}</span>
+        
+    <span class="kwa">private static</span> Colour <span class="kwd">doCompliment</span><span class="opt">(</span>Colour c1<span class="opt">,</span> Colour c2<span class="opt">) {</span>
+        <span class="kwa">switch</span> <span class="opt">(</span>c1<span class="opt">) {</span>
+        <span class="kwa">case</span> blue<span class="opt">:</span>
+            <span class="kwa">switch</span> <span class="opt">(</span>c2<span class="opt">) {</span>
+            <span class="kwa">case</span> blue<span class="opt">:</span>
+                <span class="kwa">return</span> Colour<span class="opt">.</span>blue<span class="opt">;</span>
+            <span class="kwa">case</span> red<span class="opt">:</span>
+                <span class="kwa">return</span> Colour<span class="opt">.</span>yellow<span class="opt">;</span>
+            <span class="kwa">case</span> yellow<span class="opt">:</span>
+                <span class="kwa">return</span> Colour<span class="opt">.</span>red<span class="opt">;</span>
+            <span class="opt">}</span>
+        <span class="kwa">case</span> red<span class="opt">:</span>
+            <span class="kwa">switch</span> <span class="opt">(</span>c2<span class="opt">) {</span>
+            <span class="kwa">case</span> blue<span class="opt">:</span>
+                <span class="kwa">return</span> Colour<span class="opt">.</span>yellow<span class="opt">;</span>
+            <span class="kwa">case</span> red<span class="opt">:</span>
+                <span class="kwa">return</span> Colour<span class="opt">.</span>red<span class="opt">;</span>
+            <span class="kwa">case</span> yellow<span class="opt">:</span>
+                <span class="kwa">return</span> Colour<span class="opt">.</span>blue<span class="opt">;</span>
+            <span class="opt">}</span>
+        <span class="kwa">case</span> yellow<span class="opt">:</span>
+            <span class="kwa">switch</span> <span class="opt">(</span>c2<span class="opt">) {</span>
+            <span class="kwa">case</span> blue<span class="opt">:</span>
+                <span class="kwa">return</span> Colour<span class="opt">.</span>red<span class="opt">;</span>
+            <span class="kwa">case</span> red<span class="opt">:</span>
+                <span class="kwa">return</span> Colour<span class="opt">.</span>blue<span class="opt">;</span>
+            <span class="kwa">case</span> yellow<span class="opt">:</span>
+                <span class="kwa">return</span> Colour<span class="opt">.</span>yellow<span class="opt">;</span>
+            <span class="opt">}</span>
+        <span class="opt">}</span>
+        
+        <span class="kwa">throw new</span> <span class="kwd">RuntimeException</span><span class="opt">(</span><span class="str">&quot;Error&quot;</span><span class="opt">);</span>
+    <span class="opt">}</span>
+
+    <span class="kwa">static class</span> MeetingPlace <span class="opt">{</span>
+        
+        <span class="kwa">private int</span> meetingsLeft<span class="opt">;</span>
+
+        <span class="kwa">public</span> <span class="kwd">MeetingPlace</span><span class="opt">(</span><span class="kwa">int</span> meetings<span class="opt">) {</span>
+            <span class="kwa">this</span><span class="opt">.</span>meetingsLeft <span class="opt">=</span> meetings<span class="opt">;</span>
+        <span class="opt">}</span>
+        
+        <span class="kwa">private</span> Colour firstColour <span class="opt">=</span> <span class="kwb">null</span><span class="opt">;</span>
+        <span class="kwa">private int</span> firstId <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+        Future<span class="opt">&lt;</span>Pair<span class="opt">&gt;</span> current<span class="opt">;</span>
+        
+        <span class="kwa">public</span> Pair <span class="kwd">meet</span><span class="opt">(</span><span class="kwa">int</span> id<span class="opt">,</span> Colour c<span class="opt">)</span> <span class="kwa">throws</span> Exception <span class="opt">{</span>
+            Future<span class="opt">&lt;</span>Pair<span class="opt">&gt;</span> newPair<span class="opt">;</span>
+            <span class="kwa">synchronized</span> <span class="opt">(</span><span class="kwa">this</span><span class="opt">) {</span>
+                <span class="kwa">if</span> <span class="opt">(</span>meetingsLeft <span class="opt">==</span> <span class="num">0</span><span class="opt">) {</span>
+                    <span class="kwa">throw new</span> <span class="kwd">Exception</span><span class="opt">(</span><span class="str">&quot;Finished&quot;</span><span class="opt">);</span>
+                <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span>
+                    <span class="kwa">if</span> <span class="opt">(</span>firstColour <span class="opt">==</span> <span class="kwb">null</span><span class="opt">) {</span>
+                        firstColour <span class="opt">=</span> c<span class="opt">;</span>
+                        firstId <span class="opt">=</span> id<span class="opt">;</span>
+                        current <span class="opt">=</span> <span class="kwa">new</span> Future<span class="opt">&lt;</span>Pair<span class="opt">&gt;();</span>
+                    <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span>
+                        Colour newColour <span class="opt">=</span> <span class="kwd">doCompliment</span><span class="opt">(</span>c<span class="opt">,</span> firstColour<span class="opt">);</span>
+                        current<span class="opt">.</span><span class="kwd">setItem</span><span class="opt">(</span><span class="kwa">new</span> <span class="kwd">Pair</span><span class="opt">(</span>id <span class="opt">==</span> firstId<span class="opt">,</span> newColour<span class="opt">));</span>
+                        firstColour <span class="opt">=</span> <span class="kwb">null</span><span class="opt">;</span>
+                        meetingsLeft<span class="opt">--;</span>
+                    <span class="opt">}</span>
+                    newPair <span class="opt">=</span> current<span class="opt">;</span>
+                <span class="opt">}</span>
+            <span class="opt">}</span>
+            <span class="kwa">return</span> newPair<span class="opt">.</span><span class="kwd">getItem</span><span class="opt">();</span>
+            
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+        
+    <span class="kwa">public static class</span> Future<span class="opt">&lt;</span>T<span class="opt">&gt; {</span>
+
+        <span class="kwa">private volatile</span> T t<span class="opt">;</span>
+
+        <span class="kwa">public</span> T <span class="kwd">getItem</span><span class="opt">() {</span>
+            <span class="kwa">while</span> <span class="opt">(</span>t <span class="opt">==</span> <span class="kwb">null</span><span class="opt">) {</span>
+                Thread<span class="opt">.</span><span class="kwd">yield</span><span class="opt">();</span>
+            <span class="opt">}</span>
+            <span class="kwa">return</span> t<span class="opt">;</span>
+        <span class="opt">}</span>
+
+        <span class="slc">// no synchronization necessary as assignment is atomic</span>
+        <span class="kwa">public void</span> <span class="kwd">setItem</span><span class="opt">(</span>T t<span class="opt">) {</span>
+            <span class="kwa">this</span><span class="opt">.</span>t <span class="opt">=</span> t<span class="opt">;</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>    
+    
+    <span class="kwa">static class</span> Creature <span class="kwa">implements</span> Runnable <span class="opt">{</span>
+
+        <span class="kwa">private final</span> MeetingPlace place<span class="opt">;</span>
+        <span class="kwa">private int</span> count <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+        <span class="kwa">private int</span> sameCount <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+        <span class="kwa">private</span> Colour colour<span class="opt">;</span>
+        <span class="kwa">private int</span> id<span class="opt">;</span>
+
+        <span class="kwa">public</span> <span class="kwd">Creature</span><span class="opt">(</span>MeetingPlace place<span class="opt">,</span> Colour colour<span class="opt">) {</span>
+            <span class="kwa">this</span><span class="opt">.</span>place <span class="opt">=</span> place<span class="opt">;</span>
+            <span class="kwa">this</span><span class="opt">.</span>id <span class="opt">=</span> System<span class="opt">.</span><span class="kwd">identityHashCode</span><span class="opt">(</span><span class="kwa">this</span><span class="opt">);</span>
+            <span class="kwa">this</span><span class="opt">.</span>colour <span class="opt">=</span> colour<span class="opt">;</span>
+        <span class="opt">}</span>
+        
+        <span class="kwa">public void</span> <span class="kwd">run</span><span class="opt">() {</span>
+            <span class="kwa">try</span> <span class="opt">{</span>
+                
+                <span class="kwa">while</span> <span class="opt">(</span><span class="kwb">true</span><span class="opt">) {</span>
+                    Pair p <span class="opt">=</span> place<span class="opt">.</span><span class="kwd">meet</span><span class="opt">(</span>id<span class="opt">,</span> colour<span class="opt">);</span>
+                    colour <span class="opt">=</span> p<span class="opt">.</span>colour<span class="opt">;</span>
+                    <span class="kwa">if</span> <span class="opt">(</span>p<span class="opt">.</span>sameId<span class="opt">) {</span>
+                        sameCount<span class="opt">++;</span>
+                    <span class="opt">}</span>
+                    count<span class="opt">++;</span>
+                <span class="opt">}</span>
+                
+            <span class="opt">}</span> <span class="kwa">catch</span> <span class="opt">(</span>Exception e<span class="opt">) {}</span>
+        <span class="opt">}</span>
+        
+        <span class="kwa">public int</span> <span class="kwd">getCount</span><span class="opt">() {</span>
+            <span class="kwa">return</span> count<span class="opt">;</span>
+        <span class="opt">}</span>
+        
+        <span class="kwa">public</span> String <span class="kwd">toString</span><span class="opt">() {</span>
+            <span class="kwa">return</span> String<span class="opt">.</span><span class="kwd">valueOf</span><span class="opt">(</span>count<span class="opt">) +</span> <span class="kwd">getNumber</span><span class="opt">(</span>sameCount<span class="opt">);</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>    
+    
+    <span class="kwa">private static void</span> <span class="kwd">run</span><span class="opt">(</span><span class="kwa">int</span> n<span class="opt">,</span> Colour<span class="opt">...</span>colours<span class="opt">) {</span>
+        MeetingPlace place <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">MeetingPlace</span><span class="opt">(</span>n<span class="opt">);</span>
+        Creature<span class="opt">[]</span> creatures <span class="opt">=</span> <span class="kwa">new</span> Creature<span class="opt">[</span>colours<span class="opt">.</span>length<span class="opt">];</span>
+        <span class="kwa">for</span> <span class="opt">(</span><span class="kwa">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> colours<span class="opt">.</span>length<span class="opt">;</span> i<span class="opt">++) {</span>
+            System<span class="opt">.</span>out<span class="opt">.</span><span class="kwd">print</span><span class="opt">(</span><span class="str">&quot; &quot;</span> <span class="opt">+</span> colours<span class="opt">[</span>i<span class="opt">]);</span>
+            creatures<span class="opt">[</span>i<span class="opt">] =</span> <span class="kwa">new</span> <span class="kwd">Creature</span><span class="opt">(</span>place<span class="opt">,</span> colours<span class="opt">[</span>i<span class="opt">]);</span>
+        <span class="opt">}</span>
+        System<span class="opt">.</span>out<span class="opt">.</span><span class="kwd">println</span><span class="opt">();</span>
+        Thread<span class="opt">[]</span> ts <span class="opt">=</span> <span class="kwa">new</span> Thread<span class="opt">[</span>colours<span class="opt">.</span>length<span class="opt">];</span>
+        <span class="kwa">for</span> <span class="opt">(</span><span class="kwa">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> colours<span class="opt">.</span>length<span class="opt">;</span> i<span class="opt">++) {</span>
+            ts<span class="opt">[</span>i<span class="opt">] =</span> <span class="kwa">new</span> <span class="kwd">Thread</span><span class="opt">(</span>creatures<span class="opt">[</span>i<span class="opt">]);</span>
+            ts<span class="opt">[</span>i<span class="opt">].</span><span class="kwd">start</span><span class="opt">();</span>
+        <span class="opt">}</span>
+        
+        <span class="kwa">for</span> <span class="opt">(</span>Thread t <span class="opt">:</span> ts<span class="opt">) {</span>
+            <span class="kwa">try</span> <span class="opt">{</span>
+                t<span class="opt">.</span><span class="kwd">join</span><span class="opt">();</span>
+            <span class="opt">}</span> <span class="kwa">catch</span> <span class="opt">(</span>InterruptedException e<span class="opt">) {</span>
+            <span class="opt">}</span>
+        <span class="opt">}</span>
+        
+        <span class="kwa">int</span> total <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+        <span class="kwa">for</span> <span class="opt">(</span>Creature creature <span class="opt">:</span> creatures<span class="opt">) {</span>
+            System<span class="opt">.</span>out<span class="opt">.</span><span class="kwd">println</span><span class="opt">(</span>creature<span class="opt">);</span>
+            total <span class="opt">+=</span> creature<span class="opt">.</span><span class="kwd">getCount</span><span class="opt">();</span>
+        <span class="opt">}</span>
+        System<span class="opt">.</span>out<span class="opt">.</span><span class="kwd">println</span><span class="opt">(</span><span class="kwd">getNumber</span><span class="opt">(</span>total<span class="opt">));</span>
+        System<span class="opt">.</span>out<span class="opt">.</span><span class="kwd">println</span><span class="opt">();</span>
+    <span class="opt">}</span>
+    
+    <span class="kwa">public static void</span> <span class="kwd">main</span><span class="opt">(</span>String<span class="opt">[]</span> args<span class="opt">) {</span>
+        
+        <span class="kwa">int</span> n <span class="opt">=</span> <span class="num">600</span><span class="opt">;</span>
+        <span class="kwa">try</span> <span class="opt">{</span>
+            n <span class="opt">=</span> Integer<span class="opt">.</span><span class="kwd">parseInt</span><span class="opt">(</span>args<span class="opt">[</span><span class="num">0</span><span class="opt">]);</span>
+        <span class="opt">}</span> <span class="kwa">catch</span> <span class="opt">(</span>Exception e<span class="opt">) {</span>
+        <span class="opt">}</span>
+        
+        <span class="kwd">printColours</span><span class="opt">();</span>
+        System<span class="opt">.</span>out<span class="opt">.</span><span class="kwd">println</span><span class="opt">();</span>
+        <span class="kwd">run</span><span class="opt">(</span>n<span class="opt">,</span> Colour<span class="opt">.</span>blue<span class="opt">,</span> Colour<span class="opt">.</span>red<span class="opt">,</span> Colour<span class="opt">.</span>yellow<span class="opt">);</span>
+        <span class="kwd">run</span><span class="opt">(</span>n<span class="opt">,</span> Colour<span class="opt">.</span>blue<span class="opt">,</span> Colour<span class="opt">.</span>red<span class="opt">,</span> Colour<span class="opt">.</span>yellow<span class="opt">,</span> Colour<span class="opt">.</span>red<span class="opt">,</span> Colour<span class="opt">.</span>yellow<span class="opt">,</span> 
+                Colour<span class="opt">.</span>blue<span class="opt">,</span> Colour<span class="opt">.</span>red<span class="opt">,</span> Colour<span class="opt">.</span>yellow<span class="opt">,</span> Colour<span class="opt">.</span>red<span class="opt">,</span> Colour<span class="opt">.</span>blue<span class="opt">);</span>
+    <span class="opt">}</span>    
+
+    <span class="kwa">public static class</span> Pair <span class="opt">{</span>
+        <span class="kwa">public final boolean</span> sameId<span class="opt">;</span>
+        <span class="kwa">public final</span> Colour colour<span class="opt">;</span>
+
+        <span class="kwa">public</span> <span class="kwd">Pair</span><span class="opt">(</span><span class="kwa">boolean</span> sameId<span class="opt">,</span> Colour c<span class="opt">) {</span>
+            <span class="kwa">this</span><span class="opt">.</span>sameId <span class="opt">=</span> sameId<span class="opt">;</span>
+            <span class="kwa">this</span><span class="opt">.</span>colour <span class="opt">=</span> c<span class="opt">;</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+    
+    <span class="kwa">private static final</span> String<span class="opt">[]</span> NUMBERS <span class="opt">= {</span>
+        <span class="str">&quot;zero&quot;</span><span class="opt">,</span> <span class="str">&quot;one&quot;</span><span class="opt">,</span> <span class="str">&quot;two&quot;</span><span class="opt">,</span> <span class="str">&quot;three&quot;</span><span class="opt">,</span> <span class="str">&quot;four&quot;</span><span class="opt">,</span> <span class="str">&quot;five&quot;</span><span class="opt">,</span> 
+        <span class="str">&quot;six&quot;</span><span class="opt">,</span> <span class="str">&quot;seven&quot;</span><span class="opt">,</span> <span class="str">&quot;eight&quot;</span><span class="opt">,</span> <span class="str">&quot;nine&quot;</span>
+    <span class="opt">};</span>
+    
+    <span class="kwa">private static</span> String <span class="kwd">getNumber</span><span class="opt">(</span><span class="kwa">int</span> n<span class="opt">) {</span>
+        StringBuilder sb <span class="opt">=</span> <span class="kwa">new</span> <span class="kwd">StringBuilder</span><span class="opt">();</span>
+        String nStr <span class="opt">=</span> String<span class="opt">.</span><span class="kwd">valueOf</span><span class="opt">(</span>n<span class="opt">);</span>
+        <span class="kwa">for</span> <span class="opt">(</span><span class="kwa">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> nStr<span class="opt">.</span><span class="kwd">length</span><span class="opt">();</span> i<span class="opt">++) {</span>
+            sb<span class="opt">.</span><span class="kwd">append</span><span class="opt">(</span><span class="str">&quot; &quot;</span><span class="opt">);</span>
+            sb<span class="opt">.</span><span class="kwd">append</span><span class="opt">(</span>NUMBERS<span class="opt">[</span>Character<span class="opt">.</span><span class="kwd">getNumericValue</span><span class="opt">(</span>nStr<span class="opt">.</span><span class="kwd">charAt</span><span class="opt">(</span>i<span class="opt">))]);</span>
+        <span class="opt">}</span>
+        
+        <span class="kwa">return</span> sb<span class="opt">.</span><span class="kwd">toString</span><span class="opt">();</span>
+    <span class="opt">}</span>
+    
+    <span class="kwa">private static void</span> <span class="kwd">printColours</span><span class="opt">() {</span>
+        <span class="kwd">printColours</span><span class="opt">(</span>Colour<span class="opt">.</span>blue<span class="opt">,</span> Colour<span class="opt">.</span>blue<span class="opt">);</span>
+        <span class="kwd">printColours</span><span class="opt">(</span>Colour<span class="opt">.</span>blue<span class="opt">,</span> Colour<span class="opt">.</span>red<span class="opt">);</span>
+        <span class="kwd">printColours</span><span class="opt">(</span>Colour<span class="opt">.</span>blue<span class="opt">,</span> Colour<span class="opt">.</span>yellow<span class="opt">);</span>
+        <span class="kwd">printColours</span><span class="opt">(</span>Colour<span class="opt">.</span>red<span class="opt">,</span> Colour<span class="opt">.</span>blue<span class="opt">);</span>
+        <span class="kwd">printColours</span><span class="opt">(</span>Colour<span class="opt">.</span>red<span class="opt">,</span> Colour<span class="opt">.</span>red<span class="opt">);</span>
+        <span class="kwd">printColours</span><span class="opt">(</span>Colour<span class="opt">.</span>red<span class="opt">,</span> Colour<span class="opt">.</span>yellow<span class="opt">);</span>
+        <span class="kwd">printColours</span><span class="opt">(</span>Colour<span class="opt">.</span>yellow<span class="opt">,</span> Colour<span class="opt">.</span>blue<span class="opt">);</span>
+        <span class="kwd">printColours</span><span class="opt">(</span>Colour<span class="opt">.</span>yellow<span class="opt">,</span> Colour<span class="opt">.</span>red<span class="opt">);</span>
+        <span class="kwd">printColours</span><span class="opt">(</span>Colour<span class="opt">.</span>yellow<span class="opt">,</span> Colour<span class="opt">.</span>yellow<span class="opt">);</span>
+    <span class="opt">}</span>
+    
+    <span class="kwa">private static void</span> <span class="kwd">printColours</span><span class="opt">(</span>Colour c1<span class="opt">,</span> Colour c2<span class="opt">) {</span>
+        System<span class="opt">.</span>out<span class="opt">.</span><span class="kwd">println</span><span class="opt">(</span>c1 <span class="opt">+</span> <span class="str">&quot; + &quot;</span> <span class="opt">+</span> c2 <span class="opt">+</span> <span class="str">&quot; -&gt; &quot;</span> <span class="opt">+</span> <span class="kwd">doCompliment</span><span class="opt">(</span>c1<span class="opt">,</span> c2<span class="opt">));</span>
+    <span class="opt">}</span>
+    
+    
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+java 10 2018-03-20
+Java(TM) SE Runtime Environment 18.3 (build 10+46)
+Java HotSpot(TM) 64-Bit Server VM 18.3 (build 10+46, mixed mode)
+
+
+Wed, 21 Mar 2018 17:34:53 GMT
+
+MAKE:
+mv chameneosredux.java-2.java chameneosredux.java
+/opt/src/jdk-10/bin/javac -d .  chameneosredux.java
+
+1.16s to complete and log all make actions
+
+COMMAND LINE:
+/opt/src/jdk-10/bin/java   chameneosredux 6000000
+
+PROGRAM OUTPUT:
+blue + blue -&gt; blue
+blue + red -&gt; yellow
+blue + yellow -&gt; red
+red + blue -&gt; yellow
+red + red -&gt; red
+red + yellow -&gt; blue
+yellow + blue -&gt; red
+yellow + red -&gt; blue
+yellow + yellow -&gt; yellow
+
+ blue red yellow
+3990706 zero
+4000949 zero
+4008345 zero
+ one two zero zero zero zero zero zero
+
+ blue red yellow red yellow blue red yellow red blue
+1138910 zero
+994391 zero
+910290 zero
+1163985 zero
+2017742 zero
+1268195 zero
+1278231 zero
+998799 zero
+1251190 zero
+978267 zero
+ one two zero zero zero zero zero zero
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

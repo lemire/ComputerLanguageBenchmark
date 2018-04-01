@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>meteor-contest Chapel program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>meteor-contest Chapel program</h2>
+    <aside>
+      <p><a href="./meteor-description.html#meteor">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">/* The Computer Language Benchmarks Game</span>
+<span class="com">   http://benchmarksgame.alioth.debian.org/</span>
+<span class="com"></span>
+<span class="com">   contributed by Kyle Brady and Lydia Duncan</span>
+<span class="com">   derived from the C implementation by Christian Vosteen</span>
+<span class="com"> */</span>
+
+
+<span class="com">/* The board is a 50 cell hexagonal pattern.  For    . . . . .</span>
+<span class="com">   maximum speed the board will be implemented        . . . . .</span>
+<span class="com">   using 50 bits of a 64 bit int.                    . . . . .</span>
+<span class="com">                                                      . . . . .</span>
+<span class="com">                                                     . . . . .</span>
+<span class="com">   We&apos;ll represent empty cells as 0&apos;s and full        . . . . .</span>
+<span class="com">   cells as 1&apos;s.                                     . . . . .</span>
+<span class="com">                                                      . . . . .</span>
+<span class="com">                                                     . . . . .</span>
+<span class="com">                                                      . . . . .</span>
+<span class="com"> */</span>
+
+<span class="kwa">param</span> boardCells <span class="opt">=</span> <span class="num">50</span><span class="opt">,</span>
+      boardWidth <span class="opt">=</span> <span class="num">5</span><span class="opt">,</span>
+      boardHeight <span class="opt">=</span> <span class="num">10</span><span class="opt">,</span>
+      numPieces <span class="opt">=</span> <span class="num">10</span><span class="opt">;</span>
+
+<span class="com">/* The 10 puzzle pieces are as follows:</span>
+<span class="com"></span>
+<span class="com">     Piece 0   Piece 1   Piece 2   Piece 3   Piece 4</span>
+<span class="com"></span>
+<span class="com">    O O O O    O   O O   O O O     O O O     O   O</span>
+<span class="com">           O    O O           O       O       O O</span>
+<span class="com">                               O         O         O</span>
+<span class="com"></span>
+<span class="com">     Piece 5   Piece 6   Piece 7   Piece 8   Piece 9</span>
+<span class="com"></span>
+<span class="com">      O O O     O O       O O     O O        O O O O</span>
+<span class="com">         O O       O O       O       O O O        O</span>
+<span class="com">                      O       O O</span>
+<span class="com"></span>
+<span class="com">   The pieces are represented as the path followed from one end to the</span>
+<span class="com">   other along 12 hexagonal directions.  12 directions are used rather</span>
+<span class="com">   than 6 in order to fit all the piece definitions into 4-element</span>
+<span class="com">   arrays.  For example, it is not possible to define piece #4 in</span>
+<span class="com">   terms of the 6 cardinal directions using 4 moves.</span>
+<span class="com"> */</span>
+
+<span class="kwa">enum</span> direction <span class="opt">{</span>
+  E<span class="opt">=</span><span class="num">0</span><span class="opt">,</span>
+  ESE<span class="opt">,</span>
+  SE<span class="opt">,</span>
+  S<span class="opt">,</span>
+  SW<span class="opt">,</span>
+  WSW<span class="opt">,</span>
+  W<span class="opt">,</span>
+  WNW<span class="opt">,</span>
+  NW<span class="opt">,</span>
+  N<span class="opt">,</span>
+  NE<span class="opt">,</span>
+  ENE<span class="opt">,</span>
+  PIVOT
+<span class="opt">}</span>
+<span class="kwa">use</span> direction<span class="opt">;</span>
+
+<span class="kwa">var</span> pieceDef<span class="opt">: [</span><span class="num">0</span><span class="opt">..#</span>numPieces<span class="opt">] [</span><span class="num">0</span><span class="opt">.</span><span class="num">.3</span><span class="opt">]</span> direction
+            <span class="opt">= [[</span> E<span class="opt">,</span>  E<span class="opt">,</span>  E<span class="opt">,</span> SE<span class="opt">],</span>
+               <span class="opt">[</span>SE<span class="opt">,</span>  E<span class="opt">,</span> NE<span class="opt">,</span>  E<span class="opt">],</span>
+               <span class="opt">[</span> E<span class="opt">,</span>  E<span class="opt">,</span> SE<span class="opt">,</span> SW<span class="opt">],</span>
+               <span class="opt">[</span> E<span class="opt">,</span>  E<span class="opt">,</span> SW<span class="opt">,</span> SE<span class="opt">],</span>
+               <span class="opt">[</span>SE<span class="opt">,</span>  E<span class="opt">,</span> NE<span class="opt">,</span>  S<span class="opt">],</span>
+               <span class="opt">[</span> E<span class="opt">,</span>  E<span class="opt">,</span> SW<span class="opt">,</span>  E<span class="opt">],</span>
+               <span class="opt">[</span> E<span class="opt">,</span> SE<span class="opt">,</span> SE<span class="opt">,</span> NE<span class="opt">],</span>
+               <span class="opt">[</span> E<span class="opt">,</span> SE<span class="opt">,</span> SE<span class="opt">,</span>  W<span class="opt">],</span>
+               <span class="opt">[</span> E<span class="opt">,</span> SE<span class="opt">,</span>  E<span class="opt">,</span>  E<span class="opt">],</span>
+               <span class="opt">[</span> E<span class="opt">,</span>  E<span class="opt">,</span>  E<span class="opt">,</span> SW<span class="opt">]];</span>
+
+<span class="slc">// Max # solutions</span>
+<span class="kwa">config const</span> n <span class="opt">=</span> <span class="num">2100</span><span class="opt">;</span>
+
+
+<span class="com">/* To minimize the amount of work done in the recursive solve function</span>
+<span class="com">   below, allocate enough space for all legal rotations of each piece</span>
+<span class="com">   at each position on the board. That&apos;s 10 pieces x 50 board</span>
+<span class="com">   positions x 12 rotations.  However, not all 12 rotations will fit</span>
+<span class="com">   on every cell, so keep a count of the actual number that do.</span>
+<span class="com">   Record the next possible open cell for each piece and location to</span>
+<span class="com">   reduce the burden on the solve function.</span>
+<span class="com"> */</span>
+<span class="kwa">var</span> pieces<span class="opt">,</span> nextCell<span class="opt">: [</span><span class="num">0</span><span class="opt">..#</span>numPieces<span class="opt">] [</span><span class="num">0</span><span class="opt">..#</span>boardCells<span class="opt">] [</span><span class="num">0</span><span class="opt">.</span><span class="num">.11</span><span class="opt">]</span> <span class="kwb">int</span><span class="opt">,</span>
+    pieceCounts<span class="opt">:      [</span><span class="num">0</span><span class="opt">..#</span>numPieces<span class="opt">] [</span><span class="num">0</span><span class="opt">..#</span>boardCells<span class="opt">]</span> <span class="kwb">int</span><span class="opt">,</span>
+
+    solutionCount<span class="opt">:</span> <span class="kwa">atomic</span> <span class="kwb">int</span><span class="opt">,</span>
+
+    solutions<span class="opt">: [</span><span class="num">0</span><span class="opt">..#</span>n<span class="opt">] [</span><span class="num">0</span><span class="opt">..#</span>boardCells<span class="opt">]</span> <span class="kwb">int</span><span class="opt">,</span>
+
+    badEvenTriple<span class="opt">,</span> badOddTriple<span class="opt">: [</span><span class="num">0</span><span class="opt">.</span><span class="num">.32767</span><span class="opt">]</span> <span class="kwb">bool</span><span class="opt">;</span>
+
+<span class="kwa">proc</span> <span class="kwc">main</span><span class="opt">() {</span>
+  <span class="kwc">calcPieces</span><span class="opt">();</span>
+  <span class="kwc">calcRows</span><span class="opt">();</span>
+  <span class="kwc">solve</span><span class="opt">();</span>
+  <span class="kwc">writeln</span><span class="opt">(</span>solutionCount<span class="opt">.</span><span class="kwc">read</span><span class="opt">(),</span> <span class="str">&quot; solutions found</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">);</span>
+  <span class="kwc">printLargestSmallest</span><span class="opt">();</span>
+<span class="opt">}</span>
+
+<span class="com">/* Calculate every legal rotation for each piece at each board location. */</span>
+<span class="kwa">proc</span> <span class="kwc">calcPieces</span><span class="opt">() {</span>
+  <span class="kwa">var</span> cells<span class="opt">: [</span><span class="num">0</span><span class="opt">..#</span>numPieces<span class="opt">] [</span><span class="num">0</span><span class="opt">.</span><span class="num">.4</span><span class="opt">]</span> <span class="kwb">int</span><span class="opt">;</span>
+
+  <span class="kwa">forall</span> piece <span class="kwa">in</span> <span class="num">0</span><span class="opt">..#</span>numPieces <span class="opt">{</span>
+    <span class="kwa">for</span> indx <span class="kwa">in</span> <span class="num">0</span><span class="opt">..#</span>boardCells <span class="opt">{</span>
+      <span class="kwc">calcSixRotations</span><span class="opt">(</span>piece<span class="opt">,</span> indx<span class="opt">,</span> cells<span class="opt">[</span>piece<span class="opt">]);</span>
+      <span class="kwa">serial do</span> pieceDef<span class="opt">[</span>piece<span class="opt">] =</span> <span class="kwc">flip</span><span class="opt">(</span>pieceDef<span class="opt">[</span>piece<span class="opt">]);</span>
+      <span class="kwc">calcSixRotations</span><span class="opt">(</span>piece<span class="opt">,</span> indx<span class="opt">,</span> cells<span class="opt">[</span>piece<span class="opt">]);</span>
+    <span class="opt">}</span>
+  <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="com">/* Calculate all six rotations of the specified piece at the specified</span>
+<span class="com">   index.  Calculate only half of piece 3&apos;s rotations, because any</span>
+<span class="com">   solution found has an identical solution rotated 180 degrees.  Thus</span>
+<span class="com">   we can reduce the number of attempted pieces in the solve algorithm</span>
+<span class="com">   by not including the 180-degree-rotated pieces of ONE of the</span>
+<span class="com">   pieces.  Piece 3 was chosen because it gave the best time ;)</span>
+<span class="com"> */</span>
+<span class="kwa">proc</span> <span class="kwc">calcSixRotations</span><span class="opt">(</span>piece<span class="opt">,</span> indx<span class="opt">,</span> cell<span class="opt">) {</span>
+  <span class="kwa">for</span> rotation <span class="kwa">in</span> <span class="num">0</span><span class="opt">.</span><span class="num">.5</span> <span class="opt">{</span>
+    <span class="kwa">if</span> piece <span class="opt">!=</span> <span class="num">3</span> <span class="opt">||</span> rotation <span class="opt">&lt;</span> <span class="num">3</span> <span class="opt">{</span>
+      <span class="kwc">calcCellIndices</span><span class="opt">(</span>cell<span class="opt">,</span> piece<span class="opt">,</span> indx<span class="opt">);</span>
+      <span class="kwa">if</span> <span class="kwc">cellsFitOnBoard</span><span class="opt">(</span>cell<span class="opt">,</span> piece<span class="opt">) &amp;&amp; !</span><span class="kwc">hasIsland</span><span class="opt">(</span>cell<span class="opt">,</span> piece<span class="opt">) {</span>
+        <span class="kwa">const</span> minimum <span class="opt">=</span> min <span class="kwa">reduce</span> <span class="opt">(</span><span class="kwa">for</span> i <span class="kwa">in</span> cell <span class="kwa">do</span> i<span class="opt">),</span>
+              firstEmpty <span class="opt">=</span> <span class="kwc">firstEmptyCell</span><span class="opt">(</span>cell<span class="opt">,</span> minimum<span class="opt">),</span>
+              pieceMask <span class="opt">= |</span> <span class="kwa">reduce</span> <span class="opt">(</span><span class="kwa">for</span> i <span class="kwa">in</span> cell <span class="kwa">do</span> <span class="num">1</span> <span class="opt">&lt;&lt;</span> i<span class="opt">);</span>
+
+        <span class="kwc">recordPiece</span><span class="opt">(</span>piece<span class="opt">,</span> minimum<span class="opt">,</span> firstEmpty<span class="opt">,</span> pieceMask<span class="opt">);</span>
+      <span class="opt">}</span>
+    <span class="opt">}</span>
+    <span class="kwa">serial do</span> pieceDef<span class="opt">[</span>piece<span class="opt">] =</span> <span class="kwc">rotate</span><span class="opt">(</span>pieceDef<span class="opt">[</span>piece<span class="opt">]);</span>
+  <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="com">/* Convenience function to quickly calculate all of the indices for a</span>
+<span class="com">   piece</span>
+<span class="com"> */</span>
+<span class="kwa">proc</span> <span class="kwc">calcCellIndices</span><span class="opt">(</span>cell<span class="opt">,</span> piece<span class="opt">,</span> indx<span class="opt">) {</span>
+  cell<span class="opt">[</span><span class="num">0</span><span class="opt">] =</span> indx<span class="opt">;</span>
+  <span class="kwa">for</span> i <span class="kwa">in</span> <span class="num">0</span><span class="opt">.</span><span class="num">.3</span> <span class="kwa">do</span>
+    cell<span class="opt">[</span>i<span class="opt">+</span><span class="num">1</span><span class="opt">] =</span> <span class="kwc">shift</span><span class="opt">(</span>cell<span class="opt">[</span>i<span class="opt">],</span> pieceDef<span class="opt">[</span>piece<span class="opt">][</span>i<span class="opt">]);</span>
+<span class="opt">}</span>
+
+<span class="com">/* Returns the new cell index from the specified cell in the</span>
+<span class="com">   specified direction.  The index is only valid if the starting</span>
+<span class="com">   cell and direction have been checked by the outOfBounds function</span>
+<span class="com">   first.</span>
+<span class="com"> */</span>
+<span class="kwa">proc</span> <span class="kwc">shift</span><span class="opt">(</span>cell<span class="opt">,</span> dir<span class="opt">) {</span>
+  <span class="kwa">select</span> dir <span class="opt">{</span>
+    <span class="kwa">when</span> E <span class="kwa">do</span>
+      <span class="kwa">return</span> cell <span class="opt">+</span> <span class="num">1</span><span class="opt">;</span>
+    <span class="kwa">when</span> ESE <span class="kwa">do</span>
+      <span class="kwa">if</span> <span class="opt">(</span>cell <span class="opt">/</span> <span class="num">5</span><span class="opt">) %</span> <span class="num">2</span> <span class="kwa">then</span>
+        <span class="kwa">return</span> cell <span class="opt">+</span> <span class="num">7</span><span class="opt">;</span>
+      <span class="kwa">else</span>
+        <span class="kwa">return</span> cell <span class="opt">+</span> <span class="num">6</span><span class="opt">;</span>
+    <span class="kwa">when</span> SE <span class="kwa">do</span>
+      <span class="kwa">if</span> <span class="opt">(</span>cell <span class="opt">/</span> <span class="num">5</span><span class="opt">) %</span> <span class="num">2</span> <span class="kwa">then</span>
+        <span class="kwa">return</span> cell <span class="opt">+</span> <span class="num">6</span><span class="opt">;</span>
+      <span class="kwa">else</span>
+        <span class="kwa">return</span> cell <span class="opt">+</span> <span class="num">5</span><span class="opt">;</span>
+    <span class="kwa">when</span> S <span class="kwa">do</span>
+      <span class="kwa">return</span> cell <span class="opt">+</span> <span class="num">10</span><span class="opt">;</span>
+    <span class="kwa">when</span> SW <span class="kwa">do</span>
+      <span class="kwa">if</span> <span class="opt">(</span>cell <span class="opt">/</span> <span class="num">5</span><span class="opt">) %</span> <span class="num">2</span> <span class="kwa">then</span>
+        <span class="kwa">return</span> cell <span class="opt">+</span> <span class="num">5</span><span class="opt">;</span>
+      <span class="kwa">else</span>
+        <span class="kwa">return</span> cell <span class="opt">+</span> <span class="num">4</span><span class="opt">;</span>
+    <span class="kwa">when</span> WSW <span class="kwa">do</span>
+      <span class="kwa">if</span> <span class="opt">(</span>cell <span class="opt">/</span> <span class="num">5</span><span class="opt">) %</span> <span class="num">2</span> <span class="kwa">then</span>
+        <span class="kwa">return</span> cell <span class="opt">+</span> <span class="num">4</span><span class="opt">;</span>
+      <span class="kwa">else</span>
+        <span class="kwa">return</span> cell <span class="opt">+</span> <span class="num">3</span><span class="opt">;</span>
+    <span class="kwa">when</span> W <span class="kwa">do</span>
+      <span class="kwa">return</span> cell <span class="opt">-</span> <span class="num">1</span><span class="opt">;</span>
+    <span class="kwa">when</span> WNW <span class="kwa">do</span>
+      <span class="kwa">if</span> <span class="opt">(</span>cell <span class="opt">/</span> <span class="num">5</span><span class="opt">) %</span> <span class="num">2</span> <span class="kwa">then</span>
+        <span class="kwa">return</span> cell <span class="opt">-</span> <span class="num">6</span><span class="opt">;</span>
+      <span class="kwa">else</span>
+        <span class="kwa">return</span> cell <span class="opt">-</span> <span class="num">7</span><span class="opt">;</span>
+    <span class="kwa">when</span> NW <span class="kwa">do</span>
+      <span class="kwa">if</span> <span class="opt">(</span>cell <span class="opt">/</span> <span class="num">5</span><span class="opt">) %</span> <span class="num">2</span> <span class="kwa">then</span>
+        <span class="kwa">return</span> cell <span class="opt">-</span> <span class="num">5</span><span class="opt">;</span>
+      <span class="kwa">else</span>
+        <span class="kwa">return</span> cell <span class="opt">-</span> <span class="num">6</span><span class="opt">;</span>
+    <span class="kwa">when</span> N <span class="kwa">do</span>
+      <span class="kwa">return</span> cell <span class="opt">-</span> <span class="num">10</span><span class="opt">;</span>
+    <span class="kwa">when</span> NE <span class="kwa">do</span>
+      <span class="kwa">if</span> <span class="opt">(</span>cell <span class="opt">/</span> <span class="num">5</span><span class="opt">) %</span> <span class="num">2</span> <span class="kwa">then</span>
+        <span class="kwa">return</span> cell <span class="opt">-</span> <span class="num">4</span><span class="opt">;</span>
+      <span class="kwa">else</span>
+        <span class="kwa">return</span> cell <span class="opt">-</span> <span class="num">5</span><span class="opt">;</span>
+    <span class="kwa">when</span> ENE <span class="kwa">do</span>
+      <span class="kwa">if</span> <span class="opt">(</span>cell <span class="opt">/</span> <span class="num">5</span><span class="opt">) %</span> <span class="num">2</span> <span class="kwa">then</span>
+        <span class="kwa">return</span> cell <span class="opt">-</span> <span class="num">3</span><span class="opt">;</span>
+      <span class="kwa">else</span>
+        <span class="kwa">return</span> cell <span class="opt">-</span> <span class="num">4</span><span class="opt">;</span>
+    <span class="kwa">otherwise</span>
+      <span class="kwa">return</span> cell<span class="opt">;</span>
+  <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="com">/* Convenience function to quickly calculate if a piece fits on the board */</span>
+<span class="kwa">proc</span> <span class="kwc">cellsFitOnBoard</span><span class="opt">(</span>cell<span class="opt">,</span> piece<span class="opt">) {</span>
+  <span class="kwa">return</span> <span class="opt">(&amp;&amp;</span> <span class="kwa">reduce</span> <span class="opt">(</span><span class="kwa">for</span> i <span class="kwa">in</span> <span class="num">0</span><span class="opt">.</span><span class="num">.3</span> <span class="kwa">do</span>
+                       <span class="opt">!</span><span class="kwc">outOfBounds</span><span class="opt">(</span>cell<span class="opt">[</span>i<span class="opt">],</span> pieceDef<span class="opt">[</span>piece<span class="opt">][</span>i<span class="opt">])));</span>
+<span class="opt">}</span>
+
+<span class="com">/* Returns whether the specified cell and direction will land outside of the</span>
+<span class="com">   board.  Used to determine if a piece is at a legal board location or not.</span>
+<span class="com"> */</span>
+<span class="kwa">proc</span> <span class="kwc">outOfBounds</span><span class="opt">(</span>cell<span class="opt">,</span> dir<span class="opt">) {</span>
+  <span class="kwa">select</span> dir <span class="opt">{</span>
+    <span class="kwa">when</span> E <span class="kwa">do</span>
+      <span class="kwa">return</span> cell <span class="opt">%</span> boardWidth <span class="opt">==</span> <span class="num">4</span><span class="opt">;</span>
+    <span class="kwa">when</span> ESE <span class="opt">{</span>
+      <span class="kwa">const</span> i <span class="opt">=</span> cell <span class="opt">%</span> boardHeight<span class="opt">;</span>
+      <span class="kwa">return</span> i <span class="opt">==</span> <span class="num">4</span> <span class="opt">||</span> i <span class="opt">==</span> <span class="num">8</span> <span class="opt">||</span> i <span class="opt">==</span> <span class="num">9</span> <span class="opt">||</span> cell <span class="opt">&gt;=</span> <span class="num">45</span><span class="opt">;</span>
+    <span class="opt">}</span>
+    <span class="kwa">when</span> SE <span class="kwa">do</span>
+      <span class="kwa">return</span> cell <span class="opt">%</span> boardHeight <span class="opt">==</span> <span class="num">9</span> <span class="opt">||</span> cell <span class="opt">&gt;=</span> <span class="num">45</span><span class="opt">;</span>
+    <span class="kwa">when</span> S <span class="kwa">do</span>
+      <span class="kwa">return</span> cell <span class="opt">&gt;=</span> <span class="num">40</span><span class="opt">;</span>
+    <span class="kwa">when</span> SW <span class="kwa">do</span>
+      <span class="kwa">return</span> cell <span class="opt">%</span> boardHeight <span class="opt">==</span> <span class="num">0</span> <span class="opt">||</span> cell <span class="opt">&gt;=</span> <span class="num">45</span><span class="opt">;</span>
+    <span class="kwa">when</span> WSW <span class="opt">{</span>
+      <span class="kwa">const</span> i <span class="opt">=</span> cell <span class="opt">%</span> boardHeight<span class="opt">;</span>
+      <span class="kwa">return</span> i <span class="opt">==</span> <span class="num">0</span> <span class="opt">||</span> i <span class="opt">==</span> <span class="num">1</span> <span class="opt">||</span> i <span class="opt">==</span> <span class="num">5</span> <span class="opt">||</span> cell <span class="opt">&gt;=</span> <span class="num">45</span><span class="opt">;</span>
+    <span class="opt">}</span>
+    <span class="kwa">when</span> W <span class="kwa">do</span>
+      <span class="kwa">return</span> cell <span class="opt">%</span> boardWidth <span class="opt">==</span> <span class="num">0</span><span class="opt">;</span>
+    <span class="kwa">when</span> WNW <span class="opt">{</span>
+      <span class="kwa">const</span> i <span class="opt">=</span> cell <span class="opt">%</span> boardHeight<span class="opt">;</span>
+      <span class="kwa">return</span> i <span class="opt">==</span> <span class="num">0</span> <span class="opt">||</span> i <span class="opt">==</span> <span class="num">1</span> <span class="opt">||</span> i <span class="opt">==</span> <span class="num">5</span> <span class="opt">||</span> cell <span class="opt">&lt;</span> <span class="num">5</span><span class="opt">;</span>
+    <span class="opt">}</span>
+    <span class="kwa">when</span> NW <span class="kwa">do</span>
+      <span class="kwa">return</span> cell <span class="opt">%</span> boardHeight <span class="opt">==</span> <span class="num">0</span> <span class="opt">||</span> cell <span class="opt">&lt;</span> <span class="num">5</span><span class="opt">;</span>
+    <span class="kwa">when</span> N <span class="kwa">do</span>
+      <span class="kwa">return</span> cell <span class="opt">&lt;</span> <span class="num">10</span><span class="opt">;</span>
+    <span class="kwa">when</span> NE <span class="kwa">do</span>
+      <span class="kwa">return</span> cell <span class="opt">%</span> boardHeight <span class="opt">==</span> <span class="num">9</span> <span class="opt">||</span> cell <span class="opt">&lt;</span> <span class="num">5</span><span class="opt">;</span>
+    <span class="kwa">when</span> ENE <span class="opt">{</span>
+      <span class="kwa">const</span> i <span class="opt">=</span> cell <span class="opt">%</span> boardHeight<span class="opt">;</span>
+      <span class="kwa">return</span> i <span class="opt">==</span> <span class="num">4</span> <span class="opt">||</span> i <span class="opt">==</span> <span class="num">8</span> <span class="opt">||</span> i <span class="opt">==</span> <span class="num">9</span> <span class="opt">||</span> cell <span class="opt">&lt;</span> <span class="num">5</span><span class="opt">;</span>
+    <span class="opt">}</span>
+    <span class="kwa">otherwise</span>
+      <span class="kwa">return false</span><span class="opt">;</span>
+  <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="com">/* To thin the number of pieces, calculate if any of them trap any</span>
+<span class="com">   empty cells at the edges.  There are only a handful of exceptions</span>
+<span class="com">   where the board can be solved with the trapped cells.  For example:</span>
+<span class="com">   piece 8 can trap 5 cells in the corner, but piece 3 can fit in</span>
+<span class="com">   those cells, or piece 0 can split the board in half where both</span>
+<span class="com">   halves are viable.</span>
+<span class="com"> */</span>
+<span class="kwa">proc</span> <span class="kwc">hasIsland</span><span class="opt">(</span>cell<span class="opt">,</span> piece<span class="opt">) {</span>
+  <span class="kwa">var</span> tempBoard<span class="opt">: [</span><span class="num">0</span><span class="opt">..#</span>boardCells<span class="opt">]</span> <span class="kwb">int</span><span class="opt">,</span>
+      c <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+
+  <span class="kwa">for</span> i <span class="kwa">in</span> <span class="num">0</span><span class="opt">.</span><span class="num">.4</span> <span class="kwa">do</span>
+    tempBoard<span class="opt">[</span>cell<span class="opt">[</span>i<span class="opt">]] =</span> <span class="num">1</span><span class="opt">;</span>
+
+  <span class="kwa">var</span> i <span class="opt">=</span> boardCells <span class="opt">-</span> <span class="num">1</span><span class="opt">;</span>
+
+  <span class="kwa">while</span> tempBoard<span class="opt">[</span>i<span class="opt">] ==</span> <span class="num">1</span> <span class="kwa">do</span>
+    i <span class="opt">-=</span> <span class="num">1</span><span class="opt">;</span>
+  <span class="kwc">fillContiguousSpace</span><span class="opt">(</span>tempBoard<span class="opt">,</span> i<span class="opt">);</span>
+
+  <span class="kwa">for</span> i <span class="kwa">in</span>  <span class="num">0</span><span class="opt">..#</span>boardCells <span class="kwa">do</span>
+    <span class="kwa">if</span> tempBoard<span class="opt">[</span>i<span class="opt">] ==</span> <span class="num">0</span> <span class="kwa">then</span>
+      c <span class="opt">+=</span> <span class="num">1</span><span class="opt">;</span>
+
+  <span class="kwa">return</span> <span class="opt">!(</span>c <span class="opt">==</span> <span class="num">0</span> <span class="opt">|| (</span>c <span class="opt">==</span> <span class="num">5</span> <span class="opt">&amp;&amp;</span> piece <span class="opt">==</span> <span class="num">8</span><span class="opt">) || (</span>c <span class="opt">==</span> <span class="num">40</span> <span class="opt">&amp;&amp;</span> piece <span class="opt">==</span> <span class="num">8</span><span class="opt">) ||</span>
+           <span class="opt">(</span>c <span class="opt">%</span> <span class="num">5</span> <span class="opt">==</span> <span class="num">0</span> <span class="opt">&amp;&amp;</span> piece <span class="opt">==</span> <span class="num">0</span><span class="opt">));</span>
+<span class="opt">}</span>
+
+<span class="com">/* Fill the entire board going cell by cell.  If any cells are &quot;trapped&quot;</span>
+<span class="com">   they will be left alone.</span>
+<span class="com"> */</span>
+<span class="kwa">proc</span> <span class="kwc">fillContiguousSpace</span><span class="opt">(</span>board<span class="opt">,</span> indx<span class="opt">) {</span>
+  <span class="kwa">if</span> board<span class="opt">[</span>indx<span class="opt">] ==</span> <span class="num">1</span> <span class="kwa">then</span>
+    <span class="kwa">return</span><span class="opt">;</span>
+
+  board<span class="opt">[</span>indx<span class="opt">] =</span> <span class="num">1</span><span class="opt">;</span>
+
+  <span class="kwa">for</span> dir <span class="kwa">in</span> <span class="opt">(</span>E<span class="opt">,</span> SE<span class="opt">,</span> SW<span class="opt">,</span> W<span class="opt">,</span> NW<span class="opt">,</span> NE<span class="opt">)</span> <span class="kwa">do</span>
+    <span class="kwa">if</span> <span class="opt">!</span><span class="kwc">outOfBounds</span><span class="opt">(</span>indx<span class="opt">,</span> dir<span class="opt">)</span> <span class="kwa">then</span>
+      <span class="kwc">fillContiguousSpace</span><span class="opt">(</span>board<span class="opt">,</span> <span class="kwc">shift</span><span class="opt">(</span>indx<span class="opt">,</span> dir<span class="opt">));</span>
+<span class="opt">}</span>
+
+<span class="com">/* Calculate the lowest possible open cell if the piece is placed on</span>
+<span class="com">   the board.  Used to later reduce the amount of time searching for</span>
+<span class="com">   open cells in the solve function.</span>
+<span class="com"> */</span>
+<span class="kwa">proc</span> <span class="kwc">firstEmptyCell</span><span class="opt">(</span>cell<span class="opt">,</span> <span class="kwa">in</span> min<span class="opt">) {</span>
+  <span class="kwa">while</span> <span class="opt">(</span>min <span class="opt">==</span> cell<span class="opt">[</span><span class="num">0</span><span class="opt">] ||</span> min <span class="opt">==</span> cell<span class="opt">[</span><span class="num">1</span><span class="opt">] ||</span>
+         min <span class="opt">==</span> cell<span class="opt">[</span><span class="num">2</span><span class="opt">] ||</span> min <span class="opt">==</span> cell<span class="opt">[</span><span class="num">3</span><span class="opt">] ||</span>
+         min <span class="opt">==</span> cell<span class="opt">[</span><span class="num">4</span><span class="opt">])</span> <span class="kwa">do</span>
+    min <span class="opt">+=</span> <span class="num">1</span><span class="opt">;</span>
+
+  <span class="kwa">return</span> min<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="com">/* Record the piece and other important information in arrays that</span>
+<span class="com">   will later be used by the solve function.</span>
+<span class="com"> */</span>
+<span class="kwa">proc</span> <span class="kwc">recordPiece</span><span class="opt">(</span>piece<span class="opt">,</span> minimum<span class="opt">,</span> firstEmpty<span class="opt">,</span> pieceMask<span class="opt">) {</span>
+  <span class="kwa">const</span> pieceCount <span class="opt">=</span> pieceCounts<span class="opt">[</span>piece<span class="opt">][</span>minimum<span class="opt">];</span>
+
+  pieces<span class="opt">[</span>piece<span class="opt">][</span>minimum<span class="opt">][</span>pieceCount<span class="opt">] =</span> pieceMask<span class="opt">;</span>
+  nextCell<span class="opt">[</span>piece<span class="opt">][</span>minimum<span class="opt">][</span>pieceCount<span class="opt">] =</span> firstEmpty<span class="opt">;</span>
+  pieceCounts<span class="opt">[</span>piece<span class="opt">][</span>minimum<span class="opt">] +=</span> <span class="num">1</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="com">/* Returns the direction rotated 60 degrees clockwise */</span>
+<span class="kwa">proc</span> <span class="kwc">rotate</span><span class="opt">(</span>dir<span class="opt">) {</span>
+  <span class="kwa">return</span> <span class="opt">((</span>dir <span class="opt">+</span> <span class="num">2</span><span class="opt">) %</span> PIVOT<span class="opt">:</span><span class="kwb">int</span><span class="opt">):</span> direction<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="com">/* Returns the direction flipped on the horizontal axis */</span>
+<span class="kwa">proc</span> <span class="kwc">flip</span><span class="opt">(</span>dir<span class="opt">) {</span>
+  <span class="kwa">return</span> <span class="opt">((</span>PIVOT <span class="opt">-</span> dir<span class="opt">:</span><span class="kwb">int</span><span class="opt">) %</span> PIVOT<span class="opt">:</span><span class="kwb">int</span><span class="opt">):</span> direction<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="com">/* Calculate all 32 possible states for a 5-bit row and all rows that</span>
+<span class="com">   will create islands that follow any of the 32 possible rows.  These</span>
+<span class="com">   pre- calculated 5-bit rows will be used to find islands in a</span>
+<span class="com">   partially solved board in the solve function.</span>
+<span class="com"> */</span>
+<span class="kwa">proc</span> <span class="kwc">calcRows</span><span class="opt">() {</span>
+  <span class="kwa">var</span> badEvenRows<span class="opt">,</span> badOddRows<span class="opt">: [</span><span class="num">0</span><span class="opt">.</span><span class="num">.31</span><span class="opt">] [</span><span class="num">0</span><span class="opt">.</span><span class="num">.31</span><span class="opt">]</span> <span class="kwb">bool</span><span class="opt">;</span>
+
+  <span class="kwa">forall</span> row1 <span class="kwa">in</span> <span class="num">0</span><span class="opt">.</span><span class="num">.31</span> <span class="opt">{</span>
+    <span class="kwa">for</span> row2 <span class="kwa">in</span> <span class="num">0</span><span class="opt">.</span><span class="num">.31</span> <span class="opt">{</span>
+      badEvenRows<span class="opt">[</span>row1<span class="opt">][</span>row2<span class="opt">] =</span> <span class="kwc">rowsBad</span><span class="opt">(</span>row1<span class="opt">,</span> row2<span class="opt">,</span> <span class="kwa">true</span><span class="opt">);</span>
+      badOddRows<span class="opt">[</span>row1<span class="opt">][</span>row2<span class="opt">] =</span> <span class="kwc">rowsBad</span><span class="opt">(</span>row1<span class="opt">,</span> row2<span class="opt">,</span> <span class="kwa">false</span><span class="opt">);</span>
+    <span class="opt">}</span>
+  <span class="opt">}</span>
+
+  <span class="kwa">for</span> row1 <span class="kwa">in</span> <span class="num">0</span><span class="opt">.</span><span class="num">.31</span> <span class="opt">{</span>
+    <span class="kwa">for</span> row2 <span class="kwa">in</span> <span class="num">0</span><span class="opt">.</span><span class="num">.31</span> <span class="opt">{</span>
+      <span class="kwa">for</span> row3 <span class="kwa">in</span> <span class="num">0</span><span class="opt">.</span><span class="num">.31</span> <span class="opt">{</span>
+        <span class="kwa">const</span> idx <span class="opt">=</span> row1 <span class="opt">+ (</span>row2<span class="opt">*</span><span class="num">32</span><span class="opt">) + (</span>row3<span class="opt">*</span><span class="num">1024</span><span class="opt">);</span>
+        <span class="kwa">var</span> even <span class="opt">=</span> badEvenRows<span class="opt">[</span>row1<span class="opt">][</span>row2<span class="opt">],</span>
+            odd <span class="opt">=</span> badOddRows<span class="opt">[</span>row2<span class="opt">][</span>row3<span class="opt">];</span>
+
+        <span class="kwa">if</span> <span class="opt">!</span>even <span class="opt">&amp;&amp;</span> odd <span class="opt">&amp;&amp;</span> <span class="kwc">tripleIsOkay</span><span class="opt">(</span>row1<span class="opt">,</span> row2<span class="opt">,</span> row3<span class="opt">,</span> <span class="kwa">true</span><span class="opt">)</span> <span class="kwa">then</span>
+          badEvenTriple<span class="opt">[</span>idx<span class="opt">] =</span> <span class="kwa">false</span><span class="opt">;</span>
+        <span class="kwa">else</span>
+          badEvenTriple<span class="opt">[</span>idx<span class="opt">] =</span> even <span class="opt">||</span> odd<span class="opt">;</span>
+
+        odd <span class="opt">=</span> badOddRows<span class="opt">[</span>row1<span class="opt">][</span>row2<span class="opt">];</span>
+        even <span class="opt">=</span> badEvenRows<span class="opt">[</span>row2<span class="opt">][</span>row3<span class="opt">];</span>
+        <span class="kwa">if</span> <span class="opt">!</span>odd <span class="opt">&amp;&amp;</span> even <span class="opt">&amp;&amp;</span> <span class="kwc">tripleIsOkay</span><span class="opt">(</span>row1<span class="opt">,</span> row2<span class="opt">,</span> row3<span class="opt">,</span> <span class="kwa">false</span><span class="opt">)</span> <span class="kwa">then</span>
+          badOddTriple<span class="opt">[</span>idx<span class="opt">] =</span> <span class="kwa">false</span><span class="opt">;</span>
+        <span class="kwa">else</span>
+          badOddTriple<span class="opt">[</span>idx<span class="opt">] =</span> odd <span class="opt">||</span> even<span class="opt">;</span>
+      <span class="opt">}</span>
+    <span class="opt">}</span>
+  <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="kwa">proc</span> <span class="kwc">rowsBad</span><span class="opt">(</span>row1<span class="opt">,</span> row2<span class="opt">,</span> even<span class="opt">) {</span>
+  <span class="kwa">param</span> ROWMASK    <span class="opt">=</span> <span class="num">0x1F</span><span class="opt">;</span>
+
+  <span class="com">/* even is referring to row1 */</span>
+  <span class="kwa">var</span> inZeroes<span class="opt">,</span> groupOkay <span class="opt">=</span> <span class="kwa">false</span><span class="opt">;</span>
+
+  <span class="com">/* Test for blockages at same index and shifted index */</span>
+  <span class="kwa">const</span> row2Shift <span class="opt">=</span> <span class="kwa">if</span> even <span class="kwa">then</span> <span class="opt">((</span>row2 <span class="opt">&lt;&lt;</span> <span class="num">1</span><span class="opt">) &amp;</span> ROWMASK<span class="opt">) |</span> <span class="num">0x01</span>
+                            <span class="kwa">else</span> <span class="opt">(</span>row2 <span class="opt">&gt;&gt;</span> <span class="num">1</span><span class="opt">) |</span> <span class="num">0x10</span><span class="opt">,</span>
+        block <span class="opt">= ((</span>row1 <span class="opt">^</span> row2<span class="opt">) &amp;</span> row2<span class="opt">) &amp; ((</span>row1 <span class="opt">^</span> row2Shift<span class="opt">) &amp;</span> row2Shift<span class="opt">);</span>
+
+  <span class="com">/* Test for groups of 0&apos;s */</span>
+  <span class="kwa">for</span> i <span class="kwa">in</span> <span class="num">0</span><span class="opt">.</span><span class="num">.4</span> <span class="opt">{</span>
+    <span class="kwa">if</span> row1 <span class="opt">&amp; (</span><span class="num">1</span> <span class="opt">&lt;&lt;</span> i<span class="opt">) {</span>
+      <span class="kwa">if</span> inZeroes <span class="opt">{</span>
+        <span class="kwa">if</span> <span class="opt">!</span>groupOkay <span class="kwa">then</span>
+          <span class="kwa">return true</span><span class="opt">;</span>
+        inZeroes <span class="opt">=</span> <span class="kwa">false</span><span class="opt">;</span>
+        groupOkay <span class="opt">=</span> <span class="kwa">false</span><span class="opt">;</span>
+      <span class="opt">}</span>
+    <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span>
+      <span class="kwa">if</span> <span class="opt">!</span>inZeroes <span class="kwa">then</span>
+        inZeroes <span class="opt">=</span> <span class="kwa">true</span><span class="opt">;</span>
+      <span class="kwa">if</span> <span class="opt">!((</span>block <span class="opt">&amp; (</span><span class="num">1</span> <span class="opt">&lt;&lt;</span> i<span class="opt">)))</span> <span class="kwa">then</span>
+        groupOkay <span class="opt">=</span> <span class="kwa">true</span><span class="opt">;</span>
+    <span class="opt">}</span>
+  <span class="opt">}</span>
+
+  <span class="kwa">if</span> inZeroes <span class="kwa">then</span>
+    <span class="kwa">return</span> <span class="opt">!</span>groupOkay<span class="opt">;</span>
+  <span class="kwa">else</span>
+    <span class="kwa">return false</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="com">/* Check for cases where three rows checked sequentially cause a false</span>
+<span class="com">   positive.  One scenario is when 5 cells may be surrounded where piece 5</span>
+<span class="com">   or 7 can fit.  The other scenario is when piece 2 creates a hook shape.</span>
+<span class="com"> */</span>
+<span class="kwa">proc</span> <span class="kwc">tripleIsOkay</span><span class="opt">(</span>row1<span class="opt">,</span> row2<span class="opt">,</span> row3<span class="opt">,</span> even<span class="opt">) {</span>
+  <span class="kwa">if</span> even <span class="kwa">then</span>
+    <span class="com">/* There are four cases:</span>
+<span class="com">       row1: 00011  |  00001  |  11001  |  10101</span>
+<span class="com">       row2: 01011  |  00101  |  10001  |  10001</span>
+<span class="com">       row3: 011??  |  00110  |  ?????  |  ?????</span>
+<span class="com">     */</span>
+    <span class="kwa">return</span> <span class="opt">((</span>row1 <span class="opt">==</span> <span class="num">0</span>b00011<span class="opt">) &amp;&amp; (</span>row2 <span class="opt">==</span> <span class="num">0</span>b01011<span class="opt">) &amp;&amp;</span>
+            <span class="opt">((</span>row3 <span class="opt">&amp;</span> <span class="num">0</span>b11100<span class="opt">) ==</span> <span class="num">0</span>b01100<span class="opt">)) ||</span>
+           <span class="opt">((</span>row1 <span class="opt">==</span> <span class="num">0</span>b00001<span class="opt">) &amp;&amp; (</span>row2 <span class="opt">==</span> <span class="num">0</span>b00101<span class="opt">) &amp;&amp; (</span>row3 <span class="opt">==</span> <span class="num">0</span>b00110<span class="opt">)) ||</span>
+           <span class="opt">((</span>row1 <span class="opt">==</span> <span class="num">0</span>b11001<span class="opt">) &amp;&amp; (</span>row2 <span class="opt">==</span> <span class="num">0</span>b10001<span class="opt">)) ||</span>
+           <span class="opt">((</span>row1 <span class="opt">==</span> <span class="num">0</span>b10101<span class="opt">) &amp;&amp; (</span>row2 <span class="opt">==</span> <span class="num">0</span>b10001<span class="opt">));</span>
+  <span class="kwa">else</span>
+    <span class="com">/* There are two cases:</span>
+<span class="com">       row1: 10011  |  10101</span>
+<span class="com">       row2: 10001  |  10001</span>
+<span class="com">       row3: ?????  |  ?????</span>
+<span class="com">     */</span>
+    <span class="kwa">return</span> <span class="opt">((</span>row1 <span class="opt">==</span> <span class="num">0</span>b10011<span class="opt">) &amp;&amp; (</span>row2 <span class="opt">==</span> <span class="num">0</span>b10001<span class="opt">)) ||</span>
+           <span class="opt">((</span>row1 <span class="opt">==</span> <span class="num">0</span>b10101<span class="opt">) &amp;&amp; (</span>row2 <span class="opt">==</span> <span class="num">0</span>b10001<span class="opt">));</span>
+<span class="opt">}</span>
+
+<span class="com">/* The recursive solve algorithm.  Try to place each permutation in</span>
+<span class="com">   the upper- leftmost empty cell.  Mark off available pieces as it</span>
+<span class="com">   goes along.  Because the board is a bit mask, the piece number and</span>
+<span class="com">   bit mask must be saved at each successful piece placement.  This</span>
+<span class="com">   data is used to create a 50 char array if a solution is found.</span>
+<span class="com"> */</span>
+<span class="kwa">proc</span> <span class="kwc">solve</span><span class="opt">() {</span>
+  <span class="kwa">forall</span> piece <span class="kwa">in</span> <span class="num">0</span><span class="opt">..#</span>numPieces <span class="kwa">do</span>
+    <span class="kwc">solveHelper</span><span class="opt">(</span>piece<span class="opt">);</span>
+<span class="opt">}</span>
+
+<span class="kwa">proc</span> <span class="kwc">solveHelper</span><span class="opt">(</span>piece<span class="opt">) {</span>
+  <span class="kwa">var</span> board<span class="opt">:</span> <span class="kwb">uint</span> <span class="opt">=</span> <span class="num">0xFFFC000000000000</span><span class="opt">,</span> <span class="slc">// fill bits not in the board</span>
+      avail<span class="opt">:</span> <span class="kwb">uint</span> <span class="opt">=</span> <span class="num">0x03FF</span><span class="opt">,</span>
+      solNums<span class="opt">,</span> solMasks<span class="opt">: [</span><span class="num">0</span><span class="opt">..#</span>numPieces<span class="opt">]</span> <span class="kwb">int</span><span class="opt">;</span>
+
+  <span class="kwa">const</span> depth<span class="opt">,</span> cell <span class="opt">=</span> <span class="num">0</span><span class="opt">,</span>
+        pieceNoMask <span class="opt">=</span> <span class="num">1</span> <span class="opt">&lt;&lt;</span> piece<span class="opt">,</span>
+        maxRots <span class="opt">=</span> pieceCounts<span class="opt">[</span>piece<span class="opt">][</span>cell<span class="opt">];</span>
+
+  avail <span class="opt">^=</span> pieceNoMask<span class="opt">;</span>
+  <span class="kwa">for</span> rotation <span class="kwa">in</span> <span class="num">0</span><span class="opt">..(</span>maxRots<span class="opt">-</span><span class="num">1</span><span class="opt">) {</span>
+    <span class="kwa">if</span> <span class="opt">!((</span>board <span class="opt">&amp;</span> pieces<span class="opt">[</span>piece<span class="opt">][</span>cell<span class="opt">][</span>rotation<span class="opt">]):</span><span class="kwb">bool</span><span class="opt">) {</span>
+      solNums<span class="opt">[</span>depth<span class="opt">] =</span> piece<span class="opt">;</span>
+      solMasks<span class="opt">[</span>depth<span class="opt">] =</span> pieces<span class="opt">[</span>piece<span class="opt">][</span>cell<span class="opt">][</span>rotation<span class="opt">];</span>
+      board <span class="opt">|=</span> pieces<span class="opt">[</span>piece<span class="opt">][</span>cell<span class="opt">][</span>rotation<span class="opt">];</span>
+      <span class="kwa">if</span> <span class="opt">!</span><span class="kwc">boardHasIslands</span><span class="opt">(</span>nextCell<span class="opt">[</span>piece<span class="opt">][</span>cell<span class="opt">][</span>rotation<span class="opt">],</span> board<span class="opt">) {</span>
+        <span class="kwc">solveLinear</span><span class="opt">(</span><span class="num">1</span><span class="opt">,</span> nextCell<span class="opt">[</span>piece<span class="opt">][</span>cell<span class="opt">][</span>rotation<span class="opt">],</span>
+                    board<span class="opt">,</span> avail<span class="opt">,</span> solNums<span class="opt">,</span> solMasks<span class="opt">);</span>
+      <span class="opt">}</span>
+      board <span class="opt">^=</span> pieces<span class="opt">[</span>piece<span class="opt">][</span>cell<span class="opt">][</span>rotation<span class="opt">];</span>
+    <span class="opt">}</span>
+  <span class="opt">}</span>
+
+  avail <span class="opt">^=</span> pieceNoMask<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="com">/* Calculate islands while solving the board. */</span>
+<span class="kwa">proc</span> <span class="kwc">boardHasIslands</span><span class="opt">(</span>cell<span class="opt">,</span> board<span class="opt">) {</span>
+  <span class="kwa">param</span> TRIPLEMASK <span class="opt">=</span> <span class="num">0x7FFF</span><span class="opt">;</span>
+  <span class="com">/* Too low on board, don&apos;t bother checking */</span>
+  <span class="kwa">if</span> cell <span class="opt">&gt;=</span> <span class="num">40</span> <span class="kwa">then</span>
+    <span class="kwa">return false</span><span class="opt">;</span>
+
+  <span class="kwa">const</span> currentTriple <span class="opt">= (</span>board <span class="opt">&gt;&gt; ((</span>cell <span class="opt">/</span> <span class="num">5</span><span class="opt">) *</span> <span class="num">5</span><span class="opt">)) &amp;</span> TRIPLEMASK<span class="opt">;</span>
+
+  <span class="kwa">if</span> <span class="opt">(</span>cell <span class="opt">/</span> <span class="num">5</span><span class="opt">) %</span> <span class="num">2</span> <span class="kwa">then</span>
+    <span class="kwa">return</span> badOddTriple<span class="opt">[</span>currentTriple<span class="opt">:</span><span class="kwb">int</span><span class="opt">];</span>
+  <span class="kwa">else</span>
+    <span class="kwa">return</span> badEvenTriple<span class="opt">[</span>currentTriple<span class="opt">:</span><span class="kwb">int</span><span class="opt">];</span>
+<span class="opt">}</span>
+
+<span class="kwa">proc</span> <span class="kwc">solveLinear</span><span class="opt">(</span><span class="kwa">in</span> depth<span class="opt">,</span> <span class="kwa">in</span> cell<span class="opt">,</span> <span class="kwa">in</span> board<span class="opt">,</span> <span class="kwa">in</span> avail<span class="opt">,</span> solNums<span class="opt">,</span> solMasks<span class="opt">) {</span>
+  <span class="kwa">if</span> solutionCount<span class="opt">.</span><span class="kwc">read</span><span class="opt">() &gt;=</span> n <span class="kwa">then</span>
+    <span class="kwa">return</span><span class="opt">;</span>
+
+  <span class="kwa">while</span> <span class="opt">(</span>board <span class="opt">&amp; (</span><span class="num">1</span> <span class="opt">&lt;&lt;</span> cell<span class="opt">))</span> <span class="kwa">do</span>
+    cell <span class="opt">+=</span> <span class="num">1</span><span class="opt">;</span>
+
+  <span class="kwa">for</span> piece <span class="kwa">in</span> <span class="num">0</span><span class="opt">..#</span>numPieces <span class="opt">{</span>
+    <span class="kwa">const</span> pieceNoMask <span class="opt">=</span> <span class="num">1</span> <span class="opt">&lt;&lt;</span> piece<span class="opt">;</span>
+
+    <span class="kwa">if</span> <span class="opt">!((</span>avail <span class="opt">&amp;</span> pieceNoMask<span class="opt">):</span><span class="kwb">bool</span><span class="opt">)</span> <span class="kwa">then</span>
+      <span class="kwa">continue</span><span class="opt">;</span>
+
+    avail <span class="opt">^=</span> pieceNoMask<span class="opt">;</span>
+
+    <span class="kwa">const</span> maxRots <span class="opt">=</span> pieceCounts<span class="opt">[</span>piece<span class="opt">][</span>cell<span class="opt">];</span>
+
+    <span class="kwa">for</span> rotation <span class="kwa">in</span> <span class="num">0</span><span class="opt">..(</span>maxRots<span class="opt">-</span><span class="num">1</span><span class="opt">) {</span>
+      <span class="kwa">if</span> <span class="opt">!((</span>board <span class="opt">&amp;</span> pieces<span class="opt">[</span>piece<span class="opt">][</span>cell<span class="opt">][</span>rotation<span class="opt">]):</span><span class="kwb">bool</span><span class="opt">) {</span>
+        solNums<span class="opt">[</span>depth<span class="opt">] =</span> piece<span class="opt">;</span>
+        solMasks<span class="opt">[</span>depth<span class="opt">] =</span> pieces<span class="opt">[</span>piece<span class="opt">][</span>cell<span class="opt">][</span>rotation<span class="opt">];</span>
+        <span class="kwa">if</span> depth <span class="opt">==</span> <span class="num">9</span> <span class="opt">{</span>
+          <span class="com">/* Solution found!!!!!11!!ONE! */</span>
+          <span class="kwc">recordSolution</span><span class="opt">(</span>solNums<span class="opt">,</span> solMasks<span class="opt">);</span>
+          avail <span class="opt">^=</span> pieceNoMask<span class="opt">;</span>
+          <span class="kwa">return</span><span class="opt">;</span>
+        <span class="opt">}</span>
+        board <span class="opt">|=</span> pieces<span class="opt">[</span>piece<span class="opt">][</span>cell<span class="opt">][</span>rotation<span class="opt">];</span>
+        <span class="kwa">if</span> <span class="opt">!</span><span class="kwc">boardHasIslands</span><span class="opt">(</span>nextCell<span class="opt">[</span>piece<span class="opt">][</span>cell<span class="opt">][</span>rotation<span class="opt">],</span> board<span class="opt">) {</span>
+          <span class="kwc">solveLinear</span><span class="opt">(</span>depth <span class="opt">+</span> <span class="num">1</span><span class="opt">,</span> nextCell<span class="opt">[</span>piece<span class="opt">][</span>cell<span class="opt">][</span>rotation<span class="opt">],</span>
+                      board<span class="opt">,</span> avail<span class="opt">,</span> solNums<span class="opt">,</span> solMasks<span class="opt">);</span>
+        <span class="opt">}</span>
+        board <span class="opt">^=</span> pieces<span class="opt">[</span>piece<span class="opt">][</span>cell<span class="opt">][</span>rotation<span class="opt">];</span>
+      <span class="opt">}</span>
+    <span class="opt">}</span>
+
+    avail <span class="opt">^=</span> pieceNoMask<span class="opt">;</span>
+  <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="kwa">proc</span> <span class="kwc">recordSolution</span><span class="opt">(</span>solNums<span class="opt">,</span> solMasks<span class="opt">) {</span>
+  <span class="kwa">const</span> mySolCount <span class="opt">=</span> solutionCount<span class="opt">.</span><span class="kwc">fetchAdd</span><span class="opt">(</span><span class="num">2</span><span class="opt">);</span>
+
+  <span class="kwa">for</span> solNo <span class="kwa">in</span> <span class="num">0</span><span class="opt">..#</span>numPieces <span class="opt">{</span>
+    <span class="kwa">var</span> solMask <span class="opt">=</span> solMasks<span class="opt">[</span>solNo<span class="opt">];</span>
+
+    <span class="kwa">for</span> indx <span class="kwa">in</span> <span class="num">0</span><span class="opt">..#</span>boardCells <span class="opt">{</span>
+      <span class="kwa">if</span> solMask <span class="opt">&amp;</span> <span class="num">1</span> <span class="opt">{</span>
+        solutions<span class="opt">[</span>mySolCount<span class="opt">][</span>indx<span class="opt">] =</span> solNums<span class="opt">[</span>solNo<span class="opt">];</span>
+        <span class="com">/* Board rotated 180 degrees is a solution too! */</span>
+        solutions<span class="opt">[</span>mySolCount <span class="opt">+</span> <span class="num">1</span><span class="opt">][</span>boardCells <span class="opt">-</span> <span class="num">1</span> <span class="opt">-</span> indx<span class="opt">] =</span> solNums<span class="opt">[</span>solNo<span class="opt">];</span>
+      <span class="opt">}</span>
+      solMask <span class="opt">&gt;&gt;=</span> <span class="num">1</span><span class="opt">;</span>
+    <span class="opt">}</span>
+  <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="kwa">proc</span> <span class="kwc">printLargestSmallest</span><span class="opt">() {</span>
+  <span class="kwa">var</span> sIndx<span class="opt">,</span> lIndx <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+
+  <span class="kwa">for</span> i <span class="kwa">in</span> <span class="num">1</span><span class="opt">..</span>solutionCount<span class="opt">.</span><span class="kwc">read</span><span class="opt">()-</span><span class="num">1</span> <span class="opt">{</span>
+    <span class="kwa">if</span> <span class="kwc">solutionLessThan</span><span class="opt">(</span>lIndx<span class="opt">,</span> i<span class="opt">)</span> <span class="kwa">then</span>
+      lIndx <span class="opt">=</span> i<span class="opt">;</span>
+    <span class="kwa">else if</span> <span class="kwc">solutionLessThan</span><span class="opt">(</span>i<span class="opt">,</span> sIndx<span class="opt">)</span> <span class="kwa">then</span>
+      sIndx <span class="opt">=</span> i<span class="opt">;</span>
+  <span class="opt">}</span>
+
+  <span class="kwc">pretty</span><span class="opt">(</span>solutions<span class="opt">[</span>sIndx<span class="opt">]);</span>
+  <span class="kwc">pretty</span><span class="opt">(</span>solutions<span class="opt">[</span>lIndx<span class="opt">]);</span>
+<span class="opt">}</span>
+
+<span class="kwa">proc</span> <span class="kwc">solutionLessThan</span><span class="opt">(</span>lhs<span class="opt">,</span> rhs<span class="opt">) {</span>
+  <span class="kwa">if</span> lhs <span class="opt">==</span> rhs <span class="kwa">then</span>
+    <span class="kwa">return false</span><span class="opt">;</span>
+
+  <span class="kwa">for</span> i <span class="kwa">in</span> <span class="num">0</span><span class="opt">..#</span>boardCells <span class="kwa">do</span>
+    <span class="kwa">if</span> solutions<span class="opt">[</span>lhs<span class="opt">][</span>i<span class="opt">] !=</span> solutions<span class="opt">[</span>rhs<span class="opt">][</span>i<span class="opt">]</span> <span class="kwa">then</span>
+      <span class="kwa">return</span> solutions<span class="opt">[</span>lhs<span class="opt">][</span>i<span class="opt">] &lt;</span> solutions<span class="opt">[</span>rhs<span class="opt">][</span>i<span class="opt">];</span>
+
+  <span class="kwa">return false</span><span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="com">/* pretty print a board in the specified hexagonal format */</span>
+<span class="kwa">proc</span> <span class="kwc">pretty</span><span class="opt">(</span>s<span class="opt">) {</span>
+  <span class="kwa">for</span> i <span class="kwa">in</span> <span class="num">0</span><span class="opt">..#</span>boardCells <span class="opt">{</span>
+    <span class="kwc">writef</span><span class="opt">(</span><span class="str">&quot;%i &quot;</span><span class="opt">,</span> s<span class="opt">[</span>i<span class="opt">]);</span>
+    <span class="kwa">if</span> i <span class="opt">%</span> boardWidth <span class="opt">==</span> <span class="num">4</span> <span class="opt">{</span>
+      <span class="kwc">writeln</span><span class="opt">();</span>
+      <span class="kwa">if</span> i <span class="opt">&amp;</span> <span class="num">1</span> <span class="opt">==</span> <span class="num">0</span> <span class="kwa">then</span>
+        <span class="kwc">write</span><span class="opt">(</span><span class="str">&quot; &quot;</span><span class="opt">);</span>
+    <span class="opt">}</span>
+  <span class="opt">}</span>
+  <span class="kwc">writeln</span><span class="opt">();</span>
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+chpl Version 1.16.0
+Copyright (c) 2004-2017, Cray Inc.
+
+
+Wed, 25 Oct 2017 17:01:00 GMT
+
+MAKE:
+mv meteor.chapel meteor.chpl
+/opt/src/chapel-1.16.0/bin/linux64/chpl --fast meteor.chpl -o meteor.chapel_run
+rm meteor.chpl
+
+19.90s to complete and log all make actions
+
+COMMAND LINE:
+./meteor.chapel_run --n=2098
+
+PROGRAM OUTPUT:
+2098 solutions found
+
+0 0 0 0 1 
+ 2 2 2 0 1 
+2 6 6 1 1 
+ 2 6 1 5 5 
+8 6 5 5 5 
+ 8 6 3 3 3 
+4 8 8 9 3 
+ 4 4 8 9 3 
+4 7 4 7 9 
+ 7 7 7 9 9 
+
+9 9 9 9 8 
+ 9 6 6 8 5 
+6 6 8 8 5 
+ 6 8 2 5 5 
+7 7 7 2 5 
+ 7 4 7 2 0 
+1 4 2 2 0 
+ 1 4 4 0 3 
+1 4 0 0 3 
+ 1 1 3 3 3 
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

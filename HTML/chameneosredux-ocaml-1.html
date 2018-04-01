@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>chameneos-redux OCaml program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>chameneos-redux OCaml program</h2>
+    <aside>
+      <p><a href="./chameneosredux-description.html#chameneosredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">(* The Computer Language Benchmarks Game</span>
+<span class="com">   http://benchmarksgame.alioth.debian.org/</span>
+<span class="com"></span>
+<span class="com">   contributed by Milan Stanojevic, Jul 12 2009</span>
+<span class="com">*)</span>
+
+<span class="kwa">module</span> List <span class="opt">=</span> ListLabels
+<span class="kwa">module</span> String <span class="opt">=</span> StringLabels
+
+<span class="kwa">open</span> Printf
+
+<span class="kwa">module</span> Color <span class="opt">=</span> <span class="kwa">struct</span> 
+  <span class="kwa">type</span> t <span class="opt">=</span>
+  <span class="opt">|</span> Blue
+  <span class="opt">|</span> Red
+  <span class="opt">|</span> Yellow
+
+  <span class="kwa">let</span> <span class="kwd">complement</span> t t&apos; <span class="opt">=</span>
+  <span class="kwa">match</span> t<span class="opt">,</span> t&apos; <span class="kwa">with</span> 
+    <span class="opt">|</span> Blue<span class="opt">,</span> Blue <span class="opt">-&gt;</span> Blue
+    <span class="opt">|</span> Blue<span class="opt">,</span> Red <span class="opt">-&gt;</span> Yellow
+    <span class="opt">|</span> Blue<span class="opt">,</span> Yellow <span class="opt">-&gt;</span> Red
+    <span class="opt">|</span> Red<span class="opt">,</span> Blue <span class="opt">-&gt;</span> Yellow
+    <span class="opt">|</span> Red<span class="opt">,</span> Red <span class="opt">-&gt;</span> Red
+    <span class="opt">|</span> Red<span class="opt">,</span> Yellow <span class="opt">-&gt;</span> Blue
+    <span class="opt">|</span> Yellow<span class="opt">,</span> Blue <span class="opt">-&gt;</span> Red
+    <span class="opt">|</span> Yellow<span class="opt">,</span> Red <span class="opt">-&gt;</span> Blue
+    <span class="opt">|</span> Yellow<span class="opt">,</span> Yellow <span class="opt">-&gt;</span> Yellow
+
+  <span class="kwa">let</span> <span class="kwd">to_string</span> <span class="opt">=</span> <span class="kwa">function</span>
+    <span class="opt">|</span> Blue <span class="opt">-&gt;</span> <span class="str">&quot;blue&quot;</span>
+    <span class="opt">|</span> Red <span class="opt">-&gt;</span> <span class="str">&quot;red&quot;</span>
+    <span class="opt">|</span> Yellow <span class="opt">-&gt;</span> <span class="str">&quot;yellow&quot;</span>
+
+  <span class="kwa">let</span> <span class="kwd">all</span> <span class="opt">= [</span> Blue<span class="opt">;</span> Red<span class="opt">;</span> Yellow <span class="opt">]</span>
+<span class="kwa">end</span>
+
+<span class="kwa">module</span> Meeting_place <span class="opt">=</span> <span class="kwa">struct</span>
+
+  <span class="kwa">type</span> &apos;chameneos t <span class="opt">= {</span>
+    <span class="kwa">mutable</span> state <span class="opt">: [</span> `Empty <span class="opt">|</span> `First <span class="kwa">of</span> &apos;chameneos <span class="opt">|</span> `Second <span class="kwa">of</span> &apos;chameneos <span class="opt">];</span>
+    <span class="kwa">mutable</span> meetings_left <span class="opt">:</span> <span class="kwb">int</span><span class="opt">;</span>
+    mutex <span class="opt">:</span> <span class="kwc">Mutex</span><span class="opt">.</span>t<span class="opt">;</span>
+    wait_for_second <span class="opt">:</span> <span class="kwc">Condition</span><span class="opt">.</span>t<span class="opt">;</span>
+    wait_for_empty <span class="opt">:</span> <span class="kwc">Condition</span><span class="opt">.</span>t<span class="opt">;</span>
+  <span class="opt">}</span>
+
+  <span class="kwa">let</span> <span class="kwd">create</span> n <span class="opt">= {</span>
+    state <span class="opt">=</span> `Empty<span class="opt">;</span>
+    meetings_left <span class="opt">=</span> n<span class="opt">;</span>
+    mutex <span class="opt">=</span> <span class="kwc">Mutex</span><span class="opt">.</span><span class="kwd">create</span> <span class="opt">();</span>
+    wait_for_second <span class="opt">=</span> <span class="kwc">Condition</span><span class="opt">.</span><span class="kwd">create</span> <span class="opt">();</span>
+    wait_for_empty <span class="opt">=</span> <span class="kwc">Condition</span><span class="opt">.</span><span class="kwd">create</span> <span class="opt">();</span>
+  <span class="opt">}</span>
+
+  <span class="kwa">let</span> <span class="kwd">meet</span> t c <span class="opt">=</span> 
+    <span class="kwa">let rec</span> <span class="kwd">loop</span> <span class="opt">() =</span> 
+      <span class="kwa">if</span> t<span class="opt">.</span>meetings_left <span class="opt">=</span> <span class="num">0</span> <span class="kwa">then begin</span>
+        <span class="kwc">Condition</span><span class="opt">.</span>broadcast t<span class="opt">.</span>wait_for_empty<span class="opt">;</span>
+        None
+      <span class="kwa">end</span>
+      <span class="kwa">else</span>
+	<span class="kwa">match</span> t<span class="opt">.</span>state <span class="kwa">with</span> 
+	<span class="opt">|</span> `Empty <span class="opt">-&gt;</span> 
+	    t<span class="opt">.</span>state <span class="opt">&lt;-</span> `First c<span class="opt">;</span>
+	    <span class="kwc">Condition</span><span class="opt">.</span>wait t<span class="opt">.</span>wait_for_second t<span class="opt">.</span>mutex<span class="opt">;</span>
+	    <span class="kwa">begin</span>
+	      <span class="kwa">match</span> t<span class="opt">.</span>state <span class="kwa">with</span> 
+	      <span class="opt">|</span> `Empty
+	      <span class="opt">|</span> `First _ <span class="opt">-&gt;</span> 
+		  <span class="kwa">assert false</span>
+	      <span class="opt">|</span> `Second c <span class="opt">-&gt;</span> 
+		  t<span class="opt">.</span>state <span class="opt">&lt;-</span> `Empty<span class="opt">;</span>
+                  <span class="kwc">Condition</span><span class="opt">.</span>signal t<span class="opt">.</span>wait_for_empty<span class="opt">;</span>
+                  <span class="kwc">Condition</span><span class="opt">.</span>signal t<span class="opt">.</span>wait_for_empty<span class="opt">;</span>
+		  Some c
+	    <span class="kwa">end</span>
+	<span class="opt">|</span> `First c1 <span class="opt">-&gt;</span>
+	    t<span class="opt">.</span>state <span class="opt">&lt;-</span> `Second c<span class="opt">;</span>
+	    t<span class="opt">.</span>meetings_left <span class="opt">&lt;-</span> t<span class="opt">.</span>meetings_left <span class="opt">-</span> <span class="num">1</span><span class="opt">;</span>
+	    <span class="kwc">Condition</span><span class="opt">.</span>signal t<span class="opt">.</span>wait_for_second<span class="opt">;</span>
+	    Some c1
+	<span class="opt">|</span> `Second _ <span class="opt">-&gt;</span>
+	    <span class="kwc">Condition</span><span class="opt">.</span>wait t<span class="opt">.</span>wait_for_empty t<span class="opt">.</span>mutex<span class="opt">;</span>
+	    <span class="kwd">loop</span> <span class="opt">()</span>
+    <span class="kwa">in</span>
+    <span class="kwc">Mutex</span><span class="opt">.</span>lock t<span class="opt">.</span>mutex<span class="opt">;</span>
+    <span class="kwa">let</span> <span class="kwd">res</span> <span class="opt">=</span> <span class="kwd">loop</span> <span class="opt">()</span> <span class="kwa">in</span>
+    <span class="kwc">Mutex</span><span class="opt">.</span>unlock t<span class="opt">.</span>mutex<span class="opt">;</span>
+    <span class="kwd">res</span>
+  <span class="opt">;;</span>
+<span class="kwa">end</span>
+
+<span class="kwa">module</span> Chameneos <span class="opt">=</span> <span class="kwa">struct</span> 
+  
+  <span class="kwa">type</span> t <span class="opt">= {</span>
+    id <span class="opt">:</span> <span class="kwb">int</span><span class="opt">;</span>
+    <span class="kwa">mutable</span> color <span class="opt">:</span> <span class="kwc">Color</span><span class="opt">.</span>t<span class="opt">;</span>
+    <span class="kwa">mutable</span> meetings <span class="opt">:</span> <span class="kwb">int</span><span class="opt">;</span>
+    <span class="kwa">mutable</span> meetings_with_self <span class="opt">:</span> <span class="kwb">int</span><span class="opt">;</span>
+  <span class="opt">}</span>
+
+  <span class="kwa">let</span> <span class="kwd">create</span> <span class="opt">=</span> 
+    <span class="kwa">let</span> <span class="kwd">id</span> <span class="opt">=</span> <span class="kwb">ref</span> <span class="num">0</span> <span class="kwa">in</span>
+    <span class="kwa">let</span> <span class="kwd">new_id</span> <span class="opt">() =</span> 
+      <span class="kwa">let</span> <span class="kwd">r</span> <span class="opt">= !</span><span class="kwd">id</span> <span class="kwa">in</span>
+      <span class="kwd">id</span> <span class="opt">:=</span> <span class="kwd">r</span> <span class="opt">+</span> <span class="num">1</span><span class="opt">;</span>
+      <span class="kwd">r</span>
+    <span class="kwa">in</span>
+    <span class="kwa">fun</span> color <span class="opt">-&gt;</span> 
+      <span class="opt">{</span> <span class="kwd">id</span> <span class="opt">=</span> <span class="kwd">new_id</span> <span class="opt">();</span>
+	color <span class="opt">=</span> color<span class="opt">;</span>
+	meetings <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+	meetings_with_self <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+      <span class="opt">}</span>
+
+  <span class="kwa">let</span> <span class="kwd">run</span> t place <span class="opt">=</span>
+    <span class="kwa">let rec</span> <span class="kwd">loop</span> <span class="opt">() =</span>
+      <span class="kwa">match</span> <span class="kwc">Meeting_place</span><span class="opt">.</span><span class="kwd">meet</span> place t <span class="kwa">with</span> 
+      <span class="opt">|</span> None <span class="opt">-&gt; ()</span>
+      <span class="opt">|</span> Some other <span class="opt">-&gt;</span> 
+	  t<span class="opt">.</span>meetings <span class="opt">&lt;-</span> t<span class="opt">.</span>meetings <span class="opt">+</span> <span class="num">1</span><span class="opt">;</span>
+	  <span class="kwa">if</span> t<span class="opt">.</span><span class="kwd">id</span> <span class="opt">=</span> other<span class="opt">.</span><span class="kwd">id</span> <span class="kwa">then</span> t<span class="opt">.</span>meetings_with_self <span class="opt">&lt;-</span> t<span class="opt">.</span>meetings_with_self <span class="opt">+</span> <span class="num">1</span><span class="opt">;</span>
+	  t<span class="opt">.</span>color <span class="opt">&lt;-</span> <span class="kwc">Color</span><span class="opt">.</span><span class="kwd">complement</span> t<span class="opt">.</span>color other<span class="opt">.</span>color<span class="opt">;</span>
+	  <span class="kwd">loop</span> <span class="opt">()</span> 
+    <span class="kwa">in</span>
+    <span class="kwc">Thread</span><span class="opt">.</span><span class="kwd">create loop</span> <span class="opt">()</span>
+<span class="kwa">end</span>
+
+<span class="kwa">let</span> <span class="kwd">print_complements</span> <span class="opt">() =</span> 
+  <span class="kwc">List</span><span class="opt">.</span>iter <span class="kwc">Color</span><span class="opt">.</span><span class="kwd">all</span> ~f<span class="opt">:(</span><span class="kwa">fun</span> c1 <span class="opt">-&gt;</span> 
+    <span class="kwc">List</span><span class="opt">.</span>iter <span class="kwc">Color</span><span class="opt">.</span><span class="kwd">all</span> ~f<span class="opt">:(</span><span class="kwa">fun</span> c2 <span class="opt">-&gt;</span>
+      printf <span class="str">&quot;</span><span class="ipl">%s</span> <span class="str">+</span> <span class="ipl">%s</span> <span class="str">-&gt;</span> <span class="ipl">%s</span><span class="str"></span><span class="esc">\n</span><span class="str">&quot;</span> 
+	<span class="opt">(</span><span class="kwc">Color</span><span class="opt">.</span><span class="kwd">to_string</span> c1<span class="opt">)</span>
+	<span class="opt">(</span><span class="kwc">Color</span><span class="opt">.</span><span class="kwd">to_string</span> c2<span class="opt">)</span>
+	<span class="opt">(</span><span class="kwc">Color</span><span class="opt">.</span><span class="kwd">to_string</span> <span class="opt">(</span><span class="kwc">Color</span><span class="opt">.</span><span class="kwd">complement</span> c1 c2<span class="opt">))));</span>
+  printf <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+<span class="opt">;;</span>
+
+<span class="kwa">let</span> <span class="kwd">spell_int</span> i <span class="opt">=</span> 
+  <span class="kwa">let</span> <span class="kwd">spell_char</span> <span class="opt">=</span> <span class="kwa">function</span> 
+    <span class="opt">|</span> &apos;<span class="num">0</span>&apos; <span class="opt">-&gt;</span> <span class="str">&quot;zero&quot;</span>
+    <span class="opt">|</span> &apos;<span class="num">1</span>&apos; <span class="opt">-&gt;</span> <span class="str">&quot;one&quot;</span>
+    <span class="opt">|</span> &apos;<span class="num">2</span>&apos; <span class="opt">-&gt;</span> <span class="str">&quot;two&quot;</span>
+    <span class="opt">|</span> &apos;<span class="num">3</span>&apos; <span class="opt">-&gt;</span> <span class="str">&quot;three&quot;</span>
+    <span class="opt">|</span> &apos;<span class="num">4</span>&apos; <span class="opt">-&gt;</span> <span class="str">&quot;four&quot;</span>
+    <span class="opt">|</span> &apos;<span class="num">5</span>&apos; <span class="opt">-&gt;</span> <span class="str">&quot;five&quot;</span>
+    <span class="opt">|</span> &apos;<span class="num">6</span>&apos; <span class="opt">-&gt;</span> <span class="str">&quot;six&quot;</span>
+    <span class="opt">|</span> &apos;<span class="num">7</span>&apos; <span class="opt">-&gt;</span> <span class="str">&quot;seven&quot;</span>
+    <span class="opt">|</span> &apos;<span class="num">8</span>&apos; <span class="opt">-&gt;</span> <span class="str">&quot;eight&quot;</span>
+    <span class="opt">|</span> &apos;<span class="num">9</span>&apos; <span class="opt">-&gt;</span> <span class="str">&quot;nine&quot;</span>
+    <span class="opt">|</span> x <span class="opt">-&gt;</span> failwith <span class="str">&quot;unexpected char&quot;</span>
+  <span class="kwa">in</span>
+  <span class="kwa">let</span> <span class="kwd">s</span> <span class="opt">=</span> string_of_int i <span class="kwa">in</span>
+  <span class="kwc">String</span><span class="opt">.</span>iter <span class="kwd">s</span> ~f<span class="opt">:(</span><span class="kwa">fun</span> c <span class="opt">-&gt;</span> printf <span class="str">&quot;</span> <span class="ipl">%s</span><span class="str">&quot;</span> <span class="opt">(</span><span class="kwd">spell_char</span> c<span class="opt">));</span>
+<span class="opt">;;</span>
+  
+<span class="kwa">let</span> <span class="kwd">work</span> colors n <span class="opt">=</span> 
+  <span class="kwa">let module</span> C <span class="opt">=</span> Chameneos <span class="kwa">in</span>
+  <span class="kwc">List</span><span class="opt">.</span>iter colors ~f<span class="opt">:(</span><span class="kwa">fun</span> c <span class="opt">-&gt;</span> printf <span class="str">&quot;</span> <span class="ipl">%s</span><span class="str">&quot;</span> <span class="opt">(</span><span class="kwc">Color</span><span class="opt">.</span><span class="kwd">to_string</span> c<span class="opt">));</span> printf <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+  <span class="kwa">let</span> <span class="kwd">place</span> <span class="opt">=</span> <span class="kwc">Meeting_place</span><span class="opt">.</span><span class="kwd">create</span> n <span class="kwa">in</span>
+  <span class="kwa">let</span> <span class="kwd">cs</span> <span class="opt">=</span> <span class="kwc">List</span><span class="opt">.</span>map colors ~f<span class="opt">:</span><span class="kwc">Chameneos</span><span class="opt">.</span><span class="kwd">create</span> <span class="kwa">in</span>
+  <span class="kwa">let</span> <span class="kwd">threads</span> <span class="opt">=</span> <span class="kwc">List</span><span class="opt">.</span>map <span class="kwd">cs</span> ~f<span class="opt">:(</span><span class="kwa">fun</span> c <span class="opt">-&gt;</span> <span class="kwc">Chameneos</span><span class="opt">.</span><span class="kwd">run</span> c <span class="kwd">place</span><span class="opt">)</span> <span class="kwa">in</span>
+  <span class="kwc">List</span><span class="opt">.</span>iter <span class="kwd">threads</span> ~f<span class="opt">:</span><span class="kwc">Thread</span><span class="opt">.</span>join<span class="opt">;</span>
+  <span class="kwa">let</span> <span class="kwd">sum_meets</span> <span class="opt">=</span> <span class="kwb">ref</span> <span class="num">0</span> <span class="kwa">in</span>
+  <span class="kwc">List</span><span class="opt">.</span>iter <span class="kwd">cs</span> ~f<span class="opt">:(</span><span class="kwa">fun</span> c <span class="opt">-&gt;</span>
+    printf <span class="str">&quot;</span><span class="ipl">%d</span><span class="str">&quot;</span> c<span class="opt">.</span><span class="kwc">C</span><span class="opt">.</span>meetings<span class="opt">;</span> <span class="kwd">spell_int</span> c<span class="opt">.</span><span class="kwc">C</span><span class="opt">.</span>meetings_with_self<span class="opt">;</span> printf <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+    <span class="kwd">sum_meets</span> <span class="opt">:= !</span><span class="kwd">sum_meets</span> <span class="opt">+</span> c<span class="opt">.</span><span class="kwc">C</span><span class="opt">.</span>meetings<span class="opt">);</span>
+  <span class="kwd">spell_int</span> <span class="opt">!</span><span class="kwd">sum_meets</span><span class="opt">;</span> printf <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+<span class="opt">;;</span>
+
+
+<span class="kwa">let</span> <span class="kwd">main</span> <span class="opt">() =</span> 
+  <span class="kwa">let</span> <span class="kwd">n</span> <span class="opt">=</span> 
+    <span class="kwa">try</span> 
+      int_of_string <span class="opt">(</span><span class="kwc">Sys</span><span class="opt">.</span>argv<span class="opt">.(</span><span class="num">1</span><span class="opt">))</span>
+    <span class="kwa">with</span>
+    <span class="opt">|</span> _ <span class="opt">-&gt;</span> <span class="num">600</span>
+  <span class="kwa">in</span>
+  <span class="kwd">print_complements</span> <span class="opt">();</span>
+  <span class="kwa">let module</span> C <span class="opt">=</span> Color <span class="kwa">in</span>
+  <span class="kwd">work</span> <span class="opt">[</span> <span class="kwc">C</span><span class="opt">.</span>Blue<span class="opt">;</span> <span class="kwc">C</span><span class="opt">.</span>Red<span class="opt">;</span> <span class="kwc">C</span><span class="opt">.</span>Yellow <span class="opt">]</span> <span class="kwd">n</span><span class="opt">;</span>
+  printf <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+  <span class="kwd">work</span> <span class="opt">[</span> <span class="kwc">C</span><span class="opt">.</span>Blue<span class="opt">;</span> <span class="kwc">C</span><span class="opt">.</span>Red<span class="opt">;</span> <span class="kwc">C</span><span class="opt">.</span>Yellow<span class="opt">;</span> <span class="kwc">C</span><span class="opt">.</span>Red<span class="opt">;</span> <span class="kwc">C</span><span class="opt">.</span>Yellow<span class="opt">;</span> <span class="kwc">C</span><span class="opt">.</span>Blue<span class="opt">;</span> <span class="kwc">C</span><span class="opt">.</span>Red<span class="opt">;</span> <span class="kwc">C</span><span class="opt">.</span>Yellow<span class="opt">;</span> <span class="kwc">C</span><span class="opt">.</span>Red<span class="opt">;</span> <span class="kwc">C</span><span class="opt">.</span>Blue <span class="opt">]</span> <span class="kwd">n</span><span class="opt">;</span>
+  printf <span class="str">&quot;</span><span class="esc">\n</span><span class="str">&quot;</span><span class="opt">;</span>
+<span class="opt">;;</span>
+
+<span class="kwa">let</span> <span class="opt">() =</span> <span class="kwd">main</span> <span class="opt">()</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+The OCaml native-code compiler, version 4.06.0
+
+
+Sun, 05 Nov 2017 21:42:50 GMT
+
+MAKE:
+mv chameneosredux.ocaml chameneosredux.ml
+/opt/src/ocaml-4.06.0/bin/ocamlopt -noassert -unsafe -fPIC -nodynlink -inline 100 -O3 -thread unix.cmxa threads.cmxa chameneosredux.ml -o chameneosredux.ocaml_run
+rm chameneosredux.ml
+
+0.38s to complete and log all make actions
+
+COMMAND LINE:
+./chameneosredux.ocaml_run 6000000
+
+PROGRAM OUTPUT:
+blue + blue -&gt; blue
+blue + red -&gt; yellow
+blue + yellow -&gt; red
+red + blue -&gt; yellow
+red + red -&gt; red
+red + yellow -&gt; blue
+yellow + blue -&gt; red
+yellow + red -&gt; blue
+yellow + yellow -&gt; yellow
+
+ blue red yellow
+3724853 zero
+4212144 zero
+4063003 zero
+ one two zero zero zero zero zero zero
+
+ blue red yellow red yellow blue red yellow red blue
+1208392 zero
+1192773 zero
+1210661 zero
+1188505 zero
+1210037 zero
+1193903 zero
+1190602 zero
+1217507 zero
+1190628 zero
+1196992 zero
+ one two zero zero zero zero zero zero
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

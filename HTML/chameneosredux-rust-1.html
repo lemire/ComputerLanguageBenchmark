@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>chameneos-redux Rust program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>chameneos-redux Rust program</h2>
+    <aside>
+      <p><a href="./chameneosredux-description.html#chameneosredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">// The Computer Language Benchmarks Game</span>
+<span class="slc">// http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">//</span>
+<span class="slc">// contributed by the Rust Project Developers</span>
+<span class="slc">// contributed by TeXitoi</span>
+
+<span class="kwa">use self</span><span class="opt">::</span>Color<span class="opt">::{</span>Red<span class="opt">,</span> Yellow<span class="opt">,</span> Blue<span class="opt">};</span>
+<span class="kwa">use</span> std<span class="opt">::</span>sync<span class="opt">::</span>mpsc<span class="opt">::{</span>channel<span class="opt">,</span> Sender<span class="opt">,</span> Receiver<span class="opt">};</span>
+<span class="kwa">use</span> std<span class="opt">::</span>fmt<span class="opt">;</span>
+<span class="kwa">use</span> std<span class="opt">::</span>thread<span class="opt">::</span>spawn<span class="opt">;</span>
+
+<span class="kwa">fn</span> <span class="kwd">print_complements</span><span class="opt">() {</span>
+    <span class="kwa">let</span> all <span class="opt">= [</span>Blue<span class="opt">,</span> Red<span class="opt">,</span> Yellow<span class="opt">];</span>
+    <span class="kwa">for</span> aa <span class="kwa">in</span> all<span class="num">.i</span>ter<span class="opt">() {</span>
+        <span class="kwa">for</span> bb <span class="kwa">in</span> all<span class="num">.i</span>ter<span class="opt">() {</span>
+            println<span class="opt">!(</span><span class="str">&quot;{} + {} -&gt; {}&quot;</span><span class="opt">, *</span>aa<span class="opt">, *</span>bb<span class="opt">,</span> <span class="kwd">transform</span><span class="opt">(*</span>aa<span class="opt">, *</span>bb<span class="opt">));</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="ppc">#[derive(Clone, Copy)]</span>
+<span class="kwa">enum</span> Color <span class="opt">{</span>
+    Red<span class="opt">,</span>
+    Yellow<span class="opt">,</span>
+    Blue<span class="opt">,</span>
+<span class="opt">}</span>
+
+<span class="kwa">impl</span> fmt<span class="opt">::</span>Display <span class="kwa">for</span> Color <span class="opt">{</span>
+    <span class="kwa">fn</span> <span class="kwd">fmt</span><span class="opt">(&amp;</span><span class="kwa">self</span><span class="opt">,</span> f<span class="opt">: &amp;</span><span class="kwa">mut</span> fmt<span class="opt">::</span>Formatter<span class="opt">) -&gt;</span> fmt<span class="opt">::</span>Result <span class="opt">{</span>
+        <span class="kwa">let</span> <span class="kwb">str</span> <span class="opt">=</span> <span class="kwa">match</span> <span class="opt">*</span><span class="kwa">self</span> <span class="opt">{</span>
+            Red <span class="opt">=&gt;</span> <span class="str">&quot;red&quot;</span><span class="opt">,</span>
+            Yellow <span class="opt">=&gt;</span> <span class="str">&quot;yellow&quot;</span><span class="opt">,</span>
+            Blue <span class="opt">=&gt;</span> <span class="str">&quot;blue&quot;</span><span class="opt">,</span>
+        <span class="opt">};</span>
+        write<span class="opt">!(</span>f<span class="opt">,</span> <span class="str">&quot;{}&quot;</span><span class="opt">,</span> <span class="kwb">str</span><span class="opt">)</span>
+    <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="ppc">#[derive(Clone, Copy)]</span>
+<span class="kwa">struct</span> CreatureInfo <span class="opt">{</span>
+    name<span class="opt">:</span> <span class="kwb">usize</span><span class="opt">,</span>
+    color<span class="opt">:</span> Color
+<span class="opt">}</span>
+
+<span class="kwa">fn</span> <span class="kwd">show_color_list</span><span class="opt">(</span>set<span class="opt">:</span> Vec<span class="opt">&lt;</span>Color<span class="opt">&gt;) -&gt;</span> String <span class="opt">{</span>
+    <span class="kwa">let mut</span> out <span class="opt">=</span> String<span class="opt">::</span><span class="kwd">new</span><span class="opt">();</span>
+    <span class="kwa">for</span> col <span class="kwa">in</span> set<span class="num">.i</span>ter<span class="opt">() {</span>
+        out<span class="opt">.</span><span class="kwd">push</span><span class="opt">(</span>&apos; &apos;<span class="opt">);</span>
+        out<span class="opt">.</span><span class="kwd">push_str</span><span class="opt">(&amp;*</span>format<span class="opt">!(</span><span class="str">&quot;{}&quot;</span><span class="opt">,</span> col<span class="opt">));</span>
+    <span class="opt">}</span>
+    out
+<span class="opt">}</span>
+
+<span class="kwa">fn</span> <span class="kwd">show_digit</span><span class="opt">(</span>nn<span class="opt">:</span> <span class="kwb">usize</span><span class="opt">) -&gt; &amp;</span>&apos;<span class="kwa">static</span> <span class="kwb">str</span> <span class="opt">{</span>
+    <span class="kwa">match</span> nn <span class="opt">{</span>
+        <span class="num">0</span> <span class="opt">=&gt; {</span><span class="str">&quot; zero&quot;</span><span class="opt">}</span>
+        <span class="num">1</span> <span class="opt">=&gt; {</span><span class="str">&quot; one&quot;</span><span class="opt">}</span>
+        <span class="num">2</span> <span class="opt">=&gt; {</span><span class="str">&quot; two&quot;</span><span class="opt">}</span>
+        <span class="num">3</span> <span class="opt">=&gt; {</span><span class="str">&quot; three&quot;</span><span class="opt">}</span>
+        <span class="num">4</span> <span class="opt">=&gt; {</span><span class="str">&quot; four&quot;</span><span class="opt">}</span>
+        <span class="num">5</span> <span class="opt">=&gt; {</span><span class="str">&quot; five&quot;</span><span class="opt">}</span>
+        <span class="num">6</span> <span class="opt">=&gt; {</span><span class="str">&quot; six&quot;</span><span class="opt">}</span>
+        <span class="num">7</span> <span class="opt">=&gt; {</span><span class="str">&quot; seven&quot;</span><span class="opt">}</span>
+        <span class="num">8</span> <span class="opt">=&gt; {</span><span class="str">&quot; eight&quot;</span><span class="opt">}</span>
+        <span class="num">9</span> <span class="opt">=&gt; {</span><span class="str">&quot; nine&quot;</span><span class="opt">}</span>
+        _ <span class="opt">=&gt; {</span>panic<span class="opt">!(</span><span class="str">&quot;expected digits from 0 to 9...&quot;</span><span class="opt">)}</span>
+    <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="kwa">struct</span> <span class="kwd">Number</span><span class="opt">(</span><span class="kwb">usize</span><span class="opt">);</span>
+<span class="kwa">impl</span> fmt<span class="opt">::</span>Display <span class="kwa">for</span> Number <span class="opt">{</span>
+    <span class="kwa">fn</span> <span class="kwd">fmt</span><span class="opt">(&amp;</span><span class="kwa">self</span><span class="opt">,</span> f<span class="opt">: &amp;</span><span class="kwa">mut</span> fmt<span class="opt">::</span>Formatter<span class="opt">) -&gt;</span> fmt<span class="opt">::</span>Result <span class="opt">{</span>
+        <span class="kwa">let mut</span> out <span class="opt">=</span> vec<span class="opt">![];</span>
+        <span class="kwa">let</span> <span class="kwd">Number</span><span class="opt">(</span><span class="kwa">mut</span> num<span class="opt">) = *</span><span class="kwa">self</span><span class="opt">;</span>
+        <span class="kwa">if</span> num <span class="opt">==</span> <span class="num">0</span> <span class="opt">{</span> out<span class="opt">.</span><span class="kwd">push</span><span class="opt">(</span><span class="kwd">show_digit</span><span class="opt">(</span><span class="num">0</span><span class="opt">)) };</span>
+
+        <span class="kwa">while</span> num <span class="opt">!=</span> <span class="num">0</span> <span class="opt">{</span>
+            <span class="kwa">let</span> dig <span class="opt">=</span> num <span class="opt">%</span> <span class="num">10</span><span class="opt">;</span>
+            num <span class="opt">=</span> num <span class="opt">/</span> <span class="num">10</span><span class="opt">;</span>
+            <span class="kwa">let</span> s <span class="opt">=</span> <span class="kwd">show_digit</span><span class="opt">(</span>dig<span class="opt">);</span>
+            out<span class="opt">.</span><span class="kwd">push</span><span class="opt">(</span>s<span class="opt">);</span>
+        <span class="opt">}</span>
+
+        <span class="kwa">for</span> s <span class="kwa">in</span> out<span class="num">.i</span>ter<span class="opt">().</span><span class="kwd">rev</span><span class="opt">() {</span>
+            try<span class="opt">!(</span>write<span class="opt">!(</span>f<span class="opt">,</span> <span class="str">&quot;{}&quot;</span><span class="opt">,</span> s<span class="opt">))</span>
+        <span class="opt">}</span>
+        <span class="kwd">Ok</span><span class="opt">(())</span>
+    <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="kwa">fn</span> <span class="kwd">transform</span><span class="opt">(</span>aa<span class="opt">:</span> Color<span class="opt">,</span> bb<span class="opt">:</span> Color<span class="opt">) -&gt;</span> Color <span class="opt">{</span>
+    <span class="kwa">match</span> <span class="opt">(</span>aa<span class="opt">,</span> bb<span class="opt">) {</span>
+        <span class="opt">(</span>Red<span class="opt">,</span>    Red   <span class="opt">) =&gt; {</span> Red    <span class="opt">}</span>
+        <span class="opt">(</span>Red<span class="opt">,</span>    Yellow<span class="opt">) =&gt; {</span> Blue   <span class="opt">}</span>
+        <span class="opt">(</span>Red<span class="opt">,</span>    Blue  <span class="opt">) =&gt; {</span> Yellow <span class="opt">}</span>
+        <span class="opt">(</span>Yellow<span class="opt">,</span> Red   <span class="opt">) =&gt; {</span> Blue   <span class="opt">}</span>
+        <span class="opt">(</span>Yellow<span class="opt">,</span> Yellow<span class="opt">) =&gt; {</span> Yellow <span class="opt">}</span>
+        <span class="opt">(</span>Yellow<span class="opt">,</span> Blue  <span class="opt">) =&gt; {</span> Red    <span class="opt">}</span>
+        <span class="opt">(</span>Blue<span class="opt">,</span>   Red   <span class="opt">) =&gt; {</span> Yellow <span class="opt">}</span>
+        <span class="opt">(</span>Blue<span class="opt">,</span>   Yellow<span class="opt">) =&gt; {</span> Red    <span class="opt">}</span>
+        <span class="opt">(</span>Blue<span class="opt">,</span>   Blue  <span class="opt">) =&gt; {</span> Blue   <span class="opt">}</span>
+    <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="kwa">fn</span> <span class="kwd">creature</span><span class="opt">(</span>
+    name<span class="opt">:</span> <span class="kwb">usize</span><span class="opt">,</span>
+    <span class="kwa">mut</span> color<span class="opt">:</span> Color<span class="opt">,</span>
+    from_rendezvous<span class="opt">:</span> Receiver<span class="opt">&lt;</span>CreatureInfo<span class="opt">&gt;,</span>
+    to_rendezvous<span class="opt">:</span> Sender<span class="opt">&lt;</span>CreatureInfo<span class="opt">&gt;,</span>
+    to_rendezvous_log<span class="opt">:</span> Sender<span class="opt">&lt;</span>String<span class="opt">&gt;</span>
+<span class="opt">) {</span>
+    <span class="kwa">let mut</span> creatures_met <span class="opt">=</span> <span class="num">0i32</span><span class="opt">;</span>
+    <span class="kwa">let mut</span> evil_clones_met <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+    <span class="kwa">let mut</span> rendezvous <span class="opt">=</span> from_rendezvous<span class="num">.i</span>ter<span class="opt">();</span>
+
+    <span class="kwa">loop</span> <span class="opt">{</span>
+        <span class="slc">// ask for a pairing</span>
+        to_rendezvous<span class="opt">.</span><span class="kwd">send</span><span class="opt">(</span>CreatureInfo <span class="opt">{</span>name<span class="opt">:</span> name<span class="opt">,</span> color<span class="opt">:</span> color<span class="opt">})</span><span class="num">.u</span>nwrap<span class="opt">();</span>
+
+        <span class="slc">// log and change, or quit</span>
+        <span class="kwa">match</span> rendezvous<span class="opt">.</span><span class="kwd">next</span><span class="opt">() {</span>
+            <span class="kwd">Some</span><span class="opt">(</span>other_creature<span class="opt">) =&gt; {</span>
+                color <span class="opt">=</span> <span class="kwd">transform</span><span class="opt">(</span>color<span class="opt">,</span> other_creature<span class="opt">.</span>color<span class="opt">);</span>
+
+                <span class="slc">// track some statistics</span>
+                creatures_met <span class="opt">+=</span> <span class="num">1</span><span class="opt">;</span>
+                <span class="kwa">if</span> other_creature<span class="opt">.</span>name <span class="opt">==</span> name <span class="opt">{</span>
+                   evil_clones_met <span class="opt">+=</span> <span class="num">1</span><span class="opt">;</span>
+                <span class="opt">}</span>
+            <span class="opt">}</span>
+            None <span class="opt">=&gt;</span> <span class="kwa">break</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+    <span class="slc">// log creatures met and evil clones of self</span>
+    <span class="kwa">let</span> report <span class="opt">=</span> format<span class="opt">!(</span><span class="str">&quot;{}{}&quot;</span><span class="opt">,</span> creatures_met<span class="opt">,</span> <span class="kwd">Number</span><span class="opt">(</span>evil_clones_met<span class="opt">));</span>
+    to_rendezvous_log<span class="opt">.</span><span class="kwd">send</span><span class="opt">(</span>report<span class="opt">)</span><span class="num">.u</span>nwrap<span class="opt">();</span>
+<span class="opt">}</span>
+
+<span class="kwa">fn</span> <span class="kwd">rendezvous</span><span class="opt">(</span>nn<span class="opt">:</span> <span class="kwb">usize</span><span class="opt">,</span> set<span class="opt">:</span> Vec<span class="opt">&lt;</span>Color<span class="opt">&gt;) {</span>
+    <span class="slc">// these ports will allow us to hear from the creatures</span>
+    <span class="kwa">let</span> <span class="opt">(</span>to_rendezvous<span class="opt">,</span> from_creatures<span class="opt">) =</span> channel<span class="opt">::&lt;</span>CreatureInfo<span class="opt">&gt;();</span>
+
+    <span class="slc">// these channels will be passed to the creatures so they can talk to us</span>
+    <span class="kwa">let</span> <span class="opt">(</span>to_rendezvous_log<span class="opt">,</span> from_creatures_log<span class="opt">) =</span> channel<span class="opt">::&lt;</span>String<span class="opt">&gt;();</span>
+
+    <span class="slc">// these channels will allow us to talk to each creature by &apos;name&apos;/index</span>
+    <span class="kwa">let</span> to_creature<span class="opt">:</span> Vec<span class="opt">&lt;</span>Sender<span class="opt">&lt;</span>CreatureInfo<span class="opt">&gt;&gt; =</span>
+        set<span class="num">.i</span>ter<span class="opt">().</span><span class="kwd">enumerate</span><span class="opt">().</span><span class="kwd">map</span><span class="opt">(|(</span>ii<span class="opt">, &amp;</span>col<span class="opt">)| {</span>
+            <span class="slc">// create each creature as a listener with a port, and</span>
+            <span class="slc">// give us a channel to talk to each</span>
+            <span class="kwa">let</span> to_rendezvous <span class="opt">=</span> to_rendezvous<span class="opt">.</span><span class="kwd">clone</span><span class="opt">();</span>
+            <span class="kwa">let</span> to_rendezvous_log <span class="opt">=</span> to_rendezvous_log<span class="opt">.</span><span class="kwd">clone</span><span class="opt">();</span>
+            <span class="kwa">let</span> <span class="opt">(</span>to_creature<span class="opt">,</span> from_rendezvous<span class="opt">) =</span> <span class="kwd">channel</span><span class="opt">();</span>
+            <span class="kwd">spawn</span><span class="opt">(</span><span class="kwa">move</span><span class="opt">|| {</span>
+                <span class="kwd">creature</span><span class="opt">(</span>ii<span class="opt">,</span>
+                         col<span class="opt">,</span>
+                         from_rendezvous<span class="opt">,</span>
+                         to_rendezvous<span class="opt">,</span>
+                         to_rendezvous_log<span class="opt">);</span>
+            <span class="opt">});</span>
+            to_creature
+        <span class="opt">}).</span><span class="kwd">collect</span><span class="opt">();</span>
+
+    <span class="kwa">let mut</span> creatures_met <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+
+    <span class="slc">// set up meetings...</span>
+    <span class="kwa">for</span> _ <span class="kwa">in</span> <span class="opt">(</span><span class="num">0</span><span class="opt">..</span>nn<span class="opt">) {</span>
+        <span class="kwa">let</span> fst_creature <span class="opt">=</span> from_creatures<span class="opt">.</span><span class="kwd">recv</span><span class="opt">()</span><span class="num">.u</span>nwrap<span class="opt">();</span>
+        <span class="kwa">let</span> snd_creature <span class="opt">=</span> from_creatures<span class="opt">.</span><span class="kwd">recv</span><span class="opt">()</span><span class="num">.u</span>nwrap<span class="opt">();</span>
+
+        creatures_met <span class="opt">+=</span> <span class="num">2</span><span class="opt">;</span>
+
+        to_creature<span class="opt">[</span>fst_creature<span class="opt">.</span>name<span class="opt">].</span><span class="kwd">send</span><span class="opt">(</span>snd_creature<span class="opt">)</span><span class="num">.u</span>nwrap<span class="opt">();</span>
+        to_creature<span class="opt">[</span>snd_creature<span class="opt">.</span>name<span class="opt">].</span><span class="kwd">send</span><span class="opt">(</span>fst_creature<span class="opt">)</span><span class="num">.u</span>nwrap<span class="opt">();</span>
+    <span class="opt">}</span>
+
+    <span class="slc">// tell each creature to stop</span>
+    <span class="kwd">drop</span><span class="opt">(</span>to_creature<span class="opt">);</span>
+
+    <span class="slc">// print each color in the set</span>
+    println<span class="opt">!(</span><span class="str">&quot;{}&quot;</span><span class="opt">,</span> <span class="kwd">show_color_list</span><span class="opt">(</span>set<span class="opt">));</span>
+
+    <span class="slc">// print each creature&apos;s stats</span>
+    <span class="kwd">drop</span><span class="opt">(</span>to_rendezvous_log<span class="opt">);</span>
+    <span class="kwa">for</span> rep <span class="kwa">in</span> from_creatures_log<span class="num">.i</span>ter<span class="opt">() {</span>
+        println<span class="opt">!(</span><span class="str">&quot;{}&quot;</span><span class="opt">,</span> rep<span class="opt">);</span>
+    <span class="opt">}</span>
+
+    <span class="slc">// print the total number of creatures met</span>
+    println<span class="opt">!(</span><span class="str">&quot;{}</span><span class="esc">\</span><span class="str">n&quot;</span><span class="opt">,</span> <span class="kwd">Number</span><span class="opt">(</span>creatures_met<span class="opt">));</span>
+<span class="opt">}</span>
+
+<span class="kwa">fn</span> <span class="kwd">main</span><span class="opt">() {</span>
+    <span class="kwa">let</span> nn <span class="opt">=</span> std<span class="opt">::</span>env<span class="opt">::</span><span class="kwd">args_os</span><span class="opt">().</span><span class="kwd">nth</span><span class="opt">(</span><span class="num">1</span><span class="opt">)</span>
+        <span class="opt">.</span><span class="kwd">and_then</span><span class="opt">(|</span>s<span class="opt">|</span> s<span class="num">.i</span>nto<span class="num">_</span>str<span class="num">i</span>ng<span class="opt">().</span><span class="kwd">ok</span><span class="opt">())</span>
+        <span class="opt">.</span><span class="kwd">and_then</span><span class="opt">(|</span>n<span class="opt">|</span> n<span class="opt">.</span><span class="kwd">parse</span><span class="opt">().</span><span class="kwd">ok</span><span class="opt">())</span>
+        <span class="num">.u</span>nwrap<span class="num">_</span>or<span class="opt">(</span><span class="num">600</span><span class="opt">);</span>
+
+    <span class="kwd">print_complements</span><span class="opt">();</span>
+    println<span class="opt">!(</span><span class="str">&quot;&quot;</span><span class="opt">);</span>
+
+    <span class="kwd">rendezvous</span><span class="opt">(</span>nn<span class="opt">,</span> vec<span class="opt">!(</span>Blue<span class="opt">,</span> Red<span class="opt">,</span> Yellow<span class="opt">));</span>
+
+    <span class="kwd">rendezvous</span><span class="opt">(</span>nn<span class="opt">,</span>
+        vec<span class="opt">!(</span>Blue<span class="opt">,</span> Red<span class="opt">,</span> Yellow<span class="opt">,</span> Red<span class="opt">,</span> Yellow<span class="opt">,</span> Blue<span class="opt">,</span> Red<span class="opt">,</span> Yellow<span class="opt">,</span> Red<span class="opt">,</span> Blue<span class="opt">));</span>
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+rustc 1.25.0 (84203cac6 2018-03-25)
+
+
+Thu, 29 Mar 2018 16:43:15 GMT
+
+MAKE:
+/opt/src/rust-1.25.0/bin/rustc -C opt-level=3 -C target-cpu=core2 -C lto -C codegen-units=1  chameneosredux.rs -o chameneosredux.rust_run
+warning: unnecessary parentheses around `for` head expression
+   --&gt; chameneosredux.rs:167:14
+    |
+167 |     for _ in (0..nn) {
+    |              ^^^^^^^ help: remove these parentheses
+    |
+    = note: #[warn(unused_parens)] on by default
+
+rm chameneosredux.rs
+
+9.03s to complete and log all make actions
+
+COMMAND LINE:
+./chameneosredux.rust_run 6000000
+
+PROGRAM OUTPUT:
+blue + blue -&gt; blue
+blue + red -&gt; yellow
+blue + yellow -&gt; red
+red + blue -&gt; yellow
+red + red -&gt; red
+red + yellow -&gt; blue
+yellow + blue -&gt; red
+yellow + red -&gt; blue
+yellow + yellow -&gt; yellow
+
+ blue red yellow
+4298483 zero
+4457517 zero
+3244000 zero
+ one two zero zero zero zero zero zero
+
+ blue red yellow red yellow blue red yellow red blue
+1215208 zero
+1202758 zero
+1197614 zero
+1226026 zero
+1194212 zero
+1214040 zero
+1182464 zero
+1196499 zero
+1196267 zero
+1174912 zero
+ one two zero zero zero zero zero zero
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

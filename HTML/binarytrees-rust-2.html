@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>binary-trees Rust&nbsp;#2 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>binary-trees Rust&nbsp;#2 program</h2>
+    <aside>
+      <p><a href="./binarytrees-description.html#binarytrees">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">// The Computer Language Benchmarks Game</span>
+<span class="slc">// http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">//</span>
+<span class="slc">// contributed by the Rust Project Developers</span>
+<span class="slc">// contributed by TeXitoi</span>
+<span class="slc">// contributed by Cristi Cobzarenco</span>
+<span class="slc">// contributed by Matt Brubeck</span>
+
+<span class="kwa">extern crate</span> typed_arena<span class="opt">;</span>
+<span class="kwa">extern crate</span> rayon<span class="opt">;</span>
+
+<span class="kwa">use</span> typed_arena<span class="opt">::</span>Arena<span class="opt">;</span>
+<span class="kwa">use</span> rayon<span class="opt">::</span>prelude<span class="opt">::*;</span>
+
+<span class="kwa">struct</span> Tree<span class="opt">&lt;</span>&apos;a<span class="opt">&gt; {</span>
+    children<span class="opt">:</span> Option<span class="opt">&lt;(&amp;</span>&apos;a Tree<span class="opt">&lt;</span>&apos;a<span class="opt">&gt;, &amp;</span>&apos;a Tree<span class="opt">&lt;</span>&apos;a<span class="opt">&gt;)&gt;,</span>
+<span class="opt">}</span>
+
+<span class="kwa">fn</span> <span class="kwd">item_check</span><span class="opt">(</span>tree<span class="opt">: &amp;</span>Tree<span class="opt">) -&gt;</span> <span class="kwb">i32</span> <span class="opt">{</span>
+    <span class="kwa">if let</span> <span class="kwd">Some</span><span class="opt">((</span>left<span class="opt">,</span> right<span class="opt">)) =</span> tree<span class="opt">.</span>children <span class="opt">{</span>
+        <span class="num">1</span> <span class="opt">+</span> <span class="kwd">item_check</span><span class="opt">(</span>right<span class="opt">) +</span> <span class="kwd">item_check</span><span class="opt">(</span>left<span class="opt">)</span>
+    <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span>
+        <span class="num">1</span>
+    <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="kwa">fn</span> bottom_up_tree<span class="opt">&lt;</span>&apos;r<span class="opt">&gt;(</span>arena<span class="opt">: &amp;</span>&apos;r Arena<span class="opt">&lt;</span>Tree<span class="opt">&lt;</span>&apos;r<span class="opt">&gt;&gt;,</span> depth<span class="opt">:</span> <span class="kwb">i32</span><span class="opt">)</span>
+                  <span class="opt">-&gt; &amp;</span>&apos;r Tree<span class="opt">&lt;</span>&apos;r<span class="opt">&gt; {</span>
+    <span class="kwa">let mut</span> tree <span class="opt">=</span> arena<span class="opt">.</span><span class="kwd">alloc</span><span class="opt">(</span>Tree <span class="opt">{</span> children<span class="opt">:</span> None <span class="opt">});</span>
+    <span class="kwa">if</span> depth <span class="opt">&gt;</span> <span class="num">0</span> <span class="opt">{</span>
+        <span class="kwa">let</span> right <span class="opt">=</span> <span class="kwd">bottom_up_tree</span><span class="opt">(</span>arena<span class="opt">,</span> depth <span class="opt">-</span> <span class="num">1</span><span class="opt">);</span>
+        <span class="kwa">let</span> left <span class="opt">=</span> <span class="kwd">bottom_up_tree</span><span class="opt">(</span>arena<span class="opt">,</span> depth <span class="opt">-</span> <span class="num">1</span><span class="opt">);</span>
+        tree<span class="opt">.</span>children <span class="opt">=</span> <span class="kwd">Some</span><span class="opt">((</span>left<span class="opt">,</span> right<span class="opt">))</span>
+    <span class="opt">}</span>
+    tree
+<span class="opt">}</span>
+
+<span class="kwa">fn</span> <span class="kwd">inner</span><span class="opt">(</span>depth<span class="opt">:</span> <span class="kwb">i32</span><span class="opt">,</span> iterations<span class="opt">:</span> <span class="kwb">i32</span><span class="opt">) -&gt;</span> String <span class="opt">{</span>
+    <span class="kwa">let</span> chk<span class="opt">:</span> <span class="kwb">i32</span> <span class="opt">= (</span><span class="num">0</span> <span class="opt">..</span> iterations<span class="opt">)</span><span class="num">.i</span>nto<span class="num">_</span>par<span class="num">_i</span>ter<span class="opt">().</span><span class="kwd">map</span><span class="opt">(|</span>_<span class="opt">| {</span>
+        <span class="kwa">let</span> arena <span class="opt">=</span> Arena<span class="opt">::</span><span class="kwd">new</span><span class="opt">();</span>
+        <span class="kwa">let</span> a <span class="opt">=</span> <span class="kwd">bottom_up_tree</span><span class="opt">(&amp;</span>arena<span class="opt">,</span> depth<span class="opt">);</span>
+        <span class="kwd">item_check</span><span class="opt">(</span>a<span class="opt">)</span>
+    <span class="opt">}).</span><span class="kwd">sum</span><span class="opt">();</span>
+    format<span class="opt">!(</span><span class="str">&quot;{}</span><span class="esc">\</span><span class="str">t trees of depth {}</span><span class="esc">\</span><span class="str">t check: {}&quot;</span><span class="opt">,</span> iterations<span class="opt">,</span> depth<span class="opt">,</span> chk<span class="opt">)</span>
+<span class="opt">}</span>
+
+<span class="kwa">fn</span> <span class="kwd">main</span><span class="opt">() {</span>
+    <span class="kwa">let</span> n <span class="opt">=</span> std<span class="opt">::</span>env<span class="opt">::</span><span class="kwd">args</span><span class="opt">().</span><span class="kwd">nth</span><span class="opt">(</span><span class="num">1</span><span class="opt">)</span>
+        <span class="opt">.</span><span class="kwd">and_then</span><span class="opt">(|</span>n<span class="opt">|</span> n<span class="opt">.</span><span class="kwd">parse</span><span class="opt">().</span><span class="kwd">ok</span><span class="opt">())</span>
+        <span class="num">.u</span>nwrap<span class="num">_</span>or<span class="opt">(</span><span class="num">10</span><span class="opt">);</span>
+    <span class="kwa">let</span> min_depth <span class="opt">=</span> <span class="num">4</span><span class="opt">;</span>
+    <span class="kwa">let</span> max_depth <span class="opt">=</span> <span class="kwa">if</span> min_depth <span class="opt">+</span> <span class="num">2</span> <span class="opt">&gt;</span> n <span class="opt">{</span> min_depth <span class="opt">+</span> <span class="num">2</span> <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span> n <span class="opt">};</span>
+
+    <span class="opt">{</span>
+        <span class="kwa">let</span> arena <span class="opt">=</span> Arena<span class="opt">::</span><span class="kwd">new</span><span class="opt">();</span>
+        <span class="kwa">let</span> depth <span class="opt">=</span> max_depth <span class="opt">+</span> <span class="num">1</span><span class="opt">;</span>
+        <span class="kwa">let</span> tree <span class="opt">=</span> <span class="kwd">bottom_up_tree</span><span class="opt">(&amp;</span>arena<span class="opt">,</span> depth<span class="opt">);</span>
+        println<span class="opt">!(</span><span class="str">&quot;stretch tree of depth {}</span><span class="esc">\</span><span class="str">t check: {}&quot;</span><span class="opt">,</span> depth<span class="opt">,</span> <span class="kwd">item_check</span><span class="opt">(</span>tree<span class="opt">));</span>
+    <span class="opt">}</span>
+
+    <span class="kwa">let</span> long_lived_arena <span class="opt">=</span> Arena<span class="opt">::</span><span class="kwd">new</span><span class="opt">();</span>
+    <span class="kwa">let</span> long_lived_tree <span class="opt">=</span> <span class="kwd">bottom_up_tree</span><span class="opt">(&amp;</span>long_lived_arena<span class="opt">,</span> max_depth<span class="opt">);</span>
+
+    <span class="kwa">let</span> messages <span class="opt">= (</span>min_depth<span class="opt">/</span><span class="num">2</span><span class="opt">..</span>max_depth<span class="opt">/</span><span class="num">2</span> <span class="opt">+</span> <span class="num">1</span><span class="opt">)</span><span class="num">.i</span>nto<span class="num">_</span>par<span class="num">_i</span>ter<span class="opt">().</span><span class="kwd">map</span><span class="opt">(|</span>half_depth<span class="opt">| {</span>
+            <span class="kwa">let</span> depth <span class="opt">=</span> half_depth <span class="opt">*</span> <span class="num">2</span><span class="opt">;</span>
+            <span class="kwa">let</span> iterations <span class="opt">=</span> <span class="num">1</span> <span class="opt">&lt;&lt; ((</span>max_depth <span class="opt">-</span> depth <span class="opt">+</span> min_depth<span class="opt">)</span> <span class="kwa">as</span> <span class="kwb">u32</span><span class="opt">);</span>
+            <span class="kwd">inner</span><span class="opt">(</span>depth<span class="opt">,</span> iterations<span class="opt">)</span>
+        <span class="opt">}).</span>collect<span class="opt">::&lt;</span>Vec<span class="opt">&lt;</span>_<span class="opt">&gt;&gt;();</span>
+
+    <span class="kwa">for</span> message <span class="kwa">in</span> messages <span class="opt">{</span>
+        println<span class="opt">!(</span><span class="str">&quot;{}&quot;</span><span class="opt">,</span> message<span class="opt">);</span>
+    <span class="opt">}</span>
+
+    println<span class="opt">!(</span><span class="str">&quot;long lived tree of depth {}</span><span class="esc">\</span><span class="str">t check: {}&quot;</span><span class="opt">,</span> max_depth<span class="opt">,</span> <span class="kwd">item_check</span><span class="opt">(</span>long_lived_tree<span class="opt">));</span>
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+rustc 1.25.0 (84203cac6 2018-03-25)
+
+
+Thu, 29 Mar 2018 16:41:49 GMT
+
+MAKE:
+/opt/src/rust-1.25.0/bin/rustc -C opt-level=3 -C target-cpu=core2 -C lto -C codegen-units=1 -L /opt/src/rust-libs binarytrees.rs -o binarytrees.rust-2.rust_run
+error[E0460]: found possibly newer version of crate `lazy_static` which `rayon` depends on
+  --&gt; binarytrees.rs:10:1
+   |
+10 | extern crate rayon;
+   | ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: perhaps that crate needs to be recompiled?
+   = note: the following crate versions were found:
+           crate `lazy_static`: /opt/src/rust-1.25.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/liblazy_static-c2718c97cbc91f7c.rlib
+           crate `lazy_static`: /opt/src/rust-libs/liblazy_static-cc3614442e8d4ac5.rlib
+           crate `rayon`: /opt/src/rust-libs/librayon-3db3bc39e5457432.rlib
+
+error: aborting due to previous error
+
+/home/dunham/benchmarksgame/nanobench/makefiles/u64q.programs.Makefile:632: recipe for target 'binarytrees.rust-2.rust_run' failed
+make: [binarytrees.rust-2.rust_run] Error 101 (ignored)
+
+0.73s to complete and log all make actions
+
+COMMAND LINE:
+./binarytrees.rust-2.rust_run 7
+
+MAKE ERROR 
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

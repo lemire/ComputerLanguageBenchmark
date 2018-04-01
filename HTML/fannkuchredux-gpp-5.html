@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>fannkuch-redux C++ g++&nbsp;#5 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>fannkuch-redux C++ g++&nbsp;#5 program</h2>
+    <aside>
+      <p><a href="./fannkuchredux-description.html#fannkuchredux">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">// The Computer Language Benchmarks Game</span>
+<span class="slc">// http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">//</span>
+<span class="slc">// Contributed by Dave Compton</span>
+<span class="slc">// Based on &quot;fannkuch-redux C gcc #5&quot;, contributed by Jeremy Zerfas</span>
+<span class="slc">// which in turn was based on the Ada program by Jonathan Parker and </span>
+<span class="slc">// Georg Bauhaus which in turn was based on code by Dave Fladebo, </span>
+<span class="slc">// Eckehard Berns, Heiner Marxen, Hongwei Xi, and The Anh Tran and </span>
+<span class="slc">// also the Java program by Oleg Mazurov.</span>
+
+<span class="ppc">#include &lt;iostream&gt;</span>
+<span class="ppc">#include &lt;vector&gt;</span>
+<span class="ppc">#include &lt;algorithm&gt;</span>
+
+<span class="kwa">using namespace</span> std<span class="opt">;</span>
+
+<span class="kwb">static int64_t</span> fact<span class="opt">[</span><span class="num">32</span><span class="opt">];</span>
+
+<span class="kwb">void</span> <span class="kwd">initializeFact</span><span class="opt">(</span><span class="kwb">int</span> n<span class="opt">)</span>
+<span class="opt">{</span>
+    fact<span class="opt">[</span><span class="num">0</span><span class="opt">] =</span> <span class="num">1</span><span class="opt">;</span>
+    <span class="kwa">for</span> <span class="opt">(</span><span class="kwc">auto</span> i <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span> i <span class="opt">&lt;=</span> n<span class="opt">; ++</span>i<span class="opt">)</span>
+        fact<span class="opt">[</span>i<span class="opt">] =</span> i <span class="opt">*</span> fact<span class="opt">[</span>i <span class="opt">-</span> <span class="num">1</span><span class="opt">];</span>
+<span class="opt">}</span>
+
+<span class="kwc">class</span> Permutation 
+<span class="opt">{</span>
+  <span class="kwc">public</span><span class="opt">:</span>
+    <span class="kwd">Permutation</span><span class="opt">(</span><span class="kwb">int</span> n<span class="opt">,</span> <span class="kwb">int64_t</span> start<span class="opt">);</span>
+    <span class="kwb">void</span> <span class="kwd">advance</span><span class="opt">();</span>
+    <span class="kwb">int64_t</span> <span class="kwd">countFlips</span><span class="opt">()</span> <span class="kwb">const</span><span class="opt">;</span>
+
+  <span class="kwc">private</span><span class="opt">:</span>
+     vector <span class="opt">&lt;</span><span class="kwb">int</span><span class="opt">&gt;</span> count<span class="opt">;</span>
+     vector <span class="opt">&lt;</span><span class="kwb">int8_t</span><span class="opt">&gt;</span> current<span class="opt">;</span>
+
+<span class="opt">};</span>
+
+<span class="slc">// </span>
+<span class="slc">// Initialize the current value of a permutation</span>
+<span class="slc">// and the cycle count values used to advance .</span>
+<span class="slc">// </span>
+<span class="kwc">Permutation</span><span class="opt">::</span><span class="kwd">Permutation</span><span class="opt">(</span><span class="kwb">int</span> n<span class="opt">,</span> <span class="kwb">int64_t</span> start<span class="opt">)</span>
+<span class="opt">{</span>
+    count<span class="opt">.</span><span class="kwd">resize</span><span class="opt">(</span>n<span class="opt">);</span>
+    current<span class="opt">.</span><span class="kwd">resize</span><span class="opt">(</span>n<span class="opt">);</span>
+
+    <span class="slc">// Initialize count </span>
+    <span class="kwa">for</span> <span class="opt">(</span><span class="kwc">auto</span> i <span class="opt">=</span> n <span class="opt">-</span> <span class="num">1</span><span class="opt">;</span> i <span class="opt">&gt;=</span> <span class="num">0</span><span class="opt">; --</span>i<span class="opt">)</span> 
+    <span class="opt">{</span>
+        <span class="kwc">auto</span> d <span class="opt">=</span> start <span class="opt">/</span> fact<span class="opt">[</span>i<span class="opt">];</span>
+        start <span class="opt">=</span> start <span class="opt">%</span> fact<span class="opt">[</span>i<span class="opt">];</span>
+        count<span class="opt">[</span>i<span class="opt">] =</span> d<span class="opt">;</span>
+    <span class="opt">}</span>
+
+    <span class="slc">// Initialize current.</span>
+    <span class="kwa">for</span> <span class="opt">(</span><span class="kwc">auto</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> n<span class="opt">; ++</span>i<span class="opt">)</span>
+        current<span class="opt">[</span>i<span class="opt">] =</span> i<span class="opt">;</span>
+
+    <span class="kwa">for</span> <span class="opt">(</span><span class="kwc">auto</span> i <span class="opt">=</span> n <span class="opt">-</span> <span class="num">1</span><span class="opt">;</span> i <span class="opt">&gt;=</span> <span class="num">0</span><span class="opt">; --</span>i<span class="opt">)</span> 
+    <span class="opt">{</span>
+        <span class="kwc">auto</span> d <span class="opt">=</span> count<span class="opt">[</span>i<span class="opt">];</span>
+        <span class="kwc">auto</span> b <span class="opt">=</span> current<span class="opt">.</span><span class="kwd">begin</span><span class="opt">();</span>
+        <span class="kwd">rotate</span><span class="opt">(</span>b<span class="opt">,</span> b <span class="opt">+</span> d<span class="opt">,</span> b <span class="opt">+</span> i <span class="opt">+</span> <span class="num">1</span><span class="opt">);</span>
+    <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="slc">//</span>
+<span class="slc">// Advance the current permutation to the next in sequence.</span>
+<span class="slc">// </span>
+<span class="kwb">void</span> <span class="kwc">Permutation</span><span class="opt">::</span><span class="kwd">advance</span><span class="opt">()</span>
+<span class="opt">{</span>
+    <span class="kwa">for</span> <span class="opt">(</span><span class="kwc">auto</span> i <span class="opt">=</span> <span class="num">1</span><span class="opt">; ;++</span>i<span class="opt">)</span> 
+    <span class="opt">{</span>
+        <span class="slc">// Tried using std::rotate here but that was slower.</span>
+        <span class="kwc">auto</span> first <span class="opt">=</span> current<span class="opt">[</span><span class="num">0</span><span class="opt">];</span>
+        <span class="kwa">for</span> <span class="opt">(</span><span class="kwc">auto</span> j <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> j <span class="opt">&lt;</span> i<span class="opt">; ++</span>j<span class="opt">)</span>
+            current<span class="opt">[</span>j<span class="opt">] =</span> current<span class="opt">[</span>j <span class="opt">+</span> <span class="num">1</span><span class="opt">];</span>
+        current<span class="opt">[</span>i<span class="opt">] =</span> first<span class="opt">;</span>
+
+        <span class="opt">++(</span>count<span class="opt">[</span>i<span class="opt">]);</span>
+        <span class="kwa">if</span> <span class="opt">(</span>count<span class="opt">[</span>i<span class="opt">] &lt;=</span> i<span class="opt">)</span>
+            <span class="kwa">break</span><span class="opt">;</span>
+        count<span class="opt">[</span>i<span class="opt">] =</span> <span class="num">0</span><span class="opt">;</span>
+    <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="slc">//</span>
+<span class="slc">// Count the flips required to flip 0 to the front of the vector.</span>
+<span class="slc">//</span>
+<span class="slc">// Other than minor cosmetic changes, the following routine is</span>
+<span class="slc">// basically lifted from &quot;fannkuch-redux C gcc #5&quot;</span>
+<span class="slc">//</span>
+<span class="kwc">inline</span> <span class="kwb">int64_t</span> <span class="kwc">Permutation</span><span class="opt">::</span><span class="kwd">countFlips</span><span class="opt">()</span> <span class="kwb">const</span>
+<span class="opt">{</span>
+    <span class="kwb">const</span> <span class="kwc">auto</span> n <span class="opt">=</span> current<span class="opt">.</span><span class="kwd">size</span><span class="opt">();</span>
+    <span class="kwc">auto</span> flips <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+    <span class="kwc">auto</span> first <span class="opt">=</span> current<span class="opt">[</span><span class="num">0</span><span class="opt">];</span>
+    <span class="kwa">if</span> <span class="opt">(</span>first <span class="opt">&gt;</span> <span class="num">0</span><span class="opt">)</span> 
+    <span class="opt">{</span>
+        flips <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span>
+
+        <span class="kwb">int8_t</span> temp<span class="opt">[</span>n<span class="opt">];</span>
+        <span class="slc">// Make a copy of current to work on. </span>
+        <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">size_t</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> n<span class="opt">; ++</span>i<span class="opt">)</span>
+            temp<span class="opt">[</span>i<span class="opt">] =</span> current<span class="opt">[</span>i<span class="opt">];</span>
+
+
+        <span class="slc">// Flip temp until the element at the first index is 0</span>
+        <span class="kwa">for</span> <span class="opt">(;</span> temp<span class="opt">[</span>first<span class="opt">] &gt;</span> <span class="num">0</span><span class="opt">; ++</span>flips<span class="opt">)</span> 
+        <span class="opt">{</span>
+            <span class="slc">// Record the newFirst and restore the old</span>
+            <span class="slc">// first at its new flipped position.</span>
+            <span class="kwb">const int8_t</span> newFirst <span class="opt">=</span> temp<span class="opt">[</span>first<span class="opt">];</span>
+            temp<span class="opt">[</span>first<span class="opt">] =</span> first<span class="opt">;</span>
+
+            <span class="kwa">if</span> <span class="opt">(</span>first <span class="opt">&gt;</span> <span class="num">2</span><span class="opt">)</span> 
+            <span class="opt">{</span>
+                <span class="kwb">int64_t</span> low <span class="opt">=</span> <span class="num">1</span><span class="opt">,</span> high <span class="opt">=</span> first <span class="opt">-</span> <span class="num">1</span><span class="opt">;</span>
+                <span class="kwa">do</span> 
+                <span class="opt">{</span>
+                    <span class="kwd">swap</span><span class="opt">(</span>temp<span class="opt">[</span>low<span class="opt">],</span> temp<span class="opt">[</span>high<span class="opt">]);</span>
+                    <span class="kwa">if</span> <span class="opt">(!(</span>low <span class="opt">+</span> <span class="num">3</span> <span class="opt">&lt;=</span> high <span class="opt">&amp;&amp;</span> low <span class="opt">&lt;</span> <span class="num">16</span><span class="opt">))</span>
+                        <span class="kwa">break</span><span class="opt">;</span>
+                    <span class="opt">++</span>low<span class="opt">;</span>
+                    <span class="opt">--</span>high<span class="opt">;</span>
+                <span class="opt">}</span> <span class="kwa">while</span> <span class="opt">(</span><span class="num">1</span><span class="opt">);</span>
+            <span class="opt">}</span>
+            <span class="slc">// Update first to newFirst that we recorded earlier.</span>
+            first <span class="opt">=</span> newFirst<span class="opt">;</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+    <span class="kwa">return</span> flips<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwb">int</span> <span class="kwd">main</span><span class="opt">(</span><span class="kwb">int</span> argc<span class="opt">,</span> <span class="kwb">char</span> <span class="opt">**</span>argv<span class="opt">)</span>
+<span class="opt">{</span>
+    <span class="kwb">const</span> <span class="kwc">auto</span> n <span class="opt">=</span> <span class="kwd">atoi</span><span class="opt">(</span>argv<span class="opt">[</span><span class="num">1</span><span class="opt">]);</span>
+
+    <span class="slc">// Compute some factorials for later use.</span>
+    <span class="kwd">initializeFact</span><span class="opt">(</span>n<span class="opt">);</span>
+
+    <span class="slc">// blockCount works best if it is set to a multiple of the number</span>
+    <span class="slc">// of CPUs so that the same number of blocks gets distributed to</span>
+    <span class="slc">// each cpu.  The computer used for development (Intel i7-4700MQ)</span>
+    <span class="slc">// had 8 &quot;CPU&quot;s (4 cores with hyperthreading) so 8, 16 and 24 </span>
+    <span class="slc">// all worked well.</span>
+
+    <span class="kwc">auto</span> blockCount <span class="opt">=</span> <span class="num">24</span><span class="opt">;</span>
+    <span class="kwa">if</span> <span class="opt">(</span>blockCount <span class="opt">&gt;</span> fact<span class="opt">[</span>n<span class="opt">])</span>
+        blockCount <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span>
+    <span class="kwb">const int64_t</span> blockLength <span class="opt">=</span> fact<span class="opt">[</span>n<span class="opt">] /</span> blockCount<span class="opt">;</span>
+
+    <span class="kwb">int64_t</span> maxFlips <span class="opt">=</span> <span class="num">0</span><span class="opt">,</span> checksum <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+
+    <span class="slc">// Iterate over each block.</span>
+    <span class="ppc">#pragma omp parallel for \</span>
+<span class="ppc">        reduction(max:maxFlips) \</span>
+<span class="ppc">        reduction(+:checksum)</span>
+
+    <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int64_t</span> blockStart <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+         blockStart <span class="opt">&lt;</span> fact<span class="opt">[</span>n<span class="opt">];</span> 
+         blockStart <span class="opt">+=</span> blockLength<span class="opt">)</span> 
+    <span class="opt">{</span>
+        <span class="slc">// first permutation for this block.</span>
+        Permutation <span class="kwd">permutation</span><span class="opt">(</span>n<span class="opt">,</span> blockStart<span class="opt">);</span>
+
+        <span class="slc">// Iterate over each permutation in the block.</span>
+        <span class="kwc">auto</span> index <span class="opt">=</span> blockStart<span class="opt">;</span>
+        <span class="kwa">while</span> <span class="opt">(</span><span class="num">1</span><span class="opt">)</span> 
+        <span class="opt">{</span>
+            <span class="kwb">const</span> <span class="kwc">auto</span> flips <span class="opt">=</span> permutation<span class="opt">.</span><span class="kwd">countFlips</span><span class="opt">();</span>
+
+            <span class="kwa">if</span> <span class="opt">(</span>flips<span class="opt">)</span> 
+            <span class="opt">{</span>
+                <span class="kwa">if</span> <span class="opt">(</span>index <span class="opt">%</span> <span class="num">2</span> <span class="opt">==</span> <span class="num">0</span><span class="opt">)</span>
+                    checksum <span class="opt">+=</span> flips<span class="opt">;</span>
+                <span class="kwa">else</span>
+                    checksum <span class="opt">-=</span> flips<span class="opt">;</span>
+
+                <span class="kwa">if</span> <span class="opt">(</span>flips <span class="opt">&gt;</span> maxFlips<span class="opt">)</span>
+                    maxFlips <span class="opt">=</span> flips<span class="opt">;</span>
+            <span class="opt">}</span>
+
+            <span class="kwa">if</span> <span class="opt">(++</span>index <span class="opt">==</span> blockStart <span class="opt">+</span> blockLength<span class="opt">)</span>
+                <span class="kwa">break</span><span class="opt">;</span>
+
+            <span class="slc">// next permutation for this block.</span>
+            permutation<span class="opt">.</span><span class="kwd">advance</span><span class="opt">();</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+
+    <span class="slc">// Output the results to stdout.</span>
+    cout <span class="opt">&lt;&lt;</span> checksum <span class="opt">&lt;&lt;</span> endl<span class="opt">;</span>
+    cout <span class="opt">&lt;&lt;</span> <span class="str">&quot;Pfannkuchen(&quot;</span> <span class="opt">&lt;&lt;</span> n <span class="opt">&lt;&lt;</span> <span class="str">&quot;) = &quot;</span> <span class="opt">&lt;&lt;</span> maxFlips <span class="opt">&lt;&lt;</span> endl<span class="opt">;</span>
+
+    <span class="kwa">return</span> <span class="num">0</span><span class="opt">;</span>
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+g++ (Ubuntu 7.2.0-8ubuntu3) 7.2.0
+
+
+Mon, 30 Oct 2017 19:01:29 GMT
+
+MAKE:
+/usr/bin/g++ -c -pipe -O3 -fomit-frame-pointer -march=native  -std=c++11 -fopenmp fannkuchredux.gpp-5.c++ -o fannkuchredux.gpp-5.c++.o &amp;&amp;  \
+        /usr/bin/g++ fannkuchredux.gpp-5.c++.o -o fannkuchredux.gpp-5.gpp_run -fopenmp 
+rm fannkuchredux.gpp-5.c++
+
+1.01s to complete and log all make actions
+
+COMMAND LINE:
+./fannkuchredux.gpp-5.gpp_run 12
+
+PROGRAM OUTPUT:
+3968050
+Pfannkuchen(12) = 65
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

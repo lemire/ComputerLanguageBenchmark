@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>reverse-complement Dart&nbsp;#2 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>reverse-complement Dart&nbsp;#2 program</h2>
+    <aside>
+      <p><a href="./revcomp-description.html#revcomp">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">/* The Computer Language Benchmarks Game</span>
+<span class="com">   http://benchmarksgame.alioth.debian.org/</span>
+<span class="com"></span>
+<span class="com">   Contributed by James Wendel</span>
+<span class="com">*/</span>
+
+import <span class="str">&apos;dart:io&apos;</span><span class="opt">;</span>
+
+<span class="kwa">void</span> <span class="kwd">main</span><span class="opt">() {</span>
+  <span class="kwa">var</span> src   <span class="opt">=</span> <span class="str">&quot;CGATMKRYVBHD&quot;</span><span class="opt">;</span>
+  <span class="kwa">var</span> dst   <span class="opt">=</span> <span class="str">&quot;GCTAKMYRBVDH&quot;</span><span class="opt">;</span>
+  <span class="kwa">var</span> tbl   <span class="opt">=</span> <span class="kwa">new</span> <span class="kwb">List</span><span class="opt">&lt;</span><span class="kwb">int</span><span class="opt">&gt;(</span><span class="num">256</span><span class="opt">);</span>
+  <span class="kwa">var</span> seq   <span class="opt">=</span> <span class="kwa">new</span> <span class="kwb">List</span><span class="opt">&lt;</span><span class="kwb">int</span><span class="opt">&gt;();</span>
+  
+  <span class="slc">// Set up lookup table</span>
+  <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> tbl<span class="opt">.</span>length<span class="opt">;</span> i<span class="opt">++)</span>
+    tbl<span class="opt">[</span>i<span class="opt">] =</span> i<span class="opt">;</span>
+  
+  <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> src<span class="opt">.</span>length<span class="opt">;</span> i<span class="opt">++) {</span>
+    tbl<span class="opt">[</span>src<span class="opt">.</span><span class="kwd">codeUnitAt</span><span class="opt">(</span>i<span class="opt">)]                =</span> dst<span class="opt">.</span><span class="kwd">codeUnitAt</span><span class="opt">(</span>i<span class="opt">);</span>
+    tbl<span class="opt">[</span>src<span class="opt">.</span><span class="kwd">toLowerCase</span><span class="opt">().</span><span class="kwd">codeUnitAt</span><span class="opt">(</span>i<span class="opt">)]  =</span> dst<span class="opt">.</span><span class="kwd">codeUnitAt</span><span class="opt">(</span>i<span class="opt">);</span>
+  <span class="opt">}</span>
+
+  <span class="kwa">var</span> buffer <span class="opt">=</span> <span class="kwa">new</span> <span class="kwb">List</span><span class="opt">&lt;</span><span class="kwb">int</span><span class="opt">&gt;(</span><span class="num">60</span><span class="opt">);</span>
+  <span class="kwb">List</span><span class="opt">&lt;</span><span class="kwb">int</span><span class="opt">&gt;</span> list <span class="opt">=</span> <span class="kwa">new</span> <span class="kwb">List</span><span class="opt">&lt;</span><span class="kwb">int</span><span class="opt">&gt;();</span>
+  <span class="kwb">bool</span> commentLine <span class="opt">=</span> <span class="kwa">false</span><span class="opt">;</span>
+  <span class="kwb">StringBuffer</span> sbuf <span class="opt">=</span> <span class="kwa">new</span> <span class="kwb">StringBuffer</span><span class="opt">();</span>
+   
+  stdin<span class="opt">.</span><span class="kwd">listen</span><span class="opt">((</span><span class="kwb">List</span><span class="opt">&lt;</span><span class="kwb">int</span><span class="opt">&gt;</span> dataList<span class="opt">) {</span>
+    <span class="slc">// Loop over all the contents of the buffer so far</span>
+    <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> data <span class="kwa">in</span> dataList<span class="opt">) {</span>
+      
+      <span class="slc">// Check if this is a comment line (and that we aren&apos;t already on a comment line)</span>
+      <span class="kwa">if</span> <span class="opt">(</span>data <span class="opt">==</span> <span class="num">62</span> <span class="opt">&amp;&amp; !</span>commentLine<span class="opt">) {</span>
+        <span class="kwb">int</span> count <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+        
+        <span class="slc">// Print the reverse components for the last block </span>
+        <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> g <span class="kwa">in</span> list<span class="opt">.</span>reversed<span class="opt">) {</span>
+          <span class="kwa">if</span> <span class="opt">(</span>count <span class="opt">==</span> <span class="num">60</span><span class="opt">) {</span>
+            sbuf<span class="opt">.</span><span class="kwd">write</span><span class="opt">(</span><span class="kwa">new</span> <span class="kwb">String</span><span class="opt">.</span><span class="kwd">fromCharCodes</span><span class="opt">(</span>buffer<span class="opt">.</span><span class="kwd">getRange</span><span class="opt">(</span><span class="num">0</span><span class="opt">,</span> count<span class="opt">)));</span>
+            sbuf<span class="opt">.</span><span class="kwd">write</span><span class="opt">(</span><span class="str">&apos;</span><span class="esc">\n</span><span class="str">&apos;</span><span class="opt">);</span>
+            count<span class="opt">=</span><span class="num">0</span><span class="opt">;</span>
+          <span class="opt">}</span> 
+          buffer<span class="opt">[</span>count<span class="opt">++] =</span> g<span class="opt">;</span>
+        <span class="opt">}</span>
+        <span class="slc">// Print any stragling data</span>
+        <span class="kwa">if</span> <span class="opt">(</span>count <span class="opt">&gt;</span> <span class="num">0</span><span class="opt">) {</span>
+          sbuf<span class="opt">.</span><span class="kwd">write</span><span class="opt">(</span><span class="kwa">new</span> <span class="kwb">String</span><span class="opt">.</span><span class="kwd">fromCharCodes</span><span class="opt">(</span>buffer<span class="opt">.</span><span class="kwd">getRange</span><span class="opt">(</span><span class="num">0</span><span class="opt">,</span> count<span class="opt">)));</span>
+          sbuf<span class="opt">.</span><span class="kwd">write</span><span class="opt">(</span><span class="str">&apos;</span><span class="esc">\n</span><span class="str">&apos;</span><span class="opt">);</span>
+        <span class="opt">}</span>
+        <span class="slc">// Reset the data for the begining of a block of data</span>
+        list<span class="opt">.</span><span class="kwd">clear</span><span class="opt">();</span>
+        commentLine <span class="opt">=</span> <span class="kwa">true</span><span class="opt">;</span>
+      <span class="opt">}</span> 
+        
+      <span class="kwa">if</span> <span class="opt">(</span>commentLine<span class="opt">) {</span>
+        <span class="kwa">if</span> <span class="opt">(</span>data <span class="opt">==</span> <span class="num">10</span><span class="opt">) {</span>
+          sbuf<span class="opt">.</span><span class="kwd">write</span><span class="opt">(</span><span class="kwa">new</span> <span class="kwb">String</span><span class="opt">.</span><span class="kwd">fromCharCodes</span><span class="opt">(</span>list<span class="opt">));</span>
+          <span class="kwd">print</span><span class="opt">(</span>sbuf<span class="opt">);</span>
+          sbuf <span class="opt">=</span> <span class="kwa">new</span> <span class="kwb">StringBuffer</span><span class="opt">();</span>
+          commentLine <span class="opt">=</span> <span class="kwa">false</span><span class="opt">;</span>
+          list<span class="opt">.</span><span class="kwd">clear</span><span class="opt">();</span>
+        <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span>
+          list<span class="opt">.</span><span class="kwd">add</span><span class="opt">(</span>data<span class="opt">);</span>
+        <span class="opt">}</span>
+      <span class="opt">}</span> <span class="kwa">else if</span> <span class="opt">(</span>data <span class="opt">!=</span> <span class="num">10</span><span class="opt">) {</span>
+          <span class="slc">// Add the complement to the buffer</span>
+          list<span class="opt">.</span><span class="kwd">add</span><span class="opt">(</span>tbl<span class="opt">[</span>data<span class="opt">]);</span>
+      <span class="opt">}</span>
+    <span class="opt">}</span>
+  <span class="opt">}).</span><span class="kwd">onDone</span><span class="opt">(() {</span>
+    <span class="slc">// Print out anything remaining in the buffers</span>
+    <span class="kwa">if</span> <span class="opt">(</span>commentLine<span class="opt">) {</span>
+      sbuf<span class="opt">.</span><span class="kwd">write</span><span class="opt">(</span><span class="kwa">new</span> <span class="kwb">String</span><span class="opt">.</span><span class="kwd">fromCharCodes</span><span class="opt">(</span>list<span class="opt">));</span>
+    <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span>
+      <span class="kwb">int</span> count <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span>
+      <span class="kwa">for</span> <span class="opt">(</span><span class="kwb">int</span> data <span class="kwa">in</span> list<span class="opt">.</span>reversed<span class="opt">) {</span>
+        <span class="kwa">if</span> <span class="opt">(</span>count <span class="opt">==</span> <span class="num">60</span><span class="opt">) {</span>
+          sbuf<span class="opt">.</span><span class="kwd">write</span><span class="opt">(</span><span class="kwa">new</span> <span class="kwb">String</span><span class="opt">.</span><span class="kwd">fromCharCodes</span><span class="opt">(</span>buffer<span class="opt">.</span><span class="kwd">getRange</span><span class="opt">(</span><span class="num">0</span><span class="opt">,</span> count<span class="opt">)));</span>
+          sbuf<span class="opt">.</span><span class="kwd">write</span><span class="opt">(</span><span class="str">&apos;</span><span class="esc">\n</span><span class="str">&apos;</span><span class="opt">);</span>
+          count<span class="opt">=</span><span class="num">0</span><span class="opt">;</span>
+        <span class="opt">}</span> 
+        buffer<span class="opt">[</span>count<span class="opt">++] =</span> data<span class="opt">;</span>
+      <span class="opt">}</span>
+      <span class="kwa">if</span> <span class="opt">(</span>count <span class="opt">&gt;</span> <span class="num">0</span><span class="opt">) {</span>
+        sbuf<span class="opt">.</span><span class="kwd">write</span><span class="opt">(</span><span class="kwa">new</span> <span class="kwb">String</span><span class="opt">.</span><span class="kwd">fromCharCodes</span><span class="opt">(</span>buffer<span class="opt">.</span><span class="kwd">getRange</span><span class="opt">(</span><span class="num">0</span><span class="opt">,</span> count<span class="opt">)));</span>
+      <span class="opt">}</span>
+    <span class="opt">}</span>
+    <span class="kwd">print</span><span class="opt">(</span>sbuf<span class="opt">);</span>
+  <span class="opt">});</span>
+<span class="opt">}</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+Dart VM version: 1.24.2 (Thu Jun 22 08:43:26 2017) on "linux_x64"
+
+
+Tue, 27 Mar 2018 15:52:30 GMT
+
+MAKE:
+make: 'revcomp.dart-2.dart_run' is up to date.
+
+0.12s to complete and log all make actions
+
+COMMAND LINE:
+/opt/src/dartsdk-linux-x64-release/dart-sdk/bin/dart --old_gen_heap_size=3072 revcomp.dart-2.dart 0 &lt; revcomp-input100000000.txt
+
+PROGRAM FAILED 
+
+
+PROGRAM OUTPUT:
+&gt;ONE Homo sapiens alu
+
+Exhausted heap space, trying to allocate 2147483680 bytes.
+Unhandled exception:
+Out of Memory
+#0      main.&lt;anonymous closure&gt; (file:///home/dunham/benchmarksgame_quadcore/revcomp/tmp/revcomp.dart-2.dart:12:15)
+#1      _RootZone.runUnaryGuarded (dart:async/zone.dart:1307)
+#2      _FileStream._readBlock.&lt;anonymous closure&gt; (dart:io/file_impl.dart:238)
+#3      _FutureListener.handleValue (dart:async/future_impl.dart)
+#4      _Future._propagateToListeners.handleValueCallback (dart:async/future_impl.dart:636)
+#5      _Future._propagateToListeners (dart:async/future_impl.dart)
+#6      _Future._completeWithValue (dart:async/future_impl.dart:478)
+#7      _Future._asyncComplete.&lt;anonymous closure&gt; (dart:async/future_impl.dart:510)
+#8      _microtaskLoop (dart:async/schedule_microtask.dart:41)
+#9      _startMicrotaskLoop (dart:async/schedule_microtask.dart:50)
+#10     _runPendingImmediateCallback (dart:isolate-patch/isolate_patch.dart:99)
+#11     _RawReceivePortImpl._handleMessage (dart:isolate-patch/isolate_patch.dart:152)
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

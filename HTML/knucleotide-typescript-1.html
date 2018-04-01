@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>k-nucleotide TypeScript program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>k-nucleotide TypeScript program</h2>
+    <aside>
+      <p><a href="./knucleotide-description.html#knucleotide">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+﻿<span class="com">/* The Computer Language Benchmarks Game</span>
+<span class="com">   http://benchmarksgame.alioth.debian.org/</span>
+<span class="com"></span>
+<span class="com">   contributed by Josh Goldfoot</span>
+<span class="com">*/</span>
+
+
+<span class="slc">/// &lt;reference path=&quot;./Include/node/index.d.ts&quot; /&gt;</span>
+
+<span class="kwa">import</span> <span class="opt">{</span> createInterface <span class="opt">}</span> from <span class="str">&quot;readline&quot;</span><span class="opt">;</span>
+
+<span class="kwa">class</span> RefNum <span class="opt">{</span>
+    num<span class="opt">:</span> <span class="kwb">number</span><span class="opt">;</span>
+    <span class="kwd">constructor</span><span class="opt">(</span>n<span class="opt">:</span> <span class="kwb">number</span><span class="opt">) {</span>
+        <span class="kwa">this</span><span class="opt">.</span>num <span class="opt">=</span> n<span class="opt">;</span>
+    <span class="opt">}</span>
+<span class="opt">}</span>
+
+<span class="kwa">function</span> <span class="kwd">frequency</span><span class="opt">(</span>sequence<span class="opt">:</span> <span class="kwb">string</span><span class="opt">,</span> length<span class="opt">:</span> <span class="kwb">number</span><span class="opt">):</span> Map<span class="opt">&lt;</span><span class="kwb">string</span><span class="opt">,</span> RefNum<span class="opt">&gt; {</span>
+    <span class="kwa">var</span> freq <span class="opt">=</span> <span class="kwa">new</span> Map<span class="opt">&lt;</span><span class="kwb">string</span><span class="opt">,</span> RefNum<span class="opt">&gt;();</span>
+    <span class="kwa">var</span> n <span class="opt">=</span> sequence<span class="opt">.</span>length <span class="opt">-</span> length <span class="opt">+</span> <span class="num">1</span><span class="opt">;</span>
+    <span class="kwa">var</span> sub <span class="opt">=</span> <span class="str">&quot;&quot;</span><span class="opt">;</span>
+    <span class="kwa">var</span> m<span class="opt">:</span> RefNum<span class="opt">;</span>
+    <span class="kwa">for</span> <span class="opt">(</span><span class="kwa">var</span> i <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> i <span class="opt">&lt;</span> n<span class="opt">;</span> i<span class="opt">++) {</span>
+        sub <span class="opt">=</span> sequence<span class="opt">.</span><span class="kwd">substr</span><span class="opt">(</span>i<span class="opt">,</span> length<span class="opt">);</span>
+        m <span class="opt">=</span> freq<span class="opt">.</span><span class="kwd">get</span><span class="opt">(</span>sub<span class="opt">);</span>
+        <span class="kwa">if</span> <span class="opt">(</span>m <span class="opt">===</span> <span class="kwb">undefined</span><span class="opt">) {</span>
+            freq<span class="opt">.</span><span class="kwd">set</span><span class="opt">(</span>sub<span class="opt">,</span> <span class="kwa">new</span> <span class="kwd">RefNum</span><span class="opt">(</span><span class="num">1</span><span class="opt">));</span>
+        <span class="opt">}</span> <span class="kwa">else</span> <span class="opt">{</span>
+            m<span class="opt">.</span>num <span class="opt">+=</span> <span class="num">1</span><span class="opt">;</span>
+        <span class="opt">}</span>
+    <span class="opt">}</span>
+    <span class="kwa">return</span> freq<span class="opt">;</span>
+<span class="opt">}</span>
+
+<span class="kwa">function</span> <span class="kwd">sort</span><span class="opt">(</span>sequence<span class="opt">:</span> <span class="kwb">string</span><span class="opt">,</span> length<span class="opt">:</span> <span class="kwb">number</span><span class="opt">):</span> <span class="kwb">void</span> <span class="opt">{</span>
+    <span class="kwa">var</span> freq <span class="opt">=</span> <span class="kwd">frequency</span><span class="opt">(</span>sequence<span class="opt">,</span> length<span class="opt">);</span>
+    <span class="kwa">var</span> keys <span class="opt">=</span> <span class="kwa">new</span> <span class="kwb">Array</span><span class="opt">&lt;</span><span class="kwb">string</span><span class="opt">&gt;();</span>
+    <span class="kwa">for</span> <span class="opt">(</span><span class="kwa">let</span> k <span class="kwa">of</span> freq<span class="opt">.</span><span class="kwd">keys</span><span class="opt">())</span>
+        keys<span class="opt">.</span><span class="kwd">push</span><span class="opt">(</span>k<span class="opt">);</span>
+    keys<span class="opt">.</span><span class="kwd">sort</span><span class="opt">((</span>a<span class="opt">,</span> b<span class="opt">) =&gt; (</span>freq<span class="opt">.</span><span class="kwd">get</span><span class="opt">(</span>b<span class="opt">).</span>num <span class="opt">-</span> freq<span class="opt">.</span><span class="kwd">get</span><span class="opt">(</span>a<span class="opt">).</span>num<span class="opt">));</span>
+    <span class="kwa">var</span> n <span class="opt">=</span> sequence<span class="opt">.</span>length <span class="opt">-</span> length <span class="opt">+</span> <span class="num">1</span><span class="opt">;</span>
+    keys<span class="opt">.</span><span class="kwd">forEach</span><span class="opt">(</span>key <span class="opt">=&gt; {</span>
+        <span class="kwa">var</span> count <span class="opt">= (</span>freq<span class="opt">.</span><span class="kwd">get</span><span class="opt">(</span>key<span class="opt">).</span>num <span class="opt">*</span> <span class="num">100</span> <span class="opt">/</span> n<span class="opt">).</span><span class="kwd">toFixed</span><span class="opt">(</span><span class="num">3</span><span class="opt">);</span>
+        console<span class="opt">.</span><span class="kwd">log</span><span class="opt">(</span>key <span class="opt">+</span> <span class="str">&quot; &quot;</span> <span class="opt">+</span> count<span class="opt">);</span>
+    <span class="opt">});</span>
+    console<span class="opt">.</span><span class="kwd">log</span><span class="opt">(</span><span class="str">&quot;&quot;</span><span class="opt">);</span>
+<span class="opt">}</span>
+
+<span class="kwa">function</span> <span class="kwd">find</span><span class="opt">(</span>haystack<span class="opt">:</span> <span class="kwb">string</span><span class="opt">,</span> needle<span class="opt">:</span> <span class="kwb">string</span><span class="opt">):</span> <span class="kwb">void</span> <span class="opt">{</span>
+    <span class="kwa">var</span> freq <span class="opt">=</span> <span class="kwd">frequency</span><span class="opt">(</span>haystack<span class="opt">,</span> needle<span class="opt">.</span>length<span class="opt">);</span>
+    <span class="kwa">var</span> m <span class="opt">=</span> freq<span class="opt">.</span><span class="kwd">get</span><span class="opt">(</span>needle<span class="opt">);</span>
+    <span class="kwa">var</span> num <span class="opt">=</span> m <span class="opt">?</span> m<span class="opt">.</span>num <span class="opt">:</span> <span class="num">0</span><span class="opt">;</span>
+    console<span class="opt">.</span><span class="kwd">log</span><span class="opt">(</span>num <span class="opt">+</span> <span class="str">&quot;</span><span class="esc">\t</span><span class="str">&quot;</span> <span class="opt">+</span> needle<span class="opt">);</span>
+<span class="opt">}</span>
+
+<span class="kwa">function</span> <span class="kwd">main</span><span class="opt">() {</span>
+    <span class="kwa">var</span> sequence <span class="opt">=</span> <span class="str">&quot;&quot;</span><span class="opt">;</span>
+    <span class="kwa">var</span> reading <span class="opt">=</span> <span class="kwb">false</span><span class="opt">;</span>
+    <span class="kwd">createInterface</span><span class="opt">({</span> input<span class="opt">:</span> process<span class="opt">.</span>stdin<span class="opt">,</span> output<span class="opt">:</span> process<span class="opt">.</span>stdout <span class="opt">})</span>
+        <span class="opt">.</span><span class="kwd">on</span><span class="opt">(</span><span class="str">&apos;line&apos;</span><span class="opt">,</span> line <span class="opt">=&gt; {</span>
+            <span class="kwa">if</span> <span class="opt">(</span>reading<span class="opt">) {</span>
+                <span class="kwa">if</span> <span class="opt">(</span>line<span class="opt">[</span><span class="num">0</span><span class="opt">] !==</span> <span class="str">&apos;&gt;&apos;</span><span class="opt">)</span>
+                    sequence <span class="opt">+=</span> line<span class="opt">.</span><span class="kwd">toUpperCase</span><span class="opt">();</span>
+            <span class="opt">}</span> <span class="kwa">else</span>
+                reading <span class="opt">=</span> line<span class="opt">.</span><span class="kwd">substr</span><span class="opt">(</span><span class="num">0</span><span class="opt">,</span> <span class="num">6</span><span class="opt">) ===</span> <span class="str">&apos;&gt;THREE&apos;</span><span class="opt">;</span>
+        <span class="opt">}).</span><span class="kwd">on</span><span class="opt">(</span><span class="str">&apos;close&apos;</span><span class="opt">, () =&gt; {</span>
+            <span class="kwd">sort</span><span class="opt">(</span>sequence<span class="opt">,</span> <span class="num">1</span><span class="opt">);</span>
+            <span class="kwd">sort</span><span class="opt">(</span>sequence<span class="opt">,</span> <span class="num">2</span><span class="opt">);</span>
+            <span class="kwd">find</span><span class="opt">(</span>sequence<span class="opt">,</span> <span class="str">&apos;GGT&apos;</span><span class="opt">);</span>
+            <span class="kwd">find</span><span class="opt">(</span>sequence<span class="opt">,</span> <span class="str">&apos;GGTA&apos;</span><span class="opt">);</span>
+            <span class="kwd">find</span><span class="opt">(</span>sequence<span class="opt">,</span> <span class="str">&apos;GGTATT&apos;</span><span class="opt">);</span>
+            <span class="kwd">find</span><span class="opt">(</span>sequence<span class="opt">,</span> <span class="str">&apos;GGTATTTTAATT&apos;</span><span class="opt">);</span>
+            <span class="kwd">find</span><span class="opt">(</span>sequence<span class="opt">,</span> <span class="str">&apos;GGTATTTTAATTTATAGT&apos;</span><span class="opt">);</span>
+        <span class="opt">});</span>
+<span class="opt">}</span>
+
+<span class="kwd">main</span><span class="opt">();</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+Version 2.6.2
+node.js v9.4.0
+
+
+Wed, 10 Jan 2018 20:29:35 GMT
+
+MAKE:
+mv knucleotide.typescript knucleotide.ts
+/opt/src/node-v9.4.0-linux-x64/bin/tsc --alwaysStrict -t ESNEXT  knucleotide.ts
+/opt/src/node-v8.8.1-linux-x64/lib/node_modules/babel-cli/bin/babel.js --plugins transform-es2015-modules-commonjs knucleotide.js -o knucleotide.js
+make: /opt/src/node-v8.8.1-linux-x64/lib/node_modules/babel-cli/bin/babel.js: Command not found
+/home/dunham/benchmarksgame/nanobench/makefiles/u64q.programs.Makefile:649: recipe for target 'knucleotide.typescript_run' failed
+make: [knucleotide.typescript_run] Error 127 (ignored)
+
+2.93s to complete and log all make actions
+
+COMMAND LINE:
+/opt/src/node-v9.4.0-linux-x64/bin/node --use_strict knucleotide.js 0 &lt; knucleotide-input250000.txt
+
+PROGRAM FAILED 
+
+
+PROGRAM OUTPUT:
+
+/home/dunham/benchmarksgame_quadcore/knucleotide/tmp/knucleotide.js:7
+import { createInterface } from &quot;readline&quot;;
+^^^^^^
+
+SyntaxError: Unexpected token import
+    at new Script (vm.js:51:7)
+    at createScript (vm.js:138:10)
+    at Object.runInThisContext (vm.js:199:10)
+    at Module._compile (module.js:624:28)
+    at Object.Module._extensions..js (module.js:671:10)
+    at Module.load (module.js:573:32)
+    at tryModuleLoad (module.js:513:12)
+    at Function.Module._load (module.js:505:3)
+    at Function.Module.runMain (module.js:701:10)
+    at startup (bootstrap_node.js:193:16)
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>thread-ring Lisp SBCL&nbsp;#2 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>thread-ring Lisp SBCL&nbsp;#2 program</h2>
+    <aside>
+      <p><a href="./threadring-description.html#threadring">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="slc">;;; The Computer Language Benchmarks Game</span>
+<span class="slc">;;; http://benchmarksgame.alioth.debian.org/</span>
+<span class="slc">;;;</span>
+<span class="slc">;;; contributed by Witali Kusnezow 2008-12-19</span>
+<span class="slc">;;;     using semaphore synchronization</span>
+
+<span class="opt">(</span><span class="kwa">defconstant</span>  <span class="opt">+</span>threads<span class="opt">+</span> <span class="num">503</span><span class="opt">)</span>
+<span class="opt">(</span><span class="kwa">defparameter</span> <span class="opt">*</span>counter<span class="opt">*</span> <span class="num">0</span><span class="opt">)</span>
+<span class="opt">(</span><span class="kwa">defparameter</span> <span class="opt">*</span>current<span class="opt">*</span> <span class="num">0</span><span class="opt">)</span>
+<span class="opt">(</span><span class="kwa">defparameter</span> <span class="opt">*</span>semaphore<span class="opt">* (</span><span class="kwa">sb-thread</span><span class="opt">:</span>make-semaphore<span class="opt">))</span>
+<span class="opt">(</span><span class="kwa">defparameter</span> <span class="opt">*</span>semaphores<span class="opt">*</span>
+  <span class="opt">(</span><span class="kwa">make-array</span> <span class="opt">+</span>threads<span class="opt">+</span>
+              <span class="opt">:</span>initial-contents
+              <span class="opt">(</span><span class="kwa">loop</span> for i of-type fixnum below <span class="opt">+</span>threads<span class="opt">+</span>
+                 collect <span class="opt">(</span><span class="kwa">sb-thread</span><span class="opt">:</span>make-semaphore<span class="opt">))))</span>
+
+<span class="opt">(</span><span class="kwa">declaim</span> <span class="opt">(</span><span class="kwa">type</span> fixnum <span class="opt">*</span>counter<span class="opt">* *</span>current<span class="opt">*))</span>
+
+<span class="opt">(</span><span class="kwa">defmacro</span> wait   <span class="opt">(</span><span class="kwa">semaphore</span><span class="opt">)</span>
+  <span class="opt">`(</span><span class="kwa">sb-thread</span><span class="opt">:</span>wait-on-semaphore <span class="opt">,</span>semaphore<span class="opt">))</span>
+<span class="opt">(</span><span class="kwa">defmacro</span> wake <span class="opt">(</span><span class="kwa">semaphore</span><span class="opt">)</span>
+  <span class="opt">`(</span><span class="kwa">sb-thread</span><span class="opt">:</span>signal-semaphore  <span class="opt">,</span>semaphore<span class="opt">))</span>
+<span class="opt">(</span><span class="kwa">defmacro</span> kill   <span class="opt">(</span><span class="kwa">thread</span><span class="opt">)</span>
+  <span class="opt">`(</span><span class="kwa">handler-case</span> <span class="opt">(</span><span class="kwa">sb-thread</span><span class="opt">:</span>terminate-thread <span class="opt">,</span>thread<span class="opt">)</span>
+     <span class="opt">(</span><span class="kwa">sb-thread</span><span class="opt">:</span>interrupt-thread-error <span class="opt">()</span> nil<span class="opt">)))</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">thread-body</span> <span class="opt">()</span>
+  <span class="opt">(</span><span class="kwa">let</span><span class="opt">* ((</span><span class="kwa">curr</span> <span class="opt">(</span><span class="kwa">svref</span> <span class="opt">*</span>semaphores<span class="opt">* *</span>current<span class="opt">*))</span>
+         <span class="opt">(</span><span class="kwa">next</span> <span class="opt">(</span><span class="kwa">svref</span> <span class="opt">*</span>semaphores<span class="opt">* (</span><span class="kwa">if</span> <span class="opt">(= (</span><span class="kwa">incf</span> <span class="opt">*</span>current<span class="opt">*) +</span>threads<span class="opt">+)</span> <span class="num">0</span> <span class="opt">*</span>current<span class="opt">*)))</span>
+         <span class="opt">(</span><span class="kwa">number</span> <span class="opt">*</span>current<span class="opt">*))</span>
+    <span class="opt">(</span><span class="kwa">loop</span> do <span class="opt">(</span><span class="kwa">wait</span> curr<span class="opt">)</span>
+       until <span class="opt">(</span><span class="kwa">zerop</span> <span class="opt">(</span><span class="kwa">decf</span> <span class="opt">*</span>counter<span class="opt">*))</span>
+       do <span class="opt">(</span><span class="kwa">wake</span> next<span class="opt">)</span>
+       finally <span class="opt">(</span><span class="kwa">format</span> t <span class="str">&quot;~d~%&quot;</span> number<span class="opt">) (</span><span class="kwa">wake</span> <span class="opt">*</span>semaphore<span class="opt">*))))</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">start</span> <span class="opt">(</span><span class="kwa">n</span><span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">declare</span> <span class="opt">(</span><span class="kwa">type</span> fixnum n<span class="opt">))</span>
+  <span class="opt">(</span><span class="kwa">setq</span> <span class="opt">*</span>counter<span class="opt">* (</span><span class="kwa">1</span><span class="opt">+</span> n<span class="opt">) *</span>current<span class="opt">*</span> <span class="num">0</span><span class="opt">)</span>
+  <span class="opt">(</span><span class="kwa">loop</span> for i of-type fixnum below <span class="opt">+</span>threads<span class="opt">+</span>
+     collect <span class="opt">(</span><span class="kwa">sb-thread</span><span class="opt">:</span>make-thread <span class="opt">#&apos;</span>thread-body<span class="opt">)</span> into threads
+     finally
+       <span class="opt">(</span><span class="kwa">wake</span> <span class="opt">(</span><span class="kwa">svref</span> <span class="opt">*</span>semaphores<span class="opt">*</span> <span class="num">0</span><span class="opt">))</span>
+       <span class="opt">(</span><span class="kwa">wait</span> <span class="opt">*</span>semaphore<span class="opt">*)</span>
+       <span class="opt">(</span><span class="kwa">dolist</span> <span class="opt">(</span><span class="kwa">i</span> threads<span class="opt">) (</span><span class="kwa">kill</span> i<span class="opt">))))</span>
+
+<span class="opt">(</span><span class="kwa">defun</span> <span class="kwb">main</span> <span class="opt">()</span>
+  <span class="opt">(</span><span class="kwa">let</span> <span class="opt">((</span><span class="kwa">n</span> <span class="opt">(</span><span class="kwa">parse-integer</span> <span class="opt">(</span><span class="kwa">or</span> <span class="opt">(</span><span class="kwa">car</span> <span class="opt">(</span><span class="kwa">last</span> <span class="opt">#+</span>sbcl sb-ext<span class="opt">:*</span>posix-argv<span class="opt">*</span>
+                                         <span class="opt">#+</span>cmu  extensions<span class="opt">:*</span>command-line-strings<span class="opt">*</span>
+                                         <span class="opt">#+</span>gcl  si<span class="opt">::*</span>command-args<span class="opt">*))</span> <span class="str">&quot;1&quot;</span><span class="opt">))))</span>
+    <span class="opt">(</span><span class="kwa">start</span> n<span class="opt">)))</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+SBCL 1.4.0
+
+
+Thu, 26 Oct 2017 17:54:01 GMT
+
+MAKE:
+cp: 'threadring.sbcl-2.sbcl' and './threadring.sbcl-2.sbcl' are the same file
+SBCL built with: /opt/src/sbcl-1.4.0/bin/sbcl --userinit /dev/null --batch --eval '(load &quot;threadring.sbcl-2.sbcl_compile&quot;)'
+### START threadring.sbcl-2.sbcl_compile
+(handler-bind ((sb-ext:defconstant-uneql      (lambda (c) (abort c))))      (load (compile-file &quot;threadring.sbcl-2.sbcl&quot; ))) (save-lisp-and-die &quot;sbcl.core&quot; :purify t)
+### END threadring.sbcl-2.sbcl_compile
+
+; compiling file &quot;/home/dunham/benchmarksgame/bench/threadring/threadring.sbcl-2.sbcl&quot; (written 24 JAN 2013 01:22:34 PM):
+; compiling (DEFCONSTANT +THREADS+ ...)
+; compiling (DEFPARAMETER *COUNTER* ...)
+; compiling (DEFPARAMETER *CURRENT* ...)
+; compiling (DEFPARAMETER *SEMAPHORE* ...)
+; compiling (DEFPARAMETER *SEMAPHORES* ...)
+; compiling (DECLAIM (TYPE FIXNUM ...))
+; compiling (DEFMACRO WAIT ...)
+; compiling (DEFMACRO WAKE ...)
+; compiling (DEFMACRO KILL ...)
+; compiling (DEFUN THREAD-BODY ...)
+; compiling (DEFUN START ...)
+; compiling (DEFUN MAIN ...)
+
+; /home/dunham/benchmarksgame_quadcore/threadring/tmp/threadring.sbcl-2.fasl written
+; compilation finished in 0:00:00.026
+### START threadring.sbcl-2.sbcl_run
+(main) (quit)
+### END threadring.sbcl-2.sbcl_run
+
+
+3.51s to complete and log all make actions
+
+COMMAND LINE:
+/opt/src/sbcl-1.4.0/bin/sbcl  --noinform --core sbcl.core --userinit /dev/null --load threadring.sbcl-2.sbcl_run 50000000
+
+PROGRAM OUTPUT:
+292
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+

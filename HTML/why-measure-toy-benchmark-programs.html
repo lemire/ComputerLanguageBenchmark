@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="index,follow,archive">
+<meta name="description" content="Why measure toy benchmark programs? We are profoundly uninterested in claims that these measurements somehow define the relative performance of programming languages.">
+<title>Toy benchmark programs | The Computer Language Benchmarks Game</title>
+<link rel="shortcut icon" href="./favicon.ico">
+<style><!-- 
+a{color:black;text-decoration:none}article,footer,header{margin:auto;max-width:31em;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3{font-family:Ubuntu Mono,Consolas,Menlo,monospace}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}p{color:#333;line-height:1.4;margin:.3em 0 0}p a{border-bottom:.1em solid #333;padding-bottom:.1em}#core{background-color:black}blockquote{margin-top:.3em}blockquote p{display:inline}blockquote:before,q:before{content:open-quote}blockquote:after,q:after{content:close-quote}body{quotes:'\201C' '\201D' '\2018' '\2019' '\2039' '\203A'}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<header id="top">
+  <h1 id="core"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <h2 id="toy-benchmark">Toy benchmark programs</h2>
+  <h3><q>Computer Architecture: A Quantitative Approach</q></h3>
+  <aside>
+    <blockquote cite="https://books.google.com/books?id=v3-1hVwHnHwC&amp;printsec=frontcover&amp;source=gbs_ge_summary_r&amp;cad=0#v=onepage&amp;q&amp;f=false"><p>The best choice of benchmarks to measure performance is real applications&hellip; Attempts at running programs that are much simpler than a real application have led to performance pitfalls. Examples include:
+      <ul>
+        <li><p>Kernels, which are small, key pieces of real applications
+        <li><p>Toy programs, which are 100-line programs from beginning programming assignments&hellip;
+        <li><p>Synthetic benchmarks, which are small, fake programs invented to try to match the profile and behavior of real applications&hellip;
+      </ul>
+      <p>All three are <a href="https://books.google.com/books?id=v3-1hVwHnHwC&amp;lpg=PA37&amp;dq=hennessy%20patterson%20toy%20program&amp;pg=PA37#v=onepage&amp;q=%22The%20best%20choice%20of%20benchmarks%20to%20measure%20performance%22&amp;f=false">discredited today</a>, usually because the compiler writer and architect can conspire to make the computer appear faster on these stand-in programs than on real applications.</blockquote>
+  </aside>
+  <section>
+    <h3 id="why-measure">So, why measure toy benchmark programs?</h3>
+    <p>You don't have time to inspect the source code of real applications to check that different implementations are kind-of comparable. Is it <b>really</b> the same program when written in different programming languages?
+    <p>You do have time to inspect 100-line programs. You do have time to write 100-line programs. You still might have something to learn from how other people write 100-line programs.
+    <p id="non-motivation">Non-motivation: We are profoundly uninterested in claims that these measurements, of a few tiny programs, somehow <b>define</b> the relative performance of programming languages.
+  </section>
+</article>
+<footer>
+</footer>
+

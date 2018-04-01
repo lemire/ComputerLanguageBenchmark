@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow,noarchive">
+
+<title>pidigits OCaml&nbsp;#4 program | Computer Language Benchmarks Game </title>
+<style><!--
+a{color:black;text-decoration:none}article{padding: 0 0 2.9em}article,div,footer,header{margin:auto;width:92%}body{font:100% Droid Sans,Ubuntu,Verdana,sans-serif;margin:0;-webkit-text-size-adjust:100%}h1,h2,h3,li a{font-family:Ubuntu Mono,Consolas,Menlo,monospace}div,footer,header{max-width:31em}footer{padding:2.6em 0 0}h1{font-size:1.4em;font-weight:bold;margin:0;padding:.4em}h1,h1 a{color:white}h2,h3{margin:1.5em 0 0}h2{font-size:1.4em;font-weight:normal}h3{font-size:1.2em}li{list-style-type:none;vertical-align:top}li a{display:block;font-size:1.2em;margin:.5em .5em 0;padding:.5em .5em .3em}ul{clear:left;margin:-0.3em 0 1.5em;padding-left:0;text-align:center}p{color:#333;line-height:1.4;margin:.3em 0 0}p a,a span{border-bottom:.1em solid #333;padding-bottom:.1em}#u64,#u64q{background-color:#c90016}#u32{background-color:#ffb515}#u32q{background-color:#ff6309}.com,.slc{color:#888}.kwa{color:#066}.kwb{color:#900}.kwc{color:#050}.kwa,.kwb,.kwc{font-weight:bold}.dstr,.str,.sym,.num{color:#930}pre{color:#222;font-size:1em;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word}@media only screen and (min-width:60em){article,footer,header{font-size:1.25em}}
+--></style>
+<link rel="shortcut icon" href="./favicon.ico">
+<header id="top">
+  <h1 id="u64q"><a href="./index.html">The&nbsp;Computer&nbsp;Language<br>Benchmarks&nbsp;Game</a></h1>
+</header>
+<article>
+  <div>
+    <h2>pidigits OCaml&nbsp;#4 program</h2>
+    <aside>
+      <p><a href="./pidigits-description.html#pidigits">description</a>
+    </aside>
+  </div>
+  <section>
+    </div>
+      <h3>source code</h3>
+    </div>
+    <pre>
+<span class="com">(* The Computer Language Benchmarks Game</span>
+<span class="com"> * http://benchmarksgame.alioth.debian.org/</span>
+<span class="com"> *</span>
+<span class="com"> * contributed by Christophe TROESTLER</span>
+<span class="com"> * modified by Matías Giovannini</span>
+<span class="com"> * modified by Ethan Burns</span>
+<span class="com"> *)</span>
+
+<span class="kwa">module</span> Z <span class="opt">=</span> <span class="kwa">struct</span>
+  <span class="kwa">let</span> <span class="kwd">lg</span> n <span class="opt">=</span>
+    <span class="kwa">let open</span> Int64 <span class="kwa">in</span>
+    <span class="kwa">let</span> <span class="kwd">x</span> <span class="opt">=</span> <span class="kwb">ref</span> <span class="opt">(</span>of_int n<span class="opt">)</span>
+    <span class="kwa">and</span> r <span class="opt">=</span> <span class="kwb">ref</span> <span class="num">0</span> <span class="kwa">in</span>
+    <span class="kwa">if</span> logand <span class="opt">!</span><span class="kwd">x</span> <span class="num">0xffffffff00000000</span>L <span class="opt">&lt;&gt;</span> <span class="num">0L</span> <span class="kwa">then</span> <span class="opt">(</span><span class="kwd">x</span> <span class="opt">:=</span> shift_right_logical <span class="opt">!</span><span class="kwd">x</span> <span class="num">32</span><span class="opt">;</span> r <span class="opt">:= !</span>r <span class="opt">+</span> <span class="num">32</span><span class="opt">);</span>
+    <span class="kwa">if</span> logand <span class="opt">!</span><span class="kwd">x</span> <span class="num">0x00000000ffff0000</span>L <span class="opt">&lt;&gt;</span> <span class="num">0L</span> <span class="kwa">then</span> <span class="opt">(</span><span class="kwd">x</span> <span class="opt">:=</span> shift_right_logical <span class="opt">!</span><span class="kwd">x</span> <span class="num">16</span><span class="opt">;</span> r <span class="opt">:= !</span>r <span class="opt">+</span> <span class="num">16</span><span class="opt">);</span>
+    <span class="kwa">if</span> logand <span class="opt">!</span><span class="kwd">x</span> <span class="num">0x000000000000ff00</span>L <span class="opt">&lt;&gt;</span> <span class="num">0L</span> <span class="kwa">then</span> <span class="opt">(</span><span class="kwd">x</span> <span class="opt">:=</span> shift_right_logical <span class="opt">!</span><span class="kwd">x</span>  <span class="num">8</span><span class="opt">;</span> r <span class="opt">:= !</span>r <span class="opt">+</span>  <span class="num">8</span><span class="opt">);</span>
+    <span class="kwa">if</span> logand <span class="opt">!</span><span class="kwd">x</span> <span class="num">0x00000000000000f0</span>L <span class="opt">&lt;&gt;</span> <span class="num">0L</span> <span class="kwa">then</span> <span class="opt">(</span><span class="kwd">x</span> <span class="opt">:=</span> shift_right_logical <span class="opt">!</span><span class="kwd">x</span>  <span class="num">4</span><span class="opt">;</span> r <span class="opt">:= !</span>r <span class="opt">+</span>  <span class="num">4</span><span class="opt">);</span>
+    <span class="kwa">if</span> logand <span class="opt">!</span><span class="kwd">x</span> <span class="num">0x000000000000000c</span>L <span class="opt">&lt;&gt;</span> <span class="num">0L</span> <span class="kwa">then</span> <span class="opt">(</span><span class="kwd">x</span> <span class="opt">:=</span> shift_right_logical <span class="opt">!</span><span class="kwd">x</span>  <span class="num">2</span><span class="opt">;</span> r <span class="opt">:= !</span>r <span class="opt">+</span>  <span class="num">2</span><span class="opt">);</span>
+    <span class="kwa">if</span> logand <span class="opt">!</span><span class="kwd">x</span> <span class="num">0x0000000000000002</span>L <span class="opt">&lt;&gt;</span> <span class="num">0L</span> <span class="kwa">then</span>                                  r <span class="opt">:= !</span>r <span class="opt">+</span>  <span class="num">1</span> <span class="opt">;</span>
+    <span class="opt">!</span>r
+
+  <span class="kwa">let</span> <span class="kwd">next_pow2_int</span> n <span class="opt">=</span>
+    <span class="num">1</span> <span class="kwa">lsl</span> <span class="opt">(</span><span class="kwd">lg</span> <span class="opt">(</span>n <span class="opt">+</span> pred <span class="opt">(</span><span class="num">1</span> <span class="kwa">lsl</span> <span class="opt">(</span><span class="kwd">lg</span> n<span class="opt">))))</span>
+
+  <span class="kwa">let</span> <span class="kwd">len_int</span> <span class="opt">=</span> <span class="kwc">Sys</span><span class="opt">.</span>word_size <span class="opt">-</span> <span class="num">2</span>
+
+  <span class="kwa">let</span> <span class="kwd">sgn_int</span> n <span class="opt">= (</span>n <span class="kwa">asr</span> <span class="kwd">len_int</span><span class="opt">) - ((-</span>n<span class="opt">)</span> <span class="kwa">asr</span> <span class="kwd">len_int</span><span class="opt">)</span>
+
+  <span class="kwa">open</span> Nat
+
+  <span class="kwa">let</span> <span class="kwd">set_abs_digit_nat</span> r o n <span class="opt">=</span>
+    set_digit_nat r o <span class="opt">(</span>n <span class="kwa">lxor</span> <span class="opt">(</span>n <span class="kwa">asr</span> <span class="kwd">len_int</span><span class="opt">));</span>
+    ignore <span class="opt">(</span>incr_nat r o <span class="num">1</span> <span class="opt">(</span>n <span class="kwa">lsr</span> <span class="kwd">len_int</span><span class="opt">))</span>
+
+  <span class="kwa">type</span> z <span class="opt">= {</span>
+    <span class="com">(* inv: sign == 0 === is_zero_nat repr 0 (length_nat repr) *)</span>
+    <span class="kwa">mutable</span> sign <span class="opt">:</span> <span class="kwb">int</span><span class="opt">;</span>
+    <span class="com">(* inv: size == num_digits_nat repr 0 (length_nat repr) *)</span>
+    <span class="kwa">mutable</span> size <span class="opt">:</span> <span class="kwb">int</span><span class="opt">;</span>
+    <span class="kwa">mutable</span> repr <span class="opt">:</span> nat<span class="opt">;</span>
+  <span class="opt">}</span>
+
+  <span class="kwa">let</span> <span class="kwd">make</span> len <span class="opt">=</span>
+    <span class="opt">{</span> sign <span class="opt">=</span> <span class="num">0</span><span class="opt">;</span> size <span class="opt">=</span> <span class="num">1</span><span class="opt">;</span> repr <span class="opt">=</span> make_nat len<span class="opt">; }</span>
+
+  <span class="kwa">let</span> <span class="kwd">of_int</span> n <span class="opt">=</span>
+    <span class="kwa">let</span> <span class="kwd">i</span> <span class="opt">=</span> <span class="kwd">make</span> <span class="num">1</span> <span class="kwa">in</span>
+    <span class="kwd">set_abs_digit_nat i</span><span class="opt">.</span>repr <span class="num">0</span> n<span class="opt">;</span>
+    <span class="kwd">i</span><span class="opt">.</span>sign <span class="opt">&lt;-</span> <span class="kwd">sgn_int</span> n<span class="opt">;</span>
+    <span class="kwd">i</span>
+
+  <span class="kwa">let</span> <span class="kwd">neg i</span> <span class="opt">=</span> <span class="kwd">i</span><span class="opt">.</span>sign <span class="opt">&lt;- -</span><span class="kwd">i</span><span class="opt">.</span>sign
+
+  <span class="kwa">let</span> <span class="kwd">clear i</span> <span class="opt">=</span>
+    set_to_zero_nat <span class="kwd">i</span><span class="opt">.</span>repr <span class="num">0</span> <span class="opt">(</span>length_nat <span class="kwd">i</span><span class="opt">.</span>repr<span class="opt">);</span>
+    <span class="kwd">i</span><span class="opt">.</span>sign <span class="opt">&lt;-</span> <span class="num">0</span><span class="opt">;</span>
+    <span class="kwd">i</span><span class="opt">.</span>size <span class="opt">&lt;-</span> <span class="num">1</span>
+
+  <span class="kwa">let</span> <span class="kwd">set i</span> j <span class="opt">=</span>
+    <span class="kwa">let</span> <span class="kwd">capa</span> <span class="opt">=</span> length_nat <span class="kwd">i</span><span class="opt">.</span>repr <span class="kwa">in</span>
+    <span class="kwa">if</span> j<span class="opt">.</span>size <span class="opt">&gt;</span> <span class="kwd">capa</span> <span class="kwa">then</span>
+      <span class="kwd">i</span><span class="opt">.</span>repr <span class="opt">&lt;-</span> create_nat j<span class="opt">.</span>size
+    <span class="kwa">else if</span> j<span class="opt">.</span>size <span class="opt">&lt;</span> <span class="kwd">capa</span> <span class="kwa">then</span>
+      set_to_zero_nat <span class="kwd">i</span><span class="opt">.</span>repr j<span class="opt">.</span>size <span class="opt">(</span><span class="kwd">capa</span> <span class="opt">-</span> j<span class="opt">.</span>size<span class="opt">);</span>
+    blit_nat <span class="kwd">i</span><span class="opt">.</span>repr <span class="num">0</span> j<span class="opt">.</span>repr <span class="num">0</span> j<span class="opt">.</span>size<span class="opt">;</span>
+    <span class="kwd">i</span><span class="opt">.</span>sign <span class="opt">&lt;-</span> j<span class="opt">.</span>sign<span class="opt">;</span>
+    <span class="kwd">i</span><span class="opt">.</span>size <span class="opt">&lt;-</span> j<span class="opt">.</span>size
+
+  <span class="kwa">let</span> <span class="kwd">ensure_capacity i</span> size <span class="opt">=</span>
+    <span class="kwa">let</span> <span class="kwd">capa</span> <span class="opt">=</span> length_nat <span class="kwd">i</span><span class="opt">.</span>repr <span class="kwa">in</span>
+    <span class="kwa">if</span> size <span class="opt">&gt;</span> <span class="kwd">capa</span> <span class="kwa">then begin</span>
+      <span class="kwa">let</span> <span class="kwd">capa</span> <span class="opt">=</span> <span class="kwd">next_pow2_int</span> size <span class="kwa">in</span>
+      <span class="kwa">let</span> <span class="kwd">repr</span> <span class="opt">=</span> create_nat <span class="kwd">capa</span> <span class="kwa">in</span>
+      blit_nat <span class="kwd">repr</span> <span class="num">0</span> <span class="kwd">i</span><span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> <span class="kwd">i</span><span class="opt">.</span>size<span class="opt">;</span>
+      set_to_zero_nat <span class="kwd">repr i</span><span class="opt">.</span>size <span class="opt">(</span><span class="kwd">capa</span> <span class="opt">-</span> <span class="kwd">i</span><span class="opt">.</span>size<span class="opt">);</span>
+      <span class="kwd">i</span><span class="opt">.</span><span class="kwd">repr</span> <span class="opt">&lt;-</span> <span class="kwd">repr</span>
+    <span class="kwa">end</span>
+
+  <span class="kwa">let</span> <span class="kwd">carryin</span> c <span class="kwd">i</span> <span class="opt">=</span>
+    <span class="com">(* [i] might not be normal, since this function is internal *)</span>
+    <span class="kwa">let</span> <span class="kwd">size</span> <span class="opt">=</span> <span class="kwd">i</span><span class="opt">.</span><span class="kwd">size</span> <span class="opt">+</span> <span class="num">1</span> <span class="kwa">in</span>
+    <span class="kwd">ensure_capacity i size</span><span class="opt">;</span>
+    set_digit_nat <span class="kwd">i</span><span class="opt">.</span><span class="kwd">repr i</span><span class="opt">.</span><span class="kwd">size</span> c<span class="opt">;</span>
+    <span class="kwd">i</span><span class="opt">.</span><span class="kwd">size</span> <span class="opt">&lt;-</span> <span class="kwd">size</span>
+
+  <span class="kwa">let</span> <span class="kwd">addsub</span> ~doadd <span class="kwd">i</span> j <span class="opt">=</span>
+    <span class="kwa">let</span> <span class="kwd">cmp</span> <span class="opt">=</span> compare_nat <span class="kwd">i</span><span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> <span class="kwd">i</span><span class="opt">.</span><span class="kwd">size</span> j<span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> j<span class="opt">.</span><span class="kwd">size</span> <span class="kwa">in</span>
+    <span class="kwa">if</span> <span class="kwd">cmp</span> <span class="opt">&lt;</span> <span class="num">0</span> <span class="kwa">then begin</span>
+      <span class="com">(* Denormalize i to j&apos;s length *)</span>
+      <span class="kwd">ensure_capacity i</span> j<span class="opt">.</span><span class="kwd">size</span><span class="opt">;</span>
+      <span class="kwd">i</span><span class="opt">.</span><span class="kwd">size</span> <span class="opt">&lt;-</span> j<span class="opt">.</span><span class="kwd">size</span>
+    <span class="kwa">end</span><span class="opt">;</span>
+    <span class="kwa">if</span> doadd <span class="kwa">then begin</span>
+      <span class="kwa">let</span> <span class="kwd">c</span> <span class="opt">=</span> add_nat <span class="kwd">i</span><span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> <span class="kwd">i</span><span class="opt">.</span><span class="kwd">size</span> j<span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> j<span class="opt">.</span><span class="kwd">size</span> <span class="num">0</span> <span class="kwa">in</span>
+      <span class="kwa">if</span> <span class="kwd">c</span> <span class="opt">!=</span> <span class="num">0</span> <span class="kwa">then</span> <span class="kwd">carryin c i</span>
+    <span class="kwa">end else begin</span>
+      <span class="kwa">let</span> <span class="kwd">c</span> <span class="opt">=</span> sub_nat <span class="kwd">i</span><span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> <span class="kwd">i</span><span class="opt">.</span><span class="kwd">size</span> j<span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> j<span class="opt">.</span><span class="kwd">size</span> <span class="num">1</span> <span class="kwa">in</span>
+      <span class="kwa">if</span> <span class="kwd">c</span> <span class="opt">==</span> <span class="num">0</span> <span class="kwa">then begin</span>
+        complement_nat <span class="kwd">i</span><span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> <span class="kwd">i</span><span class="opt">.</span><span class="kwd">size</span><span class="opt">;</span>
+        ignore <span class="opt">(</span>incr_nat <span class="kwd">i</span><span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> <span class="kwd">i</span><span class="opt">.</span><span class="kwd">size</span> <span class="num">1</span><span class="opt">);</span>
+        <span class="kwd">i</span><span class="opt">.</span>sign <span class="opt">&lt;- -</span><span class="kwd">i</span><span class="opt">.</span>sign
+      <span class="kwa">end</span><span class="opt">;</span>
+      <span class="com">(* Normalize *)</span>
+      <span class="kwd">i</span><span class="opt">.</span><span class="kwd">size</span> <span class="opt">&lt;-</span> num_digits_nat <span class="kwd">i</span><span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> <span class="kwd">i</span><span class="opt">.</span><span class="kwd">size</span><span class="opt">;</span>
+      <span class="kwa">if</span> is_zero_nat <span class="kwd">i</span><span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> <span class="kwd">i</span><span class="opt">.</span><span class="kwd">size</span> <span class="kwa">then</span> <span class="kwd">i</span><span class="opt">.</span>sign <span class="opt">&lt;-</span> <span class="num">0</span>
+    <span class="kwa">end</span>
+
+  <span class="kwa">let</span> <span class="kwd">add i</span> j <span class="opt">=</span>
+    <span class="kwa">if</span> j<span class="opt">.</span>sign <span class="opt">==</span> <span class="num">0</span> <span class="kwa">then</span> <span class="opt">()</span> <span class="kwa">else</span>
+    <span class="kwa">if</span> <span class="kwd">i</span><span class="opt">.</span>sign <span class="opt">==</span> <span class="num">0</span> <span class="kwa">then</span> <span class="kwd">set i</span> j <span class="kwa">else</span>
+    <span class="kwd">addsub</span> ~doadd<span class="opt">:(</span><span class="kwd">i</span><span class="opt">.</span>sign <span class="opt">==</span> j<span class="opt">.</span>sign<span class="opt">)</span> <span class="kwd">i</span> j
+  <span class="kwa">and</span> sub <span class="kwd">i</span> j <span class="opt">=</span>
+    <span class="kwa">if</span> j<span class="opt">.</span>sign <span class="opt">==</span> <span class="num">0</span> <span class="kwa">then</span> <span class="opt">()</span> <span class="kwa">else</span>
+    <span class="kwa">if</span> <span class="kwd">i</span><span class="opt">.</span>sign <span class="opt">==</span> <span class="num">0</span> <span class="kwa">then</span> <span class="opt">(</span><span class="kwd">set i</span> j<span class="opt">;</span> <span class="kwd">neg i</span><span class="opt">)</span> <span class="kwa">else</span>
+    <span class="kwd">addsub</span> ~doadd<span class="opt">:(</span><span class="kwd">i</span><span class="opt">.</span>sign <span class="opt">!=</span> j<span class="opt">.</span>sign<span class="opt">)</span> <span class="kwd">i</span> j
+
+  <span class="kwa">let</span> <span class="kwd">temp</span> <span class="opt">=</span> create_nat <span class="num">1</span>
+
+  <span class="kwa">let</span> <span class="kwd">imul i</span> n <span class="opt">=</span>
+    <span class="kwa">if</span> n <span class="opt">&lt;=</span> <span class="num">0</span> <span class="kwa">then</span> failwith <span class="str">&quot;imul&quot;</span><span class="opt">;</span>
+    <span class="kwd">set_abs_digit_nat temp</span> <span class="num">0</span> <span class="opt">(</span>n <span class="opt">-</span> <span class="num">1</span><span class="opt">);</span>
+    <span class="kwa">let</span> <span class="kwd">c</span> <span class="opt">=</span> mult_digit_nat <span class="kwd">i</span><span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> <span class="kwd">i</span><span class="opt">.</span><span class="kwd">size i</span><span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> <span class="kwd">i</span><span class="opt">.</span><span class="kwd">size temp</span> <span class="num">0</span> <span class="kwa">in</span>
+    <span class="kwa">if</span> <span class="kwd">c</span> <span class="opt">!=</span> <span class="num">0</span> <span class="kwa">then</span> <span class="kwd">carryin c i</span>
+
+  <span class="kwa">let</span> <span class="kwd">idiv i</span> j <span class="opt">=</span>
+    <span class="kwa">if</span> compare_nat <span class="kwd">i</span><span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> <span class="kwd">i</span><span class="opt">.</span><span class="kwd">size</span> j<span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> j<span class="opt">.</span><span class="kwd">size</span> <span class="opt">&lt;</span> <span class="num">0</span> <span class="kwa">then</span> <span class="num">0</span> <span class="kwa">else begin</span>
+      <span class="kwa">if</span> compare_digits_nat <span class="kwd">i</span><span class="opt">.</span><span class="kwd">repr</span> <span class="opt">(</span><span class="kwd">i</span><span class="opt">.</span><span class="kwd">size</span><span class="opt">-</span><span class="num">1</span><span class="opt">)</span> j<span class="opt">.</span><span class="kwd">repr</span> <span class="opt">(</span>j<span class="opt">.</span><span class="kwd">size</span><span class="opt">-</span><span class="num">1</span><span class="opt">) &gt;=</span> <span class="num">0</span> <span class="kwa">then</span>
+        <span class="kwd">carryin</span> <span class="num">0</span> <span class="kwd">i</span><span class="opt">;</span>
+      <span class="kwa">if</span> <span class="kwd">i</span><span class="opt">.</span><span class="kwd">size</span> <span class="opt">!=</span> j<span class="opt">.</span><span class="kwd">size</span> <span class="opt">+</span> <span class="num">1</span> <span class="kwa">then</span> failwith <span class="str">&quot;idiv&quot;</span><span class="opt">;</span> <span class="com">(* multidigit *)</span>
+      div_nat <span class="kwd">i</span><span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> <span class="kwd">i</span><span class="opt">.</span><span class="kwd">size</span> j<span class="opt">.</span><span class="kwd">repr</span> <span class="num">0</span> j<span class="opt">.</span><span class="kwd">size</span><span class="opt">;</span>
+      <span class="kwd">i</span><span class="opt">.</span>sign <span class="opt">*</span> j<span class="opt">.</span>sign <span class="opt">*</span> nth_digit_nat <span class="kwd">i</span><span class="opt">.</span><span class="kwd">repr</span> j<span class="opt">.</span><span class="kwd">size</span>
+    <span class="kwa">end</span>
+<span class="kwa">end</span>
+
+<span class="kwa">let</span> <span class="kwd">u</span><span class="opt">,</span> v <span class="opt">=</span> <span class="kwc">Z</span><span class="opt">.(</span><span class="kwd">make</span> <span class="num">1</span><span class="opt">,</span> <span class="kwd">make</span> <span class="num">1</span><span class="opt">)</span>
+
+<span class="kwa">let</span> <span class="kwd">extract i</span> n a d <span class="opt">=</span>
+  <span class="kwa">let open</span> Z <span class="kwa">in</span>
+  <span class="kwd">set  u</span> n<span class="opt">;</span>
+  <span class="kwd">imul u i</span><span class="opt">;</span>
+  <span class="kwd">add  u</span> a<span class="opt">;</span>
+  <span class="kwd">idiv u</span> d
+
+<span class="kwa">let</span> <span class="kwd">produce i</span> n a d <span class="opt">=</span>
+  <span class="kwa">let open</span> Z <span class="kwa">in</span>
+  <span class="kwa">if</span> <span class="kwd">i</span> <span class="opt">!=</span> <span class="num">0</span> <span class="kwa">then begin</span>
+    <span class="kwd">set  u</span> d<span class="opt">;</span>
+    <span class="kwd">imul u i</span><span class="opt">;</span>
+    sub  a <span class="kwd">u</span>
+  <span class="kwa">end</span><span class="opt">;</span>
+  <span class="kwd">imul</span> n <span class="num">10</span><span class="opt">;</span>
+  <span class="kwd">imul</span> a <span class="num">10</span>
+
+<span class="kwa">and</span> consume <span class="kwd">i</span> n a d <span class="opt">=</span>
+  <span class="kwa">let open</span> Z <span class="kwa">in</span>
+  <span class="kwa">let</span> <span class="kwd">j</span> <span class="opt">=</span> <span class="num">2</span><span class="opt">*</span><span class="kwd">i</span> <span class="opt">+</span> <span class="num">1</span> <span class="kwa">in</span>
+  <span class="kwd">set  u</span> n<span class="opt">;</span>
+  <span class="kwd">add  u</span> n<span class="opt">;</span>
+  <span class="kwd">add</span>  a <span class="kwd">u</span><span class="opt">;</span>
+  <span class="kwd">imul</span> n <span class="kwd">i</span><span class="opt">;</span>
+  <span class="kwd">imul</span> a <span class="kwd">j</span><span class="opt">;</span>
+  <span class="kwd">imul</span> d <span class="kwd">j</span>
+
+<span class="kwa">let</span> <span class="kwd">pi</span> num <span class="opt">=</span>
+  <span class="kwa">let</span> <span class="kwd">cnt</span> <span class="opt">=</span> <span class="kwb">ref</span> <span class="num">0</span>
+  <span class="kwa">and</span> pos <span class="opt">=</span> <span class="kwb">ref</span> <span class="num">0</span> <span class="kwa">in</span>
+  <span class="kwa">let</span> <span class="kwd">end_row</span> <span class="opt">() =</span>
+    print_string  <span class="str">&quot;</span><span class="esc">\t</span><span class="str">:&quot;</span><span class="opt">;</span>
+    print_int     <span class="opt">!</span><span class="kwd">cnt</span><span class="opt">;</span>
+    print_newline <span class="opt">();</span>
+    pos <span class="opt">:=</span> <span class="num">0</span>
+  <span class="kwa">in</span>
+  <span class="kwa">let</span> <span class="kwd">show</span> d <span class="opt">=</span>
+    print_char <span class="opt">(</span>char_of_int <span class="opt">(</span>d <span class="opt">+</span> <span class="num">48</span><span class="opt">));</span>
+    incr <span class="kwd">cnt</span><span class="opt">;</span>
+    incr pos<span class="opt">;</span>
+    <span class="kwa">if</span> <span class="opt">!</span>pos <span class="opt">==</span> <span class="num">10</span> <span class="kwa">then</span> <span class="kwd">end_row</span> <span class="opt">();</span>
+    <span class="kwa">if</span> <span class="opt">!</span><span class="kwd">cnt</span> <span class="opt">==</span> num <span class="kwa">then begin</span>
+      <span class="kwa">if</span> <span class="opt">!</span>pos <span class="opt">!=</span> <span class="num">0</span> <span class="kwa">then begin</span>
+        print_string <span class="opt">(</span><span class="kwc">String</span><span class="opt">.</span><span class="kwd">make</span> <span class="opt">(</span><span class="num">10</span> <span class="opt">- !</span>pos<span class="opt">)</span> &apos; &apos;<span class="opt">);</span>
+        <span class="kwd">end_row</span> <span class="opt">()</span>
+      <span class="kwa">end</span><span class="opt">;</span>
+      raise Exit
+    <span class="kwa">end</span>
+  <span class="kwa">in</span>
+  <span class="kwa">let</span> <span class="kwd">numer</span> <span class="opt">=</span> <span class="kwc">Z</span><span class="opt">.</span><span class="kwd">of_int</span> <span class="num">1</span>
+  <span class="kwa">and</span> accum <span class="opt">=</span> <span class="kwc">Z</span><span class="opt">.</span><span class="kwd">of_int</span> <span class="num">0</span>
+  <span class="kwa">and</span> denom <span class="opt">=</span> <span class="kwc">Z</span><span class="opt">.</span><span class="kwd">of_int</span> <span class="num">1</span>
+  <span class="kwa">and</span> <span class="kwd">i</span>     <span class="opt">=</span> <span class="kwb">ref</span> <span class="num">1</span> <span class="kwa">in</span>
+  <span class="kwa">try while true do</span>
+    <span class="kwa">let</span> <span class="kwd">d</span> <span class="opt">=</span> <span class="kwd">extract</span> <span class="num">3</span> <span class="kwd">numer</span> accum denom <span class="kwa">in</span>
+    <span class="kwa">if</span> <span class="kwd">d</span> <span class="opt">==</span> <span class="kwd">extract</span> <span class="num">4</span> <span class="kwd">numer</span> accum denom
+    <span class="kwa">then</span> <span class="opt">(</span><span class="kwd">show d</span><span class="opt">;</span>  <span class="kwd">produce d numer</span> accum denom<span class="opt">)</span>
+    <span class="kwa">else</span> <span class="opt">(</span>consume <span class="opt">!</span><span class="kwd">i numer</span> accum denom<span class="opt">;</span> incr <span class="kwd">i</span><span class="opt">)</span>
+  <span class="kwa">done with</span> Exit <span class="opt">-&gt; ()</span>
+
+<span class="kwa">let</span> <span class="opt">() =</span> <span class="kwd">pi</span> <span class="opt">(</span><span class="kwa">try</span> int_of_string <span class="opt">(</span><span class="kwc">Array</span><span class="opt">.</span>get <span class="kwc">Sys</span><span class="opt">.</span>argv <span class="num">1</span><span class="opt">)</span> <span class="kwa">with</span> _ <span class="opt">-&gt;</span> <span class="num">27</span><span class="opt">)</span>
+    </pre>
+  </section>
+  <section>
+    <h3 id="log">notes, command-line, and program output</h3>
+    <pre>
+NOTES:
+64-bit Ubuntu quad core
+The OCaml native-code compiler, version 4.06.0
+
+
+Sun, 05 Nov 2017 22:27:14 GMT
+
+MAKE:
+mv pidigits.ocaml-4.ocaml pidigits.ocaml-4.ml
+/opt/src/ocaml-4.06.0/bin/ocamlopt -noassert -unsafe -fPIC -nodynlink -inline 100 -O3 -I /usr/local/lib/ocaml/gmp gmp.cmxa pidigits.ocaml-4.ml -o pidigits.ocaml-4.ocaml_run
+File &quot;pidigits.ocaml-4.ml&quot;, line 29, characters 7-10:
+Error: Unbound module Nat
+/home/dunham/benchmarksgame/nanobench/makefiles/u64q.programs.Makefile:417: recipe for target 'pidigits.ocaml-4.ocaml_run' failed
+make: [pidigits.ocaml-4.ocaml_run] Error 2 (ignored)
+rm pidigits.ocaml-4.ml
+
+0.04s to complete and log all make actions
+
+COMMAND LINE:
+./pidigits.ocaml-4.ocaml_run 2000
+
+MAKE ERROR 
+
+    </pre>
+  </section>
+</article>
+<footer>
+  <nav>
+    <ul>
+      <li><a href="./license.html"><span>license</span></a>
+    </ul>
+  </nav>
+</footer>
+
