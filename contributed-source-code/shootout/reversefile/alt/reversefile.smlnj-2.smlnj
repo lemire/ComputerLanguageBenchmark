@@ -1,0 +1,14 @@
+(* -*- mode: sml -*-
+ * $Id$
+ * http://www.bagley.org/~doug/shootout/
+ *)
+
+fun reverseinput lines =
+  if TextIO.endOfStream TextIO.stdIn
+  then List.app print lines
+  else reverseinput (TextIO.inputLine TextIO.stdIn :: lines);
+
+fun main(name, args) = (reverseinput []; OS.Process.success);
+
+
+val _ = SMLofNJ.exportFn("reversefile", main);

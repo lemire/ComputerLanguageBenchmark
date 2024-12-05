@@ -1,0 +1,107 @@
+/* ------------------------------------------------------------------ */
+/* The Great Computer Language Shootout                               */
+/* http://shootout.alioth.debian.org/                                 */
+/*                                                                    */
+/* Modified by Anthony Borla based on code originally submitted by    */
+/* Dennis Decker Jensen. Modifications include:                       */
+/*                                                                    */
+/* * Use of C library sqrt', replacing native code implementation     */
+/* * Altered code style to conform with my other REXX contributions   */
+/* ------------------------------------------------------------------ */
+
+numeric digits 12
+
+/* ----------------------------- */
+
+call initSqrt
+
+/* ----------------------------- */
+
+N = ARG(1)
+
+parse value 0.0 0.0 N N with vBv vv u.0 v.0
+
+do i = 1 for u.0 ; u.i = 1.0 ; end
+
+do 10
+  call mulAtAv 'u.', 'v.' ; call mulAtAv 'v.', 'u.'
+end
+
+do i = 1 for u.0
+  vBv = vBv + u.i * v.i ; vv = vv + v.i * v.i
+end
+
+say FORMAT(sqrt(vBv / vv),, 9)
+
+exit 0
+
+/* ----------------------------- */
+
+A : procedure
+  parse value ARG(1) - 1 ARG(2) - 1 with i j
+  return 1 / ((i + j) *( i + j + 1) / 2 + i + 1)
+
+/* ----------- */
+
+mulAv :
+  parse arg v, Av ; procedure expose (v) (Av)
+
+  call VALUE Av||0, VALUE(v||0)
+
+  do i = 1 for VALUE(Av||0)
+    call VALUE Av||i, 0.0
+    do j = 1 for VALUE(v||0)
+      call VALUE Av||i, VALUE(Av||i) + A(i, j) * VALUE(v||j)
+    end
+  end
+
+  return
+
+/* ----------- */
+
+mulAtv :
+  parse arg v, Atv ; procedure expose (v) (Atv)
+
+  call VALUE Atv||0, VALUE(v||0)
+
+  do i = 1 for VALUE(Atv||0)
+    call VALUE Atv||i, 0.0
+    do j = 1 for VALUE(v||0)
+      call VALUE Atv||i, VALUE(Atv||i) + A(j, i) * VALUE(v||j)
+    end
+  end
+
+  return
+
+/* ----------- */
+
+mulAtAv:
+  parse arg v, AtAv ; procedure expose (v) (AtAv)
+
+  call mulAv v, 'tmp.'
+  call mulAtv 'tmp.', AtAv
+
+  return
+
+/* ----------------------------- */
+
+initSqrt : procedure
+  sqrt.calltype = 'cdecl as function with parameters'
+  sqrt.return.type = 'float64'
+  sqrt.return.name = 'return value'
+
+  sqrt.0 = 1
+
+  sqrt.1.type = 'float64'
+  sqrt.1.name = 'number'
+
+  LIBRARY = 'libm.so.6' ; parse source SYSTEM . .
+  if SYSTEM == "WIN32" then ; LIBRARY = 'msvcrt' 
+
+  err = rxFuncDefine('sqrt', LIBRARY, 'sqrt', 'sqrt.')
+
+  if err \= 0 then
+    say "Error registering function 'sqrt'"
+
+  return
+

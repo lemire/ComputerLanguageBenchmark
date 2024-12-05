@@ -1,0 +1,37 @@
+(* hash2.sml
+ *
+ *   Repeated hashtable updates.
+ *
+ * Copyright (c) 2004 by The Fellowship of SML/NJ
+ *
+ * Author: Matthias Blume (blume@tti-c.org)
+ *)
+structure Test : sig
+    val main : string * string list -> OS.Process.status
+end = struct
+    open FormatComb
+    structure T = AtomTable
+    val N = 10000
+
+    fun mkTable () = T.mkTable (N, Fail "notfound")
+
+    fun main' n =
+	let val (h1, h2) = (mkTable (), mkTable ())
+	    fun foo i = Atom.atom ("foo_" ^ Int.toString i)
+	    val (f1, f9999) = (foo 1, foo 9999)
+	    fun init i =
+		if i >= N then () else (T.insert h1 (foo i, i); init (i + 1))
+	    fun optadd (NONE, k, v) = T.insert h2 (k, ref v)
+	      | optadd (SOME r, _, v) = r := v + !r
+	    fun addall () = T.appi (fn (k, v) => optadd (T.find h2 k, k, v)) h1
+	    fun iter k = if k >= n then () else (addall (); iter (k + 1))
+	in init 0; iter 0;
+	   print (format (int o sp 1 o int o sp 1 o int o sp 1 o int o nl)
+			 (T.lookup h1 f1) (T.lookup h1 f9999)
+			 (!(T.lookup h2 f1)) (!(T.lookup h2 f9999)));
+	   OS.Process.success
+	end
+
+    fun main (_, []) = main' 1
+      | main (_, arg :: _) = main' (getOpt (Int.fromString arg, 1))
+end

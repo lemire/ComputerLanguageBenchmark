@@ -1,0 +1,104 @@
+-- $Id$
+-- http://dada.perl.it/shootout/
+-- Ada 95 code by C.C.
+-- Modified by Pascal Obry on 2005/03/30
+
+package Random_Long_Float is
+   function Gen_Random (Supr : Long_Float) return Long_Float;
+   pragma Inline (Gen_Random);
+end Random_Long_Float;
+
+package body Random_Long_Float is
+   IM          : constant Positive := 139968;
+   IA          : constant Integer  := 3877;
+   IC          : constant Integer  := 29573;
+   Last        : Integer := 42;
+
+   function Gen_Random (Supr : Long_Float) return Long_Float is
+   begin
+      Last := (Last * IA + IC) mod IM;
+      return Supr * Long_Float (Last) / Long_Float (IM);
+   end Gen_Random;
+end Random_Long_Float;
+
+package Heapsort_Pck is
+
+   type Long_Float_Array is array (Positive range <>) of Long_Float;
+   type Long_Float_Array_Ptr is access Long_Float_Array;
+
+   procedure Heapsort (A : in out Long_Float_Array);
+end Heapsort_Pck;
+
+package body Heapsort_Pck is
+
+   procedure Heapsort (A : in out Long_Float_Array) is
+      First         : constant Positive := A'First;
+      IR            : Integer;
+      One           : constant Integer := 1;
+      Minus_One     : constant Integer := -1;
+      First_Minus_1 : constant Integer := First + Minus_One;
+      First_Plus_1  : constant Integer := First + One;
+      RRA           : Long_Float;
+      L             : Integer := One + (A'Length / 2);
+      K1, K2        : Integer;
+   begin
+      if A'Length <= 0 then
+         return;
+      end if;
+      IR := A'Last;
+      loop
+         if L > One then
+            L := L - One;
+            RRA := A (First_Minus_1 + L);
+         else
+            RRA := A (IR);
+            A (IR) := A (First);
+            if IR <= First_Plus_1 then
+               A (First) := RRA;
+               exit;
+            else
+               IR := IR + Minus_One;
+            end if;
+         end if;
+         K1 := First_Minus_1 + L;
+         K2 := K1 + L;
+         while K2 <= IR loop
+            if K2 < IR then
+               if A (K2) < A (K2 + One) then
+                  K2 := K2 + One;
+               end if;
+            end if;
+            if RRA < A (K2) then
+               A (K1) := A (K2);
+               K1 := K2;
+               K2 := K1 + (K1 - First_Minus_1);
+            else
+               K2 := IR + One;
+            end if;
+         end loop;
+         A (K1) := RRA;
+      end loop;
+   end Heapsort;
+
+end Heapsort_Pck;
+
+with Ada.Command_Line, Text_IO;
+with Heapsort_Pck; use Heapsort_Pck;
+with Random_Long_Float;
+
+procedure Heapsort is
+   package Rio is new Text_IO.Float_IO (Num => Long_Float);
+
+   N : Positive;
+   X : Long_Float_Array_Ptr;
+begin
+   N := Positive'Value (Ada.Command_Line.Argument (1));
+   X := new Long_Float_Array (1 .. N);
+   for Iter in X'Range loop
+      X (Iter) := Random_Long_Float.Gen_Random (Supr => 1.0);
+   end loop;
+
+   Heapsort (A => X.all);
+   Rio.Put (X (X'Last), Fore => 0, Aft => 10, Exp => 0);
+   Text_IO.New_Line;
+end Heapsort;

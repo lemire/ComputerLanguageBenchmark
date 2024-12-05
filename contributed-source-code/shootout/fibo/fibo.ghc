@@ -1,0 +1,35 @@
+-- $Id$
+-- http://www.bagley.org/~doug/shootout/
+--
+import System(getArgs)
+
+main = do [number] <- getArgs
+          print $ fib (read number)
+
+fib :: Int -> Int
+fib n | n < 2     = 1
+      | otherwise = fib (n-2) + fib (n-1)
+
+----------------------------------------------------------------
+-- The "Canonical" version a real Haskeller would use:
+----------------------------------------------------------------
+--main = do [number] <- getArgs
+--          print (fibs !! read number)
+--
+--fibs = (1::Int):1:zipWith (+) fibs (tail fibs)
+--
+----------------------------------------------------------------
+-- "Real World" Command Line Argument Processing
+----------------------------------------------------------------
+--import System(getArgs, getProgName, exitWith, ExitCode(..))
+--
+--main = do
+--       arg <- getArgs
+--       case arg of
+--         [number] -> putStrLn (show (fib (read number)))
+--         _        -> do
+--                     progname <- getProgName
+--                     putStrLn ("Usage: " ++ progname ++ " number")
+--                     exitWith (ExitFailure 1)
+
+

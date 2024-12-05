@@ -1,0 +1,12 @@
+{-# OPTIONS -fglasgow-exts #-}
+-- The Great Computer Language Shootout
+-- http://shootout.alioth.debian.org/
+-- Contributed by Greg Buchholz
+-- Enhanced by Einar Karttunen, Mirko Rahn and Don Stewart
+
+import System; import Numeric; import GHC.Base; import GHC.Float
+
+main = putStrLn . (\(I# n) -> showFFloat (Just 9) (D# (loop n 0.0##)) []) . read . head =<< getArgs
+
+loop d s = if d ==# 0# then s else loop (d-#1#) (s +## (1.0## /## int2Double# d))
+

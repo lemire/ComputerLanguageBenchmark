@@ -1,0 +1,62 @@
+-- -*- mode: eiffel -*-
+-- $Id$
+-- http://shootout.alioth.debian.org/
+
+-- Friedrich Dominicus points out that it is about twice as fast
+-- when we substitute NATIVE_ARRAY for ARRAY.  I've commented out
+-- my original code below and now use NATIVE_ARRAY.
+
+class ARY
+
+insert
+	ARGUMENTS
+
+creation {ANY}
+	make
+
+feature {ANY}
+   make is
+      local
+         x: NATIVE_ARRAY[INTEGER];
+         y: NATIVE_ARRAY[INTEGER];
+	 i,k,n: INTEGER;
+      do
+	 if argument_count = 1 then
+	    n := argument(1).to_integer
+	 else
+	    n := 1
+	 end
+
+         x := x.calloc(n);
+         y := y.calloc(n);
+
+	 from
+	    i := 0
+	 until
+	    i = n
+	 loop
+	    x.put(i + 1, i)
+	    i := i + 1
+	 end
+	 from
+	    k := 0
+	 until
+	    k = 1000
+	 loop
+	    from
+	       i := n-1
+	    until
+	       i < 0
+	    loop
+	       y.put(x.item(i) + y.item(i),i)
+	       i := i - 1
+	    end
+	    k := k + 1
+	 end
+
+         std_output.put_integer(y.item(0))
+         std_output.put_character(' ')
+         std_output.put_integer(y.item(n-1))
+         std_output.put_character('%N')
+      end
+end

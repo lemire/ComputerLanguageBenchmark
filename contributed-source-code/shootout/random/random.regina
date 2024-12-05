@@ -1,0 +1,23 @@
+/* ------------------------------------------------------------------ */
+/* The Great Computer Language Shootout                               */
+/* http://shootout.alioth.debian.org/                                 */
+/*                                                                    */
+/* Contributed by Anthony Borla                                       */
+/* ------------------------------------------------------------------ */
+
+numeric digits 11 ; LAST = 42
+
+N = ARG(1) ; if DATATYPE(N) \= 'NUM' | N < 1 then ; N = 1
+
+N = N - 1 ; do N ; call gen_random 100.0 ; end
+
+say FORMAT(gen_random(100.0),, 9)
+
+exit 0
+
+/* ----------------------------- */
+
+gen_random :
+  LAST = (LAST * 3877 + 29573) // 139968
+  return ARG(1) * LAST / 139968
+

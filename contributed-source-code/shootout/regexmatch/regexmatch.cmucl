@@ -1,0 +1,65 @@
+;;; -*- mode: lisp -*-;
+;;; $Id$
+;;; http://shootout.alioth.debian.org/
+;;; from Jochen Schmidt
+;;; Multi-lisp modifications by Brent Fulgham
+;;; Further modified (optimized & cleaned up a little) by Markus Ziegler
+
+(proclaim '(optimize (speed 3) (safety 0) (space 0) (debug 0) (compilation-speed 0)))
+#+cmu (setf ext:*bytes-consed-between-gcs* 5000000)
+(declaim (inline typep digit-charp non-digit-charp))
+
+(use-package :meta)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun digit-charp (char)
+    (declare (type base-char char))
+    (char<= #\0 char #\9))
+
+  (defun non-digit-charp (char)
+    (declare (type base-char char))
+    (not (or (char= char #\() (char= char #\)) (digit-charp char))))
+
+  (deftype digit () '(satisfies digit-charp))
+  (deftype non-digit () '(satisfies non-digit-charp))) 
+
+(defvar area-code     (make-array 3 :element-type 'base-char))
+(defvar exchange      (make-array 3 :element-type 'base-char))
+(defvar last-4-digits (make-array 4 :element-type 'base-char))
+
+(defun parse-tel (input)
+  (declare (type simple-base-string area-code exchange last-4-digits))
+  (meta:with-string-meta (buffer input)
+    (labels ((skip-non-digits ()
+	       (meta:match (:while (:type non-digit))))
+	     (digit-triplet (result)
+	       (declare (type simple-base-string result))
+	       (meta:match (:and (:type digit (schar result 0)) 
+				 (:type digit (schar result 1)) 
+				 (:type digit (schar result 2)))))
+	     (digit-4tuple (result)
+	       (declare (type simple-base-string result))
+	       (meta:match (:and (:type digit (schar result 0))
+				 (:type digit (schar result 1))
+				 (:type digit (schar result 2))
+				 (:type digit (schar result 3)))))
+	     (telephone-nr () 
+	       (meta:match (:and (skip-non-digits)
+				 (:or (:and #\( (digit-triplet area-code) #\))
+				      (digit-triplet area-code))
+				 #\space (digit-triplet exchange) (:or #\space #\-)
+				 (digit-4tuple last-4-digits)
+				 (:or (:type non-digit) (= index end))))))
+      (telephone-nr))))
+
+(defun main ()
+  (let ((n (parse-integer (or (car (last #+sbcl sb-ext:*posix-argv*
+                                         #+cmu  extensions:*command-line-strings*)) "1")))
+        (input (loop for line = (read-line *standard-input* nil 'eof)
+		  until (eq line 'eof) collect line)))
+    (loop for i of-type fixnum from 1 below n do
+	 (loop for line of-type simple-base-string in input
+	    do (parse-tel line)))
+    (loop with i of-type fixnum = 0
+       for line of-type string in input
+       do (when (parse-tel line)
+	    (format t "~A: (~A) ~A-~A~%" (incf i) area-code exchange last-4-digits)))))

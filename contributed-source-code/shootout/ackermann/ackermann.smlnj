@@ -1,0 +1,22 @@
+(* ackermann.sml
+ *
+ *   Testing recursive calls using the Ackermann function.
+ *
+ * Copyright (c) 2004 by The Fellowship of SML/NJ
+ *
+ * Author: Matthias Blume (blume@tti-c.org)
+ *)
+structure Test : sig
+    val main : (string * string list) -> OS.Process.status
+end = struct
+    open FormatComb
+    val fmt = format (text "Ack(3," o int o text "): " o int o nl)
+
+    fun ack (0, n) = n + 1
+      | ack (m, 0) = ack (m - 1, 1)
+      | ack (m, n) = ack (m - 1, ack (m, n - 1))
+
+    fun main' n = (print (fmt n (ack (3, n))); OS.Process.success)
+    fun main (_, []) = main' 1
+      | main (_, arg :: _) = main' (getOpt (Int.fromString arg, 1))
+end

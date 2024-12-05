@@ -1,0 +1,57 @@
+(* -*- mode: sml -*-
+ * $Id$
+ * http://www.bagley.org/~doug/shootout/
+ * Modified by Stephen Weeks (back to MLton style).
+ * Modified by Daniel Wang.
+ *)
+
+fun hashtest2 n =
+    let
+       fun new () =
+	  HashTable.new {equals = op =, hash = String.hash, size = 10000}
+       val h1 = new ()
+       val h2 = new ()
+       fun doinserts1 i =
+	  if i = 10000
+	     then ()
+	  else
+	     let
+		val s = "foo_" ^ Int.toString i
+		val _ = HashTable.insert (h1, s, i)
+	     in
+		doinserts1 (i + 1)
+	     end
+       fun addinto (h, k, v) =
+	   let
+	      val r = HashTable.lookupOrInsert (h, k, fn _ => ref 0)
+	   in
+	      r := !r + v
+	   end
+	fun doinserts2 i =
+	    if i = n
+	       then ()
+	    else (HashTable.foreach (h1, fn (s, i) => addinto (h2, s, i))
+		  ; doinserts2 (i + 1))
+    in
+	doinserts1 0;
+	doinserts2 0;
+	print (Int.toString (HashTable.lookup (h1, "foo_1"))); print " ";
+	print (Int.toString (HashTable.lookup (h1, "foo_9999"))); print " ";
+	print (Int.toString (! (HashTable.lookup (h2, "foo_1")))); print " ";
+	print (Int.toString (! (HashTable.lookup (h2, "foo_9999"))));
+	print "\n"
+    end
+
+fun atoi s = case Int.fromString s of SOME num => num | NONE => 0;
+
+fun main(name, args) = 
+    let
+	val arg = hd(args @ ["1"])
+	val num = atoi arg
+    in
+	hashtest2 num;
+	OS.Process.success
+    end;
+
+
+val _ = main( CommandLine.name(), CommandLine.arguments() );

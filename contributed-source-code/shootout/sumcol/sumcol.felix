@@ -1,0 +1,18 @@
+//
+// Contributed by John Skaller
+//
+include "std";
+n := atoi(System::argv 1);
+
+open Text_file;
+var sum = 0;
+var line = readln stdin;
+
+until line == "" do
+  sum += atoi(line);
+  line = readln stdin;
+done;
+
+print sum; endl;
+
+

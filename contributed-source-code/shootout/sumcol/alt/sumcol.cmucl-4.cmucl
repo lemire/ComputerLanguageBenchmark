@@ -1,0 +1,8 @@
+;;; -*- mode: lisp -*-
+;;; $Id$
+;;; http://shootout.alioth.debian.org/
+;;; from Paul Foley
+
+(defun main ()
+  (format t "~a~%" (loop for line = (read-line nil nil) while line
+		     summing (parse-integer line))))

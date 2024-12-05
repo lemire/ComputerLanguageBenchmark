@@ -1,0 +1,13 @@
+(* *)
+$(MLTON_ROOT)/basis/basis.mlb
+$(MLTON_ROOT)/basis/mlton.mlb
+$(MLTON_ROOT)/basis/unsafe.mlb
+
+int.sml
+word.sml
+array.sml
+list.sml
+string.sml
+hash-table.sml
+insertion-sort.sml
+quick-sort.sml

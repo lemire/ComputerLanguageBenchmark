@@ -1,0 +1,50 @@
+-- $Id$
+-- http://shootout.alioth.debian.org/
+-- from Brian Gregor
+-- with modifications by Max
+-- with further modifications by JP Bernardy
+-- replace stock "read" with faster version by Greg Buchholz
+-- compile with: ghc -O2 -o moments moments.hs
+-- for better performance run with increased stack and heap
+-- i.e. ./moments +RTS -K2M -H45M < Input
+
+import Numeric
+import List(sort)
+import Char( ord )
+
+main = interact $ unlines . answers . map fast_read . lines
+
+-- compute out the answers
+answers :: [Double] -> [String]
+answers nums = ["n:                  " ++ show (length nums),
+                "median:             " ++ (showFFloat (Just 6) (median nums n) ""),
+                "mean:               " ++ (showFFloat (Just 6) mean ""),
+                "average_deviation:  " ++ (showFFloat (Just 6) avg_dev ""),
+                "standard_deviation: " ++ (showFFloat (Just 6) std_dev ""),
+                "variance:           " ++ (showFFloat (Just 6) var ""),
+                "skew:               " ++ (showFFloat (Just 6) skew ""),
+                "kurtosis:           " ++ (showFFloat (Just 6) kurt "")]
+    where n =  fromIntegral (length nums)
+          mean = sum nums / n
+          deviation = [x-mean | x <- nums]
+          avg_dev = sum (map abs deviation) / n
+          var = sum [x**2 | x <- deviation] / (n-1)
+          std_dev =  sqrt var
+          skew = sum [x**3 | x <- deviation] / (n*var*std_dev)
+          kurt = sum [x**4 | x <- deviation] / (n*var*var) - 3.0
+
+-- calculate the median
+median nums n = mid (sort nums)
+    where mid x
+              | odd (length x) = x!! midpt
+              | otherwise       = ((x!!(midpt-1)) + (x!!midpt)) / 2.0
+          midpt = floor (n/2)
+
+--Faster "read" for doubles
+fast_read ('-':xs) = -1 * fast_read(xs)
+fast_read      xs  = ip + frac
+                where
+                    (i,f) = break (== '.') xs
+                    ip    = foldl (mult_acc  10) 0 i
+                    frac  = foldl (mult_acc 0.1) 0 f
+                    mult_acc val x y = x*val + fromIntegral(ord(y)-ord('0')) 

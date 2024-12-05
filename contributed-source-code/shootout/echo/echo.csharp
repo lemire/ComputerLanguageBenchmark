@@ -1,0 +1,90 @@
+/* The Great Computer Language Shootout 
+   http://shootout.alioth.debian.org
+
+   contributed by Isaac Gouy */
+
+using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
+using System.Diagnostics;
+
+class Echo
+{
+   static void Main(string[] args)
+   {
+      int n = 1;
+      if (args.Length > 0){
+         n = Int32.Parse(args[0]);
+
+         Process p = new Process();
+         ProcessStartInfo i = p.StartInfo;
+         i.FileName = "mono";
+         i.Arguments = "echo.csharp_run";
+         i.UseShellExecute = false;
+         p.Start();
+
+         Client.Start(n);
+      }
+      else {
+         Listener.Start();
+      }
+   }
+}
+
+
+public class Listener 
+{
+   public static void Start() 
+   {
+      TcpListener listener = new TcpListener(11000);
+      listener.Start();
+      
+      using (TcpClient client = listener.AcceptTcpClient()){
+         NetworkStream s = client.GetStream();
+
+         byte[] buffer = new byte[32];
+         int count = 0;
+         while (true) {
+            int bytesRec = s.Read(buffer, 0, buffer.Length);
+
+            if (bytesRec > 0) {
+               s.Write(buffer, 0, bytesRec);
+               count += bytesRec;
+            }
+            else break; 
+         }
+         Console.WriteLine("server processed {0} bytes", count);
+         listener.Stop();
+      } 
+   }
+}
+
+
+public class Client 
+{
+   private const string data = "Hello there sailor\n";
+
+   public static void Start(int n) 
+   {
+      byte[] msg = Encoding.ASCII.GetBytes(data);
+      byte[] buffer = new byte[32];
+
+      using (TcpClient client = new TcpClient("127.0.0.1",11000)){     
+         NetworkStream s = client.GetStream();         
+
+         while (n-- > 0){
+            s.Write(msg, 0, msg.Length);
+            int bytesRec = s.Read(buffer, 0, buffer.Length);
+            bool responseOK = msg.Length == bytesRec;
+            if (responseOK)
+               for (int i=0; i < bytesRec; i++)
+                  if ( !(responseOK = msg[i] == buffer[i]) )
+                     break;
+
+            if (!responseOK) Console.WriteLine("Response doesn't match message.");
+         }
+      } 
+   }
+}

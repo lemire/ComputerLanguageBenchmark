@@ -1,0 +1,43 @@
+(* objinst.sml
+ *
+ *   Simple "object creation" benchmark.
+ *
+ * Copyright (c) 2004 by The Fellowship of SML/NJ
+ *
+ * Author: Matthias Blume (blume@tti-c.org)
+ *)
+structure Test:sig val main:string*string list->OS.Process.status end = struct
+
+    (* the "methods" (work for both Toggle and NthToggle "objects") *)
+    fun Activate (t as { a, r }) = (a (); t)
+    fun Value { a, r } = !r
+
+    (* constructor for Toggle *)
+    fun Toggle b = let val r = ref b in { a = fn() => r:=not(!r), r = r } end
+
+    (* constructor for NthToggle *)
+    fun NthToggle (b, m) =
+	let val ({ r, a }, n) = (Toggle b, ref 0)
+	    fun a' () =
+		let val i = !n+1 in if i>=m then (a(); n:=0) else n:=i end
+	in { a = a', r = r } end
+
+    (* activate k times and print value every time *)
+    fun act t =
+	let fun l 0 = ()
+	      | l k = (print(Bool.toString(Value(Activate t))^"\n"); l(k-1))
+	in l end
+
+    (* generate k instances given a constructor and its arguments *)
+    fun gen Con a = let fun l 0 = () | l k = (ignore (Con a); l(k-1)) in l end
+
+    (* try first for a Toggle object, then for an NthToggle object... *)
+    fun main' n =
+	(act (Toggle true) 5; gen Toggle true n; print "\n";
+	 act (NthToggle (true, 3)) 8; gen NthToggle (true, 3) n;
+	 OS.Process.success)
+
+    (* driver: *)
+    fun main (_, []) = main' 1
+      | main (_, arg :: _) = main' (getOpt (Int.fromString arg, 1))
+end

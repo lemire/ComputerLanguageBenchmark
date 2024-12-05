@@ -1,0 +1,69 @@
+%% The Great Computer Language Shootout
+%% contributed by Bengt Kleberg (Erlang Guru)
+%%
+%% http://shootout.alioth.debian.org/
+%%
+%% Usage: start from command line with
+%%     erlc moments.erl
+%%     erl -noinput -s moments main < InputFile
+
+-module(moments). 
+-export([main/0, main/1]). 
+
+%% ignore program argument
+main() -> main(['1']).
+main(_Args) ->
+    Numbers = input_floats(),
+    How_many = erlang:length( Numbers ),
+    Median = median( Numbers, How_many ),
+    Mean = lists:sum( Numbers ) / How_many,
+    {Ad, Av, As, Ak} = various_averages( Numbers, Mean),
+    Average_deviation = Ad / How_many,
+    Variance = Av / (How_many - 1),
+    Standard_deviation = math:sqrt(Variance),
+    Skew = skew(How_many, As, Variance, Standard_deviation),
+    Kurtosis = kurtosis(How_many, Ak, Variance),
+    print(How_many, Median, Mean, Average_deviation, Standard_deviation,
+    	Variance, Skew, Kurtosis),
+    halt().
+
+input_floats() -> % "list of (double precision floating point) numbers"? no,integers.
+    input_floats(io:fread('', "~d"), []).
+input_floats(eof, Numbers) ->
+    Numbers;
+input_floats({ok, [Float]}, Numbers) ->
+    input_floats( io:fread('', "~d"), [Float|Numbers] ).
+
+various_averages( Numbers, Mean ) ->
+    Fun = fun( Float, {Ad, Av, As, Ak} ) ->
+            D = Float - Mean,
+	    D2 = D * D,
+	    {Ad + erlang:abs(D), Av + D2, As + (D2 * D), Ak + (D2 * D2)}
+	  end,
+    lists:foldl( Fun, {0.0, 0.0, 0.0, 0.0}, Numbers ).
+
+median(L, N) -> medianS(lists:sort(L), N).
+
+medianS(L, N) ->
+    Mid = (N div 2) + 1, % 1-based list access
+    case N rem 2 of
+        0 -> (lists:nth(Mid, L) + lists:nth(Mid - 1, L)) / 2;
+        1 -> lists:nth(Mid, L)
+    end.
+
+skew(N, As, V, SD) when V > 0.0 -> As / (N * V * SD);
+skew(_N, _As, _V, _SD) -> 0.
+
+kurtosis(N, Ak, V) when V > 0.0 -> Ak / (N * V * V) - 3;
+kurtosis(_N, _Ak, _V) -> 0.
+
+print(How_many, Median, Mean, Average_deviation, Standard_deviation,
+        Variance, Skew, Kurtosis) ->
+    io:fwrite("n:                  ~w~n", [How_many]), 
+    io:fwrite("median:             ~f~n", [Median]), 
+    io:fwrite("mean:               ~f~n", [Mean]), 
+    io:fwrite("average_deviation:  ~f~n", [Average_deviation]), 
+    io:fwrite("standard_deviation: ~f~n", [Standard_deviation]), 
+    io:fwrite("variance:           ~f~n", [Variance]), 
+    io:fwrite("skew:               ~f~n", [Skew]), 
+    io:fwrite("kurtosis:           ~f~n", [Kurtosis]). 

@@ -1,0 +1,17 @@
+/* The Great Computer Language Shootout 
+   http://shootout.alioth.debian.org/
+
+   contributed by Isaac Gouy
+*/
+
+void main(String[] args){
+    println(fib(Integer.parseInt(args[0]))); 
+}
+
+
+int fib(int n)
+   requires n >= 0; // precondition
+
+fib(n) { 
+   if (n < 2) return 1; else return fib(n-2) + fib(n-1);
+}

@@ -1,0 +1,13 @@
+-- $Id$
+-- http://shootout.alioth.debian.org
+-- from Bryn Keller
+-- with modifications by Aho
+
+-- compile with: ghc -O -package data
+
+import Data.Set (elementOf, mkSet)
+
+main = do
+	d <- readFile "Usr.Dict.Words"
+	let misspelled x = not $ x `elementOf` (mkSet (lines d))
+	interact $ unlines . filter misspelled . lines

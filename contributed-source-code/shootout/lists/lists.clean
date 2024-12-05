@@ -1,0 +1,162 @@
+/* The Great Computer Language Shootout 
+   http://shootout.alioth.debian.org/
+ 
+   contributed by Isaac Gouy (Clean novice)
+   and optimized by John van Groningen
+*/
+
+module lists
+import StdEnv, LanguageShootout
+
+Start = toString (iter argi listOps 10000) +++ "\n"
+listOps size
+    # d1 = iota size
+    # (d2,d1) = copy d1
+    # d3 = empty size
+    # (d2,d3) = headToTailLoop d2 d3
+    # (d3,d2) = tailToTailLoop d3 d2
+    # d1 = reverseDq d1
+    | firstDq d1==size && equal d1 d2
+        = lengthDq d1
+        = abort "Test Failed!"
+  where
+    headToTailLoop :: !*(Deque a) !*(Deque a) -> (!*Deque a,!*Deque a)
+    headToTailLoop x y
+        | emptyDq x   = (x,y)
+                      # (z,x) = popFirst x
+                      # y = addLast z y
+                      = headToTailLoop x y
+
+    tailToTailLoop :: !*(Deque a) !*(Deque a) -> (!*Deque a,!*Deque a)
+    tailToTailLoop x y
+        | emptyDq x = (x,y)
+                    # (z,x) = popLast x
+                    # y = addLast z y
+                    = tailToTailLoop x y
+
+:: Deque a = { first ::!Int, last ::!Int, size :: !Int, a :: !.{!a} }
+
+empty :: !Int -> *Deque Int
+empty n
+    # n=inc n
+    = { first=0, last=0, size=n,a = createArray n 0 }
+
+iota :: !Int -> *Deque Int
+iota n
+    #! size=inc n
+    = { first=1, last=0, size=size, a = {i \\ i<-[0..n]} }
+
+emptyDq :: !(Deque a) -> Bool
+emptyDq {first,last,size} = first==last
+
+lengthDq :: !(Deque a) -> Int
+lengthDq {first,last,size} = up (last-first) size
+
+up n s :== n+((n>>31) bitand s) // if (n < 0) (n + s) n
+
+popFirst :: !*(Deque a) -> (!a,!*Deque a)
+popFirst {first,last,size,a}
+    | first <> last
+        #! e = a.[first]
+        # first=first+1
+        | first<>size
+            = (e,{first=first,last=last,size=size,a=a})
+            = (e,{first=0,last=last,size=size,a=a})
+        = abort "popFirst: empty"
+
+popLast :: !*(Deque a) -> (!a,!*Deque a)
+popLast {first,last,size,a}
+    | first <> last
+        | last>0
+            # last = last-1
+            #! e = a.[last]
+            = (e,{first=first,last=last,size=size,a=a})
+            # last = size-1
+            #! e = a.[last]
+            = (e,{first=first,last=last,size=size,a=a})
+        = abort "popLast: empty"
+
+addLast :: !a !*(Deque a) -> *Deque a
+addLast elem {first,last,size,a}
+    # last`=last+1
+    | last` <> size
+        | last` <> first
+                = {first=first,last=last`,size=size,a={a & [last]=elem}}
+                = abort "addLast : Full"
+        | 0 <> first
+                = {first=first,last=0,size=size,a={a & [last]=elem}}
+                = abort "addLast : Full"
+
+firstDq :: !(Deque a) -> a
+firstDq {first,last,size,a}
+    | first <> last
+        = a.[first]
+        = abort "popFirst: empty"
+
+copy :: *(Deque a) -> (!*Deque a,!*Deque a)
+copy {first,last,size,a}
+    | size==0
+        = ({first=first,last=last,size=size,a={}},{first=first,last=last,size=size,a=a})
+    #! e=a.[0]
+    # (a1,a2) = copy_array 0 size (createArray size e) a
+    = ({first=first,last=last,size=size,a=a1},{first=first,last=last,size=size,a=a2})
+  where
+    copy_array :: !Int !.Int !*{!a} !u:{!a} -> (!.{!a},!v:{!a}), [u <= v]
+    copy_array i s a1 a2
+        | i<s
+            #! e=a2.[i]
+            = copy_array (i+1) s {a1 & [i]=e} a2
+            = (a1,a2)
+
+reverseDq :: *(Deque a) -> *Deque a
+reverseDq {first,last,size,a}
+    #! w=up (last-first) size // length
+    # a = reverse_a ((w>>1)+1) first (up (last-1) size) size a
+    = {first=first,last=last,size=size,a=a}
+    where
+        reverse_a :: !Int !Int !Int !Int !*{!a} -> *{!a}
+        reverse_a n i1 i2 size a
+            | n==0
+                = a
+            #! m=min (size-i1) n
+            #! m=min (i2+1) m
+            # a = reverse_a2 i1 i2 m a
+              i1=i1+m
+              i2=i2-m
+              i1=if (i1>=size) (i1-size) i1
+              i2=if (i2<0) (i2+size) i2
+            = reverse_a (n-m) i1 i2 size a
+
+        reverse_a2 :: !Int !Int !Int !*{!a} -> *{!a}
+        reverse_a2 i1 i2 e1 a
+            | i1<e1
+                # (v1,a) = a![i1]
+                # (v2,a) = a![i2]
+                = reverse_a2 (i1+1) (i2-1) e1 {a & [i1]=v2,[i2]=v1}
+                = a
+
+equal :: !.(Deque a) !.(Deque a) -> .Bool | == a
+equal {first=first1,last=last1,size=size1,a=a1} {first=first2,last=last2,size=size2,a=a2}
+    #! len1=up (last1-first1) size1 // length
+    #! len2=up (last2-first2) size2 // length
+    = len1==len2 && equal_a len1 first1 first2 size1 size2 a1 a2
+where
+    equal_a :: !Int !Int !Int !Int !Int !.{!a} !.{!a} -> .Bool | == a
+    equal_a n i1 i2 s1 s2 a1 a2
+        | n==0
+            = True
+        #! m=min (s1-i1) n
+        #! m=min (s2-i2) m
+        | equal_a2 i1 i2 (i1+m) a1 a2
+            # i1=i1+m
+              i2=i2+m
+              i1=if (i1>=s1) (i1-s1) i1
+              i2=if (i2>=s2) (i2-s2) i2
+            = equal_a (n-m) i1 i2 s1 s2 a1 a2
+            = False
+
+    equal_a2 :: !Int !Int !Int !.{!a} !.{!a} -> .Bool | == a
+    equal_a2 i1 i2 e1 a1 a2
+        | i1<e1
+            = a1.[i1]==a2.[i2] && equal_a2 (i1+1) (i2+1) e1 a1 a2
+            = True

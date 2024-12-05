@@ -1,0 +1,5 @@
+;;; -*- mode: emacs-lisp -*-
+;;; $Id$
+;;; http://www.bagley.org/~doug/shootout/
+
+(defun main () (princ "hello world\n"))

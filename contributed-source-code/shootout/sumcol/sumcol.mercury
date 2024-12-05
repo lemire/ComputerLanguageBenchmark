@@ -1,0 +1,46 @@
+% The Computer Language Shootout Benchmarks Game
+% http://shootout.alioth.debian.org/
+
+
+:- module sumcol.
+
+:- interface.
+
+:- import_module io.
+
+:- pred main(io__state :: di, io__state :: uo) is det.
+
+:- implementation.
+
+:- import_module string, int.
+
+main -->
+    io__read_line_as_string(IOResult),
+    sumcol(IOResult, 0).
+
+:- pred sumcol(io__result(string)::in, int::in, io__state::di, io__state::uo) is det.
+
+sumcol(IOResult, Sum) -->
+    ( { IOResult = ok(LineIn) },
+        { chomp(LineIn, Line) },
+	io__read_line_as_string(NewIOResult),
+	( if { string__to_int(Line, N) } then
+	    sumcol(NewIOResult, Sum + N)
+	  else
+	    sumcol(NewIOResult, Sum)
+	)
+    ; { IOResult = eof },
+        io__write_int(Sum),
+	io__write_string("\n")
+    ; { IOResult = error(_Error) },
+	io__write_string("Error reading file!")
+    ).
+
+:- pred chomp(string::in, string::out) is det.
+
+chomp(InStr, OutStr) :-
+    ( if string__remove_suffix(InStr, "\n", NewStr) then
+	OutStr = NewStr
+      else
+	OutStr = InStr
+    ).

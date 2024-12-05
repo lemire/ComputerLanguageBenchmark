@@ -1,0 +1,45 @@
+-- -*- mode: eiffel -*-
+-- $Id$
+-- http://shootout.alioth.debian.org/
+-- Contributed by Florian Hohn
+
+class WC
+
+insert
+	ARGUMENTS
+
+creation {ANY}
+   make
+
+feature {ANY}
+   make is
+      local
+	 nl, nw, nc: INTEGER; 
+	 in_word: BOOLEAN -- false=out of word;  true=in word
+      do
+	 from
+	    std_input.read_character
+	 until
+	    std_input.end_of_input
+	 loop
+	    nc := nc + 1
+	    inspect std_input.last_character
+	    when ' ', '%T' then
+	       in_word := False
+	    when '%N' then
+	       in_word := False
+	       nl := nl + 1
+	    else
+	       if not in_word then
+		  nw := nw + 1
+		  in_word := True
+	       end
+	    end -- inspect
+	    std_input.read_character
+	 end -- loop
+	 std_output.put_string(nl.to_string + " " + 
+	                       nw.to_string + " " + 
+			       nc.to_string + "%N")
+      end
+
+end -- class WC

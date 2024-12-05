@@ -1,0 +1,32 @@
+// $Id$
+// http://shootout.alioth.debian.org/
+// Some cleanups by Brent Fulgham
+
+using System;
+
+class nestedloop
+{
+    public static int Main(String[] args)
+    {
+        int a, b, c, d, e, f, x=0;
+        int n = System.Convert.ToInt32(args[0]);
+        if(n < 1) n = 1;
+
+        for (a=0; a<n; a++) {
+	    for (b=0; b<n; b++) {
+	        for (c=0; c<n; c++) {
+		    for (d=0; d<n; d++) {
+		        for (e=0; e<n; e++) {
+			    for (f=0; f<n; f++) {
+			        x++;
+			    }
+			}
+		    }
+		}
+	    }
+	}
+
+        Console.WriteLine(x);
+	return 0;
+    }
+}

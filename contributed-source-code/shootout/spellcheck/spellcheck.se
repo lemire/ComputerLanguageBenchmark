@@ -1,0 +1,70 @@
+-- -*- mode: eiffel -*-
+-- $Id$
+-- http://shootout.alioth.debian.org/
+-- from Steve Thompson
+-- Updated for current SmartEiffel by Brent Fulgham (with a lot
+--   of help from Philippe Ribet!)
+
+-- <LOC-OFF>
+--indexing
+--   description: "This class performs the spell check test" 
+--   author : Steve Thompson
+--   email  : "Steve_Thompson@prodigy.net"
+--   date   : February 18, 2001
+--   compile: "compile -clean -boost -no_split -O3 spellcheck.e -o spellcheck"
+--   run    : "spellcheck < Input"
+-- <LOC-ON>
+
+class SPELLCHECK
+
+insert
+	ARGUMENTS
+
+creation {ANY}
+	make
+   
+feature {ANY}
+	-- Creation
+   make is
+      do
+	 read_dictionary
+	 from
+	    std_input.read_line
+	 until std_input.end_of_input loop
+	    if dictionary.has(std_input.last_string) = False then
+	       std_output.put_string(std_input.last_string)
+	       std_output.put_new_line
+	    end
+	    std_input.read_line
+	 end
+      end -- make
+   
+feature -- Queries
+   
+   dictionary: DICTIONARY[INTEGER, STRING]
+   
+feature -- Commands
+   
+   read_dictionary is
+      local
+	 file: TEXT_FILE_READ
+	 value: INTEGER 
+      do
+	 value := 1
+	 from
+	    !!dictionary.with_capacity(60000)
+	    !!file.connect_to("Usr.Dict.Words")
+	 until
+	    file.end_of_input
+	 loop
+	    file.read_line
+	    if not file.last_string.is_empty then
+	       if not dictionary.has(file.last_string) then
+	          dictionary.add(value, file.last_string.twin)
+	       end
+	    end
+	 end
+	 file.disconnect
+      end -- read_dictionary
+
+end

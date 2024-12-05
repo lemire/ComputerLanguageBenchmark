@@ -1,0 +1,68 @@
+%%% -*- mode: erlang -*- 
+%%% $Id$
+%%% http://shootout.alioth.debian.org/
+%%%
+%%% Contributed by Bengt Kleberg (Erlang Guru!)
+%%% Updated by Alexey Shchepin <alexey@sevcom.net>
+
+-module(wordfreq).
+-export([main/0, main/1]).
+
+-define(BUFSIZE, 4096).
+
+%% ignore program argument
+main() -> main(['1']).
+main(_Args) ->
+    ets:new(freqtab, [set, named_table]),
+    ok = io:setopts([binary]),
+    insert_input(io:get_chars('', ?BUFSIZE), ""),
+    List = sort(),
+    print(List),
+    halt().
+
+
+insert_input(eof, _Prev) -> ok;
+insert_input(Buf, Prev) ->
+    Suffix = words1(Prev ++ binary_to_list(Buf)),
+    insert_input(io:get_chars('', ?BUFSIZE), Suffix).
+
+
+words1([C | S]) ->
+    if
+	(C >= $a) and (C =< $z) -> words2(S, [C]);
+	(C >= $A) and (C =< $Z) -> words2(S, [C + 32]);
+	true -> words1(S)
+    end;
+words1([]) ->
+    "".
+
+words2([C | S], Cs) ->
+    if
+	(C >= $a) and (C =< $z) -> words2(S, [C | Cs]);
+	(C >= $A) and (C =< $Z) -> words2(S, [C + 32 | Cs]);
+	true ->
+	    update_count(Cs),
+	    words1(S)
+    end;
+words2([], Cs) ->
+    lists:reverse(Cs).
+
+
+update_count(Word) ->
+    case (catch ets:update_counter(freqtab, Word, 1)) of
+        {'EXIT', {badarg, _}} ->
+	    true = ets:insert(freqtab, {Word, 1});
+	_Integer ->
+	    ok
+    end.
+
+sort() ->
+    Rev = [{C, lists:reverse(W)} || {W, C} <- ets:tab2list(freqtab)],
+    lists:reverse(lists:sort(Rev)).
+
+print(List) ->
+    Fun = fun({Count, Word}) ->
+		  io:format("~7w ~s~n", [Count, Word])
+	  end,
+    lists:foreach(Fun, List).
+

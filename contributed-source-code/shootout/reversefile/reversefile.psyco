@@ -1,0 +1,16 @@
+#!/usr/bin/python
+# $Id$
+# http://www.bagley.org/~doug/shootout/
+# from Brad Knotwell
+# with help from Mark Baker
+
+import psyco
+psyco.full()
+
+def main():
+    from sys import stdin, stdout
+    w = stdin.readlines()
+    w.reverse()
+    stdout.writelines(w)
+
+main()

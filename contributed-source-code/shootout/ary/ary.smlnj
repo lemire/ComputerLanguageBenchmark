@@ -1,0 +1,32 @@
+(* ary.sml
+ *
+ *   Testing array access.
+ *
+ * Copyright (c) 2004 by The Fellowship of SML/NJ
+ *
+ * Author: Matthias Blume (blume@tti-c.org)
+ *)
+structure Test : sig
+    val main : (string * string list) -> OS.Process.status
+end = struct
+    open FormatComb
+    fun x + y = Word.toIntX (Word.+ (Word.fromInt x, Word.fromInt y))
+    fun x - y = Word.toIntX (Word.- (Word.fromInt x, Word.fromInt y))
+    infix 8 $    val op $ = Unsafe.Array.sub
+    infix 1 <-   fun (a, i) <- x = Unsafe.Array.update (a, i, x)
+
+    fun main' n =
+	let val x = Array.tabulate (n, fn i => i + 1)
+	    val y = Array.array (n, 0)
+	    fun down 0 = ()
+	      | down i = let val i = i - 1 in (y, i) <- x$i + y$i; down i end
+	    fun loop 0 = ()
+	      | loop i = (down n; loop (i - 1))
+	in loop 1000;
+	   print (format (int o sp 1 o int o nl) (y$0) (y$(n-1)));
+	   OS.Process.success
+	end
+
+    fun main (_, []) = main' 1
+      | main (_, arg :: _) = main' (getOpt (Int.fromString arg, 1))
+end

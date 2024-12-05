@@ -1,0 +1,88 @@
+/*
+   The Great Computer Language Shootout
+   http://shootout.alioth.debian.org/
+   contributed by Isaac Gouy
+*/
+
+using System;
+using System.Threading;
+
+class prodcons
+{
+   private class Buffer 
+   {
+      private int m_contents = -1;
+      private bool m_available = false;
+
+      public int Get(){
+         lock(this)
+         {
+            if (!m_available) Monitor.Wait(this);
+            m_available = false;
+            Monitor.Pulse(this);
+         }
+         return m_contents;
+      }
+
+      public void Put(int value){
+         lock(this)
+         {
+            if (m_available) Monitor.Wait(this);
+            m_contents = value;
+            m_available = true;
+            Monitor.Pulse(this);
+         }
+      }
+   }
+
+
+   // Could create separate Producer and Consumer classes
+   // Instead add the members and methods to ProdCons class
+   private Buffer b;
+   private int n = 0;
+   private static int produced = 0, consumed = 0;
+
+   private prodcons(Buffer sharedBuffer, int nTimes) {
+      b = sharedBuffer;
+      n = nTimes;
+   }
+
+   private void Produce() {
+      for (int i = 0; i < n; i++){
+         b.Put(i);
+         ++produced;
+      }
+   }
+
+   private void Consume() {
+      for (int i = 0; i < n; i++){
+         b.Get();
+         ++consumed;
+      }
+   }
+
+
+   static void Main(string[] args)
+   {
+      // Get the number of iterations
+      int n = 1;
+      if (args.Length > 0) n = Int32.Parse(args[0]); 
+
+      Buffer sharedBuffer = new Buffer();
+      //create producer and consumer
+      prodcons producer = new prodcons(sharedBuffer, n);
+      prodcons consumer = new prodcons(sharedBuffer, n);
+
+      //start producer and consumer threads
+      Thread tProducer = new Thread(new ThreadStart( producer.Produce ));
+      Thread tConsumer = new Thread(new ThreadStart( consumer.Consume ));
+      tProducer.Start();
+      tConsumer.Start();
+
+      // wait on both threads
+      tProducer.Join();
+      tConsumer.Join();
+
+        Console.WriteLine("{0} {1}", prodcons.produced, prodcons.consumed);
+   }
+}

@@ -1,0 +1,8 @@
+%%% -*- mode: erlang -*-
+%%% $Id$
+%%% http://www.bagley.org/~doug/shootout/
+
+-module(hello).
+-export([main/0]).
+
+main() -> io:fwrite("hello world\n", []), halt(0).

@@ -1,0 +1,30 @@
+-- $Id$
+-- http://shootout.alioth.debian.org
+-- By Simon Marlow, modified by Einar Karttunen
+
+import System
+import Control.Monad.ST
+import Data.Array.Base
+import Data.Array.ST
+
+add_array :: Int -> STUArray s Int Int -> STUArray s Int Int -> ST s ()
+add_array len a b = sequence_ [ add i | i <- [0..len] ]
+  where add i = do ai <- unsafeRead a i
+		   bi <- unsafeRead b i
+	  	   unsafeWrite b i (ai+bi)
+
+ary :: Int -> ST s (Int,Int)
+ary len = do 
+  a <- newListArray (0,len) [1..len+1]
+  b <- newArray (0,len) 0
+  sequence_ (take 1000 (repeat (add_array len a b)))
+  y1 <- unsafeRead b 0
+  yn <- unsafeRead b len
+  return (y1,yn)
+
+main = do
+  ~[n] <- getArgs 
+  let (y1,yn) = runST (ary ((read n)-1))
+  putStr (show y1); putStr " " ; putStrLn (show yn)
+
+

@@ -1,0 +1,48 @@
+-- $Id$
+-- http://www.bagley.org/~doug/shootout/
+-- Haskell echo/client server
+-- written by Brian Gregor
+-- simplified / updated by JP Bernardy
+-- compile with:
+--      ghc -O2 -o echo echo.hs
+
+import Control.Concurrent
+import Control.Monad(when)
+import Network 
+import System (getArgs,exitFailure)
+import System.IO
+
+message	    = "Hello there sailor"
+portnum     = 7001
+
+echo_server = do sock <- listenOn (PortNumber portnum)
+		 (s, _, _) <- accept sock
+		 hSetBuffering s LineBuffering
+		 proc <- read_data s 0
+		 putStrLn ("server processed " ++ show proc ++ " bytes")
+		 hClose s
+
+read_data sock totalbytes = 
+    do eof <- hIsEOF sock
+       if eof then return totalbytes 
+	      else do str <- hGetLine sock
+	              hPutStrLn sock str
+	              read_data sock (totalbytes + length str + 1)
+
+echo_client n = do s <- connectTo "127.0.0.1" (PortNumber portnum)
+		   hSetBuffering s LineBuffering
+		   mapM_ (server_echo s) [1..n]
+		   hClose s
+
+server_echo sock n = do hPutStrLn sock message
+	                str <- hGetLine sock 
+		        when (str /= message) exitFailure
+
+main = withSocketsDo $ do [n] <- getArgs
+			  forkIO (echo_client (read n::Int))
+			  echo_server
+
+
+
+
+

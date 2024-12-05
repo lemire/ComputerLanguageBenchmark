@@ -1,0 +1,14 @@
+(* hash2.cm
+ *
+ *   Repeated hashtable updates.
+ *
+ * Copyright (c) 2004 by The Fellowship of SML/NJ
+ *
+ * Author: Matthias Blume (blume@tti-c.org)
+ *)
+library
+	structure Test
+is
+	$/basis.cm
+	$/smlnj-lib.cm
+	hash2.sml

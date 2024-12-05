@@ -1,0 +1,17 @@
+;;; -*- mode: emacs-lisp -*-
+;;; $Id$
+;;; http://www.bagley.org/~doug/shootout/
+
+(defun main ()
+  (let* ((arg (car command-line-args-left))
+	 (n (if arg (string-to-number arg) 1))
+	 (x (make-vector n 0))
+	 (y (make-vector n 0))
+	 (last (- n 1)))
+    (dotimes (i n)
+      (aset x i (+ i 1)))
+    (dotimes (k 1000)
+      (do ((i last (- i 1)))
+	  ((< i 0))
+	(aset y i (+ (aref x i) (aref y i)))))
+    (princ (format "%d %d\n" (aref y 0) (aref y last)))))

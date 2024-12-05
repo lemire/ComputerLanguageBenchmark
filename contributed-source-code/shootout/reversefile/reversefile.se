@@ -1,0 +1,39 @@
+-- -*- mode: eiffel -*-
+-- $Id$
+-- http://www.bagley.org/~doug/shootout/
+-- from Daniel F Moisset, modified by Frank Salter
+
+class REVERSEFILE
+
+insert
+	ARGUMENTS
+
+creation {ANY}
+	make
+
+feature {ANY}
+
+    make is
+        local
+            i: ITERATOR[STRING]
+            file_content : LINKED_LIST[STRING];
+        do
+            create file_content.make;
+            from
+                std_input.read_line
+            until std_input.end_of_input
+	    loop
+                file_content.add_first(std_input.last_string.twin);
+                std_input.read_line;
+            end;
+            i := file_content.get_new_iterator
+            from 
+	       i.start
+	    until i.is_off loop
+                std_output.put_string (i.item);
+		std_output.put_new_line;
+                i.next;
+            end;
+        end;
+
+end -- class REVERSEFILE

@@ -1,0 +1,9 @@
+(* partialsums.cm
+ * Author: Anthony Borla (ajborla@bigpond.com)
+ *)
+library
+	structure Test
+is
+	$/basis.cm
+	$/smlnj-lib.cm
+	spectralnorm.sml

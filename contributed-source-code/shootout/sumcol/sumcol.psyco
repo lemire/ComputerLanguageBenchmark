@@ -1,0 +1,15 @@
+#!/usr/bin/python
+# $Id$
+# http://www.bagley.org/~doug/shootout/
+# with help from Mark Baker
+
+import sys, psyco
+psyco.full()
+
+def main():
+    count = 0
+    for line in sys.stdin.xreadlines():
+        count += int(line)
+    print count
+
+main()

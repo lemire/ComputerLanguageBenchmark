@@ -1,0 +1,89 @@
+program heapsort;
+
+{$mode objfpc} 
+
+uses
+  SysUtils;
+
+const
+  IM = 139968;
+  IA =  3877;
+  IC = 29573;
+
+var
+  random_last: longint = 42;
+  
+function gen_random(max: double): double;
+begin
+  random_last := (random_last * IA + IC) mod IM;
+  result := max * random_last / IM;
+end;
+
+procedure heapsort(n: integer; ra: pdouble);
+var
+  ir: integer;
+  i, j, l: integer;
+  rra: double;
+begin
+  ir := n;
+  l := (n >> 1) + 1;
+
+  while true do
+  begin
+    if l > 1 then
+    begin
+      dec(l);
+      rra := ra[l];
+    end else begin
+      rra := ra[ir];
+      ra[ir] := ra[1];
+      dec(ir);
+      if ir = 1 then begin
+        ra[1] := rra;
+        exit;
+      end;
+    end;
+
+    i := l;
+    j := l << 1;
+    while j <= ir do 
+    begin
+      if (j < ir) and (ra[j] < ra[j+1]) then 
+        inc(j);
+      if (rra < ra[j]) then 
+      begin
+        ra[i] := ra[j];
+        i := j;
+        j += i;
+      end else begin
+        j := ir + 1;
+      end;
+    end;
+    ra[i] := rra;
+  end;
+end;
+
+procedure main;
+var
+  I, N: integer;
+  ary: array of double;
+begin
+  if ParamCount >= 1 then
+    N := StrToInt(ParamStr(1))
+  else
+    N := 1;
+
+  { create an array of N random doubles }
+  setlength(ary, N+1);
+  for I := 1 to N do
+    ary[I] := gen_random(1);
+
+  heapsort(N, @ary[0]);
+
+  writeln(ary[N]:10:10);
+end;
+
+begin
+  main;
+end.
+

@@ -1,0 +1,18 @@
+# -*- mode: icon -*-
+# $Id$
+# http://www.bagley.org/~doug/shootout/
+
+procedure main(argv)
+    local nl, nw, nc, nonspaces
+    nl := nw := nc := 0
+    nonspaces := ~' \t'
+    while line := read() do line ? {
+	nl +:= 1
+	nc +:= 1 + *line
+	while tab(upto(nonspaces)) do {
+	    nw +:= 1
+	    tab(many(nonspaces))
+	}
+    }
+    write(nl, " ", nw, " ", nc)
+end

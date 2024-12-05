@@ -1,0 +1,49 @@
+-- $Id$
+-- http://shootout.alioth.debian.org/ 
+-- By Ray Racine (Haskell newbie)
+-- Usage for 10 iterations:: regexp 10 < Input.txt
+--
+-- This seems very hard to get right with Haskell
+-- as GHC is too good with optimizing. It takes 
+-- the regexmatch out of the loop making things 
+-- too fast. Fixing this is dependant on GHC version
+-- and the amount of kludge one is willing to 
+-- commit oneself. The current code seems to 
+-- quite linear with GHC6.2.2 but GHC6.4 optimizer
+-- will kill this too... 
+-- Added options into the Makefile to make this *slower*.
+-- ugliness by Einar Karttunen
+
+import Control.Monad
+import Data.Maybe
+import System (getArgs)
+import Text.Regex (matchRegex, mkRegex)
+
+phoneMatch = matchRegex $ mkRegex regex
+	     where regex = 
+		       "(^|[^0-9\\(]+)" ++
+		       "(" ++ 
+	               "\\(([0-9][0-9][0-9])\\)" ++
+	               "|" ++
+	               "([0-9][0-9][0-9])" ++
+	               ")" ++
+	               " " ++
+	               "([0-9][0-9][0-9])" ++
+	               "[ -]"  ++
+	               "([0-9][0-9][0-9][0-9])" ++
+		       "($|[^0-9])"
+
+canonicalPhone matchGrps = "(" ++ areacode ++ ") " ++ phnum
+                           where areacode = let (_,b) = splitAt 2 matchGrps in
+					    (head b) ++ (head . tail $ b)
+				 phnum = let (_,b) = splitAt 4 matchGrps in
+					 (head b) ++ "-" ++ (head . tail) b	
+
+matches l = return $ concatMap (fun . phoneMatch) l
+    where fun Nothing = []
+	  fun (Just v)= [canonicalPhone v]
+
+main = do [num] <- getArgs
+	  lined <- getContents >>= return . lines
+	  foldM (\n _ -> matches lined >>= \v -> n `seq` return $ n + length v) 0 [2..(read num)] 
+	  matches lined >>= foldM_ (\n v -> putStrLn (show n ++ ": " ++ v) >> return (n+1)) 1

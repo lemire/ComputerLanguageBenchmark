@@ -1,0 +1,35 @@
+(* -*- mode: sml -*-
+ * $Id$
+ * http://www.bagley.org/~doug/shootout/
+ *)
+
+fun hashtest n =
+   let
+      val hx = HashTable.new {equals = op =,
+			      hash = String.hash,
+			      size = n}
+      val () = Int.for (1, n + 1, fn i =>
+			HashTable.insert (hx, Int.fmt StringCvt.HEX i, i))
+      val r = ref 0
+      val () =
+	 Int.forDown (1, n + 1, fn i =>
+		      if isSome (HashTable.peek (hx, Int.toString i))
+			 then Int.inc r
+		      else ())
+   in
+      !r
+   end
+
+fun atoi s = case Int.fromString s of SOME num => num | NONE => 0;
+
+fun main(name, args) = 
+    let
+	val arg = hd(args @ ["1"])
+	val num = atoi arg
+	val result = hashtest num
+    in
+	print (Int.toString result) ; print "\n" ;
+	OS.Process.success
+    end;
+
+val _ = main( CommandLine.name(), CommandLine.arguments() );

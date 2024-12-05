@@ -1,0 +1,15 @@
+/* The Computer Language Shootout 
+   http://shootout.alioth.debian.org/
+   contributed by Isaac Gouy */
+
+import Include;
+
+void main(String[] args){
+   var n = Integer.parseInt(args[0]); 
+   var d = 0, partialSum = 0.0;
+
+   while (n-- > 0)
+      partialSum += 1.0/++d;
+
+   println( partialSum.toStringWith(9) );
+}

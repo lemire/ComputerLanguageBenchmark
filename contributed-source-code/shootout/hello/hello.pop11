@@ -1,0 +1,4 @@
+;;; -*- mode: lisp -*-
+;;; $Id$
+
+printf('hello world\n');

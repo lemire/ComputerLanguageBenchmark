@@ -1,0 +1,65 @@
+module:     objinst
+synopsis:   implementation of "Object Instantiation" benchmark
+author:     Peter Hinely
+copyright:  public domain 
+
+
+define sealed domain make (subclass(<toggle>));
+define sealed domain initialize (<toggle>);
+
+
+define class <toggle> (<object>)
+  slot value :: <boolean>, required-init-keyword: start-state:;
+end class;
+
+
+define class <nth-toggle> (<toggle>)
+  slot counter :: <integer> = 0;
+  slot counter-maxiumum :: <integer>, required-init-keyword: counter-maxiumum:;
+end class;
+
+
+define method activate (t :: <toggle>) => t :: <toggle>;
+  t.value := ~t.value;
+  t;
+end method;
+
+
+define method activate (t :: <nth-toggle>) => t :: <toggle>;
+  t.counter := t.counter + 1;
+  if (t.counter >= t.counter-maxiumum)
+    t.value := ~t.value;
+    t.counter := 0;
+  end;
+  t;
+end method;
+
+    
+define function main ()
+  let arg = string-to-integer(element(application-arguments(), 0, default: "1"));
+
+  let toggle = make(<toggle>, start-state: #t);
+
+  for (i from 1 to 5)
+    format-out("%s\n", if (activate(toggle).value) "true" else "false" end);
+  end;
+
+  for (i from 1 to arg)
+    toggle := make(<toggle>, start-state: #t);
+  end;
+
+  format-out("\n");
+
+  let nth-toggle = make(<nth-toggle>, start-state: #t, counter-maxiumum: 3);
+
+  for (i from 1 to 8)
+    format-out("%s\n", if (activate(nth-toggle).value) "true" else "false" end);
+  end;
+
+  for (i from 1 to arg)
+    nth-toggle := make(<nth-toggle>, start-state: #t, counter-maxiumum: 3);
+  end;
+end function main;
+
+
+main();

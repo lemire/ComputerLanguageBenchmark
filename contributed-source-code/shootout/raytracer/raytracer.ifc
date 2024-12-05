@@ -1,0 +1,202 @@
+! -*- mode: f90 -*-
+!
+! $Id$ ; $Name$
+!
+! The Great Computer Language Shootout
+! http://shootout.alioth.debian.org/ 
+!
+! contributed by Simon Geard, 2005; translated from raytracer.cxx by John Harrop
+!
+! Compile: ifort -O3 -u -what -static-libcxa -o raytracer raytracer.f90
+!
+! -> Intel Fortran 8.1-5079
+!
+module scene
+  !
+  ! This module contains the code for building the scene to be ray traced. It
+  ! is generic in nature except for the definition of a Sphere. This is because without
+  ! generic types (which are in fortran2003 but there are no compilers yet!)
+  ! the tree has to be defined for each data type.
+  !
+  ! A sphere
+  type Sphere
+     real*8, dimension(3) :: centre = (/ 0.0d0,0.0d0,0.0d0 /)
+     real*8               :: radius = 0.0d0
+  end type Sphere
+  !
+  ! Tree data structure
+  type Tree
+     type(Sphere)        :: data
+     type(Tree), pointer :: children(:) => null()
+     integer             :: num_children = 0
+  end type Tree
+
+  interface assignment(=)
+     module procedure equals_t_t ! Tree = Tree
+  end interface
+
+contains
+
+  ! Assignment
+  recursive subroutine equals_t_t(t2, t1)
+    type(Tree), intent(out) :: t2
+    type(Tree), intent(in)  :: t1
+    t2%data = t1%data
+    t2%num_children = t1%num_children
+    t2%children => t1%children
+  end subroutine equals_t_t
+
+  ! Add a child to the tree
+  subroutine addChild(t, c)
+    type(Tree), intent(inout) :: t
+    type(Tree), intent(in)    :: c
+    
+    type(Tree), allocatable   :: wk(:)
+    if (.not. associated(t%children)) then
+       allocate(t%children(5)) ! The optimal choice for this test
+       t%num_children = 0
+    elseif (t%num_children == size(t%children)) then
+       allocate(wk(t%num_children))
+       wk = t%children
+       deallocate(t%children)
+       allocate(t%children(2*t%num_children))
+       t%children = wk
+       deallocate(wk)
+    end if
+    t%num_children = t%num_children + 1
+    t%children(t%num_children) = c
+  end subroutine addChild
+
+  ! Free all allocated memory
+  recursive subroutine tidy(t)
+    type(Tree) :: t
+    integer :: i
+    if (associated(t%children)) then
+       do i=1,t%num_children
+          call tidy(t%children(i))
+       end do
+       deallocate(t%children)
+    end if
+  end subroutine tidy
+
+end module scene
+
+! The program itself
+program ray_tracer
+  use scene
+
+  integer, parameter   :: ss = 4
+
+  real*8, dimension(3) :: d, e
+  integer              :: x, dx, y, dy, n
+  integer              :: level = 6
+  type(Tree)           :: t_scene
+  character(len=4)     :: argv
+  real*8               :: infinity = huge(1.0d0)
+  real*8               :: delta, g
+  real*8, dimension(3) :: ro = (/0.0d0,0.0d0,-4.0d0/)
+  real*8, dimension(3) :: light = (/-1.0d0,-3.0d0,2.0d0/)
+
+  type Ray
+     real*8, dimension(3) :: orig, dir
+  end type Ray
+
+  call getarg(1,argv); read(argv,*) n
+  write(*,'(a2/i0,a1,i0/a3)') 'P5', n,' ', n,'255'
+  
+  delta = sqrt(epsilon(1.0d0))
+  light = light/sqrt(dot_product(light,light))
+  t_scene = create(level, Sphere((/0.0d0, -1.0d0, 0.0d0/),1.0d0)) ! Build the scene
+  do y=n-1,0,-1; do x=0,n-1
+     g = 0.0d0
+     do dx=0,ss-1; do dy=0,ss-1
+        d = (/x + dble(dx)/ss - 0.5d0*n,y + dble(dy)/ss - 0.5d0*n,dble(n)/)
+        g = g + ray_trace(1.0d0,light,Ray(ro,d/sqrt(dot_product(d,d))),t_scene)
+     end do; end do
+     write(*,'(a1)',advance='no') char(nint(255*g/(ss*ss)))
+  end do; end do
+  call tidy(t_scene)
+
+contains
+     
+  real*8 function ray_sphere(r, t)
+    type(Ray), intent(in)  :: r
+    type(Tree), intent(in) :: t
+    
+    real*8                 :: b, disc, d, v(3)
+    
+    v = t%data%centre - r%orig
+    b = dot_product(v, r%dir)
+    disc = b*b - dot_product(v,v) + t%data%radius * t%data%radius
+    if (disc < 0.0d0) then
+       ray_sphere = infinity; return
+    end if
+    d = sqrt(disc)
+    ray_sphere = merge(infinity, merge(b-d, b+d, b > d), b < -d)
+  end function ray_sphere
+
+  recursive subroutine intersect(lambda, normal, r, t)
+    real*8, intent(inout)               :: lambda
+    real*8, dimension(3), intent(inout) :: normal
+    type(Ray), intent(in)               :: r
+    type(Tree), intent(in)              :: t
+
+    integer    :: i
+    real*8     :: l
+
+    l = ray_sphere(r,t)
+    if (l >= lambda) return
+    if (t%num_children == 0) then
+       lambda = l
+       normal = r%orig + l*r%dir - t%data%centre
+       normal = normal/sqrt(dot_product(normal,normal))
+    else
+       do i=1,t%num_children
+          call intersect(lambda, normal, r, t%children(i))
+       end do
+    end if
+  end subroutine intersect
+
+  real*8 function ray_trace(weight, light,  r, t)
+    real*8, intent(in)               :: weight
+    real*8, dimension(:), intent(in) :: light
+    type(Ray), intent(in)            :: r
+    type(Tree), intent(in)           :: t
+
+    real*8                           :: lambda, g, l 
+    real*8, dimension(3)             :: normal
+
+    ray_trace = 0.0d0
+    lambda = infinity
+    call intersect(lambda, normal, r, t)
+    if (lambda == infinity) return
+    g = -dot_product(normal, light); l = infinity
+    if (g <  0.0d0) return
+    call intersect(l, normal, Ray(r%orig + lambda * r%dir + delta * normal, -light), t)
+    if (l == infinity) ray_trace = g
+  end function ray_trace
+
+  recursive function create(level, s) result(t)
+    type(Tree)                 :: t
+    integer, intent(in)        :: level
+    type(Sphere), intent(in)   :: s
+    real*8     :: rn,d,c(3)
+    type(Tree) :: tn
+    integer    :: i
+    real*8, parameter :: cen(8) = (/1.0d0,1.0d0,-1.0d0,1.0d0,1.0d0,-1.0d0,-1.0d0,-1.0d0/)
+    if (level == 1) then
+       t%data = s ! A leaf
+       return
+    end if
+
+    t%data = Sphere(s%centre,3*s%radius)
+    call addChild(t,Tree(s,null(),0))
+
+    rn = t%data%radius/sqrt(12.0d0)
+    d = 0.5d0*s%radius
+    c = s%centre
+    do i=1,7,2
+       call addChild(t,create(level-1,Sphere(c + rn*(/cen(i),1.0d0,cen(i+1)/),d)))
+    end do
+  end function create
+end program ray_tracer

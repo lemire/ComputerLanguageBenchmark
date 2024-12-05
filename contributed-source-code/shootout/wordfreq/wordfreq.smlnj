@@ -1,0 +1,36 @@
+(* wordfreq.sml
+ *
+ *   Count word frequency and produce sorted listing.
+ *
+ * Copyright (c) 2004 by The Fellowship of SML/NJ
+ *
+ * Author: Matthias Blume (blume@tti-c.org)
+ *)
+structure Test : sig
+    val main : string * string list -> OS.Process.status
+end = struct
+    structure T = HashTableFn (type hash_key = string
+                               val hashVal = HashString.hashString
+			       val sameKey : string * string -> bool = op = )
+
+    fun main _ =
+	let open FormatComb
+	    val tbl = T.mkTable (1024, Fail "notfound")
+	    fun inc s = let val s' = String.map Char.toLower s
+			in case T.find tbl s' of
+			       NONE => T.insert tbl (s', ref 1)
+			     | SOME r => r := !r + 1
+			end
+	    fun cnt () =
+		case TextIO.inputLine TextIO.stdIn of
+		    SOME l => (app inc (String.tokens (not o Char.isAlpha) l);
+			       cnt ())
+		  | NONE => ()
+	    fun byFreq ((s: string, ref c), (s', ref c')) =
+		c < c' orelse c = c' andalso s < s'
+	    val counts = (cnt (); ListMergeSort.sort byFreq (T.listItemsi tbl))
+	    fun show (s, ref c) =
+		print (format (pad left 7 int o sp 1 o string o nl) c s)
+	in app show counts; OS.Process.success
+	end
+end

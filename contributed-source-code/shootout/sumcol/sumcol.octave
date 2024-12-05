@@ -1,0 +1,13 @@
+# The Computer Language Shootout
+# http://shootout.alioth.debian.org/
+# contributed by Carson Reynolds 2007/4/10
+
+y = 0;
+x = fgets(stdin);
+
+while ~feof(stdin)
+  y = y + str2num(x);
+  x = fgets(stdin);
+end
+
+printf("%d\n", y);

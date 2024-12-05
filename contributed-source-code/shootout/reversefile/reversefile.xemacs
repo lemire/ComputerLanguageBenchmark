@@ -1,0 +1,9 @@
+;;; -*- mode: emacs-lisp -*-
+;;; $Id$
+;;; http://www.bagley.org/~doug/shootout/ 
+
+
+(defun main ()
+  (insert-file-contents-literally (concat "Input." (car command-line-args-left)))
+  (reverse-region (point-min) (point-max))
+  (princ (buffer-string)))

@@ -1,0 +1,27 @@
+-- $Id$
+-- http://www.bagley.org/~doug/shootout/
+-- from Roland Dowdeswell
+-- adjusted by Aaron Denney, borrowing strictness attempt 
+-- from Malcom Wallace's matrix multiplication
+module Main where
+
+import System(getArgs)
+
+main = getArgs >>= putStrLn . ("Count: "++) . show . mytest . read . headOr1
+  where headOr1 x = if length x /= 1 then "1" else head x
+
+-- Here we try to force it to recompute at each step.
+mytest n = length $ strictlast $ map sieve $ replicate n ([2..8192])
+
+strictlast [x] = x
+strictlast (x:xs) | force x = strictlast xs
+force [] = True
+force (x:xs) = x `seq` force xs
+
+-- we use Int rather than let Haskell default to Integer,
+-- because we are trying to remain competetive with other
+-- languages that do not do arbitrary precision math by
+-- default...
+sieve :: [Int] -> [Int]
+sieve [] = []
+sieve (h:t) = h : sieve [x| x<-t, x`mod`h /= 0]

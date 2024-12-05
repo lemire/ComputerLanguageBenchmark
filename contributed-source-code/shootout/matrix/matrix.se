@@ -1,0 +1,103 @@
+-- -*- mode: eiffel -*-
+-- $Id$
+-- http://shootout.alioth.debian.org/
+-- from Steve Thompson
+--
+-- Revised to use FIXED_ARRAY2 by Jose Bollo.
+--
+-- <LOC-OFF>
+--indexing
+--   description: "This class performs the matrix multiplication test" 
+--   author : Steve Thompson
+--   email  : "Steve_Thompson@prodigy.net"
+--   date   : February 18, 2001
+--   compile: "compile -clean -boost -no_split -O3 main.e -o main"
+--   run    : "main 300"
+-- <LOC-ON>
+   
+class MATRIX
+
+insert
+	ARGUMENTS
+
+creation {ANY}
+	make
+   
+feature {ANY} -- Creation
+   make is
+      local
+	 index, count: INTEGER
+	 m1, m2: like matrix
+      do
+	 from
+	    if argument_count < 1 then 
+	       count := 1
+	    else 
+	       count := argument(1).to_integer
+	    end
+	    index := 0
+	    m1 := new_matrix(30, 30) 
+	    m2 := new_matrix(30, 30) 
+	    !!matrix.make(30, 30)
+	 until
+	    index = count
+	 loop
+	    mmult(30, 30, m1, m2)
+	    index := index + 1
+	 end -- from
+	 print(matrix.item(0, 0).to_string + " " + matrix.item(2, 3).to_string + " " +
+	       matrix.item(3, 2).to_string + " " + matrix.item(4, 4).to_string + "%N")
+      end -- make
+   
+feature -- Queries
+   
+   matrix: FIXED_ARRAY2[INTEGER]
+   
+   new_matrix(rows, columns: INTEGER): like matrix is
+	 -- Create and populate a new matrix.
+      local
+	 i, j, count: INTEGER
+      do
+	 !!Result.make(rows, columns)
+	 from 
+	    count := 1
+	    i := 0
+	 until i = rows loop
+	    from j := 0 until j = columns loop
+	       Result.put(count, i, j)
+	       count := count + 1
+	       j := j + 1
+	    end 
+	    i := i + 1
+	 end
+      end -- new_matrix
+   
+feature -- Commands
+   
+   zero_matrix(rows, columns: INTEGER; a_matrix: like matrix) is
+	 -- Clear a matrix
+      do
+	 matrix.make(rows, columns)
+      end -- zero_matrix
+   
+   mmult(rows, columns: INTEGER; first, second: like matrix) is
+	 -- Multiply two matrices.
+      local
+	 i, j, k, val: INTEGER
+      do
+	 zero_matrix(rows, columns, matrix)
+	 from i := 0 until i = rows loop
+	    from j := 0 until j = columns loop
+	       val := 0
+	       from k := 0 until k = columns loop
+		  val := val + first.item(i, k) * second.item(k, j)
+		  k := k + 1
+	       end
+	       matrix.put(val, i, j)
+	       j := j + 1
+	    end
+	    i := i + 1
+	 end -- from
+      end -- mmult
+   
+end

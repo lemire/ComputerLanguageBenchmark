@@ -1,0 +1,75 @@
+-- -*- mode: eiffel -*-
+-- $Id$
+-- http://www.bagley.org/~doug/shootout/
+-- from Steve Thompson
+
+-- <LOC-OFF>
+--indexing
+--   description: "This class is the entry point for the instantiation performance test" 
+--   author : Steve Thompson
+--   email  : "Steve_Thompson@prodigy.net"
+--   date   : February 18, 2001
+--   compile: "compile -clean -boost -no_split -O3 main.e -o main"
+--   run    : "main 400000"
+-- <LOC-ON>
+
+class OBJINST
+
+insert
+	ARGUMENTS
+
+creation {ANY}
+	make
+
+feature {ANY} -- Print Formatting
+   format_out(state: BOOLEAN): STRING is
+     do
+        if state then
+	   Result := once "true"
+	else
+	   Result := once "false"
+	end
+     end
+   
+feature -- Creation
+   
+   make is
+      local
+	 index: INTEGER
+	 n: INTEGER
+	 toggle: TOGGLE
+	 nth_toggle: NTH_TOGGLE
+      do
+	 if argument_count = 0 then 
+	    n := 1
+	 else
+	    n := argument(1).to_integer
+	 end
+	 
+	 !!toggle.make(True)
+	 from index := 0 until index = 5 loop
+	    print(format_out(toggle.activate.value))
+	    print(once "%N")
+	    index := index + 1
+	 end
+	 from index := 0 until index = n loop
+	    !!toggle.make(True)
+	    index := index + 1
+	 end
+	 
+	 print(once "%N")
+	 
+	 !!nth_toggle.make(True, 3)
+	 from index := 0 until index = 8 loop
+	    print(format_out(nth_toggle.activate.value))
+	    print(once "%N")
+	    index := index + 1
+	 end
+	 from index := 0 until index = n loop
+	    !!nth_toggle.make(True, 3)
+	    index := index + 1
+	 end
+	 
+      end -- make
+   
+end

@@ -1,0 +1,12 @@
+/* The Great Computer Language Shootout 
+   contributed by Isaac Gouy (Clean novice)
+*/
+
+module fibo
+import StdEnv, LanguageShootout
+
+fib n
+   | n<2 = 1
+   = fib (n-1) + fib (n-2) 
+
+Start = toString (fib argi) +++ "\n"

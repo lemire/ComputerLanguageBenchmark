@@ -1,0 +1,13 @@
+%%% $Id$
+%%% http://shootout.alioth.debian.org/
+-module(ackermann).
+-export([main/1]).
+
+main([Arg]) ->
+    Num = list_to_integer(Arg),
+    io:fwrite("Ack(3,~w): ~w\n", [Num, ack(3, Num)]),
+    halt(0).
+
+ack(0, N) -> N+1;
+ack(M, 0) -> ack(M-1, 1);
+ack(M, N) -> ack(M-1, ack(M, N-1)).

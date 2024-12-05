@@ -1,0 +1,9 @@
+#!/bin/bash
+
+SCRIPT=$1
+ARG=$2
+
+$SCRIPT $((-1*ARG)) &
+nice $SCRIPT $ARG
+wait
+

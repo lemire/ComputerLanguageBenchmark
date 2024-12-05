@@ -1,0 +1,11 @@
+(* -*- mode: sml -*-
+ * $Id$
+ * http://shootout.alioth.debian.org/
+ *)
+
+fun sumlines sum =
+   case TextIO.inputLine TextIO.stdIn of
+      NONE => print (concat [Int.toString sum, "\n"])
+    | SOME str => sumlines (sum + (Option.valOf (Int.fromString str)))
+	
+val _ = sumlines 0

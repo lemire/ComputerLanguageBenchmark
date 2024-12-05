@@ -1,0 +1,18 @@
+/* The Great Computer Language Shootout 
+   http://shootout.alioth.debian.org/
+
+   contributed by Isaac Gouy
+*/
+
+
+int ack(int m,int n) {
+   if (m == 0) return n + 1;
+   if (n == 0) return ack(m-1, 1);
+   return ack(m-1, ack(m, n-1)); 
+}
+
+void main(String[] args){
+   let n = Integer.parseInt(args[0]);   
+   println("Ack(3," + n + "): " + ack(3,n)); 
+}
+

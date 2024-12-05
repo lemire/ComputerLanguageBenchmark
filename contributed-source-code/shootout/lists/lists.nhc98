@@ -1,0 +1,24 @@
+-- $Id$
+-- http://shootout.alioth.debian.org/
+-- from Aaron Denney
+-- modified by Einar Karttunen
+-- Uses edison library - compile with "-package data"
+
+import System(getArgs)
+import qualified SimpleQueue as L
+
+copy = fmap id
+
+test :: Int -> Int
+test size | isok1 && isok2 = L.size l1'
+          | otherwise = error "not OK"
+                  where l1 = L.fromList [1..size]
+                        l2 = copy l1
+                        l3 = L.foldl (L.snoc) L.empty l2
+                        l2' = L.foldr (flip L.snoc) L.empty l3
+                        l1' = L.reverse l1
+                        isok1 = L.lhead l1' == size
+                        isok2 = l1' == l2'
+
+for n = foldl (\p _ -> if test p == p then p else 0) 10000 [1..n]
+main  = getArgs >>= print . for . read . head

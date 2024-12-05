@@ -1,0 +1,15 @@
+/* The Great Computer Language Shootout 
+   http://shootout.alioth.debian.org/
+
+   contributed by Isaac Gouy
+*/
+
+void main(String[] args){
+   var n = Integer.parseInt(args[0]);
+   let s = "hello\n";
+   var buffer = new StringBuffer(32);
+
+   while (n-- > 0) buffer.append(s);
+
+   println(buffer.length); 
+}

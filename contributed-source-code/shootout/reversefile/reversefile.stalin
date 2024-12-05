@@ -1,0 +1,12 @@
+;;; -*- mode: scheme -*-
+;;; $Id$
+;;; http://www.bagley.org/~doug/shootout/
+
+(include "QobiScheme")
+
+(let ((line (read-line)))
+  (cond ((eof-object? line) #f)
+	(else
+	 (reverse-input)
+	 (display line)
+	 (newline))))

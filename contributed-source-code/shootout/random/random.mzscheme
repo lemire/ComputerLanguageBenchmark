@@ -1,0 +1,42 @@
+;;; http://shootout.alioth.debian.org/
+;;; Random implementation, by Jens Axel Sogaard
+;;;
+;;; Modified for proper string output by Brent Fulgham
+
+(module random mzscheme
+  (provide main)
+
+  (define IM 139968)
+  (define IA   3877)
+  (define IC  29573)
+
+  (define gen_random
+    (let ((LAST 42))
+      (lambda (max)
+	(set! LAST (modulo (+ (* LAST IA) IC) IM))
+	(/ (* max LAST) IM))))
+
+  ;;; Stupid boiler-plate for formatting floating point value
+  (define (roundto digits n)
+    (let* ([e (expt 10 digits)]
+           [num (round (abs (* e (inexact->exact n))))]
+           [str (number->string (remainder num e))])
+      (format "~a~a.~a~a" 
+              (if (negative? n) "-" "")
+              (quotient num e) 
+              (make-string (- digits (string-length str)) #\0)
+              str)))
+
+  (define (main args)
+    (let ((n (if (= (vector-length args) 0)
+		 1
+		 (string->number (vector-ref args 0)))))
+      (let loop ((iter n))
+	(if (> iter 1)
+	    (begin
+	      (gen_random 100.0)
+	      (loop (- iter 1)))))
+      (printf "~a~%"
+	      (roundto 9 (gen_random 100.0)))))
+
+  (main (current-command-line-arguments)))

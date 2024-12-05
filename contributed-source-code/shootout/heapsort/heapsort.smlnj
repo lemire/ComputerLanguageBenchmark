@@ -1,0 +1,52 @@
+(* heapsort.sml
+ *
+ *   Use heapsort to sort a random array of 64-bit floating-point numbers.
+ *
+ * Copyright (c) 2004 by The Fellowship of SML/NJ
+ *
+ * Author: Matthias Blume (blume@tti-c.org)
+ *)
+structure Test:sig val main:string*string list->OS.Process.status end = struct
+
+    infix 8 $  val op $ = Unsafe.Array.sub
+    infix 3 <- fun (a, i) <- x = Unsafe.Array.update (a, i, x)
+
+    (* floating format *)
+    val f10 = Real.fmt (StringCvt.FIX (SOME 10))
+
+    (* the constants for the random number generator *)
+    val (M, A, C) = (139968, 3877, 29573)       val M' = 1.0 / real M
+
+    (* the random number generator *)
+    val random = let val l = ref 42
+		 in fn m => let val c = (!l*A+C) mod M in l:=c; m*M'*real c end
+		 end
+
+    (* the heapsort code itself *)
+    fun heapsort (a: real array, n) =
+	let fun sft (k, x, n) =
+		let val l1 = k+k+1
+		in if l1>=n then (a,k)<-x
+		   else let val l2 = l1+1
+			    val (l, y) =
+				if l2>=n then (l1, a$l1)
+				else let val (y1, y2) = (a$l1, a$l2)
+				     in if y1>y2 then (l1, y1) else (l2, y2)
+				     end
+			in if x>y then (a,k)<-x else ((a,k)<-y; sft (l, x, n))
+			end
+		end
+	    fun mkheap k = if k >= 0 then (sft(k,a$k,n); mkheap(k-1)) else ()
+	    fun srt 0 = ()
+	      | srt k = let val t = a$k in (a,k)<-a$0; sft(0,t,k); srt(k-1) end
+	in mkheap ((n+1) div 2 - 1); srt (n-1) end
+
+    (* generate random array, sort it, print last element *)
+    fun main' n =
+	let val a = Array.tabulate (n, fn _ => random 1.0)
+	in heapsort (a,n); print (f10 (a$(n-1)) ^ "\n"); OS.Process.success end
+
+    (* driver: *)
+    fun main (_, []) = main' 1
+      | main (_, arg :: _) = main' (getOpt (Int.fromString arg, 1))
+end

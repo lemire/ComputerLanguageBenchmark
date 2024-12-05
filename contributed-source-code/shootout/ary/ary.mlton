@@ -1,0 +1,33 @@
+(* -*- mode: sml -*-
+ * $Id$
+ * http://www.bagley.org/~doug/shootout/
+ *)
+
+fun ary n =
+    let
+	val x = Array.array (n, 0)
+	val y = Array.array (n, 0)
+    in
+       Int.for (0, n, fn i => Array.update (x, i, i + 1));
+       Int.for (0, 1000, fn k =>
+		Int.forDown
+		(0, n, fn i =>
+		 Array.update (y, i, Array.sub (x, i) + Array.sub (y, i))));
+       print (Int.toString (Array.sub (y, 0)));
+       print " ";
+       print (Int.toString (Array.sub (y, n - 1)));
+       print "\n"
+    end;
+
+fun atoi s = case Int.fromString s of SOME num => num | NONE => 0;
+
+fun main (name, args) = 
+    let
+	val arg = hd (args @ ["1"])
+	val num = atoi arg
+    in
+	ary num;
+	OS.Process.success
+    end;
+
+val _ = main( CommandLine.name(), CommandLine.arguments() );

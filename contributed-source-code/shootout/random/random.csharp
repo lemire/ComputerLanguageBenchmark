@@ -1,0 +1,28 @@
+/* The Great Computer Language Shootout
+ * http://shootout.alioth.debian.org/
+ *  
+ * contributed by Isaac Gouy 
+ */
+
+using System;
+
+class Random
+{
+   const int IM = 139968;
+   const int IA = 3877;
+   const int IC = 29573;
+   static int last = 42;
+
+   public static double gen_random(double max) {        
+      last = (last * IA + IC) % IM;
+      return( max * last / IM );
+   }
+
+   public static void Main(String[] args) {
+      int n = 1;
+      if (args.Length > 0) n = Int32.Parse(args[0]);
+
+      while (n-- > 1) gen_random(100.0);
+      Console.WriteLine("{0:f9}", gen_random(100.0));
+   }
+}

@@ -1,0 +1,21 @@
+-- $Id$
+-- http://shootout.alioth.debian.org/
+-- by JP Bernardy, optimized by Einar Karttunen
+
+import Control.Concurrent
+import System
+
+producer n m mv | n == m = return m
+		| True   = putMVar mv n >> producer (n+1) m mv
+
+consumer 0 m mv = return m
+consumer n m mv = takeMVar mv >> consumer (n-1) m mv
+
+main = do [a] <- getArgs
+          let n = read a :: Int
+          mvar <- newEmptyMVar 
+	  ret  <- newEmptyMVar
+          forkIO (producer 0 n mvar >>= putMVar ret)
+	  m <- consumer n n mvar 
+	  r <- takeMVar ret
+	  putStrLn (show r ++ " " ++ show m)

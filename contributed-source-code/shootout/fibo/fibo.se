@@ -1,0 +1,37 @@
+-- -*- mode: eiffel -*-
+-- $Id$
+-- http://www.bagley.org/~doug/shootout/
+
+class FIBO
+
+insert
+	ARGUMENTS
+
+creation {ANY}
+	make
+
+feature {ANY}
+   make is
+      local
+	 n: INTEGER;
+      do
+	 if argument_count = 1 then
+	    n := argument(1).to_integer
+	 else
+	    n := 1
+	 end
+         std_output.put_integer(fib(n))
+         std_output.put_new_line
+      end;
+
+feature {NONE}
+
+   fib(n:INTEGER):INTEGER is
+      do
+	 if n < 2 then
+	    Result := 1
+	 else
+	    Result := fib(n-2) + fib(n-1)
+	 end
+      end;
+end

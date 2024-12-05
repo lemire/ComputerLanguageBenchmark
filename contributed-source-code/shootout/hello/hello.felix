@@ -1,0 +1,7 @@
+//
+// Contributed by John Skaller
+//
+include "std";
+n := atoi(System::argv 1);
+print "hello world"; endl;
+

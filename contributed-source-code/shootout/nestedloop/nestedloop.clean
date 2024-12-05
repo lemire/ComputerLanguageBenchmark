@@ -1,0 +1,34 @@
+ /* The Great Computer Language Shootout 
+   http://shootout.alioth.debian.org/
+ 
+   contributed by Isaac Gouy (Clean novice)
+*/
+
+module nestedloop
+import StdEnv, LanguageShootout
+
+Start = toString (loopA argi argi 0) +++ "\n"
+
+loopA n m x 
+   | n > 0         = loopA (n-1) m (loopB m m x)
+   | otherwise     = x
+
+loopB n m x
+   | n > 0         = loopB (n-1) m (loopC m m x)
+   | otherwise     = x
+
+loopC n m x
+   | n > 0         = loopC (n-1) m (loopD m m x)
+   | otherwise     = x
+
+loopD n m x
+   | n > 0         = loopD (n-1) m (loopE m m x)
+   | otherwise     = x
+
+loopE n m x
+   | n > 0         = loopE (n-1) m (loopF m x)
+   | otherwise     = x
+
+loopF n x
+   | n > 0         = loopF (n-1) (x+1)
+   | otherwise     = x

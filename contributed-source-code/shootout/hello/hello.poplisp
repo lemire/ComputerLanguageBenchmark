@@ -1,0 +1,5 @@
+;;; -*- mode: lisp -*-
+;;; $Id$
+;;; http://shootout.alioth.debian.org/ 
+
+(write-line "hello world")

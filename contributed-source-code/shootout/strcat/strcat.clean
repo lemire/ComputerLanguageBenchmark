@@ -1,0 +1,40 @@
+/* The Computer Language Shootout 
+   http://shootout.alioth.debian.org/
+   contributed by Isaac Gouy (Clean novice)
+   Updated by John van Groningen
+*/
+
+module strcat
+import StdEnv, LanguageShootout
+
+Start =  toString (sbLength (appendLoop argi sbNew)) +++ "\n"
+
+appendLoop n sb
+   | n>0   = appendLoop (n-1) (sbAppend sb "hello\n")
+   = sb
+
+// To do this in the "same way" we need to define a StringBuffer
+
+:: StringBuffer = Sb !Int !.String
+
+sbNew = Sb 0 (createArray 32 ' ')
+
+sbAppend (Sb n b) s
+   = if (minsize > size b)
+      (Sb minsize (copyTo s n (resize b minsize) ))
+      (Sb minsize (copyTo s n b))
+   where 
+      minsize = n + size s
+
+      copyTo :: !.{#Char} !Int !*{#Char} -> .{#Char}
+      copyTo s n a = {a & [n+i] = s.[i] \\ i <- [0..size s - 1]}
+
+      resize b min
+         = if (newsize < min) 
+            (copyTo b 0 (createArray min ' '))
+            (copyTo b 0 (createArray newsize ' '))   
+
+         where newsize = size b * 2 + 5   
+
+sbLength (Sb n b) = n
+

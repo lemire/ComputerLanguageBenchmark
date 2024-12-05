@@ -1,0 +1,20 @@
+(* spellcheck.sml
+ *
+ *   Checking for presence of words in a dictionary.
+ *
+ * Copyright (c) 2004 by The Fellowship of SML/NJ
+ *
+ * Author: Matthias Blume (blume@tti-c.org)
+ *)
+structure Test:sig val main:string*string list->OS.Process.status end = struct
+    structure H = HashString and T = HashTable and I = TextIO
+    fun main _ =
+	let val ht = T.mkTable (H.hashString, op =) (40000, Fail "notfound")
+	    val (i,f,d) = (T.insert ht, T.find ht, I.openIn "Usr.Dict.Words")
+	    fun c() = case I.inputLine I.stdIn of
+			  SOME l => (if isSome (f l) then () else print l; c())
+			| NONE => OS.Process.success
+	    fun b() = case I.inputLine d of SOME l => (i(l,()); b())
+					  | NONE => (I.closeIn d; c())
+	in b () end
+end

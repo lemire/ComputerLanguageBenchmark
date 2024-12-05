@@ -1,0 +1,17 @@
+/* The Computer Language Shootout 
+   http://shootout.alioth.debian.org
+   contributed by Isaac Gouy (Clean novice)
+*/
+
+module sumcol
+import StdEnv
+
+Start world  
+   # (console, world) = stdio world
+   = toString (sumints console 0) +++ "\n"
+   
+sumints f sumi
+   # (ok,i,f) = freadi f
+   | not ok = sumi
+   = sumints f (sumi+i)
+   

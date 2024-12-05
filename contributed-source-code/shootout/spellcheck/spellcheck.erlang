@@ -1,0 +1,33 @@
+%%% -*- mode: erlang -*-
+%%% $Id$ 
+%%% http://shootout.alioth.debian.org/
+%%%
+%%% New (speedy) implementation by Bengt Kleberg. 
+
+-module(spellcheck).
+-export([main/0, main/1]).
+ 
+main() -> main(['1']).
+main(_Args) ->
+	Dict = load_dict(),
+	spell( io:fread('', "~s"), Dict ),
+	halt().
+
+load_dict() ->
+	Dict = ets:new(i_am_a_carrot, [set]),
+	{ok, Binary} = file:read_file("Usr.Dict.Words"),
+	Fun = fun( Word ) ->
+		ets:insert(Dict, {Word, 1})
+	end,
+	lists:foreach( Fun, string:tokens(erlang:binary_to_list( Binary ), "\n") ),
+	Dict.
+
+spell(eof, _Dict) ->
+	ok;
+spell({ok, [Word]}, Dict) ->
+	case ets:lookup(Dict, Word) of
+		[] -> io:format("~s~n",[Word]);
+		_Entry  -> ok
+	end,
+	spell( io:fread('', "~s"), Dict ).
+

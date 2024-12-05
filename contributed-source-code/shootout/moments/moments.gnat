@@ -1,0 +1,129 @@
+-- $Id$
+-- http://shootout.alioth.debian.org
+-- Contributed by Pascal Obry on 2005/03/22
+-- Revised by Vasiliy Fofanov 2005/03/23
+-- Modified by Pascal Obry on 2005/03/30
+
+generic
+   type Item_Type is private;
+   with function "<=" (X, Y : Item_Type) return Boolean;
+   type Sequence is array (Integer range <>) of Item_Type;
+procedure Quick_Sort (S : in out Sequence; Lwb, Upb : in Integer);
+
+procedure Quick_Sort (S : in out Sequence; Lwb, Upb : in Integer) is
+   Pivot : Item_Type := S (Upb);
+   Front : Integer := Lwb;
+   Back  : Integer := Upb;
+   Temp  : Item_Type;
+begin
+   if Lwb < Upb then
+      while  (Front <= Back)  loop
+         while not  (Pivot <= S (Front)) loop
+            Front := Front + 1;
+         end loop;
+         while not  (S (Back) <= Pivot) loop
+            Back := Back - 1;
+         end loop;
+         if Front <= Back then
+            Temp := S (Front);
+            S (Front) := S (Back);
+            S (Back) := Temp;
+            Front := Front + 1;
+            Back  := Back - 1;
+         end if;
+      end loop;
+      Quick_Sort (S, Lwb, Back);
+      Quick_Sort (S, Front, Upb);
+   end if;
+end Quick_Sort;
+
+-- $Id$
+-- http://shootout.alioth.debian.org
+-- Contributed by Pascal Obry on 2005/03/22
+-- Revised by Vasiliy Fofanov 2005/03/23
+-- Modified by Pascal Obry on 2005/03/30
+
+with System, Ada.Numerics.Generic_Elementary_Functions;
+with Ada.Text_IO; use Ada.Text_IO;
+with Quick_Sort;
+with GNAT.Dynamic_Tables;
+
+procedure Moments is
+
+   type Real is new Long_Float;
+
+   package AF is new
+     Ada.Numerics.Generic_Elementary_Functions (Float_Type => Real);
+   package RIO is new Ada.Text_IO.Float_IO (Num => Real);
+
+   procedure Put
+     (Item : Real; Fore : Field := 0; Aft : Field := 6;
+      Exp  : Field := 0) renames RIO.Put;
+
+   package Real_Table is
+      new GNAT.Dynamic_Tables (Real, Integer, 1, 4_096, 200);
+
+   procedure Sort is new Quick_Sort (Real, "<=", Real_Table.Table_Type);
+
+   Table                    : Real_Table.Instance;
+
+   Dev, D_2, Mean, Median   : Real;
+   Standard_Deviation       : Real;
+   Sum, Avg_Abs_Deviation   : Real    := 0.0;
+   Variance, Skew, Kurtosis : Real    := 0.0;
+   M                        : Natural := 0;
+   Value                    : Real;
+
+begin
+   Real_Table.Init (Table);
+
+   begin
+      loop
+         RIO.Get (Item => Value);
+         M := M + 1;
+         Real_Table.Append (Table, Value);
+         Sum := Sum + Value;
+      end loop;
+   exception
+      when others => null;
+   end;
+
+   Mean := Sum / Real (M);
+
+   for K in 1 .. M loop
+      Dev               := Table.Table (K) - Mean;
+      Avg_Abs_Deviation := Avg_Abs_Deviation + abs Dev;
+      D_2               := Dev * Dev;
+      Variance          := Variance + D_2;
+      Skew              := Skew + (D_2 * Dev);
+      Kurtosis          := Kurtosis + (D_2 * D_2);
+   end loop;
+
+   Avg_Abs_Deviation  := Avg_Abs_Deviation / Real (M);
+   Variance           := Variance / Real (M - 1);
+   Standard_Deviation := AF.Sqrt (Variance);
+
+   if Variance < 10.0 * Real'Model_Epsilon then
+      Put_Line ("> Reduced accuracy results: 0 = ((Variance/10 + 1) - 1)");
+   else
+      Skew     := Skew / (Real (M) * Variance * Standard_Deviation);
+      Kurtosis := -3.0 + Kurtosis / (Real (M) * Variance * Variance);
+   end if;
+
+   Sort (Table.Table.all, 1, M);
+
+   if 1 = (M mod 2) then
+      Median := Table.Table ((M + 1) / 2);
+   else
+      Median := (Table.Table (M / 2) + Table.Table (1 + M / 2)) / 2.0;
+   end if;
+
+   Put_Line ("n:                 " & Integer'Image (M));
+   Put ("median:             "); Put (Median);              New_Line;
+   Put ("mean:               "); Put (Mean);                New_Line;
+   Put ("average_deviation:  "); Put (Avg_Abs_Deviation);   New_Line;
+   Put ("standard_deviation: "); Put (Standard_Deviation);  New_Line;
+   Put ("variance:           "); Put (Variance);            New_Line;
+   Put ("skew:               "); Put (Skew);                New_Line;
+   Put ("kurtosis:           "); Put (Kurtosis);            New_Line;
+end Moments;

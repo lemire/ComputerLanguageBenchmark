@@ -1,0 +1,157 @@
+(* implicitode.ml                                           -*-tuareg-*-
+ *
+ * The Great Computer Language Shootout
+ * http://shootout.alioth.debian.org/
+ *
+ * Contributed by Sebastien Loisel
+ * Cleaned up and made more idiomatic by Christophe Troestler
+ *)
+
+module type SCALAR = sig
+  type t
+  val ( + ) : t -> t -> t
+  val ( - ) : t -> t -> t
+  val ( * ) : t -> t -> t
+  val ( / ) : t -> t -> t
+  val mk : int -> t
+  val mf : float -> t
+  val pr : t -> string
+end
+
+module FL64 : SCALAR = struct
+  type t = float
+  let ( + ) x y = x +. y
+  let ( - ) x y = x -. y
+  let ( * ) x y = x *. y
+  let ( / ) x y = x /. y
+  let mk = float
+  let mf x = x
+  let pr x = Printf.sprintf "%.12e" x
+end
+
+(* Low precision floating point type. *)
+module FL : SCALAR = struct
+  type t = float
+  let pr x = Printf.sprintf "%.2e" x
+  let mf x =
+    if x = 0.0 then 0.0 else
+      let k = truncate(log(abs_float x)) in
+      let x' = exp(6. -. float k) in floor(x *. x' +. 0.5) /. x'
+  let mk x = mf (float x)
+  let ( + ) x y = mf (x +. y)
+  let ( - ) x y = mf (x -. y)
+  let ( * ) x y = mf (x *. y)
+  let ( / ) x y = mf (x /. y)
+end
+
+(* Complex numbers on the field [F].  Overflow is not handled. *)
+module C(F : SCALAR) = struct
+  type t = { re: F.t; im: F.t }
+  let mk a = { re = F.mk a;  im = F.mk 0 }
+  let mf a = { re = F.mf a;  im = F.mk 0 }
+  let mc a b = { re = a; im = b }
+  let pr a = F.pr a.re ^ " " ^ F.pr a.im
+
+  open F
+  let ( + ) a b = { re = a.re + b.re;  im = a.im + b.im }
+  and ( - ) a b = { re = a.re - b.re;  im = a.im - b.im }
+  and ( * ) a b = { re = a.re * b.re - a.im * b.im;
+		    im = a.re * b.im + a.im * b.re }
+  and ( / ) a b =
+    let mag = b.re * b.re + b.im * b.im in
+    { re = (a.re * b.re + a.im * b.im) / mag;
+      im = (a.im * b.re - a.re * b.im) / mag }
+end
+
+module Functions(F : SCALAR) = struct
+  let f0 = F.mk 0 and f1 = F.mk 1 and f2 = F.mk 2 and f3 = F.mk 3
+  let f5 = F.mk 5 and f6 = F.mk 6 and f7 = F.mk 7
+  let sqr x = F.( * ) x x
+  let rec ( ** ) x k =
+    if k = 0 then f1
+    else if k mod 2 = 0 then sqr(x**(k/2)) else F.( * ) x (x**(k-1))
+
+  open F
+  let rat x = ((f2 * x + f3 * x**2 + f7 * x**6 + f5 * x**11 + f1)
+	       / (f5 * x - f6 * x**3 - f3 * x**7 + f2))
+
+  (* Automatic differentiation type on the field [F]. *)
+  module AD = struct
+    type t = { x : F.t; dx : F.t }
+    let mk i = { x = F.mk i; dx = f0 }
+    let mf x = { x = F.mf x; dx = f0 }
+    let pr a = pr a.x ^ " " ^ pr a.dx
+    let vr y dy = { x = y; dx = dy }
+    let ( + ) a b = { x = a.x + b.x;  dx = a.dx + b.dx }
+    and ( - ) a b = { x = a.x - b.x;  dx = a.dx - b.dx }
+    and ( * ) a b = { x = a.x * b.x;  dx = a.dx * b.x + a.x * b.dx }
+    and ( / ) a b = { x = a.x/b.x; dx = (a.dx*b.x-a.x*b.dx)/(b.x*b.x) }
+
+    let newton x0 n g =
+      let x = ref x0 in
+      for i = 1 to n do
+	let v = g(vr !x f1) in
+	x := F.(-) !x (F.(/) v.x v.dx)
+      done; !x
+
+    let trapezoid_method_rooter gad gf y0 t0 t1 =
+      let vt1 = vr t1 f0
+      and dt2 = vr (F.(/) (F.(-) t1 t0) f2) f0
+      and vy0 = vr y0 f0
+      and vg0 = vr (gf t0 y0) f0 in
+      fun y1 -> (gad vt1 y1 + vg0) * dt2 + vy0 - y1
+
+    let trapezoid_method t0 dt y0 gad gf numsteps =
+      let y = ref y0 and t = ref t0 in
+      for i = 1 to numsteps do
+	y := newton !y 10 (trapezoid_method_rooter gad gf !y !t (F.(+) !t dt));
+	t := F.(+) !t dt;
+      done; !y
+  end
+end
+
+module Integrate_functions(F : SCALAR) = struct
+  module Funs = Functions(F)
+  module AD = Funs.AD
+  module ADFuns = Functions(AD)
+  open F
+
+  let sqrintegrandad t y = ADFuns.sqr y
+  let sqrintegrandf t y = Funs.sqr y
+  let ratintegrandad t y = AD.(-) (ADFuns.rat y) t
+  let ratintegrandf t y = Funs.rat y -  t
+  let integrate_functions x0 n =
+    let integ f df = AD.trapezoid_method (mk 1) (mk 1 / mk n) x0 f df n in
+    print_string ("i1 " ^ (pr (integ sqrintegrandad sqrintegrandf)) ^"\n");
+    print_string ("i2 " ^ (pr (integ ratintegrandad ratintegrandf)) ^"\n")
+  end
+
+module Funs = Functions(FL64)
+module AD = Funs.AD
+module ADFuns = Functions(AD)
+
+let mysqrt x = AD.(-) (ADFuns.sqr x) (AD.mk 2)
+let () =
+  let f1 = FL64.mk 1 in
+  print_string("rational_taylor_series: " ^
+		 (AD.pr (ADFuns.rat (AD.vr (FL64.mf 0.25) f1))) ^ "\n");
+  print_string("newton-sqrt_2: " ^ (FL64.pr (AD.newton f1 10 mysqrt)) ^ "\n");
+  print_string("newton-rat: " ^
+		 (FL64.pr (AD.newton (FL64.mk (-1)) 6 ADFuns.rat)) ^ "\n")
+
+let n = int_of_string(Array.get Sys.argv 1)
+let pfl64 = FL64.mf 0.02
+let pfl = FL.mf 0.02
+module I1 = Integrate_functions(FL64)
+module I2 = Integrate_functions(FL)
+let () =
+  I1.integrate_functions pfl64 (n*4);
+  I2.integrate_functions pfl n
+
+module CFL64 = C(FL64)
+module CFL = C(FL)
+module I3 = Integrate_functions(CFL64)
+module I4 = Integrate_functions(CFL)
+let () =
+  I3.integrate_functions (CFL64.mc pfl64 pfl64) n;
+  I4.integrate_functions (CFL.mc pfl pfl) n

@@ -1,0 +1,36 @@
+(* strcat.sml
+ *
+ *   Repeated string(-buffer) concatenation.
+ *
+ * Copyright (c) 2004 by The Fellowship of SML/NJ
+ *
+ * Author: Matthias Blume (blume@tti-c.org)
+ *)
+structure Test : sig
+    val main : string * string list -> OS.Process.status
+end = struct
+    structure S = CharArraySlice
+
+    val stuff = "hello\n"
+    val stuffsz = size stuff
+    val new = Unsafe.CharArray.create
+
+    fun loop (0, _, pos, _) = pos
+      | loop (n, a, pos, sz) =
+	let val pos' = pos + stuffsz
+	in if pos' > sz then
+	       let val sz' = sz + sz
+		   val a' = new sz'
+	       in S.copy { dst = a', di = 0, src = S.slice (a, 0, SOME pos) };
+		  CharArray.copyVec { dst = a', di = pos, src = stuff };
+		  loop (n - 1, a', pos', sz')
+	       end
+	   else (CharArray.copyVec { dst = a, di = pos, src = stuff };
+		 loop (n - 1, a, pos', sz))
+	end
+
+    fun main' n = (print (Int.toString (loop (n, new 32, 0, 32)) ^ "\n");
+		   OS.Process.success)
+    fun main (_, []) = main' 1
+      | main (_, arg :: _) = main' (getOpt (Int.fromString arg, 1))
+end

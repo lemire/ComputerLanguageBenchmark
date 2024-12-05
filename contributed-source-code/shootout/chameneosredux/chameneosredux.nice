@@ -1,0 +1,152 @@
+/* The Computer Language Benchmarks Game
+   http://shootout.alioth.debian.org/
+   contributed by Isaac Gouy
+
+   RendezvousServer and Creature follow the same synchronization
+   approach as Mall and Chameneos in ANNEX A: JAVA SOLUTION 
+   "Chameneos, a Concurrency Game for Java, Ada and Others"
+*/
+
+
+enum Colour { blue, red, yellow }
+
+Colour complementColour(Colour self, Colour other){
+   if (self == other) { 
+      return self; 
+   } 
+   else if (self == blue) { 
+      if (other == red) return yellow; else return red; 
+   } 
+   else if (self == red) {  
+      if (other == blue) return yellow; else return blue; 
+   }  
+   else {
+       if (other == blue) return red; else return blue; 
+   } 
+}
+
+void checkCreatureColourChanges() {
+   let colours = [blue,red,yellow];
+   for (self : colours)
+      for (other : colours)
+         println(self + " + " + other + " -> " + complementColour(self,other));
+   println();
+}
+
+
+
+let (int,Colour) stopToken = (0,blue);
+
+class RendezvousServer {
+   private (int,Colour) a = stopToken; 
+   private (int,Colour) b = stopToken; 
+
+   private boolean firstCall = true;
+   private boolean mustWait = false;
+
+   private int countdown = n;
+
+
+   (int,Colour) notify((int,Colour) token) {
+
+      synchronized(this) {
+
+         var other = stopToken;
+
+         while ( mustWait && countdown > 0 ) this.wait();
+  
+         if ( firstCall ) {
+            a = token;
+            firstCall = false;
+
+            while ( ! firstCall && countdown > 0 ) this.wait();
+            other = b; 
+            mustWait = false;
+            this.notifyAll();
+
+            --countdown;
+         } 
+
+         else {
+            b = token;
+            other = a;
+            firstCall = true;
+            mustWait = true; 
+            this.notifyAll();               
+         } 
+
+         return countdown >= 0 ? other : stopToken;         
+      }
+   }
+
+}
+
+
+class Creature extends Thread {
+   private int name;
+   Colour colour;
+   int selfMet = 0; 
+   int creaturesMet = 0; 
+   private RendezvousServer rendezvous;
+
+   override void run(){ 
+      while (true) {
+         (int otherName, Colour otherColour) = rendezvous.notify( (name,colour) );
+         if (otherName == 0) break;
+
+         colour = complementColour(colour,otherColour);
+         if (otherName == name) selfMet++;
+         creaturesMet++;
+      }
+   }
+   
+}
+
+
+
+List<Creature> startRendezvousCreaturesWith(List<Colour> colourList){
+   let r = new RendezvousServer();
+   var i = 0;
+   let rendezvousCreatures = colourList .map(
+      Colour c => new Creature(name: ++i, colour: c, rendezvous: r));
+
+   for (c : rendezvousCreatures) c.start();
+   for (c : rendezvousCreatures) c.join();
+ 
+   return rendezvousCreatures;
+}
+
+
+void reportRendezvouses(List<Colour> colourList){
+   let numbers = ["zero", "one", "two", "three", "four", 
+                  "five", "six", "seven", "eight", "nine"];
+
+   String spellout(int k) =
+      k .toString .toCharArray .foldLeft(
+         (String s, char c) => 
+            s + " " + numbers[ Character.getNumericValue(c) ], "");
+
+
+   for (c : colourList) print(" " + c); println();
+
+   let rendezvousCreatures = startRendezvousCreaturesWith(colourList);
+
+   var sum = 0;
+   for (c : rendezvousCreatures){
+      sum += c.creaturesMet;
+      println(c.creaturesMet + spellout(c.selfMet) );
+   }
+   println( spellout(sum) );
+   println();
+}
+
+
+var int n = 0;
+
+void main(String[] args){
+   n = Integer.parseInt(args[0]);
+
+   checkCreatureColourChanges();
+   reportRendezvouses([blue,red,yellow]);
+   reportRendezvouses([blue,red,yellow,red,yellow,blue,red,yellow,red,blue]);
+}

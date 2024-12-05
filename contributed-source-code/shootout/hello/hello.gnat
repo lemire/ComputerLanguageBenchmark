@@ -1,0 +1,9 @@
+-- $Id$
+-- http://dada.perl.it/shootout/
+-- Ada 95 code by C.C.
+
+with Ada.Text_IO;
+procedure Hello is
+begin
+   Ada.Text_IO.Put_Line ("hello world");
+end Hello;

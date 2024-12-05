@@ -1,0 +1,33 @@
+;; -*- mode: lisp -*-
+;;; $Id$
+;;; http://shootout.alioth.debian.org/
+;;; Chih-Chung Chang contributed better declarations to improve performance
+;;; Multi-lisp modifications by Brent Fulgham
+;;; Modified by Juho Snellman 2005-10-26
+;;;   * Reformatted for style.
+;;;   * (THE FIXNUM ...) is undefined behaviour when ... isn't a fixnum,
+;;;     which was causing a failure on SBCL. Recoded using the SBCL / CMUCL
+;;;     modular arithmetic facility instead. (As a bonus it's also faster).
+
+(defconstant im 139968)
+(defconstant ia 3877)
+(defconstant ic 29573)
+
+(defvar the-last 42)
+
+(declaim (inline gen-random))
+(defun gen-random (max)
+  (declare (type (unsigned-byte 32) im ia ic the-last)
+           (double-float max))
+  (let ((last (ldb (byte 32 0)
+                   (mod (ldb (byte 32 0) (+ (* the-last ia) ic)) im))))
+    (setf the-last last)
+    (/ (* max last) im)))
+
+(defun main ()
+  (let ((n (parse-integer (or (car (last #+sbcl sb-ext:*posix-argv*
+                                         #+cmu  extensions:*command-line-strings*
+					 #+gcl  si::*command-args*)) "1"))))
+    (loop for i fixnum from 1 below n do
+      (gen-random 100.0d0))
+    (format t "~,9F~%" (gen-random 100.0d0))))

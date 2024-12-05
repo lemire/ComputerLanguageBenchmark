@@ -1,0 +1,38 @@
+-- $Id$
+-- http://shootout.alioth.debian.org
+--
+-- from Simon Marlow
+
+import System
+import Control.Exception as Exception
+import Data.IORef
+
+blowup n | even n    = throw (ErrorCall "H")
+	 | otherwise = throw (ErrorCall "L")
+
+lo_function lo n = 
+  Exception.catch (blowup n) $
+    \ex -> case ex of
+		ErrorCall "L" -> do nlo <- readIORef lo
+				    writeIORef lo $! (nlo + 1)
+		_ -> throw ex
+
+hi_function hi lo n = 
+  Exception.catch (lo_function lo n) $
+    \ex -> case ex of
+		ErrorCall "H" -> do nhi <- readIORef hi
+				    writeIORef hi $! (nhi + 1)
+		_ -> throw ex
+
+some_function hi lo n = hi_function hi lo n
+
+main = do
+  [arg] <- getArgs
+  let n = read arg :: Int
+  hi <- newIORef (0 :: Int)
+  lo <- newIORef (0 :: Int)
+  mapM_ (some_function hi lo) [n,n-1..1]
+  nhi <- readIORef hi
+  nlo <- readIORef lo
+  putStrLn ("Exceptions: HI=" ++ show nhi ++ " / LO=" ++ show nlo)
+

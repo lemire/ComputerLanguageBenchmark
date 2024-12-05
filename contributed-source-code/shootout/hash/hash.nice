@@ -1,0 +1,22 @@
+/* The Great Computer Language Shootout 
+   http://shootout.alioth.debian.org/
+
+   contributed by Isaac Gouy
+*/
+
+
+void main(String[] args){
+   let n = Integer.parseInt(args[0]);   
+   var count = 0;
+
+   HashMap<String,int> table = new HashMap();
+
+   for (int i = 1; i <= n; i++) 
+      table[Integer.toString(i, 16)] = i;
+   for (int i = 1; i <= n; i++)
+      if ( table.containsKey(Integer.toString(i, 10)) ) count++;
+
+   println(count);
+}
+
+

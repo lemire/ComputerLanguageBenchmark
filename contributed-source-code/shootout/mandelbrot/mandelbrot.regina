@@ -1,0 +1,45 @@
+/* ------------------------------------------------------------------ */
+/* The Great Computer Language Shootout                               */
+/* http://shootout.alioth.debian.org/                                 */
+/*                                                                    */
+/* Contributed by Anthony Borla                                       */
+/* ------------------------------------------------------------------ */
+
+width = ARG(1) ; if DATATYPE(width) \= 'NUM' | width < 1 then ; width = 600
+height = width ; byte_acc = 0 ; bit_num = 0 ; output = 0
+
+call LINEOUT , "P4" ; call LINEOUT , width height
+
+do y = 0 to height - 1
+
+  do x = 0 to width - 1
+
+    limitAdjustment = 1
+
+    Zr = 0 ; Zi = 0
+    Cr = (2 * x / width - 1.5) ; Ci = (2 * y / height - 1)
+
+    do 50
+      Tr = Zr * Zr - Zi * Zi + Cr
+      Ti = 2 * Zr * Zi + Ci
+      Zr = Tr ; Zi = Ti
+      if (Zr * Zr + Zi * Zi) > 4.0 then do ; limitAdjustment = 0 ; leave ; end 
+    end
+
+    bit_num = bit_num + 1 ; if bit_num == 8 then ; output = 1
+
+    byte_acc = byte_acc * 2 + limitAdjustment
+
+    if x == width - 1 & bit_num \= 8 then do
+      byte_acc = byte_acc * 2 ** (8 - width // 8) ; output = 1
+    end
+
+    if output then do
+      call CHAROUT , D2C(byte_acc)
+      byte_acc = 0 ; bit_num = 0 ; output = 0
+    end
+
+  end
+
+end
+

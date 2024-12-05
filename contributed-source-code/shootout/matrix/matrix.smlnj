@@ -1,0 +1,54 @@
+(* matrix.sml
+ *
+ *   Matrix multiplication with integers.
+ *
+ * Copyright (c) 2004 by The Fellowship of SML/NJ
+ *
+ * Author: Matthias Blume (blume@tti-c.org)
+ *)
+structure Test : sig
+    val main : (string * string list) -> OS.Process.status
+end = struct
+
+    fun x + y = Word.toIntX (Word.+ (Word.fromInt x, Word.fromInt y))
+    fun x - y = Word.toIntX (Word.- (Word.fromInt x, Word.fromInt y))
+    fun x * y = Word.toIntX (Word.* (Word.fromInt x, Word.fromInt y))
+
+    fun mkmatrix (rows, cols) = Array.tabulate (rows * cols, fn i => i + 1)
+
+    val sub = Unsafe.Array.sub
+    val upd = Unsafe.Array.update
+
+    fun mmult (r, cr, c, a1, a2, a) =
+	let fun elem (i, j) = let
+		val k1start = i * cr
+		val k1end = k1start + cr
+		fun loop (k1, k2, x) =
+		    if k1 >= k1end then x
+		    else loop (k1 + 1, k2 + c, x + sub (a1, k1) * sub (a2, k2))
+	    in loop (k1start, j, 0)
+	    end
+	    fun oloop (i0, i, j) =
+		if j >= c then oloop (i0, i + 1, 0)
+		else if i >= r then ()
+		else (upd (a, i0, elem (i, j)); oloop (i0 + 1, i, j + 1))
+	in oloop (0, 0, 0)
+	end
+
+    val sz = 30
+
+    fun main' n =
+	let val (a1, a2) = (mkmatrix (sz, sz), mkmatrix (sz, sz))
+	    val a = Array.array (sz * sz, 0)
+	    fun loop n = (mmult (sz, sz, sz, a1, a2, a);
+			  if n <= 0 then () else loop (n - 1))
+	    fun show (i, j) = Int.toString (sub (a, i * sz + j))
+	in loop (n - 1);
+	   app print [show (0, 0), " ", show (2, 3), " ",
+		      show (3, 2), " ", show (4, 4), "\n"];
+	   OS.Process.success
+	end
+
+    fun main (_, []) = main' 1
+      | main (_, arg :: _) = main' (getOpt (Int.fromString arg, 1))
+end

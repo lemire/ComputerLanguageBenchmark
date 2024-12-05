@@ -1,0 +1,10 @@
+%%% -*- mode: prolog -*-
+%%% $Id$
+%%% http://shootout.alioth.debian.org/
+:- module(hello,[main/0],[]).
+
+:- use_module(library(write)).
+
+main :-
+	write('hello world'), nl, halt.
+

@@ -1,0 +1,34 @@
+#!/usr/bin/newlisp
+
+# list - benchmark - newLISP 8.3.0 or later
+# now mimics Python's way
+#
+# Contributed by Lutz Mueller
+
+(set 'SIZE 10000)
+
+(define (test-lists)
+	(set 'Li1  (sequence 1 SIZE))
+	(set 'Li2 Li1)
+	(set 'Li3 '())
+
+	; remove each item from left of Li2 and append to Li3
+
+	(reverse Li2)
+
+	(while Li2 (push (pop Li2) Li3 -1))
+	(while Li3 (push (pop Li3) Li2 -1))
+
+	(reverse Li1)
+	(if 	(!= (first Li1) SIZE) 0
+		(= Li1 Li2) (length Li1)
+		0))
+
+(set 'n (integer (nth 2 (main-args))))
+
+(dotimes (i n)
+	(set 'result (test-lists)))
+
+(println result)
+(exit)
+

@@ -1,0 +1,9 @@
+/*
+ *  http://shootout.alioth.debian.org/
+ * 
+ */
+
+module hello
+import StdEnv
+
+Start = "hello world\n"

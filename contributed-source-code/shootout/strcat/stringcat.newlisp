@@ -1,0 +1,13 @@
+#!/usr/bin/newlisp
+
+# stringcat - benchmark
+#
+# Contributed by Lutz Mueller
+
+(set 'n (integer (nth 2 (main-args))))
+(dotimes (i n) (push "hello\n" str))
+(set 'str (join str))
+(println (length str))
+
+(exit)
+

@@ -1,0 +1,37 @@
+-- $Id$
+-- http://shootout.alioth.debian.org/
+-- Author: Einar Karttunen
+
+import Control.Monad
+import Data.IORef
+import System
+
+class Toggle a where
+    activate :: a -> IO ()
+    value :: a -> IO Bool
+
+newtype ToggleC    = ToggleC (IORef Bool)
+newtype NthToggleC = NthToggleC (IORef (Bool, Int, Int))
+
+modr r x = do { v <- readIORef r; writeIORef r $! x v }
+
+newToggle s = newIORef s >>= return . ToggleC
+newNthToggle s m = newIORef (s,0,m) >>= return . NthToggleC
+
+instance Toggle ToggleC where 
+    activate (ToggleC t) = modr t not
+    value (ToggleC t)    = readIORef t
+
+instance Toggle NthToggleC where
+    activate (NthToggleC t) = modr t (\x@(s,v,m) -> x `seq` if v+1 == m then (not s,0,m) else (s,v+1,m))
+    value    (NthToggleC t) = do { ~(s,_,_) <- readIORef t; s `seq` return s }
+
+out b = putStrLn (if b then "true" else "false")
+
+main = do [num] <- getArgs
+	  toggle<- newToggle True
+	  replicateM_ (read num) (activate toggle >> value toggle)
+	  value toggle>>= out
+	  ntoggle<- newNthToggle True 3
+	  replicateM_ (read num) (activate ntoggle >> value ntoggle)
+	  value ntoggle>>= out

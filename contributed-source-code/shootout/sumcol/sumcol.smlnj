@@ -1,0 +1,18 @@
+(* sumcol.sml
+ *
+ *   Sum a column of integers read from stdin.
+ *
+ * Copyright (c) 2004 by The Fellowship of SML/NJ
+ *
+ * Author: Matthias Blume (blume@tti-c.org)
+ *)
+structure Test : sig
+    val main : (string * string list) -> OS.Process.status
+end = struct
+    fun sumlines sum =
+	case TextIO.inputLine TextIO.stdIn of
+	    NONE => print (Int.toString sum ^ "\n")
+	  | SOME line => sumlines (sum + getOpt (Int.fromString line, 0))
+
+    fun main _ = (sumlines 0; OS.Process.success)
+end

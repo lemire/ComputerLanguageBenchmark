@@ -1,0 +1,22 @@
+
+
+
+Object subclass: #Tests   instanceVariableNames: ''   classVariableNames: ''   poolDictionaries: ''   category: 'Shootout'!
+
+!Tests class methodsFor: 'platform'!arg   ^(SmalltalkImage current getSystemAttribute: 3) asInteger! !
+
+!Tests class methodsFor: 'platform'!stdin   ^UnixProcess stdIn! !
+
+!Tests class methodsFor: 'platform'!stdinSpecial   ^UnixProcess stdIn! !!Tests class methodsFor: 'platform'!stdout   ^UnixProcess stdOut! !
+
+!Tests class methodsFor: 'platform'!stdoutSpecial   ^UnixProcess stdOut! !
+
+!Stream methodsFor: 'platform'!nl   self nextPut: Character lf! !
+
+!Stream methodsFor: 'platform'!print: number digits: decimalPlaces
+   | precision rounded |   decimalPlaces <= 0 ifTrue: [^ number rounded printString].   precision := Utilities floatPrecisionForDecimalPlaces: decimalPlaces.   rounded := number roundTo: precision.
+   self nextPutAll:       ((rounded asScaledDecimal: decimalPlaces) printString copyUpTo: $s)! !
+
+!Stream methodsFor: 'platform'!print: number paddedTo: width   self nextPutAll: (number printStringLength: width padded: false)! !
+
+

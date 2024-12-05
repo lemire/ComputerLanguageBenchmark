@@ -1,0 +1,46 @@
+/* The Computer Language Shootout 
+   http://shootout.alioth.debian.org/
+   contributed by Isaac Gouy 
+*/
+
+using System;
+
+class recursive
+{
+   static void Main(string[] args){
+      int n = Int32.Parse(args[0]);
+      Console.WriteLine("Ack(3,{0}): {1}", n, Ack(3, n));
+      Console.WriteLine("Fib({0:f1}): {1:f1}", 27.0+n, Fib(27.0+n));
+      n--; Console.WriteLine("Tak({0},{1},{2}): {3}", 3*n,2*n,n, Tak(3*n,2*n,n)); 
+
+      Console.WriteLine("Fib(3): {0}", Fib(3));
+      Console.WriteLine("Tak(3.0,2.0,1.0): {0:f1}",Tak(3.0,2.0,1.0));
+   }
+
+
+   public static int Ack(int m, int n) {
+      if (m == 0) return n + 1;
+      if (n == 0) return Ack(m-1, 1);
+      else return Ack(m-1, Ack(m, n-1));
+   }
+
+   public static int Fib(int n) {
+      if (n < 2) return 1;
+      else return Fib(n-2) + Fib(n-1);
+   }
+
+   public static int Tak(int x, int y, int z) {
+      if (y < x) return Tak(Tak(x-1,y,z), Tak(y-1,z,x), Tak(z-1,x,y));
+      else return z;
+   }
+
+   public static double Fib(double n) {
+      if (n < 2.0) return 1.0;
+      else return Fib(n-2.0) + Fib(n-1.0);
+   }
+
+   public static double Tak(double x, double y, double z) {
+      if (y < x) return Tak(Tak(x-1.0,y,z), Tak(y-1.0,z,x), Tak(z-1.0,x,y));
+      else return z;
+   }
+}

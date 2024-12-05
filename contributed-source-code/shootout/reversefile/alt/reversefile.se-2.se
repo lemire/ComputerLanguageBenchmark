@@ -1,0 +1,38 @@
+-- -*- mode: eiffel -*-
+-- $Id$
+-- http://www.bagley.org/~doug/shootout/
+-- from: Friedrich Dominicus
+
+class REVERSEFILE
+
+insert
+	ARGUMENTS
+
+creation {ANY}
+	make
+
+feature {ANY}
+    make is
+        local
+            i: INTEGER;
+            arr_string: ARRAY[STRING];
+        do
+            create arr_string.make(1,100);
+            from io.read_line
+                i := 1;
+            until io.end_of_input
+            loop
+                arr_string.force(clone(io.last_string), i);
+                io.read_line;
+                i := i + 1;
+            end;
+            from i := arr_string.upper
+            until i < 1
+            loop
+                io.put_string (arr_string.item(i));
+                io.put_character('%N');
+                i := i -1 ;
+            end;
+        end;
+
+end -- class REVERSEFILE

@@ -1,0 +1,18 @@
+/** 
+ * The Computer Language Benchmarks Game 
+ * Based on the CAL Open Quark version
+ * Contributed by Magnus Byne.
+ */
+module Hello;
+
+import Cal.Core.Prelude using
+    typeConstructor = String;
+    ;
+import Cal.IO.Console using
+    function = print;
+    ;
+
+main :: [String] -> ();
+public main args =
+    print "hello world\n";
+

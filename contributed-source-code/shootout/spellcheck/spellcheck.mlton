@@ -1,0 +1,54 @@
+(* -*- mode: sml -*-
+ * $Id$
+ * http://www.bagley.org/~doug/shootout/
+ *)
+
+open TextIO;
+
+fun chop str = String.substring (str, 0, (String.size str) - 1);
+
+fun spellcheck () =
+    let
+	val dict = HashTable.new {hash = String.hash,
+				  equals = op =,
+				  size = 40000}
+    in
+	let val din = openIn "Usr.Dict.Words"
+	    fun init_dict din dict =
+	        case inputLine din of
+		    NONE => ()
+		  | SOME(instr) => ( HashTable.insert (dict, chop instr, 1);
+                                     init_dict din dict )
+	in
+	    init_dict din dict
+	end;
+
+	let fun check_words dict =
+	    case inputLine stdIn of
+	        NONE => ()
+	      | SOME(instr) =>
+	          let val word = chop instr
+		  in
+		    case HashTable.peek (dict, word) of
+			SOME _ => ()
+		      | NONE => (print word ; print "\n");
+		    check_words dict
+		  end
+	in
+	    check_words dict
+	end handle EndOfFile => ()
+    end
+
+fun atoi s = case Int.fromString s of SOME num => num | NONE => 0;
+
+fun main(name, args) = 
+    let
+	val arg = hd(args @ ["1"])
+	val num = atoi arg
+    in
+	spellcheck ();
+	OS.Process.success
+    end;
+
+
+val _ = main( CommandLine.name(), CommandLine.arguments() );

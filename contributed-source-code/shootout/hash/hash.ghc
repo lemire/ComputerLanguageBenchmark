@@ -1,0 +1,16 @@
+-- $Id$
+-- http://shootout.alioth.debian.org/ 
+-- from Bryn Keller
+-- modified by JP Bernardy
+-- build with ghc -O2 -fglasgow-exts sourcefile.hs
+
+import System (getArgs)
+import Data.FiniteMap
+import Numeric (showHex)
+
+countKeys tbl n = length [() | i <- [1..n], lookupWithDefaultFM tbl False (show i)]
+
+main = do [number] <- getArgs
+          let num = read number
+              tbl = listToFM [(showHex i "", True) | i <- [(1::Int)..num]]
+          print (countKeys tbl num)

@@ -1,0 +1,39 @@
+%%% -*- mode: erlang -*-
+%%% $Id$
+%%% http://shootout.alioth.debian.org/
+%%%
+%%% Super-fast implementation by Mark Scandariato
+%%% Mega-improvement by Alexey Shchepin <alexey@sevcom.net>
+%%% Corrected to meet Shootout criteria, and made Hyper-fast
+%%%    by Mark Scandariato
+
+-module(wc).
+-export([main/1]).
+
+-define(BUFSIZE, 4096).
+
+main(_Args) ->
+    ok = io:setopts([binary]),
+    {L, W, C} = s(next(), 0, 0, 0),
+    io:fwrite("~p ~p ~p~n", [L,W,C]),
+    erlang:halt(0).
+
+next() -> next(io:get_chars('',?BUFSIZE)).
+
+next(eof) -> eof;
+next(Bin) -> binary_to_list(Bin).
+
+s([$\s|T], C, L, W) -> s(T, C+1, L, W);
+s([$\t|T], C, L, W) -> s(T, C+1, L, W);
+s([$\n|T], C, L, W) -> s(T, C+1, L+1, W);
+s([_|T], C, L, W)   -> w(T, C+1, L, W+1);
+s([], C, L, W)      -> s(next(), C, L, W);
+s(eof, C, L, W)     -> {L, W, C}.
+
+w([$\s|T], C, L, W) -> s(T, C+1, L, W);
+w([$\t|T], C, L, W) -> s(T, C+1, L, W);
+w([$\n|T], C, L, W) -> s(T, C+1, L+1, W);
+w([_|T], C, L, W)   -> w(T, C+1, L, W);
+w([], C, L, W)      -> w(next(), C, L, W);
+w(eof, C, L, W)     -> {L, W, C}.
+

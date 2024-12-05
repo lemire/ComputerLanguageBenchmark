@@ -1,0 +1,19 @@
+/* ------------------------------------------------------------------ */
+/* The Great Computer Language Shootout                               */
+/* http://shootout.alioth.debian.org/                                 */
+/*                                                                    */
+/* Contributed by Anthony Borla                                       */
+/* ------------------------------------------------------------------ */
+
+N = ARG(1) ; if DATATYPE(N) \= 'NUM' | N < 1 then ; N = 1 
+
+say "Ack(3," || N || "):" ack(3, N) 
+
+exit 0
+
+/* ----------------------------- */
+
+ack :
+  if ARG(1) == 0 then ; return ARG(2) + 1
+  if ARG(2) == 0 then ; return ack(ARG(1) - 1, 1)
+  return ack(ARG(1) - 1, ack(ARG(1), ARG(2) - 1))

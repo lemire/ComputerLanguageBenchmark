@@ -1,0 +1,27 @@
+(* random.sml
+ *
+ *   Floating-point random number generator + test loop.
+ *
+ * Copyright (c) 2004 by The Fellowship of SML/NJ
+ *
+ * Author: Matthias Blume (blume@tti-c.org)
+ *)
+structure Test: sig val main:string*string list->OS.Process.status end = struct
+
+    (* the constants *)
+    val (M, A, C) = (0w139968, 0w3877, 0w29573)
+
+    (* floating format, word->real conversion *)
+    val (f9, wreal) = (Real.fmt (StringCvt.FIX (SOME 9)), real o Word.toIntX)
+
+    (* the loop *)
+    fun rl (n, s, m) = let fun l (0w0, s) = m * wreal s / wreal M
+			     | l (n, s) = l (n - 0w1, (s * A + C) mod M)
+		       in l (n, s) end
+
+    (* the driver *)
+    fun main' n = (print (f9 (rl (Word.fromInt n, 0w42, 100.0)) ^ "\n");
+		   OS.Process.success)
+    fun main (_, []) = main' 1
+      | main (_, arg :: _) = main' (getOpt (Int.fromString arg, 1))
+end

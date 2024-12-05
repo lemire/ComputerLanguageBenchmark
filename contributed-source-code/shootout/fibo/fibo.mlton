@@ -1,0 +1,21 @@
+(* -*- mode: sml -*-
+ * $Id$
+ * http://www.bagley.org/~doug/shootout/
+ *)
+
+fun fib n = if n < 2 then 1 else fib (n-2) + fib (n-1)
+
+fun atoi s = case Int.fromString s of SOME num => num | NONE => 0;
+
+fun main(name, args) = 
+  let
+    val arg = hd(args @ ["1"]);
+    val num = atoi arg;
+    val fib = fib num;
+    val result = Int.toString fib;
+  in (
+      print result; print "\n";
+      OS.Process.success
+  ) end;
+
+val _ = main( CommandLine.name(), CommandLine.arguments() );

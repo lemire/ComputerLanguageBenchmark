@@ -1,0 +1,25 @@
+#!/usr/bin/newlisp
+
+;; spellcheck.newlisp - benchmark - newLISP 8.3.0 or later
+;;
+;; Contributed by Lutz Mueller
+
+(context 'MAIN)
+
+(define (main)
+	(set 'infile (open "Usr.Dict.Words" "read"))
+	(while (set 'word (read-line infile))
+		(symbol word 'Dictionary))
+	(close infile)
+
+	(while (set 'word (read-line))
+		(if (not (symbol word 'Dictionary nil))
+			(println word))))
+
+(main)
+
+;; eof
+
+
+	
+

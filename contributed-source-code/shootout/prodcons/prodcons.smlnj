@@ -1,0 +1,29 @@
+(* prodcons.sml
+ *
+ *   Producer-Consumer using Concurrent ML.
+ *
+ * Copyright (c) 2004 by The Fellowship of SML/NJ
+ *
+ * Author: Matthias Blume (blume@tti-c.org)
+ *)
+structure Test : sig
+    val main : string * string list -> OS.Process.status
+end = struct
+
+    fun doit n =
+	let val (ch, ret) = (CML.channel (), CML.channel ())
+	    fun prod (i, n) = if i >= n then CML.send (ret, i)
+			      else (CML.send (ch, i); prod (i + 1, n))
+	    fun cons (0, m) = m
+	      | cons (i, m) = (ignore (CML.recv ch); cons (i - 1, m + 1))
+	    val _ = CML.spawn (fn () => prod (0, n))
+	    val c = cons (n, 0)
+	    val p = CML.recv ret
+	    open FormatComb
+	in TextIO.output (TextIO.stdOut, format (int o sp 1 o int o nl) p c)
+	end
+
+    fun main' n = (RunCML.doit (fn () => doit n, NONE); OS.Process.success)
+    fun main (_, []) = main' 1
+      | main (_, arg :: _) = main' (getOpt (Int.fromString arg, 1))
+end

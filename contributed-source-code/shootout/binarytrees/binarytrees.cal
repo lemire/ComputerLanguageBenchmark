@@ -1,0 +1,139 @@
+/** 
+ * The Computer Language Benchmarks Game 
+ * Based on the CAL Open Quark version
+ * Contributed by Magnus Byne.
+ */
+module Binarytrees;
+
+import Cal.Core.Prelude using
+    typeConstructor = Int, String;
+    function = eager, max, seq, stringToInt;
+    ;
+
+import Cal.Core.Bits using
+    function = shiftL;
+    ;
+
+import Cal.Collections.List using
+    function = head;
+    ;
+
+import Cal.Core.Debug using
+    function = show;
+    ;
+
+import Cal.IO.Console using
+    function = printLine;
+    ;
+
+data public Tree =
+    Empty |
+    Node
+        value :: !Int
+        leftChild :: !Tree
+        rightChild :: !Tree
+    ;
+
+/** Traverses tree and returns a checksum on the values in the nodes.*/
+check :: Tree -> Int;
+check !tree =
+    case tree of
+    Empty -> 0;
+    Node value left right -> value + check left - check right;
+    ;
+
+/** builds a tree of depth */
+make :: Int -> Int -> Tree;
+make !i !depth =
+    if depth == 1 then
+        Node
+            i
+            (Node (2 * i - 1) Empty Empty)
+            (Node (2 * i) Empty Empty)
+    else
+        Node
+            i
+            (make (2 * i - 1) (depth - 1))
+            (make (2 * i) (depth - 1))
+    ;
+
+/** 
+ * Test different numbers of trees at different depths and
+ * writes the number and checksum to stdout.
+ */
+testTrees :: Int -> Int -> Int -> ();
+testTrees !depth !minDepth !maxDepth =
+    let
+        //allocates and checks 2i trees, each of depth depth
+        testFixedDepth :: Int -> Int -> Int -> Int;
+        testFixedDepth !i !depth !checksum =
+            if i == 0 then
+                checksum
+            else
+                testFixedDepth
+                    (i - 1)
+                    depth
+                    (
+                        checksum + check (make i depth)
+                        + check (make (-i) depth)
+                    )
+            ;
+    in
+        if depth > maxDepth then
+            ()
+        else
+            let
+                i :: Int;
+                i = eager $ shiftL 1 (maxDepth - depth + minDepth);
+            in
+                printLine
+                    (
+                        show (i * 2)
+                        ++ "\t trees of depth "
+                        ++ show depth
+                        ++ "\t check: "
+                        ++ show (testFixedDepth i depth 0)
+                    )
+                `seq`
+                testTrees (depth + 2) minDepth maxDepth
+    ;
+
+main :: [String] -> ();
+public main !args =
+    let
+        n :: Int;
+        n = eager $ stringToInt (head args);
+
+        minDepth :: Int;
+        minDepth = 4;
+
+        maxDepth :: Int;
+        maxDepth = max (minDepth + 2) n;
+
+        stretchDepth :: Int;
+        stretchDepth = maxDepth + 1;
+
+        longLivedTree :: Tree;
+        longLivedTree = make 0 maxDepth;
+    in
+        printLine
+            (
+                "stretch tree of depth "
+                ++ show stretchDepth
+                ++ "\t check: "
+                ++ show (check (make 0 stretchDepth))
+            )
+        `seq`
+        longLivedTree
+        `seq`
+        testTrees minDepth minDepth maxDepth
+        `seq`
+        printLine
+            (
+                "long lived tree of depth "
+                ++ show maxDepth
+                ++ "\t check: "
+                ++ show (check longLivedTree)
+            )
+    ;
+

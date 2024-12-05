@@ -1,0 +1,10 @@
+# -*- mode: icon -*-
+# $Id$
+# http://www.bagley.org/~doug/shootout/
+
+procedure main(argv)
+    n := argv[1] | 1;
+    str := "";
+    every i := 1 to n do str ||:= "hello\n";
+    write(*str);
+end

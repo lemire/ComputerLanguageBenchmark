@@ -1,0 +1,10 @@
+;;; $Id$
+;;; http://shootout.alioth.debian.org/
+
+(defun fib (n)
+(if (< n 2) 1 (+ (fib (- n 1)) (fib (- n 2)))))
+
+(let 
+	((n (parse-integer (or (car pop11::poparglist) "1"))))
+	(format *standard-output* "~A~%" (fib n))
+)
